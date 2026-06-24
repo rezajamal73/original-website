@@ -31,8 +31,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-      # 'multi.captcha_admin',
-    "jazzmin",
+    # 'multi.captcha_admin',
+    # "jazzmin",
     'adminsortable2',
     'django.contrib.admin',
     'django.contrib.auth',
