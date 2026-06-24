@@ -1,4 +1,4 @@
-# app/admin.py
+# app_media/admin.py
 
 from django.contrib import admin
 from django.utils.html import format_html
@@ -8,9 +8,6 @@ from adminsortable2.admin import SortableAdminMixin
 from .models import Media, MediaImage, MediaVideo
 
 
-# -------------------------------------------------------
-#   GLOBAL DELETE BUTTON
-# -------------------------------------------------------
 def admin_delete_button(obj):
     url = reverse(
         f"admin:{obj._meta.app_label}_{obj._meta.model_name}_delete",
@@ -39,9 +36,6 @@ def admin_delete_button(obj):
 admin_delete_button.short_description = "حذف"
 
 
-# -------------------------------------------------------
-#   INLINE: IMAGE
-# -------------------------------------------------------
 class MediaImageInline(admin.TabularInline):
     model = MediaImage
     extra = 1
@@ -59,9 +53,6 @@ class MediaImageInline(admin.TabularInline):
     show_image.short_description = "پیش‌نمایش"
 
 
-# -------------------------------------------------------
-#   INLINE: VIDEO
-# -------------------------------------------------------
 class MediaVideoInline(admin.TabularInline):
     model = MediaVideo
     extra = 1
@@ -71,21 +62,15 @@ class MediaVideoInline(admin.TabularInline):
     def show_video(self, obj):
         if obj.video:
             return format_html(
-                """
-                <video width='120' height='80' controls
-                    style='border-radius:8px; box-shadow:0 0 6px #aaa;'>
-                    <source src='{}'>
-                </video>
-                """,
+                "<video width='120' height='80' controls "
+                "style='border-radius:8px; box-shadow:0 0 6px #aaa;'>"
+                "<source src='{}'></video>",
                 obj.video.url,
             )
         return "—"
     show_video.short_description = "پیش‌نمایش"
 
 
-# =======================================================
-#   MEDIA ADMIN
-# =======================================================
 @admin.register(Media)
 class MediaAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_display = (
@@ -114,7 +99,6 @@ class MediaAdmin(SortableAdminMixin, admin.ModelAdmin):
         ("📝 انگلیسی", {"fields": ("title_en", "summary_en", "slug")}),
     )
 
-    # ------------------ ICONS ------------------
     def image_icon(self, obj):
         if obj.image:
             return format_html(
@@ -145,10 +129,16 @@ class MediaAdmin(SortableAdminMixin, admin.ModelAdmin):
 
     def status_icon(self, obj):
         if obj.status == "published":
-            return format_html("<b style='color:green'>منتشر شده</b>")
-        return format_html("<b style='color:red'>پیش‌نویس</b>")
+            return format_html(
+                "<b style='color:green;'>{}</b>",
+                "منتشر شده",
+            )
+        return format_html(
+            "<b style='color:red;'>{}</b>",
+            "پیش‌نویس",
+        )
     status_icon.short_description = "وضعیت"
 
     def special_icon(self, obj):
         return "⭐" if obj.is_special else "—"
-    special_icon.short_description = "نمایش در صفحه اصلی "
+    special_icon.short_description = "نمایش در صفحه اصلی"

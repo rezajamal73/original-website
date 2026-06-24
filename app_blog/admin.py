@@ -3,6 +3,7 @@ from django.utils.html import format_html
 from django.urls import reverse
 from adminsortable2.admin import SortableAdminMixin
 from app_blog.models import blog, blog_Category, blog_Tag, BlogImage
+from django.utils.safestring import mark_safe
 
 
 # ---------------------------------------
@@ -154,6 +155,8 @@ class BlogAdmin( admin.ModelAdmin):
             )
         return "🖼️"
 
+    image_icon.short_description = "پوستر"
+
     # IMAGE PREVIEW – form view
 
     def show_image_in_field(self, obj):
@@ -175,8 +178,8 @@ class BlogAdmin( admin.ModelAdmin):
     # STATUS
     def status_icon(self, obj):
         if obj.status == "published":
-            return format_html("<b style='color:green'>منتشر شده</b>")
-        return format_html("<b style='color:red'>پیش‌نویس</b>")
+            return mark_safe("<b style='color:green'>منتشر شده</b>")
+        return mark_safe("<b style='color:red'>پیش‌نویس</b>")
 
     status_icon.short_description = "وضعیت"
 
@@ -189,19 +192,22 @@ class BlogAdmin( admin.ModelAdmin):
     # TAGS (NEW) – ICON
     def tag_icon(self, obj):
         tags = obj.tags.all()
+
         if not tags.exists():
             return "—"
 
-        return format_html(
-            "<div style='display:flex; flex-wrap:wrap; gap:6px;'>"
-            + "".join([
+        html = "<div style='display:flex; flex-wrap:wrap; gap:6px;'>"
+
+        for t in tags:
+            html += (
                 f"<span style='background:#E8F0FE; color:#1A73E8; "
                 f"padding:3px 8px; border-radius:6px; font-size:12px;'>"
                 f"🏷️ {t.title_fa}</span>"
-                for t in tags
-            ])
-            + "</div>"
-        )
+            )
+
+        html += "</div>"
+
+        return mark_safe(html)
 
     tag_icon.short_description = "برچسب‌ها"
 

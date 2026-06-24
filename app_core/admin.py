@@ -142,11 +142,13 @@ class UserProxyAdmin(BaseUserAdmin):
     colored_name.short_description = "نام و نام خانوادگی"
 
     def is_active_icon(self, obj):
-        return format_html("✅" if obj.is_active else "⛔")
+        return "✅" if obj.is_active else "⛔"
+
     is_active_icon.short_description = "فعال"
 
     def is_staff_icon(self, obj):
-        return format_html("👤" if obj.is_staff else "—")
+        return "👤" if obj.is_staff else "—"
+
     is_staff_icon.short_description = "کارمند"
 
     def date_joined_icon(self, obj):

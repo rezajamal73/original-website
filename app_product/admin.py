@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.utils.html import format_html
 
 from adminsortable2.admin import SortableAdminMixin
+from django.utils.safestring import mark_safe
 
 from .models import (
     Product,
@@ -257,9 +258,9 @@ class ProductAdmin(SortableAdminMixin, admin.ModelAdmin):
 
     def status_col(self, obj):
         return (
-            format_html("<b style='color:green'>✅ منتشر</b>")
+            mark_safe("<b style='color:green'>✅ منتشر</b>")
             if obj.status == "published"
-            else format_html("<b style='color:#dc3545'>⛔ پیش‌نویس</b>")
+            else mark_safe("<b style='color:#dc3545'>⛔ پیش‌نویس</b>")
         )
 
     status_col.short_description = "وضعیت"

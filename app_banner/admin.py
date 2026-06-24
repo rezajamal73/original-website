@@ -8,13 +8,10 @@ from app_banner.models import (
     OtherBanner,
     SpecialProductBanner,
     MainBanner,
-HeroSliderSetting,
+    HeroSliderSetting,
 )
 
 
-# =====================================================
-# دکمه حذف اختصاصی
-# =====================================================
 def admin_delete_button(obj):
     url = reverse(
         f"admin:{obj._meta.app_label}_{obj._meta.model_name}_delete",
@@ -37,17 +34,25 @@ def admin_delete_button(obj):
         url,
     )
 
-
 admin_delete_button.short_description = "حذف"
+
+
+def make_status_icon(published_label: str, draft_label: str):
+    """Factory تولید status_icon برای جلوگیری از تکرار کد"""
+    def status_icon(self, obj):
+        if obj.status == "published":
+            return format_html("<b style='color:green;'>{}</b>", published_label)
+        return format_html("<b style='color:red;'>{}</b>", draft_label)
+    status_icon.short_description = "وضعیت"
+    return status_icon
+
 
 @admin.register(HeroSliderSetting)
 class HeroSliderSettingAdmin(admin.ModelAdmin):
-
     def has_add_permission(self, request):
         return not HeroSliderSetting.objects.exists()
-# =====================================================
-# مدیریت بنر اصلی (اسلایدر صفحه خانه)
-# =====================================================
+
+
 @admin.register(HeroBanner)
 class HeroBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
     ordering = ("order",)
@@ -91,14 +96,11 @@ class HeroBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
                 "subtitle_en",
             )
         }),
-        ("🖼️ تصویر بنر", {
-            "fields": ("image", "image_preview")
-        }),
+        ("🖼️ تصویر بنر", {"fields": ("image", "image_preview")}),
     )
 
     def display_title(self, obj):
         return obj.label_fa or obj.title_p1_fa or "— بدون عنوان —"
-
     display_title.short_description = "عنوان"
 
     def image_icon(self, obj):
@@ -108,7 +110,6 @@ class HeroBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
                 obj.image.url,
             )
         return "—"
-
     image_icon.short_description = "تصویر"
 
     def image_preview(self, obj):
@@ -118,27 +119,15 @@ class HeroBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
                 obj.image.url,
             )
         return "تصویری وجود ندارد"
-
     image_preview.short_description = "پیش‌نمایش تصویر"
 
-    def status_icon(self, obj):
-        return (
-            format_html("<b style='color:green'>✅ منتشر شده</b>")
-            if obj.status == "published"
-            else format_html("<b style='color:red'>⛔ پیش‌نویس</b>")
-        )
-
-    status_icon.short_description = "وضعیت"
+    status_icon = make_status_icon("✅ منتشر شده", "⛔ پیش‌نویس")
 
     def admin_delete(self, obj):
         return admin_delete_button(obj)
-
     admin_delete.short_description = "حذف"
 
 
-# =====================================================
-# مدیریت بنر صفحات داخلی
-# =====================================================
 @admin.register(OtherBanner)
 class OtherBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
     ordering = ("order",)
@@ -166,7 +155,6 @@ class OtherBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
 
     def display_title(self, obj):
         return obj.label_fa or "— بدون عنوان —"
-
     display_title.short_description = "عنوان"
 
     def image_icon(self, obj):
@@ -176,7 +164,6 @@ class OtherBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
                 obj.image.url,
             )
         return "—"
-
     image_icon.short_description = "تصویر"
 
     def image_preview(self, obj):
@@ -186,27 +173,15 @@ class OtherBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
                 obj.image.url,
             )
         return "تصویری وجود ندارد"
-
     image_preview.short_description = "پیش‌نمایش تصویر"
 
-    def status_icon(self, obj):
-        return (
-            format_html("<b style='color:green'>✅ منتشر شده</b>")
-            if obj.status == "published"
-            else format_html("<b style='color:red'>⛔ پیش‌نویس</b>")
-        )
-
-    status_icon.short_description = "وضعیت"
+    status_icon = make_status_icon("✅ منتشر شده", "⛔ پیش‌نویس")
 
     def admin_delete(self, obj):
         return admin_delete_button(obj)
-
     admin_delete.short_description = "حذف"
 
 
-# =====================================================
-# مدیریت بنر محصولات ویژه
-# =====================================================
 @admin.register(SpecialProductBanner)
 class SpecialProductBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
     ordering = ("order",)
@@ -232,7 +207,6 @@ class SpecialProductBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
 
     def display_title(self, obj):
         return obj.title_fa or "— بنر محصول ویژه —"
-
     display_title.short_description = "عنوان"
 
     def image_icon(self, obj):
@@ -242,7 +216,6 @@ class SpecialProductBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
                 obj.image.url,
             )
         return "—"
-
     image_icon.short_description = "تصویر"
 
     def image_preview(self, obj):
@@ -252,27 +225,15 @@ class SpecialProductBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
                 obj.image.url,
             )
         return "تصویری وجود ندارد"
-
     image_preview.short_description = "پیش‌نمایش تصویر"
 
-    def status_icon(self, obj):
-        return (
-            format_html("<b style='color:green'>✅ فعال</b>")
-            if obj.status == "published"
-            else format_html("<b style='color:red'>⛔ غیرفعال</b>")
-        )
-
-    status_icon.short_description = "وضعیت"
+    status_icon = make_status_icon("✅ فعال", "⛔ غیرفعال")
 
     def admin_delete(self, obj):
         return admin_delete_button(obj)
-
     admin_delete.short_description = "حذف"
 
 
-# =====================================================
-# مدیریت بنر اصلی صفحات داخلی
-# =====================================================
 @admin.register(MainBanner)
 class MainBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
     ordering = ("order",)
@@ -296,9 +257,7 @@ class MainBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
         ("📝 محتوای انگلیسی", {
             "fields": ("title_p1_en", "title_p2_en", "subtitle_en")
         }),
-        ("🖼️ تصویر بنر", {
-            "fields": ("image", "image_preview")
-        }),
+        ("🖼️ تصویر بنر", {"fields": ("image", "image_preview")}),
     )
 
     def has_add_permission(self, request):
@@ -308,14 +267,12 @@ class MainBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
         if obj.title_p1_fa or obj.title_p2_fa:
             return f"{obj.title_p1_fa or ''} | {obj.title_p2_fa or ''}"
         return "— بدون عنوان —"
-
     title_fa.short_description = "عنوان فارسی"
 
     def title_en(self, obj):
         if obj.title_p1_en or obj.title_p2_en:
             return f"{obj.title_p1_en or ''} | {obj.title_p2_en or ''}"
         return "—"
-
     title_en.short_description = "عنوان انگلیسی"
 
     def image_icon(self, obj):
@@ -325,7 +282,6 @@ class MainBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
                 obj.image.url,
             )
         return "—"
-
     image_icon.short_description = "تصویر"
 
     def image_preview(self, obj):
@@ -335,19 +291,10 @@ class MainBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
                 obj.image.url,
             )
         return "تصویری وجود ندارد"
-
     image_preview.short_description = "پیش‌نمایش تصویر"
 
-    def status_icon(self, obj):
-        return (
-            format_html("<b style='color:green'>✅ منتشر شده</b>")
-            if obj.status == "published"
-            else format_html("<b style='color:red'>⛔ پیش‌نویس</b>")
-        )
-
-    status_icon.short_description = "وضعیت"
+    status_icon = make_status_icon("✅ منتشر شده", "⛔ پیش‌نویس")
 
     def admin_delete(self, obj):
         return admin_delete_button(obj)
-
     admin_delete.short_description = "حذف"

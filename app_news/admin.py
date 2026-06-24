@@ -2,6 +2,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
+from django.utils.safestring import mark_safe
 
 from app_news.models import (
     News,
@@ -195,8 +196,10 @@ class NewsAdmin(admin.ModelAdmin):
 
     def status_icon(self, obj):
         if obj.status == "published":
-            return format_html("<b style='color:green'>منتشر شده</b>")
-        return format_html("<b style='color:red'>پیش‌نویس</b>")
+            return mark_safe("<b style='color:green'>منتشر شده</b>")
+
+        return mark_safe("<b style='color:red'>پیش‌نویس</b>")
+
     status_icon.short_description = "وضعیت"
 
     def category_icon(self, obj):
@@ -208,20 +211,21 @@ class NewsAdmin(admin.ModelAdmin):
     # ---------------------------------------------------
     def tag_icon(self, obj):
         tags = obj.tags.all()
+
         if not tags.exists():
             return "—"
 
-        return format_html(
-            "<div style='display:flex; flex-wrap:wrap; gap:6px;'>"
-            + "".join([
-                f"<span style='background:#E8F0FE; color:#1A73E8; "
-                f"padding:3px 8px; border-radius:6px; font-size:12px;'>"
-                f"🏷️ {t.title_fa}</span>"
-                for t in tags
-            ])
-            + "</div>"
+        html = "".join([
+            f"<span style='background:#E8F0FE;color:#1A73E8;padding:3px 8px;border-radius:6px;font-size:12px;'>🏷️ {t.title_fa}</span>"
+            for t in tags
+        ])
+
+        return mark_safe(
+            f"<div style='display:flex;flex-wrap:wrap;gap:6px;'>{html}</div>"
         )
+
     tag_icon.short_description = "برچسب‌ها"
+
 
     # ---------------------------------------------------
     def date_icon(self, obj):
