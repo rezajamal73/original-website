@@ -1,0 +1,130 @@
+{% extends 'RTL/core/base.html' %}
+{% load static %}
+{% block content %}
+    <main class="main">
+        <!-- breadcrumb -->
+        <div class="site-breadcrumb">
+            <div class="site-breadcrumb-bg" style="background: url('{{ banner.image.url }}')">
+            </div>
+            <div class="container">
+                <div class="site-breadcrumb-wrap">
+                    <h4 class="breadcrumb-title">
+                        رسانه
+                    </h4>
+                    <ul class="breadcrumb-menu">
+                        <li>
+                            <a href="{% url 'app_core:home' %}">
+                                <i class="far fa-home">
+                                </i>
+                                خانه
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'app_media:home' %}">
+                                <i class="far">
+                                </i>
+                                کلیه رسانه ها
+                            </a>
+                        </li>
+                        <li class="active">{{ media.title_fa }}
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+        <!-- breadcrumb end -->
+        <!-- blog single area -->
+<div class="blog-single-area py-100">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 col-xxl-9 mx-auto">
+
+                <div class="blog-single-wrap">
+                    <div class="blog-single-content">
+
+                        <!-- پوستر رسانه -->
+                        {% if media.image %}
+                            <div class="blog-thumb-img">
+                                <img src="{{ media.image.url }}" alt="{{ media.title_fa }}">
+                            </div>
+                        {% endif %}
+
+                        <div class="blog-info">
+
+                            <!-- عنوان -->
+                            <div class="blog-details">
+                                <h3 class="blog-details-title mb-20">
+                                    {{ media.title_fa }}
+                                </h3>
+
+                                {% if media.summary_fa %}
+                                    <p class="mb-20">
+                                        {{ media.summary_fa|linebreaks }}
+                                    </p>
+                                {% endif %}
+                            </div>
+
+                            <!-- گالری تصاویر -->
+                            {% if images %}
+                                <div class="blog-author">
+
+                                    <h5 class="mb-3" style="width:100%;">
+                                        تصاویر:
+                                    </h5>
+
+                                    <div class="row g-4 popup-gallery">
+                                        {% for img in images %}
+                                            <div class="col-md-4 col-lg-3">
+                                                <div class="gallery-item wow fadeInUp">
+                                                    <div class="gallery-img">
+                                                        <img src="{{ img.image.url }}" alt="{{ media.title_fa }}">
+                                                        <a class="popup-img gallery-link"
+                                                           href="{{ img.image.url }}">
+                                                            <i class="fal fa-plus"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+
+                                </div>
+                            {% endif %}
+
+                            <!-- ویدیوها -->
+                            {% if videos %}
+                                <h5 class="mb-3 mt-40" style="width:100%;">
+                                    ویدیوها:
+                                </h5>
+
+                                <div class="row g-4">
+                                    {% for vid in videos %}
+                                        <div class="col-md-6 col-lg-4">
+                                            <div style="border-radius:10px; overflow:hidden;">
+                                                <video controls style="width:100%;">
+                                                    <source src="{{ vid.video.url }}" type="video/mp4">
+                                                    مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند
+                                                </video>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
+                            <!-- خط جداکننده -->
+                            <hr style="margin:40px 0;">
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+    </main>
+{% endblock %}

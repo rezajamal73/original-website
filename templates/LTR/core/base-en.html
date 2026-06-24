@@ -1,0 +1,175 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+    <!-- meta tags -->
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta content="" name="description"/>
+    <meta content="" name="keywords"/>
+
+    <title>
+        {% if site_info %}
+            {{ site_info.name_company_p1_fa }} {{ site_info.name_company_p2_fa }}
+        {% endif %}
+    </title>
+
+    {% if site_info and site_info.header_logo %}
+        <link rel="icon" type="image/x-icon" href="{{ site_info.header_logo.url }}">
+    {% endif %}
+
+    <link href="{% static 'RTl/assets/css/bootstrap.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTl/assets/css/all-fontawesome.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTl/assets/css/animate.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTl/assets/css/magnific-popup.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTl/assets/css/owl.carousel.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTl/assets/css/jquery-ui.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTl/assets/css/nice-select.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTl/assets/css/style.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTl/assets/css/flex-slider.min.css' %}" rel="stylesheet"/>
+</head>
+
+<body class="home-5">
+
+<div class="preloader">
+    <div class="loader-ripple">
+        <div></div>
+        <div></div>
+    </div>
+</div>
+
+<header class="header">
+    <div class="header-top black-bg">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-5">
+                    <ul class="header-top-list">
+                        {% if site_info.email %}
+                            <li>
+                                <a href="mailto:{{ site_info.email }}">
+                                    <i class="far fa-envelopes"></i>
+                                    {{ site_info.email }}
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if site_info.phone_1 %}
+                            <li>
+                                <a href="tel:{{ site_info.phone_1 }}">
+                                    <i class="far fa-headset"></i>
+                                    {{ site_info.phone_1 }}
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if site_info.suport_phone %}
+                            <li class="help">
+                                <a href="tel:{{ site_info.suport_phone }}">
+                                    <i class="far fa-comment-question"></i>
+                                    Contact Support
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <div class="col-xl-7">
+                    <ul class="header-top-list">
+                        <li>
+                            <div class="dropdown">
+                                <a class="dropdown-toggle" data-bs-toggle="dropdown"
+                                   href="{% url 'app_core:home_en' %}">
+                                    <i class="far fa-globe-americas"></i>
+                                    English
+                                </a>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" href="{% url 'app_core:home' %}">
+                                        Persian
+                                    </a>
+                                </div>
+                            </div>
+                        </li>
+
+                        {% if follow_links %}
+                            <li class="social">
+                                <span>Follow Us:</span>
+                                {% for link in follow_links %}
+                                    {% if link.svg_icon and link.url %}
+                                        <a href="{{ link.url }}" target="_blank">
+                                            <img src="{{ link.svg_icon.url }}" width="30" height="30"/>
+                                        </a>
+                                    {% endif %}
+                                {% endfor %}
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-navigation">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container">
+                <a class="navbar-brand" href="{% url 'app_core:home' %}">
+                    {% if site_info.header_logo %}
+                        <img src="{{ site_info.header_logo.url }}" alt="logo">
+                    {% endif %}
+                </a>
+                <div class="d-flex flex-column company-brand-text">
+                    {% if site_info.name_company_p1_en %}
+                        <span class="line-1">{{ site_info.name_company_p1_en }}</span>
+                    {% endif %}
+
+                    {% if site_info.name_company_p2_fa %}
+                        <span class="line-2">{{ site_info.name_company_p2_en }}</span>
+                    {% endif %}
+                </div>
+
+                <ul class="navbar-nav">
+                    <li><a class="nav-link" href="{% url 'app_core:home' %}">Home</a></li>
+                    <li class="dropdown">
+                        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">About Company</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="{% url 'app_core:about' %}">Company History</a></li>
+                            <li><a class="dropdown-item" href="{% url 'app_chart:board_home' %}">Board Members</a></li>
+                            <li><a class="dropdown-item" href="{% url 'app_chart:chart' %}">Organization Chart</a></li>
+                            <li><a class="dropdown-item" href="{% url 'app_reports:vision_missions' %}">Vision &
+                                Mission</a></li>
+                        </ul>
+                    </li>
+
+                    <li><a class="nav-link" href="{% url 'app_product:product_list' %}">Products</a></li>
+                    <li><a class="nav-link" href="{% url 'app_news:news_home' %}">Company News</a></li>
+                    <li><a class="nav-link" href="{% url 'app_media:home' %}">Media</a></li>
+                    <li><a class="nav-link" href="{% url 'app_blog:blog_home' %}">Articles</a></li>
+                    <li><a class="nav-link" href="{% url 'app_core:contact' %}">Contact Us</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+</header>
+
+<div class="search-popup">
+    <button class="close-search"><i class="far fa-times"></i></button>
+    <input class="form-control" placeholder="Search here..." type="search"/>
+</div>
+
+{% block content %}{% endblock %}
+
+<footer class="footer-area light">
+    <div class="container">
+        <p class="text-center">
+            {% if site_info.designer_name_fa %}
+                Designed by {{ site_info.designer_name_fa }}
+            {% endif %}
+        </p>
+    </div>
+</footer>
+
+<script src="{% static 'RTl/assets/js/jquery-3.7.1.min.js' %}"></script>
+<script src="{% static 'RTl/assets/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'RTl/assets/js/main.js' %}"></script>
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,user-scalable=no,initial-scale=1,maximum-scale=1,minimum-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Not Found</title>
+    <link rel="stylesheet" href="{% static '404/CustomCssJs/normalize.min.css' %}">
+    <link rel="stylesheet" href="{% static '404/CustomCssJs/Style.css' %}">
+</head>
+<body><h1>صفحه خطا 404</h1>
+<section class="error-container"><span>4</span><span><span class="screen-reader-text">0</span></span><span>4</span>
+</section>
+<div class="link-container"><a href="{% url 'app_core:home' %}" class="more-link">به صفحه اصلی مراجعه کنید</a></div>
+</body>
+</html>

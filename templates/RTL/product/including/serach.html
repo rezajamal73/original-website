@@ -1,0 +1,39 @@
+{% load static %}
+
+<div class="shop-search-form widget search">
+    <h5 class="widget-title">جستجو در محصولات</h5>
+
+    <form class="search-form" id="productSearchForm" method="GET" action="{% url 'app_product:product_search' %}">
+        <div class="form-group">
+            <input
+                class="form-control"
+                type="text"
+                name="q"
+                id="productSearchInput"
+                placeholder="اینجا جستجو کنید ..."
+                value="{{ request.GET.q|default:'' }}"
+            />
+            <button type="submit">
+                <i class="far fa-search"></i>
+            </button>
+        </div>
+    </form>
+
+    {% if request.GET.q and request.GET.q|length > 0 and products|length == 0 %}
+        <p style="margin-top:10px; padding:10px; background:#ffe3e3; color:#c40000; border-radius:6px; font-size:14px;">
+            <a href="{% url 'app_product:product_list' %}" style="color:#c40000; text-decoration:none;">❌</a>
+            نتیجه‌ای برای "<b>{{ request.GET.q }}</b>" یافت نشد.
+        </p>
+    {% endif %}
+</div>
+
+<script>
+    document.getElementById("productSearchForm").addEventListener("submit", function (e) {
+        const input = document.getElementById("productSearchInput").value.trim();
+        // اگر سرچ خالی بود → بازگشت به صفحه اصلی محصولات
+        if (input === "") {
+            e.preventDefault();
+            window.location.href = "{% url 'app_product:product_list' %}";
+        }
+    });
+</script>

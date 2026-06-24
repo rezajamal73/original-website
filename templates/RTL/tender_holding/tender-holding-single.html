@@ -1,0 +1,165 @@
+{% extends 'RTL/core/base.html' %}
+{% load static %}
+{% load tender_holding_tags %}
+{% load humanize %}
+{% load jformat %}
+{% block content %}
+
+    <main class="main">
+        <!-- breadcrumb -->
+        <div class="site-breadcrumb">
+            <div class="site-breadcrumb-bg" style="background: url('{{ banner.image.url }}')">
+            </div>
+            <div class="container">
+                <div class="site-breadcrumb-wrap">
+                    <h4 class="breadcrumb-title">
+                        مناقصه
+                    </h4>
+                    <ul class="breadcrumb-menu">
+                        <li>
+                            <a href="{% url 'app_core:home' %}">
+                                <i class="far fa-home">
+                                </i>
+                                خانه
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'app_tender_holding:tender_holding_home' %}">
+                                <i class="far">
+                                </i>
+                                کلیه مناقصات هلدینگ
+                            </a>
+                        </li>
+                        <li class="active">{{ tender.title_fa }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- breadcrumb end -->
+        <!-- blog area -->
+        <div class="blog-area py-100">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="blog-single-wrap">
+                            <div class="blog-single-content">
+                                <div class="blog-thumb-img">
+                                    <img alt="thumb" src="{{ holding.poster.url }}">
+                                </div>
+                                <div class="blog-info">
+                                    <div class="blog-meta">
+                                        <div class="blog-meta-left">
+                                            <ul>
+                                                <li>
+                                                    {% if site_info %}
+                                                        <i class="far fa-user"></i>
+                                                        <a href="#">
+                                                            {{ site_info.name_company_p1_fa }}
+                                                            {{ site_info.name_company_p2_fa }}
+                                                        </a>
+                                                    {% endif %}
+                                                </li>
+                                                <li>
+                                                    <i class="far fa-timer"></i>
+                                                    وضعیت: {{ holding.get_status_display }}
+                                                </li>
+                                                {% if holding.estimated_amount %}
+                                                    <li>
+                                                        <i class="far fa-money-bill"></i>
+                                                        مبلغ ضمانت:
+                                                        <a>{{ holding.estimated_amount|intcomma }} تومان</a>
+                                                    </li>
+                                                {% endif %}
+                                                <li>
+                                                    <i class="far fa-calendar-alt"></i>
+                                                    شروع: {{ holding.start_date_fa|jformat:"%Y/%m/%d" }} —
+                                                    پایان: {{ holding.end_date_fa|jformat:"%Y/%m/%d" }}
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <div class="blog-details">
+                                        <h3 class="blog-details-title mb-20">{{ holding.title_fa }}</h3>
+                                        <p class="mb-10">{{ holding.description_fa }}</p>
+
+                                        {% if holding.description_2_fa %}
+                                            <p class="mb-10">{{ holding.description_2_fa }}</p>
+                                        {% endif %}
+
+                                        {% if holding.gallery_images.exists %}
+                                            <div class="blog-author">
+                                                <h5 class="mb-3" style="display:block; width:100%; clear:both;">
+                                                    عکس‌ها:</h5>
+                                                <div class="row g-4 popup-gallery">
+                                                    {% for img in holding.gallery_images.all %}
+                                                        <div class="col-md-4 col-lg-3">
+                                                            <div class="gallery-item wow fadeInUp"
+                                                                 data-wow-delay=".25s">
+                                                                <div class="gallery-img">
+                                                                    <img alt="{{ img.caption }}"
+                                                                         src="{{ img.image.url }}"/>
+                                                                    <a class="popup-img gallery-link"
+                                                                       href="{{ img.image.url }}">
+                                                                        <i class="fal fa-plus"></i>
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+
+                                        {% if holding.upload_file %}
+                                            <blockquote class="blockqoute">
+                                                <h6 class="blockqoute-author">
+                                                    <a href="{{ holding.upload_file.url }}" download
+                                                       class="btn btn-primary">
+                                                        📥 دانلود فایل
+                                                    </a>
+                                                </h6>
+                                                <i class="far fa-quote-right"></i>
+                                            </blockquote>
+                                        {% endif %}
+
+                                        <hr/>
+
+                                        <div class="blog-details-tags pb-20"
+                                             style="display: flex; gap: 40px; align-items: center; flex-wrap: wrap;">
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <h5 style="margin: 0;">دسته‌بندی:</h5>
+                                                <span>{{ holding.category.title_fa }}</span>
+                                            </div>
+
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <h5 style="margin: 0;">برچسب‌ها:</h5>
+                                                <ul style="margin: 0; padding: 0; list-style: none; display: flex; gap: 10px;">
+                                                    {% for tag in holding.tags.all %}
+                                                        <li><p>{{ tag.title_fa }}</p></li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <aside class="sidebar">
+                            {% include 'RTL/tender_holding/including/serach.html' %}
+                            {% holding_categories %}
+                            {% holding_recent %}
+                            {% holding_tags %}
+                        </aside>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- blog area end -->
+    </main>
+{% endblock %}

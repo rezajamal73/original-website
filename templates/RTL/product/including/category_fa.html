@@ -1,0 +1,15 @@
+{% load static %}
+
+<h4 class="shop-widget-title">شکل دارویی</h4>
+<ul class="shop-category-list">
+    {% for cat in cat_list %}
+        <li>
+           <a href="{% url 'app_product:category' slug=cat.slug %}">
+                {{ cat.title_fa }}
+                <span>({{ cat.product_count }})</span>
+            </a>
+        </li>
+    {% empty %}
+        <li>هیچ دسته‌ای یافت نشد</li>
+    {% endfor %}
+</ul>

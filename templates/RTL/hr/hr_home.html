@@ -1,0 +1,135 @@
+{% extends 'RTL/core/base.html' %}
+{% load static %}
+{% block content %}
+    <main class="main">
+        <!-- breadcrumb -->
+        <div class="site-breadcrumb">
+            <div class="site-breadcrumb-bg" style="background: url('{{ banner.image.url }}')">
+            </div>
+            <div class="container">
+                <div class="site-breadcrumb-wrap">
+                    <h4 class="breadcrumb-title">
+                        فرصت های شغلی ما
+                    </h4>
+                    <ul class="breadcrumb-menu">
+                        <li>
+                            <a href="{% url 'app_core:home' %}">
+                                <i class="far fa-home">
+                                </i>
+                                خانه
+                            </a>
+                        </li>
+
+                        <li class="active">
+                            <a href="{% url 'app_hr:hr_home' %}">
+                                کلیه فرصت های شغلی
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- breadcrumb end -->
+        <!-- blog area -->
+        <div class="blog-area py-100">
+            <div class="container">
+                {% if job_list %}
+                    <!-- عنوان -->
+                    <div class="row">
+                        <div class="col-lg-6 mx-auto">
+                            <div class="site-heading text-center">
+                                <h2 class="site-title">
+                                    لیست جذب
+                                    <span>شرکت</span>
+                                </h2>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="blog-area py-100">
+                    <div class="container">
+                    <div class="row g-4">
+
+
+                    {% for job in job_list %}
+                        <div class="col-md-6 col-lg-4">
+                            <div class="blog-item wow fadeInUp" data-wow-delay=".25s">
+
+                                <div class="blog-item-img position-relative">
+                                    <a href="{% url 'app_hr:hr_single' job.id %}">
+                                        {% if job.poster %}
+                                            <img src="{{ job.poster.url }}" alt="{{ job.title }}">
+                                        {% endif %}
+                                    </a>
+
+                                    <span class="blog-date">
+                                            <i class="far fa-calendar-alt"></i>
+                                            {{ job.start_date_fa }}
+                                        </span>
+                                </div>
+
+                                <div class="blog-item-info">
+
+                                    <div class="blog-item-meta d-flex justify-content-between align-items-center">
+                                        <ul class="mb-0">
+                                            <li>
+                                                <i class="far fa-briefcase"></i>
+                                                سمت: {{ job.position }}
+                                            </li>
+                                            <li>
+                                                <i class="far fa-building"></i>
+                                                واحد: {{ job.activity }}
+                                            </li>
+                                        </ul>
+
+                                        {% if job.recruitment_status == "open" %}
+                                            <span class="recruit-badge open">
+        <i class="fas fa-user-check"></i>
+        جذب فعال
+    </span>
+                                        {% else %}
+                                            <span class="recruit-badge closed">
+        <i class="fas fa-user-slash"></i>
+        جذب بسته شده
+    </span>
+                                        {% endif %}
+
+                                    </div>
+
+                                    <h4 class="blog-title">
+                                        <a href="{% url 'app_hr:hr_single' job.id %}">
+                                            {{ job.title }}
+                                        </a>
+                                    </h4>
+
+                                    <p>{{ job.description_1|truncatechars:120 }}</p>
+
+                                    <a class="theme-btn" href="{% url 'app_hr:hr_single' job.id %}">
+                                        مشاهده جزئیات
+                                        <i class="fas fa-arrow-left"></i>
+                                    </a>
+
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                {% else %}
+                    <!-- ✅ حالت خالی -->
+                    <div class="col-12">
+                        <div class="alert alert-info text-center">
+                            اطلاعاتی وارد نشده است
+                        </div>
+                    </div>
+                {% endif %}
+
+                </div>
+                </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+{% endblock %}

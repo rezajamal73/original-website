@@ -1,0 +1,90 @@
+{% extends 'RTL/core/base.html' %}
+{% load static %}
+{% block content %}
+    <main class="main">
+        <!-- breadcrumb -->
+        <div class="site-breadcrumb">
+            <div class="site-breadcrumb-bg" style="background: url('{{ banner.image.url }}')">
+            </div>
+            <div class="container">
+                <div class="site-breadcrumb-wrap">
+                    <h4 class="breadcrumb-title">
+                        دپارتمان ها
+                    </h4>
+                    <ul class="breadcrumb-menu">
+                        <li>
+                            <a href="{% url 'app_core:home' %}">
+                                <i class="far fa-home">
+                                </i>
+                                خانه
+                            </a>
+                        </li>
+                        <li class="active">
+                            واحد ها
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- breadcrumb end -->
+
+        <div class="container py-5">
+            <div class="row g-5">
+
+                {% for dept in contacts %}
+                    <div class="col-6 col-sm-3 col-md-3 col-lg-3">
+
+                        <details class="dept-card">
+                            <summary class="dept-header">
+
+                        <span class="dept-icon">
+                            <i class="fal fa-building"></i>
+                        </span>
+
+                                <span class="dept-title">
+                            {{ dept.department_name_fa }}
+                        </span>
+
+                                <span class="dept-arrow">
+                            <i class="fal fa-chevron-down"></i>
+                        </span>
+
+                            </summary>
+
+                            <div class="dept-body">
+                                <div class="dept-item">
+                                    <i class="fal fa-phone"></i>
+                                    <span>{{ dept.phone_1 }}</span>
+                                </div>
+
+                                {% if dept.phone_2 %}
+                                    <div class="dept-item muted">
+                                        <i class="fal fa-phone-alt"></i>
+                                        <span>{{ dept.phone_2 }}</span>
+                                    </div>
+                                {% endif %}
+
+                                {% if dept.email %}
+                                    <div class="dept-item muted">
+                                        <i class="fal fa-envelope"></i>
+                                        <a href="mailto:{{ dept.email }}" class="text-decoration-none">
+                                            {{ dept.email }}
+                                        </a>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </details>
+
+                    </div>
+                {% empty %}
+                    <div class="col-12 text-center text-muted">
+                        اطلاعاتی ثبت نشده است
+                    </div>
+                {% endfor %}
+
+            </div>
+        </div>
+
+
+    </main>
+{% endblock %}

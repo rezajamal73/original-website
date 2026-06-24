@@ -1,0 +1,15 @@
+{% load static %}
+
+<div class="widget category">
+    <h5 class="widget-title">دسته‌بندی‌های مزایده</h5>
+
+    <div class="category-list">
+        {% for title, info in categories.items %}
+            <a href="{% url 'app_auction:auction_category' info.slug %}">
+                <i class="far fa-arrow-left"></i>
+                {{ title }}
+                <span>({{ info.count }})</span>
+            </a>
+        {% endfor %}
+    </div>
+</div>

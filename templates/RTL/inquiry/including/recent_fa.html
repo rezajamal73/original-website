@@ -1,0 +1,35 @@
+{% load static %}
+
+<div class="widget recent-post">
+    <h5 class="widget-title">استعلام‌های فعال</h5>
+
+    {% for inquiry in inquiries %}
+        <div class="recent-post-item">
+
+            <div class="recent-post-img">
+                <a href="{% url 'app_inquiry:single' inquiry.id %}">
+                    {% if inquiry.cover_image %}
+                        <img src="{{ inquiry.cover_image.url }}" alt="{{ inquiry.title_fa }}">
+
+                    {% endif %}
+                </a>
+            </div>
+
+            <div class="recent-post-bio">
+                <h6>
+                    <a href="{% url 'app_inquiry:single' inquiry.id %}">
+                        {{ inquiry.title_fa|truncatechars:30 }}
+                    </a>
+                </h6>
+
+                <span>
+                    <i class="far fa-clock"></i>
+                    {{ inquiry.start_date_fa }}
+                </span>
+            </div>
+
+        </div>
+    {% empty %}
+        <p>استعلام فعالی وجود ندارد.</p>
+    {% endfor %}
+</div>

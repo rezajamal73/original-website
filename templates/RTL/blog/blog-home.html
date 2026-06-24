@@ -1,0 +1,175 @@
+{% extends 'RTL/core/base.html' %}
+{% load static %}
+{% load blog_tags %}
+{% block content %}
+    <main class="main">
+        <!-- breadcrumb -->
+        <div class="site-breadcrumb">
+            <div class="site-breadcrumb-bg" style="background-image: url('{{ banner.image.url }}')">
+            </div>
+
+            <div class="container">
+                <div class="site-breadcrumb-wrap">
+                    <h4 class="breadcrumb-title">
+                        مقالات ما
+                    </h4>
+                    <ul class="breadcrumb-menu">
+                        <li>
+                            <a href="{% url 'app_core:home' %}">
+                                <i class="far fa-home">
+                                </i>
+                                خانه
+                            </a>
+                        </li>
+
+                        <li class="active">
+                            <a href="{% url 'app_blog:blog_home' %}">
+                                کلیه مقالات ها
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- breadcrumb end -->
+        <!-- blog area -->
+        <div class="blog-area2 py-100">
+            <div class="container">
+                <div class="row g-4">
+
+                    <!-- محتوای اصلی -->
+                    <div class="col-lg-8 col-12">
+                        <div class="row g-4">
+
+                            {% if blogs %}
+                                {% for blog in blogs %}
+                                    <div class="col-md-6">
+                                        <div class="blog-item wow fadeInUp" data-wow-delay=".25s">
+
+                                    <span class="blog-date">
+                                        <i class="far fa-calendar-alt"></i>
+                                        {{ blog.publish_date_fa }}
+                                    </span>
+
+                                            <div class="blog-item-img">
+                                                <a href="{% url 'app_blog:blog_single' blog.id %}">
+                                                    <img src="{{ blog.image.url }}" alt="{{ blog.title_fa }}">
+                                                </a>
+                                            </div>
+
+                                            <div class="blog-item-info">
+
+                                                <h4 class="blog-title">
+                                                    <a href="{% url 'app_blog:blog_single' blog.id %}">
+                                                        {{ blog.title_fa }}
+                                                    </a>
+                                                </h4>
+
+                                                <p>{{ blog.content_1_fa|truncatechars:45 }}</p>
+
+                                                <div class="blog-item-meta">
+                                                    <ul>
+                                                        <li>
+                                                            <i class="far fa-user-circle"></i>
+                                                            {% if blog.author and blog.author.first_name or blog.author.last_name %}
+                                                                {{ blog.author.first_name }} {{ blog.author.last_name }}
+                                                            {% else %}
+                                                                {{ site_info.name_company_p1_fa }}
+                                                                {{ site_info.name_company_p2_fa }}
+                                                            {% endif %}
+                                                        </li>
+                                                        <li>
+                                                            <i class="far fa-comments"></i>
+                                                            {% for tag in blog.tags.all %}
+                                                                <span style="margin:0 5px;">
+                                                            {{ tag.title_fa }}
+                                                        </span>
+                                                            {% empty %}
+                                                                <span>بدون برچسب</span>
+                                                            {% endfor %}
+                                                        </li>
+                                                    </ul>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+
+                            {% else %}
+                                <!-- ✅ حالت خالی -->
+                                <div class="col-12">
+                                    <div class="alert alert-info text-center">
+                                        اطلاعاتی وارد نشده است
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                        </div>
+
+                        <!-- pagination فقط وقتی دیتا هست -->
+                        {% if blogs and blogs.has_other_pages %}
+                            <div class="pagination-area mt-60">
+                                <div aria-label="Page navigation example">
+                                    <ul class="pagination">
+
+                                        {% if blogs.has_previous %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ blogs.previous_page_number }}">
+                                                    <i class="far fa-arrow-right"></i>
+                                                </a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item disabled">
+                                        <span class="page-link">
+                                            <i class="far fa-arrow-right"></i>
+                                        </span>
+                                            </li>
+                                        {% endif %}
+
+                                        {% for i in blogs.paginator.page_range %}
+                                            <li class="page-item {% if blogs.number == i %}active{% endif %}">
+                                                <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                                            </li>
+                                        {% endfor %}
+
+                                        {% if blogs.has_next %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ blogs.next_page_number }}">
+                                                    <i class="far fa-arrow-left"></i>
+                                                </a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item disabled">
+                                        <span class="page-link">
+                                            <i class="far fa-arrow-left"></i>
+                                        </span>
+                                            </li>
+                                        {% endif %}
+
+                                    </ul>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <!-- pagination end -->
+
+                    </div>
+
+                    <!-- سایدبار -->
+                    <div class="col-lg-4 col-12">
+                        <aside class="sidebar">
+                            {% include 'RTL/blog/including/serach.html' %}
+                            {% blog_category_fa %}
+                            {% blog_recent_fa %}
+                            {% blog_tags_fa %}
+                        </aside>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- blog area end -->
+    </main>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% load static %}
+
+<div class="widget category">
+    <h5 class="widget-title">دسته‌بندی‌ها</h5>
+
+    <div class="category-list">
+        {% for title, info in categories.items %}
+            <a href="{% url 'app_tender_holding:tender_holding_category' info.slug %}">
+                <i class="far fa-arrow-left"></i>
+                {{ title }}
+                <span>({{ info.count }})</span>
+            </a>
+        {% empty %}
+            <p>دسته‌بندی‌ای وجود ندارد.</p>
+        {% endfor %}
+    </div>
+</div>

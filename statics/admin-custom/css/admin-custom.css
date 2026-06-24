@@ -1,0 +1,172 @@
+/* ================================
+   Enterprise Pro MAX CSS – Reza WebSystem (Ultra Enhanced Edition)
+================================ */
+
+/* ================================
+   1) Global Ultra-Smooth UI
+=============================== */
+body {
+    background: linear-gradient(135deg, #eef2f7, #f9fbff);
+    color: #1d1f20;
+    font-family: 'IRANSans', 'Roboto', sans-serif;
+    line-height: 1.8;
+    transition: all 0.45s ease;
+    overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #032e63;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-shadow: 0 3px 6px rgba(0,0,0,0.08);
+}
+
+a {
+    color: #01a0e2;
+    transition: all 0.3s ease;
+}
+
+a:hover {
+    color: #003c99;
+    text-shadow: 0 3px 8px rgba(0,86,166,0.35);
+}
+
+/* ================================
+   2) Glassmorphism Navbar (Ultra HD)
+=============================== */
+.navbar {
+    backdrop-filter: blur(18px) saturate(200%);
+    background: rgba(255, 255, 255, 0.55) !important;
+    border-bottom: 1px solid rgba(255,255,255,0.4);
+    box-shadow: 0 6px 25px rgba(0,0,0,0.12);
+    padding: 20px 28px !important;
+    border-radius: 0 0 30px 30px;
+    animation: fadeDown 0.7s ease;
+}
+
+@keyframes fadeDown {
+    from { transform: translateY(-25px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* ================================
+   3) Hyper-Modern Sidebar – FINAL FIXED VERSION
+=============================== */
+
+
+
+
+
+
+
+/* ================================
+   4) Luxury Forms – Diamond Edition
+=============================== */
+.form-control {
+    border-radius: 14px !important;
+    padding: 15px !important;
+    transition: 0.3s;
+}
+
+.form-control:focus {
+    border-color: #01a0e2 !important;
+    box-shadow: 0 0 14px rgba(1,160,226,0.45) !important;
+    background: #fff;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #01a0e2, #032e63) !important;
+    padding: 12px 27px !important;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    box-shadow: 0 5px 18px rgba(1,160,226,0.35);
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px rgba(1,160,226,0.45);
+}
+
+/* ================================
+   5) Premium Dashboard Widgets – 3D Motion
+=============================== */
+.stat-box {
+    background: #ffffff;
+    padding: 34px;
+    border-radius: 20px;
+    box-shadow: 0 8px 22px rgba(0,0,0,0.1);
+    transition: 0.4s ease;
+    transform: translateY(25px);
+    opacity: 0;
+    animation: boxPop 0.7s forwards;
+}
+
+@keyframes boxPop {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.stat-box:hover {
+    transform: translateY(-10px) scale(1.03);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.18);
+}
+
+.stat-value {
+    font-size: 36px;
+    font-weight: 800;
+    color: #01a0e2;
+}
+
+.stat-label {
+    color: #8b96a3;
+    font-size: 15px;
+}
+
+/* ================================
+   6) Frosted Glass Login – Ultra Crystal
+=============================== */
+.login-box {
+    background: rgba(255,255,255,0.72);
+    backdrop-filter: blur(20px) saturate(180%);
+    padding: 45px;
+    border-radius: 20px;
+    width: 420px;
+    box-shadow: 0 10px 32px rgba(0,0,0,0.18);
+    animation: fadeIn 0.8s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* ================================
+   7) Premium Snackbar Toast
+=============================== */
+.admin-toast {
+    position: fixed;
+    bottom: 28px;
+    left: 28px;
+    background: linear-gradient(135deg, #01a0e2, #032e63);
+    color: #fff;
+    padding: 16px 26px;
+    border-radius: 14px;
+    font-size: 15px;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.45s ease;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+    z-index: 9999;
+}
+
+.admin-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ================================
+   8) Mobile Ultra Responsive
+=============================== */
+@media (max-width: 768px) {
+    .stat-box { width: 100% !important; }
+    .login-box { width: 92% !important; }
+}

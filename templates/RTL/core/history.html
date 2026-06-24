@@ -1,0 +1,111 @@
+{% extends 'RTL/core/base.html' %}
+{% load static %}
+{% block content %}
+    <main class="main">
+        <!-- breadcrumb -->
+        <div class="site-breadcrumb">
+            <div class="site-breadcrumb-bg" style="background: url('{{ banner.image.url }}')">
+            </div>
+            <div class="container">
+                <div class="site-breadcrumb-wrap">
+                    <h4 class="breadcrumb-title">
+                     درباره ما
+                    </h4>
+                    <ul class="breadcrumb-menu">
+                        <li>
+                            <a href="{% url 'app_core:home' %}">
+                                <i class="far fa-home">
+                                </i>
+                                خانه
+                            </a>
+                        </li>
+                        <li class="active">
+                           تاریخچه شرکت
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- breadcrumb end -->
+
+        <div class="py-100">
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <div class="terms-content">
+
+                            {% if section and section.texts.exists %}
+                                {% for text in section.texts.all %}
+
+                                    <!-- عنوان -->
+                                    <h4 class="mt-5 mb-3">
+                                        {{ text.title_fa }}
+                                    </h4>
+
+                                    <!-- متن -->
+                                    <p>
+                                        {{ text.content_fa|linebreaks }}
+                                    </p>
+
+                                    <!-- تصاویر -->
+                                    {% if text.images.exists %}
+                                        <h6 class="mb-2">:تصاویر</h6>
+                                        <div class="row g-4 popup-gallery mt-4">
+                                            {% for image in text.images.all %}
+                                                <div class="col-md-4 col-lg-3">
+                                                    <div class="gallery-item">
+                                                        <div class="gallery-img">
+                                                            <img
+                                                                    src="{{ image.image.url }}"
+                                                                    alt="{{ image.alt_text|default:'تصویر' }}"
+                                                                    class="img-fluid rounded"
+                                                            >
+                                                            <a
+                                                                    class="popup-img gallery-link"
+                                                                    href="{{ image.image.url }}"
+                                                            >
+                                                                <i class="fal fa-plus"></i>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+
+                                    <!-- پیوست‌ها -->
+                                    {% if text.attachments.exists %}
+                                        <div class="mt-4">
+                                            <h6 class="mb-2">پیوست‌ها</h6>
+                                            <ul class="list-unstyled">
+                                                {% for attachment in text.attachments.all %}
+                                                    <li class="mb-2">
+                                                        <a href="{{ attachment.file.url }}" target="_blank">
+                                                            <i class="fal fa-file me-2"></i>
+                                                            {{ attachment.title }}
+                                                        </a>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    {% endif %}
+
+                                    <hr class="my-5">
+
+                                {% endfor %}
+
+                            {% else %}
+                                <!-- پیام جایگزین به‌جای 404 -->
+                                <div class="alert alert-info text-center">
+                                    اطلاعاتی وارد نشده است
+                                </div>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+{% endblock %}

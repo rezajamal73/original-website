@@ -1,0 +1,198 @@
+{% extends 'RTL/core/base.html' %}
+{% load static %}
+{% load inquiry_tags %}
+{% load humanize %}
+{% load jformat %}
+{% block content %}
+
+    <main class="main">
+        <!-- breadcrumb -->
+        <div class="site-breadcrumb">
+            <div class="site-breadcrumb-bg" style="background: url('{{ banner.image.url }}')">
+            </div>
+            <div class="container">
+                <div class="site-breadcrumb-wrap">
+                    <h4 class="breadcrumb-title"> مزایده
+                    </h4>
+                    <ul class="breadcrumb-menu">
+                        <li>
+                            <a href="{% url 'app_core:home' %}">
+                                <i class="far fa-home">
+                                </i>
+                                خانه
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'app_inquiry:home' %}">
+                                <i class="far">
+                                </i>
+                                کلیه استعلامات خرید
+                            </a>
+                        </li>
+                        <li class="active">{{ inquiry.title_fa }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- breadcrumb end -->
+        <!-- blog area -->
+
+
+        <div class="blog-area py-100">
+            <div class="container">
+                <div class="row">
+
+                    <!-- MAIN CONTENT -->
+                    <div class="col-lg-8">
+                        <div class="blog-single-wrap">
+                            <div class="blog-single-content">
+
+                                <!-- COVER IMAGE -->
+                                <div class="blog-thumb-img">
+                                    <img alt="{{ inquiry.title_fa }}" src="{{ inquiry.cover_image.url }}">
+                                </div>
+
+                                <div class="blog-info">
+
+                                    <!-- META -->
+                                    <div class="blog-meta">
+                                        <div class="blog-meta-left">
+                                            <ul>
+                                                {% if site_info %}
+                                                    <li>
+                                                        <i class="far fa-user"></i>
+                                                        <a href="#">
+                                                            {{ site_info.name_company_p1_fa }}
+                                                            {{ site_info.name_company_p2_fa }}
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+
+                                                {% if inquiry.estimated_amount %}
+                                                    <li>
+                                                        <i class="far fa-money-bill"></i>
+                                                        مبلغ ضمانت:
+                                                        {{ inquiry.estimated_amount|intcomma }} تومان
+                                                    </li>
+                                                {% endif %}
+
+                                                <li>
+                                                    <i class="far fa-calendar-alt"></i>
+                                                    شروع:
+                                                    {{ inquiry.start_date_fa|jformat:"%Y/%m/%d" }}
+                                                    —
+                                                    پایان:
+                                                    {{ inquiry.end_date_fa|jformat:"%Y/%m/%d" }}
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <div class="blog-details">
+
+                                        <!-- TITLE -->
+                                        <h3 class="blog-details-title mb-20">
+                                            {{ inquiry.title_fa }}
+                                        </h3>
+
+                                        <!-- DESCRIPTION -->
+                                        <p class="mb-10">{{ inquiry.description_fa }}</p>
+
+                                        <!-- GALLERY -->
+                                        {% if inquiry.gallery_images.exists %}
+                                            <div class="blog-author">
+                                                <h5 class="mb-3">عکس‌ها:</h5>
+
+                                                <div class="row g-4 popup-gallery">
+                                                    {% for img in inquiry.gallery_images.all %}
+                                                        <div class="col-md-4 col-lg-3">
+                                                            <div class="gallery-item wow fadeInUp"
+                                                                 data-wow-delay=".25s">
+                                                                <div class="gallery-img">
+                                                                    <img
+                                                                            src="{{ img.image.url }}"
+                                                                            alt="{{ img.caption|default:'Image' }}"
+                                                                            class="img-fluid"
+                                                                    >
+                                                                    <a class="popup-img gallery-link"
+                                                                       href="{{ img.image.url }}">
+                                                                        <i class="fal fa-plus"></i>
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        {% endif %}
+
+                                        <!-- ATTACHMENT FILE -->
+                                        {% if inquiry.attachment %}
+                                            <blockquote class="blockqoute">
+                                                <h6 class="blockqoute-author">
+                                                    <a href="{{ inquiry.attachment.url }}" download
+                                                       class="btn btn-primary">
+                                                        📥 دانلود فایل پیوست
+                                                    </a>
+                                                </h6>
+                                                <i class="far fa-quote-right"></i>
+                                            </blockquote>
+                                        {% endif %}
+
+                                        <hr>
+
+                                        <!-- CATEGORY + TAGS -->
+                                        <div class="blog-details-tags pb-20"
+                                             style="display:flex; gap:40px; flex-wrap:wrap;">
+
+                                            <!-- CATEGORY -->
+                                            <div style="display:flex; gap:8px;">
+                                                <h5>دسته‌بندی:</h5>
+                                                <span>{{ inquiry.category.title_fa }}</span>
+                                            </div>
+
+                                            <!-- TAGS -->
+                                            {% if inquiry.tags.exists %}
+                                                <div style="display:flex; gap:8px;">
+                                                    <h5>برچسب‌ها:</h5>
+                                                    <ul style="list-style:none; display:flex; gap:10px; padding:0;">
+                                                        {% for tag in inquiry.tags.all %}
+                                                            <li>
+                                                                <a href="{% url 'app_inquiry:tag' tag.slug %}">
+                                                                    {{ tag.title_fa }}
+                                                                </a>
+                                                            </li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </div>
+                                            {% endif %}
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SIDEBAR -->
+                    <div class="col-lg-4">
+                        <aside class="sidebar">
+                            {% include 'RTL/inquiry/including/serach.html' %}
+                            {% inquiry_categories %}
+                            {% inquiry_recent %}
+                            {% inquiry_tags %}
+                        </aside>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <!-- blog area end -->
+    </main>
+{% endblock %}

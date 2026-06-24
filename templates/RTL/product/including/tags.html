@@ -1,0 +1,14 @@
+<div class="widget sidebar-tag">
+    <h5 class="widget-title">بر اساس گروه درمانی</h5>
+
+    <div class="tag-list">
+        {% for tag in tags %}
+            <a href="{% url 'app_product:product_tag' slug=tag.slug %}">
+                {{ tag.title_fa }}
+                {% if tag.product_count %}
+                    ({{ tag.product_count }})
+                {% endif %}
+            </a>
+        {% endfor %}
+    </div>
+</div>

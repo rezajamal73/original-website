@@ -1,0 +1,192 @@
+{% extends 'RTL/core/base.html' %}
+{% load static %}
+{% load tender_holding_tags %}
+{% load jformat %}
+{% load humanize %}
+{% block content %}
+    <main class="main">
+        <!-- breadcrumb -->
+        <div class="site-breadcrumb">
+            <div class="site-breadcrumb-bg" style="background: url('{{ banner.image.url }}')">
+            </div>
+            <div class="container">
+                <div class="site-breadcrumb-wrap">
+                    <h4 class="breadcrumb-title">
+                        مناقصات ما
+                    </h4>
+                    <ul class="breadcrumb-menu">
+                        <li>
+                            <a href="{% url 'app_core:home' %}">
+                                <i class="far fa-home">
+                                </i>
+                                خانه
+                            </a>
+                        </li>
+
+                        <li class="active">
+                            <a href="{% url 'app_tender_holding:tender_holding_home' %}">
+                                کلیه مناقصات هلدینگ</a>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- breadcrumb end -->
+        <!-- blog area -->
+        <div class="blog-area2 py-100">
+            <div class="container">
+                <div class="row g-4">
+
+                    <!-- محتوای اصلی -->
+                    <div class="col-lg-8 col-12">
+                        <div class="row g-4">
+
+                            {% if holdings %}
+                                {% for holding in holdings %}
+                                    <div class="col-md-6">
+                                        <div class="blog-item wow fadeInUp" data-wow-delay=".25s">
+
+                                            <!-- تاریخ -->
+                                            <span class="blog-date">
+                                            <i class="far fa-calendar-alt"></i>
+                                            شروع: {{ holding.start_date_fa|jformat:"%Y/%m/%d" }}
+                                            <span class="date-separator">&nbsp; — &nbsp;</span>
+                                            <span class="end-date">
+                                                پایان: {{ holding.end_date_fa|jformat:"%Y/%m/%d" }}
+                                            </span>
+                                        </span>
+
+                                            <!-- تصویر -->
+                                            <div class="blog-item-img">
+                                                <a href="{% url 'app_tender_holding:tender_holding_single' holding.id %}">
+                                                    <img src="{{ holding.poster.url }}" alt="{{ holding.title_fa }}">
+                                                </a>
+                                            </div>
+
+                                            <!-- محتوا -->
+                                            <div class="blog-item-info">
+
+                                                <h4 class="blog-title">
+                                                    <a href="{% url 'app_tender_holding:tender_holding_single' holding.id %}">
+                                                        {{ holding.title_fa }}
+                                                    </a>
+                                                </h4>
+
+                                                <p>{{ holding.description_fa|truncatechars:45 }}</p>
+
+                                                <div class="blog-item-meta">
+                                                    <ul>
+
+                                                        <!-- وضعیت -->
+                                                        <li class="d-flex align-items-center mb-2">
+                                                    <span class="status-indicator
+                                                        {% if holding.status == 'ongoing' %}status-ongoing
+                                                        {% elif holding.status == 'extended' %}status-extended
+                                                        {% else %}status-finished
+                                                        {% endif %}">
+                                                        <i class="far fa-timer me-2"></i>
+                                                        {{ holding.get_status_display }}
+                                                    </span>
+                                                        </li>
+
+                                                        <!-- دسته‌بندی -->
+                                                        <li>
+                                                            <i class="far fa-folder-open"></i>
+                                                            دسته‌بندی: {{ holding.category.title_fa }}
+                                                        </li>
+
+                                                        <!-- مبلغ -->
+                                                        {% if holding.estimated_amount %}
+                                                            <li>
+                                                                <i class="far fa-money-bill"></i>
+                                                                مبلغ ضمانت:
+                                                                {{ holding.estimated_amount|intcomma }} تومان
+                                                            </li>
+                                                        {% endif %}
+
+                                                    </ul>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+
+                            {% else %}
+                                <!-- حالت خالی -->
+                                <div class="col-12">
+                                    <div class="alert alert-info text-center">
+                                        اطلاعاتی برای نمایش وجود ندارد
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                        </div>
+
+                        <!-- pagination -->
+                        {% if holdings and holdings.has_other_pages %}
+                            <div class="pagination-area mt-60">
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination">
+
+                                        {% if holdings.has_previous %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ holdings.previous_page_number }}">
+                                                    <i class="far fa-arrow-right"></i>
+                                                </a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item disabled">
+                                        <span class="page-link">
+                                            <i class="far fa-arrow-right"></i>
+                                        </span>
+                                            </li>
+                                        {% endif %}
+
+                                        {% for i in holdings.paginator.page_range %}
+                                            <li class="page-item {% if holdings.number == i %}active{% endif %}">
+                                                <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                                            </li>
+                                        {% endfor %}
+
+                                        {% if holdings.has_next %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ holdings.next_page_number }}">
+                                                    <i class="far fa-arrow-left"></i>
+                                                </a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item disabled">
+                                        <span class="page-link">
+                                            <i class="far fa-arrow-left"></i>
+                                        </span>
+                                            </li>
+                                        {% endif %}
+
+                                    </ul>
+                                </nav>
+                            </div>
+                        {% endif %}
+                        <!-- pagination end -->
+
+                    </div>
+
+                    <!-- سایدبار -->
+                    <div class="col-lg-4 col-12">
+                        <aside class="sidebar">
+                            {% include 'RTL/tender_holding/including/serach.html' %}
+                            {% holding_categories %}
+                            {% holding_recent %}
+                            {% holding_tags %}
+                        </aside>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+        <!-- blog area end -->
+    </main>
+{% endblock %}

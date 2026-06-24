@@ -1,0 +1,80 @@
+{% load static %}
+{% if blogs %}
+    <div class="blog-area py-100">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6 mx-auto wow fadeInDown" data-wow-delay=".25s">
+                    <div class="site-heading text-center">
+                        <h2 class="site-title">
+                            آخرین <span>مقالات</span>
+                        </h2>
+                        <div class="text-center mt-2 all-products-wrapper">
+                            <a href="{% url 'app_blog:blog_home' %}" class="all-products-link">
+                                مشاهده تمام مقالات
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-4">
+                {% for item in blogs %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="blog-item wow fadeInUp" data-wow-delay=".25s">
+                            <!-- IMAGE -->
+                            <div class="blog-item-img">
+                                {% if item.image %}
+                                    <a href="{% url 'app_blog:blog_single' item.id %}">
+                                        <img src="{{ item.image.url }}" alt="{{ item.title_fa }}">
+                                    </a>
+                                {% endif %}
+
+                                {% if item.publish_date_fa %}
+                                    <span class="blog-date">
+                                    <i class="far fa-calendar-alt"></i>
+                                    {{ item.publish_date_fa }}
+                                </span>
+                                {% endif %}
+                            </div>
+
+                            <!-- CONTENT -->
+                            <div class="blog-item-info">
+
+                                <div class="blog-item-meta">
+                                    <ul>
+                                        <li>
+                                            <i class="far fa-user-circle"></i>
+                                            نویسنده: شرکت کارخانجات داروپخش
+                                            {% if blog.author and blog.author.first_name or blog.author.last_name %}
+                                                {{ blog.author.first_name }} {{ blog.author.last_name }}
+                                            {% else %}
+                                                {{ site_info.name_company_p1_fa }}
+                                                {{ site_info.name_company_p2_fa }}
+                                            {% endif %}
+                                        </li>
+                                    </ul>
+                                </div>
+
+                                <h4 class="blog-title">
+                                    <a href="{% url 'app_blog:blog_single' item.id %}">
+                                        {{ item.title_fa }}
+                                    </a>
+                                </h4>
+
+                                <p>
+                                    {{ item.content_1_fa|striptags|truncatechars:120 }}
+                                </p>
+
+                                <a class="theme-btn" href="{% url 'app_blog:blog_single' item.id %}">
+                                    بیشتر بخوانید
+                                    <i class="fas fa-arrow-left"></i>
+                                </a>
+
+                            </div>
+
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endif %}

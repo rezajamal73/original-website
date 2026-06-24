@@ -1,0 +1,168 @@
+{% extends 'RTL/core/base.html' %}
+{% load static %}
+{% block content %}
+    <main class="main">
+        <!-- breadcrumb -->
+        <div class="site-breadcrumb">
+            <div class="site-breadcrumb-bg" style="background: url('{{ banner.image.url }}')">
+            </div>
+            <div class="container">
+                <div class="site-breadcrumb-wrap">
+                    <h4 class="breadcrumb-title">
+                        اخبار ما
+                    </h4>
+                    <ul class="breadcrumb-menu">
+                        <li>
+                            <a href="{% url 'app_core:home' %}">
+                                <i class="far fa-home">
+                                </i>
+                                خانه
+                            </a>
+                        </li>
+
+                        <li class="active">
+                            <a href="{% url 'app_news:news_home' %}">
+                                کلیه اخبار ها
+                            </a>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- breadcrumb end -->
+        <!-- blog area -->
+        <div class="blog-area py-100">
+            <div class="container">
+                {% if news_list %}
+                    <!-- هدر و دسته‌بندی‌ها (همیشه نمایش داده شود) -->
+                    <div class="row">
+                        <div class="blog-details-tags pb-20">
+                            <h5>دسته‌بندی‌ها:</h5>
+                            <ul>
+                                {% for cat in categories_2 %}
+                                    <li>
+                                        <a href="{% url 'app_news:news_category' cat.slug %}">
+                                            <span>{{ cat.title_fa }}</span>
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                        <div style="width:100%;height:1px;background:linear-gradient(to right,#eee,#ccc,#eee);margin:20px 0;border-radius:2px;"></div>
+
+                        <div class="col-lg-6 mx-auto">
+                            <div class="site-heading text-center">
+                                <span class="site-title-tagline">اخبار ما</span>
+                                <h2 class="site-title">
+                                    آخرین اخبار
+                                    <span>شرکت</span>
+                                </h2>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 🔽 محتوای اصلی -->
+                    <div class="blog-area py-100">
+                    <div class="container">
+
+
+                    <div class="row g-4">
+                        {% for news in news_list %}
+                            <div class="col-md-6 col-lg-4">
+                                <div class="blog-item wow fadeInUp">
+
+                                    <div class="blog-item-img">
+                                        <a href="{% url 'app_news:news_single' news.id %}">
+                                            <img src="{{ news.image.url }}" alt="{{ news.title_fa }}">
+                                        </a>
+                                        <span class="blog-date">
+                                            <i class="far fa-calendar-alt"></i>
+                                            {{ news.publish_date_fa }}
+                                        </span>
+                                    </div>
+
+                                    <div class="blog-item-info">
+                                        <div class="blog-item-meta">
+                                            <ul>
+                                                <li>
+                                                    {% if site_info %}
+                                                        <i class="far fa-user-circle"></i>
+                                                        {{ site_info.name_company_p1_fa }}
+                                                        {{ site_info.name_company_p2_fa }}
+                                                    {% endif %}
+                                                </li>
+                                                <li>
+                                                    {% for tag in news.tags.all %}
+                                                        <a href="{% url 'app_news:news_tag' tag.slug %}">
+                                                            <i class="far fa-comments"></i> {{ tag.title_fa }}
+                                                        </a>
+                                                        {% if not forloop.last %} / {% endif %}
+                                                    {% endfor %}
+                                                </li>
+                                            </ul>
+                                        </div>
+
+                                        <h4 class="blog-title">
+                                            <a href="{% url 'app_news:news_single' news.id %}">
+                                                {{ news.title_fa }}
+                                            </a>
+                                        </h4>
+
+                                        <p>{{ news.summary_fa|default:news.content_fa|truncatechars:120 }}</p>
+
+                                        <a class="theme-btn" href="{% url 'app_news:news_single' news.id %}">
+                                            بیشتر بخوانید
+                                            <i class="fas fa-arrow-left"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- pagination -->
+                    {% if news_list.has_other_pages %}
+                        <div class="pagination-area mt-60">
+                            <ul class="pagination justify-content-center">
+                                {% if news_list.has_previous %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ news_list.previous_page_number }}">
+                                            <i class="far fa-arrow-right"></i>
+                                        </a>
+                                    </li>
+                                {% endif %}
+
+                                {% for i in news_list.paginator.page_range %}
+                                    <li class="page-item {% if news_list.number == i %}active{% endif %}">
+                                        <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                                    </li>
+                                {% endfor %}
+
+                                {% if news_list.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="?page={{ news_list.next_page_number }}">
+                                            <i class="far fa-arrow-left"></i>
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                {% else %}
+                    <!-- ✅ اگر هیچ خبری وارد نشده بود -->
+                    <div class="alert alert-info text-center mt-5">
+                        اطلاعاتی وارد نشده است
+                    </div>
+                {% endif %}
+
+                </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+{% endblock %}

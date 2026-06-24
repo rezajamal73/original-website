@@ -1,0 +1,340 @@
+code
+1-	python -m venv venv
+venv\scripts\activate
+pip3 install virtualenv
+virtualenv env
+source env/bin/activate
+
+pip install "django>3.2,<3.3"
+pip freeze >r.txt
+pip install -r pip.txt
+python -m pip install --upgrade pip
+django-admin startproject mysite .
+python manage.py runserver
+python manage.py
+python manage.py startapp website
+python manage.py makemigrations
+python manage.py migrate
+python manage.py createsuperuser
+----------
+./wget.exe –r  url_to_website
+--
+pip install pillow
+
+2-	Make app = python manage.py startapp app_site  & startapp app_blog
+
+3-	Settings = insert app 
+INSTALLED_APPS = [
+'app_blog.apps.AppBlogConfig',
+'app_site.apps.AppSiteConfig',
+
+4-	Insert static
+1-	TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [BASE_DIR / 'templates']
+
+
+
+2-	STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'static'
+STATICFILES_DIRS = [
+    BASE_DIR / 'statics',
+]
+MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = '/media/'
+
+
+
+
+
+
+
+5-	Urls: home
+from django.contrib import admin
+from django.urls import path,include
+from django.conf.urls.static import static
+from django.conf import settings
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', include('appsite.urls')),
+    path('blog/', include('appblog.urls')),
+]
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+6-	Urls: app_site
+from django.urls import path
+from appsite.views import *
+app_name = 'appsite'
+urlpatterns = [
+    path('',index_home,name='index'),
+    path('about/',index_about,name='about'),
+    path('contact/',index_contact, name='contact'),
+
+]
+
+7-	Urls: app_blog
+from django.urls import path
+from appblog.views import *
+app_name = 'appblog'
+urlpatterns = [
+    path('',blog_home,name='bloghome'),
+    path('<int:pid>',blog_single,name='blogsingle'),
+    # path('post-<int:pid>', test, name='test'),
+
+]
+
+8-	Views : app_site
+from django.shortcuts import render
+
+def index_home(request):
+
+    return render(request,'web/index.html')
+
+def index_about(request):
+
+    return render(request,'web/about.html')
+
+def index_contact(request):
+
+    return render(request,'web/contact.html')
+
+9-	Views : app_blog
+from django.shortcuts import render,get_object_or_404
+from appblog.models import post
+
+
+def blog_home(request):
+    posts = post.objects.filter(status=1)
+    context = {'post':posts}
+    return render(request,'blog/blog-home.html',context)
+
+def blog_single(request,pid):
+    posts = post.objects.filter(status=1)
+    posts = get_object_or_404(post,pk=pid)or(post,pk=pid,status=1) 
+    context = {'post':posts}
+    return render(request,'blog/blog-single.html',context)
+ 
+
+10-	Models : app_blog
+from django.db import models
+from django.contrib.auth.models import User
+
+class category(models.Model):
+
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+class post(models.Model):
+    # 
+title = models.CharField(max_length=100)
+content = models.TextField()
+
+author = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+image=models.ImageField(upload_to ='blog/',default= ’blog/default.jpg)
+category = models.ManyToManyField(category)
+
+    counted_views = models.IntegerField(default=0)
+    status = models.BooleanField(default=False)
+    published_date = models.DateTimeField(null=True)
+    created_date = models.DateTimeField(auto_now_add=True)
+    updated_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
+
+
+
+
+
+
+
+
+
+11-	Models : app_site
+from django.db import models
+
+class contact(models.Model):
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    email = models.EmailField()
+    subject = models.CharField(max_length=100)
+    message = models.TextField()
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return "{}""-""{}".format(
+
+
+12-	Admin: app_blog
+from django.contrib import admin
+from appblog.models import post
+
+
+
+class postAdmin(admin.ModelAdmin):
+    date_hierarchy = 'created_date'
+    empty_value_display = '-empty-'
+    list_display = ('title', 'created_date','status','published_date')
+    list_filter = ('status',)
+    search_fields = ('title','content')
+    # ordering = ('-created_date',)
+
+admin.site.register(category)
+admin.site.register(post, postAdmin,)
+
+13-	Admin: app_site
+from django.contrib import admin
+from appsite.models import contact
+
+class ContactAdmin(admin.ModelAdmin):
+    date_hierarchy = 'created'
+    list_display = ('first_name','email','first_name',)
+    list_filter = ('email',)
+    search_fields = ('first_name','message',)
+    ordering = ('-created',)
+admin.site.register(contact, ContactAdmin)
+
+templates
+{% static 'css/linearicons.css' %}"
+{% url 'appsite:index' %}
+{% static 'img/logo.png' %}
+{% static 'img/i1.jpg' %}
+{% static 'js/i1.js' %}
+
+
+14-	Base.html
+{% load static %}
+
+{% block content %}
+
+{% endblock %}
+
+15-	Make directory web & blog and        Home , about ,.. html
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+{% endblock %}
+
+
+16-	In blog for insert tag post 
+
+1-	{% for posts in post %}     برای فراخوانی پست ها
+
+{{ posts.title }}
+
+{% endfor %}
+
+2- {% url 'app_blog:single_blog' post.id %}    برای داینامیک کردن صفحه پست       
+
+3-     {{ post.author.first_name or get_full_name }},{{ post.author_id }}                  افزودن نویسنده
+
+4- {{ post.image.url }}                      افزودن عکس
+
+
+
+	{%for post in post%}
+ {% for cat in post.category.all %}   برای افزودن کتگوری ها در پست             
+<li><a href="#"> {{ cat.name }}{% if not forloop.last %},{% endif %}  </a></li>
+{% endfor %}   
+	{%endfor%} 
+یا 
+{{ post.category.all|join:"," }}
+6- {{post.content|truncatechars:100}}           کوتا کردن متن ...
+7- {{ post.published|date:'d M Y' }}
+
+
+
+
+{% include 'blog_web/include_blog.html' %}       از صفحه تمپلیت وبلاگ
+
+
+
+
+
+Templatetags make directory > __init__.py> reset Django >make file in templatetags >blog_tags.py>
+from django import template
+
+register = template.Library()>
+in blog
+{%load blog_tags%}
+
+from django import template
+from app_blog.models import Post
+register = template.Library()
+
+
+@register.simple_tag(name='total_post')
+def function():
+    posts = Post.objects.filter(status=True).count()
+    return posts
+
+----------
+Blog
+
+{% total_post as tp %}
+
+{{tp}}
+
+
+
+@register.inclusion_tag('blog_web/include_blog/include_blog_left_last_news.html')
+def last_post():
+    posts = Post.objects.filter(status=True).order_by('published')[:4]
+    return {'posts': posts}
+
+
+tag
+{% for post in posts %}
+<a href="{% url 'app_blog:blog_details' post.id %}">{{post.title}}</a></h3>
+{% endfor %}
+
+
+{% load blog_tags %}
+{% last_post %}
+
+css
+max-width: 50px;
+
+
+
+
+
+
+
+
+@register.inclusion_tag('blog_web/include_blog/include_blog_left_category.html')
+def all_category_posts():
+    posts = Post.objects.filter(status=True)
+    categories = category.objects.all()
+    cat_dict = {}
+    for cat in categories:
+        count = posts.filter(category=cat).count()
+        if count > 0:
+            cat_dict[cat.name] = count
+    return {'categories': cat_dict}
+
+
+tag
+
+
+{% for name,count in categories.items %}
+  <li>
+      <a href="">{{name}}</a>
+  </li>
+{% endfor %}
+
+
+Statics
+17-	Insert css ,fonts,img,js,scss
+
+
+
+

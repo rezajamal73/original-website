@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>گزارش درخواست استخدام</title>
+    <style>
+        body {
+            font-family: Tahoma, sans-serif;
+            margin: 40px;
+            color: #000;
+        }
+
+        h2 {
+            border-bottom: 2px solid #000;
+            padding-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        td {
+            border: 1px solid #000;
+            padding: 8px;
+            vertical-align: top;
+        }
+
+        .label {
+            background: #f1f1f1;
+            width: 30%;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body onload="window.print()">
+
+<h2> 📄گزارش درخواست جذب</h2>
+
+<table>
+    <tr>
+        <td class="label">نام و نام خانوادگی</td>
+        <td>{{ application.full_name }}</td>
+    </tr>
+    <tr>
+        <td class="label">کد ملی</td>
+        <td>{{ application.national_code }}</td>
+    </tr>
+    <tr>
+        <td class="label">سن / جنسیت</td>
+        <td>{{ application.age }} / {{ application.get_gender_display }}</td>
+    </tr>
+    <tr>
+        <td class="label">وضعیت تأهل</td>
+        <td>{{ application.get_marital_status_display }}</td>
+    </tr>
+    <tr>
+        <td class="label">وضعیت نظام وظیفه</td>
+        <td>{{ application.get_military_status_display|default:"—" }}</td>
+    </tr>
+    <tr>
+        <td class="label">شماره تماس</td>
+        <td>{{ application.mobile }}</td>
+    </tr>
+    <tr>
+        <td class="label">شماره تماس ضروری</td>
+        <td>{{ application.mobile_support }}</td>
+    </tr>
+    <tr>
+        <td class="label">ایمیل</td>
+        <td>{{ application.email }}</td>
+    </tr>
+    <tr>
+        <td class="label">موقعیت شغلی</td>
+        <td>{{ application.opportunity.position }}</td>
+    </tr>
+    <tr>
+        <td class="label">عنوان فراخوان</td>
+        <td>{{ application.opportunity.title }}</td>
+    </tr>
+    <tr>
+        <td class="label">تاریخ ثبت درخواست</td>
+        <td>{{ application.created_at_fa_display }}</td>
+    </tr>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,15 @@
+{% load static %}
+
+<div class="widget category">
+    <h5 class="widget-title">دسته‌بندی‌ها</h5>
+
+    <div class="category-list">
+        {% for cat in categories %}
+            <a href="{% url 'app_blog:blog_category' cat.title_fa %}">
+                <i class="far fa-arrow-left"></i>
+                {{ cat.title_fa }}
+                <span>({{ cat.count }})</span>
+            </a>
+        {% endfor %}
+    </div>
+</div>

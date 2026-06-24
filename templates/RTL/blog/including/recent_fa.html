@@ -1,0 +1,30 @@
+{% load static %}
+
+<div class="widget recent-post">
+    <h5 class="widget-title">آخرین مقالات</h5>
+
+    {% for post in blogs %}
+        <div class="recent-post-item">
+
+            <div class="recent-post-img">
+                <a href="{% url 'app_blog:blog_single' post.id %}">
+                    <img src="{{ post.image.url }}">
+                </a>
+            </div>
+
+            <div class="recent-post-bio">
+                <h6>
+                    <a href="{% url 'app_blog:blog_single' post.id %}">
+                        {{ post.title_fa|truncatechars:25 }}
+                    </a>
+                </h6>
+
+                <span>
+                    <i class="far fa-clock"></i>
+                    {{ post.publish_date_fa }}
+                </span>
+            </div>
+
+        </div>
+    {% endfor %}
+</div>

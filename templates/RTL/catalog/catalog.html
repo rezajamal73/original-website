@@ -1,0 +1,73 @@
+{% extends 'RTL/core/base.html' %}
+
+{% block content %}
+
+<!-- breadcrumb -->
+<div class="site-breadcrumb">
+    <div class="site-breadcrumb-bg"
+         style="background: url('{{ banner.image.url }}')">
+    </div>
+
+    <div class="container">
+        <div class="site-breadcrumb-wrap">
+            <h4 class="breadcrumb-title">کاتالوگ</h4>
+            <ul class="breadcrumb-menu">
+                <li>
+                    <a href="/">
+                        <i class="far fa-home"></i>
+                        خانه
+                    </a>
+                </li>
+                <li class="active">کاتالوگ شرکت</li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- breadcrumb end -->
+
+<div class="container my-5">
+
+    <!-- Title -->
+    <div class="text-center mb-4">
+        <h2 class="mb-2">{{ catalog.title }}</h2>
+
+        {% if catalog.description %}
+            <p class="text-muted">
+                {{ catalog.description }}
+            </p>
+        {% endif %}
+    </div>
+
+    <!-- PDF Viewer (Full Height, Stable) -->
+    <div class="card shadow-sm mb-4">
+        <div style="width:100%; height:80vh;">
+            <iframe
+                src="{{ catalog.pdf_file.url }}"
+                style="width:100%; height:100%; border:none;"
+                loading="lazy">
+            </iframe>
+        </div>
+    </div>
+
+    <!-- Download + Dates -->
+    <div class="text-center">
+
+        <a href="{{ catalog.pdf_file.url }}"
+           class="btn btn-primary btn-lg mb-3"
+           download>
+            دانلود کاتالوگ (PDF)
+        </a>
+
+        <div class="text-muted small">
+            آخرین بروزرسانی:
+            <br>
+            {{ catalog.updated_at_jalali }}
+            |
+            {{ catalog.updated_at_gregorian }}
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

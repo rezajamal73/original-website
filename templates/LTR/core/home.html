@@ -1,0 +1,331 @@
+{% extends 'LTR/core/base-en.html' %}
+{% load static %}
+{% load home_tags %}
+
+{% block content %}
+    <main class="main" dir="ltr">
+
+        {% if active_slider == "hs_1" %}
+            <div class="hero-section hs-1 mt-20">
+                <div class="container">
+                    <div class="hero-slider owl-carousel owl-theme" dir="ltr">
+
+                        {% for banner in banners %}
+                            <div class="hero-single"
+                                 style="background-image: url({{ banner.image.url }});">
+
+                                <div class="container">
+                                    <div class="row align-items-center">
+                                        <div class="col-lg-6">
+                                            <div class="hero-content">
+
+                                                {% if banner.label_en %}
+                                                    <h6 class="hero-sub-title"
+                                                        data-animation="fadeInUp"
+                                                        data-delay=".25s">
+                                                        {{ banner.label_en }}
+                                                    </h6>
+                                                {% endif %}
+
+                                                {% if banner.title_p1_en or banner.title_p2_en or banner.title_p3_en %}
+                                                    <h1 class="hero-title"
+                                                        data-animation="fadeInRight"
+                                                        data-delay=".50s">
+                                                        {{ banner.title_p1_en|default_if_none:"" }}
+                                                        {% if banner.title_p2_en %}
+                                                            <span>{{ banner.title_p2_en }}</span>
+                                                        {% endif %}
+                                                        {{ banner.title_p3_en|default_if_none:"" }}
+                                                    </h1>
+                                                {% endif %}
+
+                                                {% if banner.subtitle_en %}
+                                                    <p data-animation="fadeInLeft"
+                                                       data-delay=".75s">
+                                                        {{ banner.subtitle_en }}
+                                                    </p>
+                                                {% endif %}
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        {% endfor %}
+
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+
+        {% if active_slider == "hs_2" %}
+            <div class="hero-section hs-2 mt-20">
+                <div class="hero-slider owl-carousel owl-theme" dir="ltr">
+
+                    {% for banner in banners %}
+                        <div class="hero-single">
+                            <div class="hero-single-bg"
+                                 style="background-image: url({{ banner.image.url }});">
+                            </div>
+
+                            <div class="container">
+                                <div class="row align-items-center">
+                                    <div class="col-lg-6">
+                                        <div class="hero-content">
+
+                                            {% if banner.label_en %}
+                                                <h6 class="hero-sub-title"
+                                                    data-animation="fadeInUp"
+                                                    data-delay=".25s">
+                                                    {{ banner.label_en }}
+                                                </h6>
+                                            {% endif %}
+
+                                            {% if banner.title_p1_en or banner.title_p2_en or banner.title_p3_en %}
+                                                <h1 class="hero-title"
+                                                    data-animation="fadeInRight"
+                                                    data-delay=".50s">
+                                                    {{ banner.title_p1_en|default_if_none:"" }}
+                                                    {% if banner.title_p2_en %}
+                                                        <span>{{ banner.title_p2_en }}</span>
+                                                    {% endif %}
+                                                    {{ banner.title_p3_en|default_if_none:"" }}
+                                                </h1>
+                                            {% endif %}
+
+                                            {% if banner.subtitle_en %}
+                                                <p data-animation="fadeInLeft"
+                                                   data-delay=".75s">
+                                                    {{ banner.subtitle_en }}
+                                                </p>
+                                            {% endif %}
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    {% endfor %}
+
+                </div>
+            </div>
+        {% endif %}
+
+
+        {% if statistics %}
+            <div class="counter-area pt-50 pb-50">
+                <div class="container">
+                    <div class="row">
+
+                        {% for stat in statistics %}
+                            <div class="col-lg-3 col-sm-6">
+                                <div class="counter-box">
+
+                                    {% if stat.icon_svg %}
+                                        <div class="icon">
+                                            <img src="{{ stat.icon_svg.url }}" width="50" alt="{{ stat.title_en }}">
+                                        </div>
+                                    {% endif %}
+
+                                    <div class="counter-info">
+                                        <div class="counter-amount">
+                                <span class="counter" data-to="{{ stat.value }}" data-speed="3000">
+                                    {{ stat.value }}
+                                </span>
+                                            {% if stat.suffix %}
+                                                <span class="counter-sign">{{ stat.suffix }}</span>
+                                            {% endif %}
+                                        </div>
+
+                                        {% if stat.title_en %}
+                                            <h6 class="title">{{ stat.title_en }}</h6>
+                                        {% endif %}
+                                    </div>
+
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if section %}
+            <div class="about-area py-100">
+                <div class="container">
+                    <div class="row align-items-center">
+
+                        <div class="col-lg-6">
+                            {% with first_text=section.texts.first %}
+                                {% if first_text and first_text.images.exists %}
+                                    <div class="about-img">
+                                        <div class="row">
+                                            {% if first_text.images.all.0 %}
+                                                <div class="col-7">
+                                                    <img src="{{ first_text.images.all.0.image.url }}"
+                                                         alt="{{ first_text.title_en }}">
+                                                </div>
+                                            {% endif %}
+                                            {% if first_text.images.all.1 %}
+                                                <div class="col-5 align-self-end">
+                                                    <img src="{{ first_text.images.all.1.image.url }}"
+                                                         alt="{{ first_text.title_en }}">
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                        </div>
+
+                        <div class="col-lg-6">
+                            <div class="about-right">
+
+                                <div class="site-heading mb-3">
+                            <span class="site-title-tagline">
+                                <i class="flaticon-drive"></i> About Us
+                            </span>
+                                    <h2 class="site-title">{{ section.texts.first.title_en }}</h2>
+                                </div>
+
+                                {% for text in section.texts.all %}
+                                    <p>{{ text.content_en|linebreaks }}</p>
+                                {% endfor %}
+
+                                {% if section.about_items.exists %}
+                                    <ul class="about-list">
+                                        {% for item in section.about_items.all %}
+                                            <li>
+                                                <i class="fas fa-check-double"></i>
+                                                {{ item.title_en }}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+
+                                <a class="theme-btn mt-4" href="{% url 'app_core:about' %}">
+                                    Company History <i class="fas fa-arrow-right"></i>
+                                </a>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if categories %}
+            <div class="category-area py-100">
+                <div class="container">
+
+                    <div class="site-heading text-center">
+                        <h2 class="site-title">Product Categories</h2>
+                        <a href="{% url 'app_product:product_list' %}" class="all-products-link">
+                            View All Products
+                        </a>
+                    </div>
+
+                    <div class="row g-3">
+                        {% for category in categories %}
+                            <div class="col-6 col-md-4 col-lg-2">
+                                <div class="category-item">
+                                    <a href="{% url 'app_product:category' slug=category.slug %}">
+                                        <img src="{{ category.cat_icon.url }}" alt="{{ category.title_en }}">
+                                        <h4>{{ category.title_en }}</h4>
+                                        <p>{{ category.product_count }} Products</p>
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                </div>
+            </div>
+        {% endif %}
+
+        {% if special_products %}
+            <div class="product-area py-100">
+                <div class="container">
+                    <div class="site-heading text-center">
+                        <h2 class="site-title">Featured Products</h2>
+                    </div>
+
+                    <div class="row g-4">
+                        {% for p in special_products %}
+                            <div class="col-md-4 col-lg-3">
+                                <div class="product-item">
+                                    <a href="{{ p.get_absolute_url }}">
+                                        <img src="{{ p.main_image.url }}" alt="{{ p.title_en }}">
+                                        <h3>{{ p.title_en }}</h3>
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                </div>
+            </div>
+        {% endif %}
+
+        {% if home_medias %}
+            <div class="gallery-area pb-100">
+                <div class="container">
+                    <div class="site-heading text-center">
+                        <h2 class="site-title">Photo Gallery</h2>
+                        <a href="{% url 'app_media:home' %}" class="all-products-link">
+                            View Full Gallery
+                        </a>
+                    </div>
+
+                    <div class="row g-4 popup-gallery">
+                        {% for media in home_medias %}
+                            {% for img in media.images.all %}
+                                <div class="col-md-4 col-lg-3">
+                                    <a href="{{ img.image.url }}" class="popup-img">
+                                        <img src="{{ img.image.url }}" alt="{{ media.title_en }}">
+                                    </a>
+                                </div>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+
+                </div>
+            </div>
+        {% endif %}
+
+        {% home_blog_recent_fa %}
+
+        {% if group_companies %}
+            <div class="company-area pb-100">
+                <div class="container">
+                    <div class="site-heading text-center">
+                        <h2 class="site-title">Group Companies</h2>
+                        <a href="{% url 'app_reports:companies' %}" class="all-products-link">
+                            View All Companies
+                        </a>
+                    </div>
+
+                    <div class="owl-carousel">
+                        {% for company in group_companies %}
+                            {% if company.is_active %}
+                                <div class="company-item">
+                                    <a href="{{ company.website }}" target="_blank">
+                                        <img src="{{ company.logo.url }}" alt="{{ company.name }}">
+                                        <span>{{ company.name }}</span>
+                                    </a>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                </div>
+            </div>
+        {% endif %}
+
+    </main>
+{% endblock %}

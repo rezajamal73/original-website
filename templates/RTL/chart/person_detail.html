@@ -1,0 +1,117 @@
+{% extends 'RTL/core/base.html' %}
+{% load static %}
+{% load product_tags %}
+{% block content %}
+    <main class="main">
+        <!-- breadcrumb -->
+        <div class="site-breadcrumb">
+            <div class="site-breadcrumb-bg" style="background: url('{{ banner.image.url }}')">
+            </div>
+            <div class="container">
+                <div class="site-breadcrumb-wrap">
+                    <h4 class="breadcrumb-title">
+                        اطلاعات
+                    </h4>
+                    <ul class="breadcrumb-menu">
+                        <li>
+                            <a href="{% url 'app_core:home' %}">
+                                <i class="far fa-home">
+                                </i>
+                                خانه
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'app_chart:chart' %}">
+                                <i class="far">
+                                </i>
+                               چارت سازمانی و تیم اجرایی
+                            </a>
+                        </li>
+                        <li class="active">کارمند
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- breadcrumb end -->
+        <!-- shop single -->
+        <div class="shop-single2 bg-2 py-100">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-9 col-lg-6 col-xxl-5">
+                        <div class="shop-single-gallery">
+                            <div class="flexslider-thumbnails" dir="ltr">
+                                <ul class="slides">
+                                    <li data-thumb="{{ person.photo.url }}">
+                                        <img
+                                                src="{{ person.photo.url }}"
+                                                alt="{{ person.name_fa }}"
+                                                style="
+                                                           max-width: 300px;
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 0 8px rgba(0,0,0,0.15);
+            display: block;
+            margin: 0 auto;
+        "
+                                        />
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-lg-6 col-xxl-6">
+                        <div class="shop-single-info">
+                            <h4 class="shop-single-title">
+                                نام و نام خانوادگی:
+                                <span>{{ person.name_fa }}</span>
+                            </h4>
+                            <P> </P>
+                            <ul class="list-unstyled mb-3">
+                                <li>
+                                    سمت:
+                                    <span>{{ person.position_fa }}</span>
+                                </li>
+                            </ul>
+                            <div class="shop-single-sortinfo">
+                                <ul>
+                                    <li>
+                                        ایمیل:
+                                        <span>{% if person.email %}{{ person.email }}{% else %}—{% endif %}</span>
+                                    </li>
+                                </ul>
+
+                                <ul>
+                                    <li>
+                                        شماره تماس:<span>{% if person.phone %}{{ person.phone }}{% else %}
+                                        —{% endif %}</span>
+                                    </li>
+                                </ul>
+                                <ul>
+                                    <li>
+                                        توضیحات:
+                                        <span>{% if person.content_fa %}{{ person.content_fa }}{% else %}
+                                            —{% endif %}</span>
+                                    </li>
+                                </ul>
+                            </div>
+
+                        </div>
+
+                        <div class="shop-single-action">
+                            <div class="row align-items-center">
+                                <div class="col-md-6 col-lg-12 col-xl-6">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        </div>
+
+    </main>
+{% endblock %}

@@ -1,0 +1,334 @@
+{% extends 'RTL/core/base.html' %}
+{% load static %}
+{% load product_tags %}
+{% block content %}
+    <main class="main">
+        <!-- breadcrumb -->
+        <div class="site-breadcrumb">
+            <div class="site-breadcrumb-bg" style="background: url('{{ banner.image.url }}')">
+            </div>
+            <div class="container">
+                <div class="site-breadcrumb-wrap">
+                    <h4 class="breadcrumb-title">
+                        محصول
+                    </h4>
+                    <ul class="breadcrumb-menu">
+                        <li>
+                            <a href="{% url 'app_core:home' %}">
+                                <i class="far fa-home">
+                                </i>
+                                خانه
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'app_product:product_list' %}">
+                                <i class="far">
+                                </i>
+                                کلیه محصولات
+                            </a>
+                        </li>
+                        <li class="active">{{ product.title_fa }}
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- breadcrumb end -->
+        <!-- shop single -->
+        <div class="shop-single2 bg-2 py-100">
+            <div class="container">
+                <div class="row g-5">
+
+                    <!-- ===== Gallery ===== -->
+                    <div class="col-lg-5">
+                        <div class="shop-single-gallery">
+                            <div class="flexslider-thumbnails" dir="ltr">
+                                <ul class="slides">
+
+                                    {% if product.main_image or product.images.exists %}
+
+                                        {% if product.main_image %}
+                                            <li data-thumb="{{ product.main_image.url }}">
+                                                <img src="{{ product.main_image.url }}"
+                                                     alt="{{ product.title_fa }}">
+                                            </li>
+                                        {% endif %}
+
+                                        {% for img in product.images.all %}
+                                            <li data-thumb="{{ img.image.url }}">
+                                                <img src="{{ img.image.url }}"
+                                                     alt="{{ product.title_fa }}">
+                                            </li>
+                                        {% endfor %}
+
+                                    {% endif %}
+
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- ===== Info ===== -->
+                    <div class="col-lg-7">
+                        <div class="shop-single-info">
+
+                            <h3 class="shop-single-title mb-3">
+                                {{ product.title_fa }}
+                            </h3>
+                            <h3 class="shop-single-title mb-3">
+                                نام برند:
+                                {{ product.title_en }}
+                            </h3>
+
+                            {% if product.generic_name_fa %}
+                                <p class="text-muted">
+                                    <strong>نام ژنریک:</strong>
+                                    {{ product.generic_name_fa }}
+                                </p>
+                            {% endif %}
+
+                            {% if product.generic_name_en %}
+                                <p class="text-muted" style="margin-right: 55px;">
+                                    {{ product.generic_name_en }}
+                                </p>
+                            {% endif %}
+
+
+                            <ul class="list-unstyled shop-single-sortinfo">
+
+                                {% if product.summary_fa %}
+                                    <li>
+                                        <strong>توضیح کوتاه:</strong>
+                                        {{ product.summary_fa }}
+                                    </li>
+                                {% endif %}
+
+
+                                <hr>
+
+                                <table cellpadding="10">
+                                    <tr>
+                                        <td>
+                                            <strong>کد محصول:</strong>
+                                            {{ product.sku }}
+                                        </td>
+
+                                        <!-- فاصله افقی -->
+                                        <td width="40"></td>
+
+                                        {% if product.category %}
+                                            <td>
+                                                <strong>دسته‌بندی دارویی:</strong>
+                                                {{ product.category.title_fa }}
+                                            </td>
+                                        {% endif %}
+                                    </tr>
+
+                                    <tr>
+                                        <!-- فاصله عمودی -->
+                                        <td height="20"></td>
+                                    </tr>
+
+                                    <tr>
+                                        {% if product.category2 %}
+                                            <td>
+                                                <strong>شکل دارویی:</strong>
+                                                {{ product.category2.title_fa }}
+                                            </td>
+                                        {% endif %}
+
+                                        <!-- فاصله افقی -->
+                                        <td width="40"></td>
+
+                                        {% if product.tags.exists %}
+                                            <td>
+                                                <strong>برچسب‌ها:</strong>
+                                                {% for tag in product.tags.all %}
+                                                    <span class="badge bg-secondary me-1">
+                        {{ tag.title_fa }}
+                    </span>
+                                                {% endfor %}
+                                            </td>
+                                        {% endif %}
+                                    </tr>
+                                </table>
+
+
+                            </ul>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== Tabs ===== -->
+                <div class="shop-single-details mt-5">
+                    <!-- ===== Tabs ===== -->
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#desc">
+                                توضیحات محصول
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#pregnancy">
+                                مصرف در بارداری
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#composition">
+                                ترکیبات
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#indications">
+                                موارد مصرف
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#contra">
+                                منع مصرف
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#warnings">
+                                هشدارها
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#instructions">
+                                نحوه مصرف
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#qr-code">
+                                QR کد محصول
+                            </button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content p-4 bg-white border border-top-0">
+
+                        <!-- ===== Description ===== -->
+                        <div class="tab-pane fade show active" id="desc">
+                            {% if product.description_fa %}
+                                <div class="product-description">
+                                    <h5>توضیحات:</h5>
+                                    {{ product.description_fa|linebreaksbr }}
+                                </div>
+                            {% else %}
+                                <p class="text-muted">توضیحی برای این محصول وجود ندارد.</p>
+                            {% endif %}
+                        </div>
+
+                        <!-- ===== Pregnancy Use ===== -->
+                        <div class="tab-pane fade" id="pregnancy">
+                            {% if product.pregnancy_use_fa %}
+                                <div class="product-description">
+                                    <h5>مصرف در بارداری:</h5>
+                                    {{ product.pregnancy_use_fa|linebreaksbr }}
+                                </div>
+                            {% else %}
+                                <p class="text-muted">
+                                    اطلاعاتی در مورد مصرف در بارداری برای این محصول موجود نیست.
+                                </p>
+                            {% endif %}
+                        </div>
+
+                        <!-- ===== QR Code ===== -->
+                        <div class="tab-pane fade" id="qr-code">
+                            {% if product.qr_code %}
+                                <div class="mt-4 text-center">
+                                    <p class="mb-2"><strong>QR Code محصول</strong></p>
+                                    <img src="{{ product.qr_code.url }}"
+                                         alt="QR {{ product.title_fa }}"
+                                         class="img-fluid"
+                                         style="max-width:150px">
+                                </div>
+                            {% else %}
+                                <p class="text-muted">QR کد برای این محصول موجود نیست.</p>
+                            {% endif %}
+                        </div>
+
+                        <!-- ===== Composition ===== -->
+                        <div class="tab-pane fade" id="composition">
+                            {% if product.composition_fa %}
+                                <div class="product-description">
+                                    <h5>ترکیبات:</h5>
+                                    {{ product.composition_fa|linebreaksbr }}
+                                </div>
+                            {% else %}
+                                <p class="text-muted">
+                                    اطلاعاتی در مورد ترکیبات برای این محصول موجود نیست.
+                                </p>
+                            {% endif %}
+                        </div>
+
+                        <!-- ===== Indications ===== -->
+                        <div class="tab-pane fade" id="indications">
+                            {% if product.indications_fa %}
+                                <div class="product-description">
+                                    <h5>موارد مصرف:</h5>
+                                    {{ product.indications_fa|linebreaksbr }}
+                                </div>
+                            {% else %}
+                                <p class="text-muted">
+                                    اطلاعاتی در مورد موارد مصرف برای این محصول موجود نیست.
+                                </p>
+                            {% endif %}
+                        </div>
+
+                        <!-- ===== Contraindications ===== -->
+                        <div class="tab-pane fade" id="contra">
+                            {% if product.contra_fa %}
+                                <div class="product-description">
+                                    <h5>منع مصرف:</h5>
+                                    {{ product.contra_fa|linebreaksbr }}
+                                </div>
+                            {% else %}
+                                <p class="text-muted">
+                                    اطلاعاتی در مورد منع مصرف برای این محصول موجود نیست.
+                                </p>
+                            {% endif %}
+                        </div>
+
+                        <!-- ===== Warnings ===== -->
+                        <div class="tab-pane fade" id="warnings">
+                            {% if product.warnings_fa %}
+                                <div class="product-description">
+                                    <h5>هشدارها:</h5>
+                                    {{ product.warnings_fa|linebreaksbr }}
+                                </div>
+                            {% else %}
+                                <p class="text-muted">
+                                    اطلاعاتی در مورد هشدارها برای این محصول موجود نیست.
+                                </p>
+                            {% endif %}
+                        </div>
+
+                        <!-- ===== Instructions ===== -->
+                        <div class="tab-pane fade" id="instructions">
+                            {% if product.instructions_fa %}
+                                <div class="product-description">
+                                    <h5>نحوه مصرف:</h5>
+                                    {{ product.instructions_fa|linebreaksbr }}
+                                </div>
+                            {% else %}
+                                <p class="text-muted">
+                                    اطلاعاتی در مورد نحوه مصرف برای این محصول موجود نیست.
+                                </p>
+                            {% endif %}
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+        </div>
+
+
+    </main>
+{% endblock %}

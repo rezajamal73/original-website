@@ -1,0 +1,710 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+    <!-- meta tags -->
+    <meta charset="utf-8"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta content="" name="description"/>
+    <meta content="" name="keywords"/>
+    <!-- title -->
+    <title>
+        {% if site_info %}
+            {{ site_info.name_company_p1_fa }} {{ site_info.name_company_p2_fa }}
+        {% endif %}
+
+    </title>
+
+    <!-- favicon -->
+    {% if site_info and site_info.header_logo %}
+        <link rel="icon" type="image/x-icon" href="{{ site_info.header_logo.url }}">
+    {% endif %}
+    <!-- css -->
+    <link href="{% static 'RTl/assets/css/bootstrap.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTl/assets/css/all-fontawesome.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTl/assets/css/animate.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTl/assets/css/magnific-popup.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTl/assets/css/owl.carousel.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTl/assets/css/jquery-ui.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTl/assets/css/nice-select.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTl/assets/css/style.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTl/assets/css/flex-slider.min.css' %}" rel="stylesheet"/>
+
+</head>
+<body class="home-5">
+<!-- preloader -->
+<div class="preloader">
+    <div class="loader-ripple">
+        <div>
+        </div>
+        <div>
+        </div>
+    </div>
+</div>
+<!-- preloader end -->
+<!-- header area -->
+<header class="header">
+    <!-- header top -->
+    <div class="header-top black-bg">
+        <div class="container">
+            <div class="header-top-wrap">
+                <div class="row">
+                    <div class="col-12 col-md-6 col-lg-6 col-xl-5">
+                        <div class="header-top-left">
+                            <ul class="header-top-list">
+                                {% if site_info.email %}
+                                    <li>
+                                        <a href="mailto:{{ site_info.email }}">
+                                            <i class="far fa-envelopes"></i>
+                                            <span>{{ site_info.email }}</span>
+                                        </a>
+                                    </li>
+                                {% endif %}
+                                {% if site_info.phone_1 %}
+                                    <li>
+                                        <a href="tel:{{ site_info.phone_1 }}">
+                                            <i class="far fa-headset"></i>
+                                            {{ site_info.phone_1 }}
+                                        </a>
+                                    </li>
+                                {% endif %}
+                                {% if site_info.suport_phone %}
+                                    <li class="help">
+                                        <a href="tel:{{ site_info.suport_phone }}">
+                                            <i class="far fa-comment-question"></i>
+                                            تماس با پشتیبانی
+                                        </a>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-6 col-xl-7">
+                        <div class="header-top-right">
+                            <ul class="header-top-list">
+                                <li>
+                                    <div class="dropdown">
+                                        <a aria-expanded="false" class="dropdown-toggle" data-bs-toggle="dropdown"
+                                           href="{% url 'app_core:home' %}">
+                                            <i class="far fa-globe-americas">
+                                            </i>
+                                            فارسی
+                                        </a>
+                                        <div class="dropdown-menu">
+                                            <a class="dropdown-item" href="{% url 'app_core:home_en' %}">
+                                                English
+                                            </a>
+                                        </div>
+                                    </div>
+                                </li>
+                                {% if follow_links %}
+                                    <li class="social">
+                                        <div class="header-top-social">
+                                            <span>ما را دنبال کنید:</span>
+
+                                            {% for link in follow_links %}
+                                                {% if link.svg_icon and link.url %}
+                                                    <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer">
+                                                        <img
+                                                                src="{{ link.svg_icon.url }}"
+                                                                width="30"
+                                                                height="30"
+                                                        />
+                                                    </a>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
+                                    </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- header top end -->
+    <!-- navbar -->
+    <div class="main-navigation">
+        <nav class="navbar navbar-expand-lg">
+            <div class="container position-relative">
+                <a class="navbar-brand d-flex align-items-center" href="{% url 'app_core:home' %}">
+                    {% if site_info.header_logo %}
+                        <img alt="logo" src="{{ site_info.header_logo.url }}">
+                    {% endif %}
+                </a>
+                <div class="d-flex flex-column company-brand-text">
+                    {% if site_info.name_company_p1_fa %}
+                        <span class="line-1">{{ site_info.name_company_p1_fa }}</span>
+                    {% endif %}
+
+                    {% if site_info.name_company_p2_fa %}
+                        <span class="line-2">{{ site_info.name_company_p2_fa }}</span>
+                    {% endif %}
+                </div>
+                </a>
+
+                <div class="mobile-menu-right">
+                    <div class="mobile-menu-btn">
+                        <a class="nav-right-link search-box-outer" href="#">
+                            <i class="far fa-search">
+                            </i>
+                        </a>
+                    </div>
+                    <button aria-controls="offcanvasNavbar" aria-label="Toggle navigation" class="navbar-toggler"
+                            data-bs-target="#offcanvasNavbar" data-bs-toggle="offcanvas" type="button"><span>
+
+                    </span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+                <div aria-labelledby="offcanvasNavbarLabel" class="offcanvas offcanvas-start" id="offcanvasNavbar"
+                     tabindex="-1">
+                    <div class="offcanvas-header">
+                        <a class="offcanvas-brand" href="{% url 'app_core:home' %}" id="offcanvasNavbarLabel">
+                            {% if site_info.sidebar_logo %}
+                                <img alt="logo" src="{{ site_info.sidebar_logo.url }}">
+                            {% endif %}
+                        </a>
+                        <button aria-label="Close" class="btn-close" data-bs-dismiss="offcanvas" type="button">
+                        </button>
+                    </div>
+                    <div class="offcanvas-body">
+                        <ul class="navbar-nav justify-content-end flex-grow-1">
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'app_core:home' %}">
+                                    خانه
+                                </a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
+                                    درباره شرکت
+                                </a>
+                                <ul class="dropdown-menu fade-down">
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'app_core:about' %}">
+                                            تاریخچه شرکت
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'app_chart:board_home' %}">
+                                            اعضای هیئت مدیره
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'app_chart:chart' %}">
+                                            تیم اجرایی و چارت سازمانی
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'app_reports:governance' %}">
+                                            اعضاء کمیته ها
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'app_reports:sustainability' %}">
+                                            حاکمیت شرکت
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'app_reports:vision_missions' %}">
+                                            چشم انداز و ماموریت ها
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'app_reports:certificate' %}">
+                                            گواهینامه ها و استاندارد ها
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'app_reports:financial' %}">
+                                            اطلاعیه ها و گزارشات مالی
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'app_reports:shareholder' %}">
+                                            امور سهام
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'app_reports:companies' %}">
+                                            شرکت های هم گروه
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'app_sale:sales_chart' %}">
+                                            نمودار فروش
+                                        </a>
+                                    </li>
+
+                                </ul>
+
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'app_product:product_list' %}">محصولات</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'app_news:news_home' %}">
+                                    اخبار شرکت
+                                </a>
+                            </li>
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
+                                    مناقصات و مزایدات
+                                </a>
+                                <ul class="dropdown-menu fade-down">
+                                    <li>
+                                        <a class="dropdown-item"
+                                           href="{% url 'app_tender:tender_home' %}">
+                                            مناقصات
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                           href="{% url 'app_auction:auction_home' %}">
+                                            مزایدات
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                           href="{% url 'app_inquiry:home' %}">
+                                            استعلام خرید
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                           href="{% url 'app_tender_holding:tender_holding_home' %}">
+                                            مناقصه های هلدینگ
+                                        </a>
+                                    </li>
+                                </ul>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'app_media:home' %}">
+                                    رسانه
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'app_catalog:catalog' %}">
+                                    کاتالوگ
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'app_blog:blog_home' %}">
+                                    مقالات
+                                </a>
+                            </li>
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
+                                    ارتباط با ما
+                                </a>
+                                <ul class="dropdown-menu fade-down">
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'app_hr:hr_home' %}">
+                                            فرصت های شغلی
+                                        </a>
+                                    </li>
+                                    {% if site_info and site_info.phone_security_1 or site_info.phone_security_2 or site_info.phone_security_3 or site_info.email_security or site_info.fax_security %}
+                                        <li>
+                                            <a class="dropdown-item"
+                                               href="{% url 'app_core:contact_security' %}">
+                                                تماس با واحد حراست
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'app_reports:department_contact_list' %}">
+                                            دپارتمان ها
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'app_core:contact' %}">
+                                            تماس با ما
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <!-- nav-right -->
+                        <div class="nav-right icon">
+                            <a class="nav-right-link search-box-outer" href="#">
+                                <i class="far fa-search">
+                                </i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <!-- navbar end -->
+</header>
+<!-- header area end -->
+<!-- popup search -->
+<div class="search-popup">
+    <button class="close-search">
+	<span class="far fa-times">
+	</span>
+    </button>
+    <form action="#">
+        <div class="form-group">
+            <input class="form-control" name="search-field" placeholder="اینجا جستجو کنید ..." required=""
+                   type="search"/>
+            <button type="submit">
+                <i class="far fa-search">
+                </i>
+            </button>
+        </div>
+    </form>
+</div>
+<!-- popup search end -->
+
+
+
+{% block content %}
+
+
+
+
+
+{% endblock %}
+<!-- footer area -->
+<footer class="footer-area light">
+    <div class="footer-widget">
+        <div class="container">
+            <div class="row footer-widget-wrapper pt-100 pb-40">
+                <div class="col-md-6 col-lg-4">
+                    <div class="footer-widget-box about-us">
+
+                        <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'app_core:home' %}">
+                            {% if site_info.footer_logo %}
+                                <img alt="logo" src="{{ site_info.footer_logo.url }}" class="brand-logo">
+                            {% endif %}
+                            {% if site_info.slogan_fa %}
+                                <span class="brand-text">{{ site_info.slogan_fa }}</span>
+                            {% endif %}
+                        </a>
+
+                        <div class="d-flex flex-column company-brand-text">
+                            <span class="line-1">{{ site_info.name_company_p1_fa }}</span>
+                            <span class="line-2">{{ site_info.name_company_p2_fa }}</span>
+                        </div>
+                        <p></p>
+                        <ul class="footer-contact">
+                            {# ---------- ADDRESS ---------- #}
+                            {% if site_info.address_fa %}
+                                <li>
+                                    <i class="far fa-map-marker-alt"></i>
+                                    {{ site_info.address_fa }}
+                                </li>
+                            {% endif %}
+                            {# ---------- PHONE ---------- #}
+                            {% if site_info.phone_1 or site_info.phone_2 or site_info.phone_3 or site_info.phone_4 or site_info.phone_5 %}
+                                <li class="footer-contact-phone">
+                                    <i class="far fa-phone"></i>
+
+                                    <div class="phone-wrapper">
+                                        <span class="phone-prefix">پیش شماره 021</span>
+                                        <div class="phone-line">
+                                            {% if site_info.phone_1 %}
+                                                <a href="tel:{{ site_info.phone_1 }}">{{ site_info.phone_1 }}</a>
+                                            {% endif %}
+                                            {% if site_info.phone_2 %}
+                                                , <a href="tel:{{ site_info.phone_2 }}">{{ site_info.phone_2 }}</a>
+                                            {% endif %}
+                                            {% if site_info.phone_3 %}
+                                                , <a href="tel:{{ site_info.phone_3 }}">{{ site_info.phone_3 }}</a>
+                                            {% endif %}
+                                        </div>
+
+                                        {% if site_info.phone_4 or site_info.phone_5 %}
+                                            <div class="phone-line">
+                                                {% if site_info.phone_4 %}
+                                                    <a href="tel:{{ site_info.phone_4 }}">{{ site_info.phone_4 }}</a>
+                                                {% endif %}
+                                                {% if site_info.phone_5 %}
+                                                    {% if site_info.phone_4 %}, {% endif %}
+                                                    <a href="tel:{{ site_info.phone_5 }}">{{ site_info.phone_5 }}</a>
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </li>
+                            {% endif %}
+
+                            {# ---------- EMAIL ---------- #}
+                            {% if site_info.email %}
+                                <li>
+                                    <a href="mailto:{{ site_info.email }}">
+                                        <i class="far fa-envelope"></i>
+                                        {{ site_info.email }}
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            {% if site_info.postal_code %}
+                                <li>
+                                    <i class="far fa-sign-post"></i>
+                                    {{ site_info.postal_code }}
+                                </li>
+                            {% endif %}
+
+
+                            {# ---------- WORK DAYS ---------- #}
+                            {% if site_info.work_days_fa %}
+                                <li>
+                                    <i class="far fa-clock"></i>
+                                    {{ site_info.work_days_fa }}
+                                </li>
+                            {% endif %}
+
+                        </ul>
+
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="footer-widget-box list">
+                        <h4 class="footer-widget-title">
+                            لینک های سریع
+                        </h4>
+                        <ul class="footer-list">
+                            <li>
+                                <a href="{% url 'app_core:about' %}">
+                                    درباره ما
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'app_chart:board_home' %}">
+                                    اعضای هیئت مدیره
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'app_chart:chart' %}">
+                                    تیم اجرایی و چارت سازمانی
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'app_reports:governance' %}">
+                                    اعضاء کمیته
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'app_reports:sustainability' %}">
+                                    حاکمیت شرکت
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'app_reports:vision_missions' %}">
+                                    چشم انداز و ماموریت ها
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'app_reports:certificate' %}">
+                                    گواهینامه ها و استاندارد ها
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'app_reports:financial' %}">
+                                    اطلاعیه ها و گزارشات مالی
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'app_reports:shareholder' %}">
+                                    امور سهام
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'app_reports:companies' %}">
+                                    شرکت های هم گروه
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'app_sale:sales_chart' %}">
+                                    نمودار فروش
+                                </a>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-3">
+                    <div class="footer-widget-box list">
+                        <h4 class="footer-widget-title">
+                            لینک ها
+                        </h4>
+                        <ul class="footer-list">
+                            <li>
+                                <a href="{% url 'app_product:product_list' %}">
+                                    محصولات
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'app_news:news_home' %}">
+                                    اخبار شرکت
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'app_tender:tender_home' %}">
+                                    مناقصه
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'app_auction:auction_home' %}">
+                                    مزایده
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'app_inquiry:home' %}">
+                                    استعلام خرید
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'app_tender_holding:tender_holding_home' %}">
+                                    مناقصه های هلدینگ
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'app_media:home' %}">
+                                    رسانه
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{% url 'app_catalog:catalog' %}">
+                                    کاتالوگ
+                                </a>
+                            </li>
+
+                            <li>
+                                <a href="{% url 'app_blog:blog_home' %}">
+                                    مقالات
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'app_hr:hr_home' %}">
+                                    فرصت های شغلی
+                                </a>
+                            </li>
+
+                            {% if site_info.phone_security_1 or site_info.phone_security_2 or site_info.phone_security_3 or site_info.email_security or site_info.fax_security %}
+                                <li>
+                                    <a href="{% url 'app_core:contact_security' %}">
+                                        تماس با واحد حراست
+                                    </a>
+                                </li>
+                            {% endif %}
+
+                            <li>
+                                <a href="{% url 'app_core:contact' %}">
+                                    تماس با ما
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-2">
+                    <div class="footer-widget-box list">
+                        <h4 class="footer-widget-title">
+                            دسته بندی محصولات
+                        </h4>
+
+                        {% for category in categories %}
+                            <ul class="footer-list">
+                                <li>
+                                    <a href="{% url 'app_product:category' slug=category.slug %}">
+                                        {{ category.title_fa }}
+                                    </a>
+                                </li>
+                            </ul>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="copyright">
+        <div class="container">
+            <div class="copyright-wrap">
+                <div class="row">
+                    {% if site_info and site_info.designer_name_fa %}
+                        <div class="col-12 col-lg-6 align-self-center">
+                            <p class="copyright-text">
+                                طراحی شده توسط: {{ site_info.designer_name_fa }}
+                            </p>
+                        </div>
+                    {% endif %}
+
+                    {% if follow_links %}
+                        <div class="col-12 col-lg-6 align-self-center">
+                            <div class="header-top-social">
+                                <span>ما را دنبال کنید:</span>
+
+                                {% for link in follow_links %}
+                                    {% if link.svg_icon and link.url %}
+                                        <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer">
+                                            <img
+                                                    src="{{ link.svg_icon.url }}"
+                                                    width="30"
+                                                    height="30"
+                                            />
+                                        </a>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+<!-- footer area end -->
+<!-- scroll-top -->
+<a href="#" id="scroll-top">
+    <i class="far fa-arrow-up-from-arc">
+    </i>
+</a>
+<!-- scroll-top end -->
+
+<!-- js -->
+{#<script data-cfasync="false"#}
+{#        src="https://live.themewild.com/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js' %}">#}
+{#</script>#}
+<script src="{% static 'RTl/assets/js/jquery-3.7.1.min.js' %}">
+</script>
+<script src="{% static 'RTl/assets/js/modernizr.min.js' %}">
+</script>
+<script src="{% static 'RTl/assets/js/bootstrap.bundle.min.js' %}">
+</script>
+<script src="{% static 'RTl/assets/js/imagesloaded.pkgd.min.js' %}">
+</script>
+<script src="{% static 'RTl/assets/js/jquery.magnific-popup.min.js' %}">
+</script>
+<script src="{% static 'RTl/assets/js/isotope.pkgd.min.js' %}">
+</script>
+<script src="{% static 'RTl/assets/js/jquery.appear.min.js' %}">
+</script>
+<script src="{% static 'RTl/assets/js/jquery.easing.min.js' %}">
+</script>
+<script src="{% static 'RTl/assets/js/owl.carousel.min.js' %}">
+</script>
+<script src="{% static 'RTl/assets/js/counter-up.js' %}">
+</script>
+<script src="{% static 'RTl/assets/js/jquery-ui.min.js' %}">
+</script>
+<script src="{% static 'RTl/assets/js/jquery.nice-select.min.js' %}">
+</script>
+<script src="{% static 'RTl/assets/js/countdown.min.js' %}">
+</script>
+<script src="{% static 'RTl/assets/js/wow.min.js' %}">
+</script>
+<script src="{% static 'RTl/assets/js/flex-slider.js' %}">
+</script>
+<script src="{% static 'RTl/assets/js/main.js' %}">
+</script>
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>گزارش پیام حراست</title>
+    <style>
+        body {
+            font-family: Tahoma, sans-serif;
+            margin: 40px;
+            color: #000;
+        }
+
+        h2 {
+            border-bottom: 2px solid #000;
+            padding-bottom: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        td {
+            border: 1px solid #000;
+            padding: 10px;
+            vertical-align: top;
+        }
+
+        .label {
+            background: #f1f1f1;
+            width: 30%;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body onload="window.print()">
+
+<h2>📄 گزارش پیام حراست</h2>
+
+<table>
+    <tr>
+        <td class="label">نام و نام خانوادگی</td>
+        <td>{{ contact.first_name }} {{ contact.last_name }}</td>
+    </tr>
+    <tr>
+        <td class="label">شماره تماس</td>
+        <td>{{ contact.phone }}</td>
+    </tr>
+    <tr>
+        <td class="label">ایمیل</td>
+        <td>{{ contact.email|default:"—" }}</td>
+    </tr>
+    <tr>
+        <td class="label">موضوع</td>
+        <td>{{ contact.subject }}</td>
+    </tr>
+    <tr>
+        <td class="label">متن پیام</td>
+        <td>{{ contact.message }}</td>
+    </tr>
+    <tr>
+        <td class="label">وضعیت</td>
+        <td>{{ contact.get_status_display }}</td>
+    </tr>
+    <tr>
+        <td class="label">تاریخ ارسال</td>
+        <td>{{ contact.created_at_fa }}</td>
+    </tr>
+</table>
+
+</body>
+</html>

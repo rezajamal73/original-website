@@ -1,0 +1,181 @@
+{% extends 'RTL/core/base.html' %}
+{% load static %}
+{% load auction_tags %}
+{% load jformat %}
+{% load humanize %}
+{% block content %}
+    <main class="main">
+        <!-- breadcrumb -->
+        <div class="site-breadcrumb">
+            <div class="site-breadcrumb-bg" style="background: url('{{ banner.image.url }}')">
+            </div>
+            <div class="container">
+                <div class="site-breadcrumb-wrap">
+                    <h4 class="breadcrumb-title">
+                        مزایدات ما
+                    </h4>
+                    <ul class="breadcrumb-menu">
+                        <li>
+                            <a href="{% url 'app_core:home' %}">
+                                <i class="far fa-home">
+                                </i>
+                                خانه
+                            </a>
+                        </li>
+
+                        <li class="active">
+                            <a href="{% url 'app_auction:auction_home' %}">
+                                کلیه مزایدات </a>
+                        </li>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- breadcrumb end -->
+        <!-- blog area -->
+        <div class="blog-area2 py-100">
+            <div class="container">
+                <div class="row g-4">
+
+                    <!-- محتوای اصلی -->
+                    <div class="col-lg-8 col-12">
+                        <div class="row g-4">
+
+                            {% if auctions %}
+                                {% for item in auctions %}
+                                    <div class="col-md-6">
+                                        <div class="blog-item wow fadeInUp" data-wow-delay=".25s">
+<span class="blog-date">
+    <i class="far fa-calendar-alt"></i>
+    شروع: {{ item.start_date_fa|jformat:"%Y/%m/%d" }}
+    <span class="date-separator">&nbsp; — &nbsp;</span>
+    <span class="end-date">
+        پایان: {{ item.end_date_fa|jformat:"%Y/%m/%d" }}
+    </span>
+</span>
+
+                                            <div class="blog-item-img">
+                                                <a href="{% url 'app_auction:auction_single' item.id %}">
+                                                    <img src="{{ item.poster.url }}" alt="{{ item.title_fa }}">
+                                                </a>
+                                            </div>
+
+                                            <div class="blog-item-info">
+                                                <h4 class="blog-title">
+                                                    <a href="{% url 'app_auction:auction_single' item.id %}">
+                                                        {{ item.title_fa }}
+                                                    </a>
+                                                </h4>
+
+                                                <p>{{ item.description_fa|truncatechars:45 }}</p>
+
+                                                <div class="blog-item-meta">
+                                                    <ul>
+                                                        <li class="d-flex align-items-center mb-2">
+    <span class="status-indicator
+        {% if item.status == 'ongoing' %}status-ongoing
+        {% elif item.status == 'extended' %}status-extended
+        {% else %}status-finished
+        {% endif %}">
+        <i class="far fa-timer me-2"></i>
+        {{ item.get_status_display }}
+    </span>
+                                                        </li>
+
+                                                        <li>
+                                                            <i class="far fa-folder-open"></i>
+                                                            {{ item.category.title_fa }}
+                                                        </li>
+
+                                                        {% if item.estimated_amount %}
+                                                            <li>
+                                                                <i class="far fa-money-bill"></i>
+                                                                ضمانت:
+                                                                {{ item.estimated_amount|intcomma }} تومان
+                                                            </li>
+                                                        {% endif %}
+                                                    </ul>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                {% endfor %}
+
+                            {% else %}
+                                <!-- ✅ حالت خالی -->
+                                <div class="col-12">
+                                    <div class="alert alert-info text-center">
+                                        اطلاعاتی وارد نشده است
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                        </div>
+
+                        <!-- pagination فقط وقتی دیتا هست -->
+                        {% if auctions and auctions.has_other_pages %}
+                            <div class="pagination-area mt-60">
+                                <div aria-label="Page navigation example">
+                                    <ul class="pagination">
+
+                                        {% if auctions.has_previous %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ auctions.previous_page_number }}">
+                                                    <i class="far fa-arrow-right"></i>
+                                                </a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item disabled">
+                                        <span class="page-link">
+                                            <i class="far fa-arrow-right"></i>
+                                        </span>
+                                            </li>
+                                        {% endif %}
+
+                                        {% for i in auctions.paginator.page_range %}
+                                            <li class="page-item {% if auctions.number == i %}active{% endif %}">
+                                                <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+                                            </li>
+                                        {% endfor %}
+
+                                        {% if auctions.has_next %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="?page={{ auctions.next_page_number }}">
+                                                    <i class="far fa-arrow-left"></i>
+                                                </a>
+                                            </li>
+                                        {% else %}
+                                            <li class="page-item disabled">
+                                        <span class="page-link">
+                                            <i class="far fa-arrow-left"></i>
+                                        </span>
+                                            </li>
+                                        {% endif %}
+
+                                    </ul>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <!-- pagination end -->
+
+                    </div>
+
+                    <!-- سایدبار (همیشه نمایش داده شود) -->
+                    <div class="col-lg-4 col-12">
+                        <aside class="sidebar">
+                            {% include 'RTL/auction/including/serach.html' %}
+                            {% auction_categories %}
+                            {% auction_recent %}
+                            {% auction_tags %}
+                        </aside>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- blog area end -->
+    </main>
+{% endblock %}

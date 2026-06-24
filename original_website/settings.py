@@ -31,14 +31,41 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+      # 'multi.captcha_admin',
+    "jazzmin",
+    'adminsortable2',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-]
+    'django_jalali',
+    'django.contrib.humanize',
 
+    'app_core.apps.AppBaseConfig',
+    'app_banner.apps.AppBannerConfig',
+    'app_blog.apps.AppBlogConfig',
+    'app_news.apps.AppNewsConfig',
+    'app_chart.apps.AppChartConfig',
+    'app_product.apps.AppProductConfig',
+    'app_tender.apps.AppTenderConfig',
+    'app_tender_holding.apps.AppTenderHoldingConfig',
+    'app_inquiry.apps.AppInquiryConfig',
+
+    'app_auction.apps.AppAuctionConfig',
+    'app_security.apps.AppSecurityConfig',
+    'app_contact.apps.AppContactConfig',
+    'app_reports.apps.AppReportsConfig',
+    'app_hr.apps.AppHrConfig',
+    'app_media.apps.AppMediaConfig',
+    'app_sale.apps.AppSaleConfig',
+    'app_catalog.apps.AppCatalogConfig',
+
+    'django.contrib.sites',
+    'django.contrib.sitemaps',
+]
+SITE_ID = 2
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -116,3 +143,54 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'static'
+STATICFILES_DIRS = [
+    BASE_DIR / 'statics',
+]
+MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_URL = '/media/'
+
+# Default primary key field type
+# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
+
+
+JAZZMIN_SETTINGS = {
+
+    # ================================
+    # 1) لوگو، عنوان و برندینگ اصلی
+    # ================================
+    "site_title": "پنل مدیریت",
+    "site_header": "سیستم مدیریت مرکزی داروپخش",
+    "site_brand": "داشبورد مدیریت",
+    "welcome_sign": "به پنل مدیریت شرکت داروپخش خوش آمدید",
+    "copyright":
+        "© 2025 | تمامی حقوق برای شرکت کارخانجات داروپخش محفوظ است.",
+
+    # ================================
+    # 2) لوگو
+    # ================================
+    "site_logo": "admin-custom/images/logo.png",
+    "login_logo": "admin-custom/images/logo.png",
+
+    # ================================
+    # 3) لینک‌های بالای صفحه (سایدبار بالا)
+    # ================================
+    "topmenu_links": [
+        {
+            "name": "👁️ مشاهده سایت",
+            "url": "/",
+            "new_window": True,
+        },
+    ],
+
+    # ================================
+    # 4) فایل‌های سفارشی
+    # ================================
+    "custom_css": "admin-custom/css/admin-custom.css",
+
+}
+
+
+
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

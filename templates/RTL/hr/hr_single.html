@@ -1,0 +1,404 @@
+{% extends 'RTL/core/base.html' %}
+{% load static %}
+{% block content %}
+    <main class="main">
+        <!-- breadcrumb -->
+        <div class="site-breadcrumb">
+            <div class="site-breadcrumb-bg" style="background: url('{{ banner.image.url }}')">
+            </div>
+            <div class="container">
+                <div class="site-breadcrumb-wrap">
+                    <h4 class="breadcrumb-title">
+                        {{ news.title_fa }}
+                    </h4>
+                    <ul class="breadcrumb-menu">
+                        <li>
+                            <a href="{% url 'app_core:home' %}">
+                                <i class="far fa-home">
+                                </i>
+                                خانه
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{% url 'app_hr:hr_single' job.id %}">
+                                <i class="far">
+                                </i>
+                                فرم جذب
+                            </a>
+                        </li>
+                        <li class="active">{{ news.title_fa }}
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+        <!-- breadcrumb end -->
+        <!-- blog single area -->
+        <div class="blog-single-area py-100">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-10 col-xxl-9 mx-auto">
+
+                        <div class="blog-single-wrap">
+                            <div class="blog-single-content">
+                                <!-- عنوان -->
+                                <div class="blog-details mb-30 text-center">
+                                    <h2 class="blog-details-title">
+                                        {{ job.title }}
+                                    </h2>
+                                </div>
+
+                                <!-- اطلاعات کلی -->
+                                <div class="job-summary mb-40">
+                                    <div class="d-flex justify-content-between align-items-center mb-15">
+                                        <h4 class="mb-0">:اطلاعات شغل</h4>
+
+                                        {% if job.recruitment_status == "open" %}
+                                            <span class="recruit-badge open">
+        <i class="fas fa-user-check"></i>
+        جذب فعال
+    </span>
+                                        {% else %}
+                                            <span class="recruit-badge closed">
+        <i class="fas fa-user-slash"></i>
+        جذب بسته شده
+    </span>
+                                        {% endif %}
+
+                                    </div>
+
+                                    <div class="table-responsive">
+                                        <table class="table table-bordered align-middle text-center">
+                                            <tbody>
+                                            <tr>
+                                                <th>
+                                                    عنوان شغلی:
+                                                </th>
+                                                <td>{{ job.position }}</td>
+
+                                                <th>واحد فعالیت:</th>
+                                                <td>{{ job.activity }}</td>
+                                            </tr>
+                                            <tr>
+                                                <th>تاریخ درخواست:</th>
+                                                <td>{{ job.start_date_fa }}</td>
+
+                                                <th>وضعیت:</th>
+                                                <td>{{ job.get_recruitment_status_display }}</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- شرایط احراز -->
+                                <div class="job-conditions mb-40">
+                                    <h4 class="mb-15">شرایط احراز:</h4>
+
+                                    <div class="table-responsive">
+                                        <table class="table table-striped table-hover">
+                                            <tbody>
+
+                                            <!-- جنسیت -->
+                                            <tr>
+                                                <th width="35%">جنسیت:</th>
+                                                <td>{{ job.get_gender_display }}</td>
+                                                <th>
+                                                    حداقل مدرک تحصیلی:
+                                                </th>
+                                                <td>
+                                                    {% if job.education_level %}
+                                                        {{ job.get_education_level_display }}
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            <!-- حداقل سابقه کار -->
+                                            <tr>
+                                                <th>حداقل سابقه کار:</th>
+                                                <td>
+                                                    {% if job.min_experience_years %}
+                                                        {{ job.min_experience_years }} سال
+
+                                                    {% endif %}
+                                                </td>
+                                                <th width="35%">
+                                                    بازه سنی:
+                                                </th>
+                                                <td>
+                                                    {% if job.min_age and job.max_age %}
+                                                        {{ job.min_age }} تا {{ job.max_age }} سال
+                                                    {% elif job.min_age %}
+                                                        حداقل {{ job.min_age }} سال
+                                                    {% elif job.max_age %}
+                                                        حداکثر {{ job.max_age }} سال
+                                                    {% else %}
+                                                        —
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+
+                                <!-- توضیحات و مزایا -->
+                                <div class="row mb-40">
+                                    <div class="col-md-6 mb-30">
+                                        <div class="card h-100 shadow-sm">
+                                            <div class="card-body">
+                                                <h5 class="card-title mb-15">
+                                                    <i class="fas fa-file-alt me-1"></i>
+                                                    شرح موقعیت شغلی:
+                                                </h5>
+                                                {{ job.description_1|linebreaks }}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 mb-30">
+                                        <div class="card h-100 shadow-sm">
+                                            <div class="card-body">
+                                                <h5 class="card-title mb-15">
+                                                    <i class="fas fa-gift me-1"></i>
+                                                    مزایای شغلی:
+                                                </h5>
+                                                {{ job.description_2|linebreaks }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="apply-form" class="contact-area pt-100 pb-100">
+                                    <div class="container">
+                                        <div class="row">
+                                            {% if job.recruitment_status == "open" %}
+                                                <div class="col-lg-12">
+
+                                                <div class="contact-form">
+                                                <div class="contact-form-header text-center mb-40">
+                                                    <h2>فرم ارسال درخواست همکاری</h2>
+                                                    <p>
+                                                        در صورت دارا بودن شرایط، فرم زیر را با دقت تکمیل و رزومه خود
+                                                        را ارسال نمایید.
+                                                    </p>
+                                                </div>
+
+                                                <form method="post" enctype="multipart/form-data">
+                                                    {% csrf_token %}
+
+                                                    <!-- اطلاعات فردی -->
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <input class="form-control" name="first_name"
+                                                                       placeholder="نام *" required>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <input class="form-control" name="last_name"
+                                                                       placeholder="نام خانوادگی *" required>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <input class="form-control" name="national_code"
+                                                                       placeholder="کد ملی *" maxlength="10"
+                                                                       required>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <input class="form-control" name="age"
+                                                                       type="number" min="0" placeholder="سن *"
+                                                                       required>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- جنسیت + نظام وظیفه -->
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <select class="form-control" name="gender"
+                                                                        id="gender-select" required>
+                                                                    <option value="">جنسیت *</option>
+                                                                    <option value="male">مرد</option>
+                                                                    <option value="female">زن</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-6" id="military-wrapper">
+                                                            <div class="form-group">
+                                                                <select class="form-control"
+                                                                        name="military_status"
+                                                                        id="military-status">
+                                                                    <option value="">وضعیت نظام وظیفه *</option>
+                                                                    <option value="completed">پایان خدمت
+                                                                    </option>
+                                                                    <option value="exempt">معاف</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- وضعیت تأهل + ایمیل -->
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <select class="form-control"
+                                                                        name="marital_status" required>
+                                                                    <option value="">وضعیت تأهل *</option>
+                                                                    <option value="single">مجرد</option>
+                                                                    <option value="married">متأهل</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <input class="form-control" type="email"
+                                                                       name="email" placeholder="ایمیل *"
+                                                                       required>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- اطلاعات تماس -->
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <input class="form-control" name="mobile"
+                                                                       placeholder="شماره تماس *" required>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <input class="form-control"
+                                                                       name="mobile_support"
+                                                                       placeholder="شماره تماس ضروری *"
+                                                                       required>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- اطلاعات تحصیلی و سابقه -->
+                                                    <div class="row">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <select class="form-control"
+                                                                        name="last_education_level">
+                                                                    <option value="">آخرین مدرک تحصیلی</option>
+                                                                    <option value="diploma">دیپلم</option>
+                                                                    <option value="associate">کاردانی</option>
+                                                                    <option value="bachelor">کارشناسی</option>
+                                                                    <option value="master">کارشناسی ارشد
+                                                                    </option>
+                                                                    <option value="phd">دکتری</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-6">
+                                                            <div class="form-group">
+                                                                <input class="form-control"
+                                                                       name="work_experience_years"
+                                                                       type="number" min="0"
+                                                                       placeholder="سابقه کار مرتبط (سال) *"
+                                                                       required>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- رزومه -->
+                                                    <div class="form-group">
+                                                        <input class="form-control" type="file"
+                                                               name="resume_file" accept=".pdf" required>
+                                                        <small class="text-muted">
+                                                            فقط فایل PDF – حداکثر ۳ مگابایت
+                                                        </small>
+                                                    </div>
+                                                    <!-- CAPTCHA -->
+                                                    <div class="form-group row">
+                                                        <div class="col-md-4 mb-2 mb-md-0">
+                                                            <div class="form-control text-center"
+                                                                 style="background:#f8f9fa;font-weight:bold;cursor:default">
+                                                                {{ captcha_code }}
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-8">
+                                                            <input class="form-control"
+                                                                   name="captcha"
+                                                                   placeholder="کد امنیتی را وارد کنید"
+                                                                   required>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- دکمه ارسال -->
+                                                    <div class="text-center mt-40">
+                                                        <button type="submit" class="theme-btn">
+                                                            ارسال درخواست <i class="far fa-paper-plane"></i>
+                                                        </button>
+                                                    </div>
+
+                                                    <!-- پیام‌ها -->
+                                                    <div class="col-md-12 my-3">
+                                                        <div class="form-messege text-success text-center">
+                                                            {% if messages %}
+                                                                {% for message in messages %}
+                                                                    {{ message }}
+                                                                {% endfor %}
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </form>
+
+                                            {% else %}
+                                                <div class="alert alert-danger text-center">
+                                                    <strong>❌ جذب برای این موقعیت شغلی به پایان رسیده
+                                                        است.</strong>
+                                                </div>
+                                            {% endif %}
+
+
+
+                                            </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <script>
+                                    document.addEventListener("DOMContentLoaded", function () {
+                                        const genderSelect = document.getElementById("gender-select");
+                                        const militaryWrapper = document.getElementById("military-wrapper");
+                                        const militarySelect = document.getElementById("military-status");
+
+                                        function toggleMilitaryStatus() {
+                                            if (genderSelect.value === "male") {
+                                                militaryWrapper.style.display = "block";
+                                                militarySelect.setAttribute("required", "required");
+                                            } else {
+                                                militaryWrapper.style.display = "none";
+                                                militarySelect.removeAttribute("required");
+                                                militarySelect.value = "";
+                                            }
+                                        }
+
+                                        toggleMilitaryStatus();
+                                        genderSelect.addEventListener("change", toggleMilitaryStatus);
+                                    });
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% load static %}
+
+<div class="widget search">
+    <h5 class="widget-title">جستجو در مناقصه‌ها</h5>
+
+    <form class="search-form" id="tenderSearchForm" method="GET" action="{% url 'app_tender:search' %}">
+        <input
+            class="form-control"
+            type="text"
+            name="s"
+            id="tenderSearchInput"
+            placeholder="اینجا جستجو کنید ..."
+            value="{{ request.GET.s|default:'' }}"
+        >
+        <button type="submit">
+            <i class="far fa-search"></i>
+        </button>
+    </form>
+
+    {% if request.GET.s and request.GET.s|length > 0 and tenders|length == 0 %}
+        <p style="margin-top:10px; padding:10px; background:#ffe3e3; color:#c40000; border-radius:6px; font-size:14px;">
+            <a href="{% url 'app_tender:tender_home' %}" style="color:#c40000; text-decoration:none;">❌</a>
+            نتیجه‌ای برای "<b>{{ request.GET.s }}</b>" یافت نشد.
+        </p>
+    {% endif %}
+</div>
+
+<script>
+document.getElementById("tenderSearchForm").addEventListener("submit", function (e) {
+    const input = document.getElementById("tenderSearchInput").value.trim();
+
+    // اگر سرچ خالی بود → بازگشت به صفحه اصلی مناقصه‌ها
+    if (input === "") {
+        e.preventDefault();
+        window.location.href = "{% url 'app_tender:tender_home' %}";
+    }
+});
+</script>

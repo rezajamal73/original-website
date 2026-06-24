@@ -1,0 +1,252 @@
+{% extends 'RTL/core/base.html' %}
+{% load static %}
+{% block content %}
+    <main class="main">
+        <!-- breadcrumb -->
+        <div class="site-breadcrumb">
+            <div class="site-breadcrumb-bg" style="background: url('{{ banner.image.url }}')">
+            </div>
+            <div class="container">
+                <div class="site-breadcrumb-wrap">
+                    <h4 class="breadcrumb-title">
+                        با ما تماس بگیرید
+                    </h4>
+                    <ul class="breadcrumb-menu">
+                        <li>
+                            <a href="{% url 'app_core:home' %}">
+                                <i class="far fa-home">
+                                </i>
+                                خانه
+                            </a>
+                        </li>
+                        <li class="active">
+                            <a href="{% url 'app_core:contact' %}">
+                                اطلاعات تماس با شرکت
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- breadcrumb end -->
+        <!-- contact area -->
+        <div class="contact-area pt-100 pb-80">
+            <div class="container">
+                <div class="contact-wrapper">
+                    <div class="row">
+                        <div class="col-lg-5">
+                            <div class="contact-content">
+                                <div class="row">
+                                    {% if site_info and site_info.address_fa %}
+                                        <div class="col-md-6">
+                                            <div class="contact-info">
+                                                <div class="contact-info-icon">
+                                                    <i class="fal fa-map-location-dot"></i>
+                                                </div>
+                                                <div class="contact-info-content">
+                                                    <h5>آدرس کارخانه</h5>
+                                                    <p class="text-center">{{ site_info.address_fa }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+
+
+                                    {% if site_info and site_info.phone_1 or site_info.phone_2 or site_info.phone_3 or site_info.phone_4 or site_info.phone_5 %}
+    <div class="col-md-6">
+        <div class="contact-info text-center">
+            <div class="contact-info-icon" style="justify-content:center;">
+                <i class="fal fa-headset"></i>
+            </div>
+
+            <div class="contact-info-content">
+                <h5 class="text-center">با ما تماس بگیرید</h5>
+
+                {% if site_info.phone_1 %}<p class="text-center">{{ site_info.phone_1 }}</p>{% endif %}
+                {% if site_info.phone_2 %}<p class="text-center">{{ site_info.phone_2 }}</p>{% endif %}
+                {% if site_info.phone_3 %}<p class="text-center">{{ site_info.phone_3 }}</p>{% endif %}
+                {% if site_info.phone_4 %}<p class="text-center">{{ site_info.phone_4 }}</p>{% endif %}
+                {% if site_info.phone_5 %}<p class="text-center">{{ site_info.phone_5 }}</p>{% endif %}
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+
+
+                                    {% if site_info and site_info.fax_1 or site_info.fax_2 or site_info.fax_3 %}
+    <div class="col-md-6">
+        <div class="contact-info text-center">
+            <div class="contact-info-icon" style="justify-content:center;">
+                <i class="fal fa-fax"></i>
+            </div>
+
+            <div class="contact-info-content">
+                <h5 class="text-center">فکس</h5>
+
+                {% if site_info.fax_1 %}<p class="text-center">{{ site_info.fax_1 }}</p>{% endif %}
+                {% if site_info.fax_2 %}<p class="text-center">{{ site_info.fax_2 }}</p>{% endif %}
+                {% if site_info.fax_3 %}<p class="text-center">{{ site_info.fax_3 }}</p>{% endif %}
+            </div>
+        </div>
+    </div>
+{% endif %}
+
+
+
+                                    {% if site_info and site_info.work_days_fa %}
+                                        <div class="col-md-6">
+                                            <div class="contact-info">
+                                                <div class="contact-info-icon">
+                                                    <i class="fal fa-alarm-clock"></i>
+                                                </div>
+                                                <div class="contact-info-content">
+                                                    <h5>روزهای فعالیت</h5>
+                                                    <p class="text-center">{{ site_info.work_days_fa }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+
+
+                                    {% if site_info and site_info.email %}
+                                        <div class="col-md-6">
+                                            <div class="contact-info">
+                                                <div class="contact-info-icon">
+                                                    <i class="fal fa-envelopes"></i>
+                                                </div>
+                                                <div class="contact-info-content">
+                                                    <h5>به ما ایمیل بزنید</h5>
+                                                    <p>
+                                                        <a href="mailto:{{ site_info.email }}">
+                                                            {{ site_info.email }}
+                                                        </a>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+
+
+                                    {% if site_info and site_info.postal_code %}
+                                        <div class="col-md-6">
+                                            <div class="contact-info">
+                                                <div class="contact-info-icon">
+                                                    <i class="fal fa-signs-post"></i>
+                                                </div>
+                                                <div class="contact-info-content">
+                                                    <h5>کد پستی</h5>
+                                                    <p>{{ site_info.postal_code }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-7">
+                            <div class="contact-form">
+                                <div class="contact-form-header">
+                                    <h2>
+                                        تماس بگیرید
+                                    </h2>
+                                    <p>
+                                        برای ارتباط با دفتر مدیریت عامل خواهشمندیم فرم زیر را تکمیل نمایید.
+                                    </p>
+                                </div>
+                                <form action="{% url 'app_contact:contact_submit' %}" method="post">
+                                    {% csrf_token %}
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <input class="form-control" name="first_name"
+                                                       placeholder="نام شما" required type="text">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <input class="form-control" name="last_name"
+                                                       placeholder="نام خانوادگی" required type="text">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <input class="form-control" name="phone"
+                                                       placeholder="شماره تماس (الزامی)" required type="text">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <input class="form-control" name="email"
+                                                       placeholder="ایمیل شما" type="email">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <input class="form-control" name="subject"
+                                               placeholder="موضوع شما" required type="text">
+                                    </div>
+
+                                    <div class="form-group">
+        <textarea class="form-control" name="message"
+                  rows="4" placeholder="پیام خود را بنویسید" required></textarea>
+                                    </div>
+                                    <!-- CAPTCHA -->
+                                    <div class="form-group row">
+                                        <div class="col-md-4 mb-2 mb-md-0">
+                                            <div class="form-control text-center"
+                                                 style="background:#f8f9fa;font-weight:bold;cursor:default">
+                                                {{ captcha_code }}
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-8">
+                                            <input class="form-control"
+                                                   name="captcha"
+                                                   placeholder="کد امنیتی را وارد کنید"
+                                                   required>
+                                        </div>
+                                    </div>
+
+
+                                    <button class="theme-btn" type="submit">
+                                        ارسال کنید <i class="far fa-paper-plane"></i>
+                                    </button>
+                                    <div class="col-md-12 my-3">
+                                        <div class="form-messege text-success">
+                                            {% if messages %}
+                                                {% for message in messages %}
+                                                    {{ message }}
+                                                {% endfor %}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- end contact area -->
+        <!-- map -->
+        <div class="contact-map">
+            <iframe
+                    loading="lazy"
+                    allowfullscreen
+                    referrerpolicy="no-referrer-when-downgrade"
+                    src="https://www.google.com/maps?q=35.73423478295848,51.15102356744643&z=15&output=embed"
+                    style="border:0; width:100%; height:400px;">
+            </iframe>
+        </div>
+
+        <!-- end map -->
+    </main>
+{% endblock %}

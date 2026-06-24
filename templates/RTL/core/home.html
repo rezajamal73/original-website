@@ -1,0 +1,625 @@
+{% extends 'RTL/core/base.html' %}
+{% load static %}
+{% load home_tags %}
+{% block content %}
+    <main class="main">
+        {% if active_slider == "hs_1" %}
+            <div class="hero-section hs-1 mt-20">
+                <div class="container">
+                    <div class="hero-slider owl-carousel owl-theme" dir="ltr">
+                        {% if banners %}
+                            {% for banner in banners %}
+                                <div class="hero-single" dir="rtl"
+                                     style="background-image: url({{ banner.image.url }});">
+                                    <div class="container">
+                                        <div class="row align-items-center">
+                                            <div class="col-lg-6">
+                                                <div class="hero-content">
+
+                                                    {% if banner.label_fa %}
+                                                        <h6 class="hero-sub-title"
+                                                            data-animation="fadeInUp"
+                                                            data-delay=".25s">
+                                                            {{ banner.label_fa }}
+                                                        </h6>
+                                                    {% endif %}
+                                                    {% if banner.title_p1_fa or banner.title_p2_fa or banner.title_p3_fa %}
+                                                        <h1 class="hero-title"
+                                                            data-animation="fadeInRight"
+                                                            data-delay=".50s">
+                                                            {{ banner.title_p1_fa|default_if_none:"" }}
+                                                            {% if banner.title_p2_fa %}
+                                                                <span>{{ banner.title_p2_fa }}</span>
+                                                            {% endif %}
+                                                            {{ banner.title_p3_fa|default_if_none:"" }}
+                                                        </h1>
+                                                    {% endif %}
+                                                    {% if banner.subtitle_fa %}
+                                                        <p data-animation="fadeInLeft"
+                                                           data-delay=".75s">
+                                                            {{ banner.subtitle_fa }}
+                                                        </p>
+                                                    {% endif %}
+                                                    {#                                                <div class="hero-btn"#}
+                                                    {#                                                     data-animation="fadeInUp"#}
+                                                    {#                                                     data-delay="1s">#}
+                                                    {#                                                    <a class="theme-btn"#}
+                                                    {#                                                       href="{% url 'app_product:product_list' %}">#}
+                                                    {#                                                        بیشتر بدانید#}
+                                                    {#                                                        <i class="fas fa-arrow-left"></i>#}
+                                                    {#                                                    </a>#}
+                                                    {#                                                </div>#}
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        {% if active_slider == "hs_2" %}
+            <div class="hero-section hs-2 mt-20">
+                <div class="hero-slider owl-carousel owl-theme" dir="ltr">
+                    {% if banners %}
+                        {% for banner in banners %}
+                            <div class="hero-single" dir="rtl">
+                                <div class="hero-single-bg"
+                                     style="background-image: url({{ banner.image.url }})">
+                                </div>
+
+                                <div class="container">
+                                    <div class="row align-items-center">
+                                        <div class="col-lg-6">
+                                            <div class="hero-content">
+
+                                                {% if banner.label_fa %}
+                                                    <h6 class="hero-sub-title"
+                                                        data-animation="fadeInUp"
+                                                        data-delay=".25s">
+                                                        {{ banner.label_fa }}
+                                                    </h6>
+                                                {% endif %}
+
+                                                {% if banner.title_p1_fa or banner.title_p2_fa or banner.title_p3_fa %}
+                                                    <h1 class="hero-title"
+                                                        data-animation="fadeInRight"
+                                                        data-delay=".50s">
+                                                        {{ banner.title_p1_fa|default_if_none:"" }}
+                                                        {% if banner.title_p2_fa %}
+                                                            <span>{{ banner.title_p2_fa }}</span>
+                                                        {% endif %}
+                                                        {{ banner.title_p3_fa|default_if_none:"" }}
+                                                    </h1>
+                                                {% endif %}
+
+                                                {% if banner.subtitle_fa %}
+                                                    <p data-animation="fadeInLeft"
+                                                       data-delay=".75s">
+                                                        {{ banner.subtitle_fa }}
+                                                    </p>
+                                                {% endif %}
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+
+        {% if statistics %}
+            <div class="counter-area pt-50 pb-50">
+                <div class="container">
+                    <div class="row">
+
+                        {% for stat in statistics %}
+                            <div class="col-lg-3 col-sm-6">
+                                <div class="counter-box">
+
+                                    {% if stat.icon_svg %}
+                                        <div class="icon">
+                                            <img
+                                                    src="{{ stat.icon_svg.url }}"
+                                                    width="50"
+                                                    alt="{{ stat.title_fa|default:'icon' }}"
+                                            />
+                                        </div>
+                                    {% endif %}
+
+                                    <div class="counter-info">
+                                        <div class="counter-amount">
+
+                                            {% if stat.value %}
+                                                <span
+                                                        class="counter"
+                                                        data-to="{{ stat.value }}"
+                                                        data-speed="3000"
+                                                >
+                                            {{ stat.value }}
+                                        </span>
+                                            {% endif %}
+
+                                            {% if stat.suffix %}
+                                                <span class="counter-sign">
+                                            {{ stat.suffix }}
+                                        </span>
+                                            {% endif %}
+                                        </div>
+
+                                        {% if stat.title_fa %}
+                                            <h6 class="title">
+                                                {{ stat.title_fa }}
+                                            </h6>
+                                        {% endif %}
+                                    </div>
+
+                                </div>
+                            </div>
+                        {% endfor %}
+
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        {% if section %}
+            {% if section.texts.exists or section.about_items.exists or section.about_year %}
+                <div class="about-area py-100">
+                    <div class="container">
+                        <div class="row align-items-center">
+
+                            <!-- LEFT IMAGE -->
+                            <div class="col-lg-6">
+                                <div class="about-left wow fadeInLeft" data-wow-delay=".25s">
+
+                                    {% with about_text=section.texts.first %}
+                                        {% if about_text and about_text.images.exists %}
+                                            <div class="about-img">
+                                                <div class="row">
+
+                                                    {% if about_text.images.all.0 %}
+                                                        <div class="col-7">
+                                                            <img class="img-1"
+                                                                 src="{{ about_text.images.all.0.image.url }}"
+                                                                 alt="{{ about_text.title_fa }}">
+                                                        </div>
+                                                    {% endif %}
+
+                                                    {% if about_text.images.all.1 %}
+                                                        <div class="col-5 align-self-end">
+                                                            <img class="img-2"
+                                                                 src="{{ about_text.images.all.1.image.url }}"
+                                                                 alt="{{ about_text.title_fa }}">
+                                                        </div>
+                                                    {% endif %}
+
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endwith %}
+
+                                    {% if section.about_year %}
+                                        <div class="about-experience">
+                                            <div class="about-experience-icon">
+                                                <img src="{% static 'RTL/assets/img/icon/experience.svg' %}" alt="">
+                                            </div>
+                                            <b>
+                                                {{ section.about_year.year }} سال
+                                                <br>
+                                                تجربه
+                                            </b>
+                                        </div>
+                                    {% endif %}
+
+                                </div>
+                            </div>
+
+                            <!-- RIGHT CONTENT -->
+                            <div class="col-lg-6">
+                                <div class="about-right wow fadeInRight" data-wow-delay=".25s">
+
+                                    {% with first_text=section.texts.first %}
+                                        {% if first_text %}
+                                            <div class="site-heading mb-3">
+                                    <span class="site-title-tagline justify-content-start">
+                                        <i class="flaticon-drive"></i>
+                                        درباره ما
+                                    </span>
+                                                <h2 class="site-title">
+                                                    {{ first_text.title_fa }}
+                                                </h2>
+                                            </div>
+                                        {% endif %}
+                                    {% endwith %}
+
+                                    {% for text in section.texts.all %}
+                                        <p>{{ text.content_fa|linebreaks }}</p>
+                                    {% endfor %}
+
+                                    {% if section.about_items.exists %}
+                                        <div class="about-list">
+                                            <ul>
+                                                {% for item in section.about_items.all %}
+                                                    <li>
+                                                        <i class="fas fa-check-double"></i>
+                                                        {{ item.title_fa }}
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                    {% endif %}
+
+                                    <a class="theme-btn mt-4" href="{% url 'app_core:about' %}">
+                                        تاریخچه شرکت
+                                        <i class="fas fa-arrow-left"></i>
+                                    </a>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+
+        {% if categories %}
+            <div class="category-area ca-2 py-100">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-6 mx-auto">
+                            <div class="site-heading text-center">
+                        <span class="site-title-tagline">
+
+                        </span>
+                                <h2 class="site-title">
+                                    <span>دسته بندی های</span>
+                                    محصولات دارویی
+                                </h2>
+
+                                <div class="text-center mt-2 all-products-wrapper">
+                                    <a href="{% url 'app_product:product_list' %}" class="all-products-link">
+                                        مشاهده تمام محصولات
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        {% for category in categories %}
+                            <div class="col-6 col-md-4 col-lg-2">
+                                <div class="category-item" dir="rtl">
+                                    <a href="{% url 'app_product:category' slug=category.slug %}">
+                                        <div class="category-info">
+                                            <div class="icon">
+                                                {% if category.cat_icon %}
+                                                    <img
+                                                            src="{{ category.cat_icon.url }}"
+                                                            alt="{{ category.title_fa }}"
+                                                            loading="lazy">
+                                                {% else %}
+                                                    <img
+                                                            src="{% static 'RTL/assets/img/default/new.svg' %}"
+                                                            alt="{{ category.title_fa }}"
+                                                            loading="lazy">
+                                                {% endif %}
+                                            </div>
+
+                                            <div class="content">
+                                                <h4>{{ category.title_fa }}</h4>
+                                                <p class="text-center">
+                                                    {{ category.product_count }} محصول
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                </div>
+            </div>
+
+            <div style="width:100%;height:1px;
+        background:linear-gradient(to right, #eee, #ccc, #eee);
+        margin:20px 0;border-radius:2px;"></div>
+        {% endif %}
+
+
+
+        {% if special_products %}
+<section class="product-area py-5">
+    <div class="container">
+
+        <!-- ===== Section Title ===== -->
+        <div class="row">
+            <div class="col-lg-6 mx-auto">
+                <div class="site-heading text-center mb-4">
+                    <h2 class="site-title">
+                        محصولات <span class="text-primary">محبوب</span>
+                    </h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== Content Row ===== -->
+        <div class="row align-items-start">
+
+            <!-- ================= PRODUCTS (Slider) ================= -->
+            <div class="col-lg-9">
+                <div class="product-area pt-80">
+
+                    <!-- Header -->
+                    <div class="row mb-3">
+                        <div class="col-12 wow fadeInDown" data-wow-delay=".25s">
+                            <div class="site-heading-inline">
+                                <h2 class="site-title">موارد ویژه</h2>
+                                <a href="{% url 'app_product:product_list' %}">
+                                    مشاهده بیشتر
+                                    <i class="fas fa-angle-double-left"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Slider -->
+                    <div class="product-wrap item-2 wow fadeInUp" data-wow-delay=".25s">
+                        <div class="product-slider owl-carousel owl-theme" dir="ltr">
+
+                            {% for p in special_products %}
+                            <div class="product-item" dir="rtl">
+
+                                <!-- Image -->
+                                <div class="product-img">
+                                    <span class="type new">ویژه</span>
+
+                                    <a href="{{ p.get_absolute_url }}">
+                                        {% if p.main_image %}
+                                            <img src="{{ p.main_image.url }}"
+                                                 alt="{{ p.title_fa }}">
+                                        {% endif %}
+                                    </a>
+
+                                    <div class="product-action-wrap">
+                                        <div class="product-action">
+                                            <a href="{{ p.get_absolute_url }}"
+                                               data-tooltip="tooltip"
+                                               title="مشاهده محصول">
+                                                <i class="far fa-eye"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Content -->
+                                <div class="product-content text-center">
+                                    <h3 class="product-title text-truncate">
+                                        <a href="{{ p.get_absolute_url }}">
+                                            {{ p.title_fa }}
+                                        </a>
+                                    </h3>
+
+                                    {% if p.generic_name_fa %}
+                                        <small class="text-muted d-block">
+                                            {{ p.generic_name_fa }}
+                                        </small>
+                                    {% endif %}
+                                </div>
+
+                            </div>
+                            {% endfor %}
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- ================= BANNERS ================= -->
+            <div class="col-lg-3">
+                <div class="product-banner ps-lg-3">
+
+                    {% if special_product_banners %}
+                        {% for banner in special_product_banners %}
+                            <a href="#" class="banner-item d-block mb-3">
+                                <img src="{{ banner.image.url }}"
+                                     alt="{{ banner.title_fa }}"
+                                     class="img-fluid rounded">
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-center text-muted py-4">
+                            بنری برای نمایش وجود ندارد
+                        </p>
+                    {% endif %}
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+{% endif %}
+
+
+
+
+
+        {% if home_medias %}
+            <div class="gallery-area pb-100">
+                <div class="container">
+
+                    <div class="row">
+                        <div class="col-lg-6 mx-auto wow fadeInDown" data-wow-delay=".25s">
+                            <div class="site-heading text-center">
+                                <h2 class="site-title">
+                                    <span>گالری</span> عکس‌ها
+                                </h2>
+                                <div class="text-center mt-2 all-products-wrapper">
+                                    <a href="{% url 'app_media:home' %}" class="all-products-link">
+                                        مشاهده تمام گالری
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-4 popup-gallery">
+
+                        {% for media in home_medias %}
+                            {% for img in media.images.all %}
+
+                                <div class="col-md-4 col-lg-3">
+                                    <div class="gallery-item wow fadeInUp" data-wow-delay=".25s">
+                                        <div class="gallery-img">
+
+                                            <img
+                                                    src="{{ img.image.url }}"
+                                                    alt="{{ media.title_fa }}"
+                                            />
+
+                                            <a
+                                                    class="popup-img gallery-link"
+                                                    href="{{ img.image.url }}"
+                                                    title="{{ media.title_fa }}"
+                                            >
+                                                <i class="fal fa-plus"></i>
+                                            </a>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                            {% endfor %}
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+            </div>
+        {% endif %}
+
+
+        {% if main_banner %}
+            <div class="choose-area bg py-100">
+                <div class="container">
+                    <div class="row g-4 align-items-center wow fadeInDown" data-wow-delay=".25s">
+
+                        <div class="col-lg-4">
+                            {% if main_banner.title_p1_fa %}
+                                <span class="site-title-tagline">
+                    {{ main_banner.title_p1_fa }}
+                </span>
+                            {% endif %}
+
+                            {% if main_banner.title_p2_fa %}
+                                <h2 class="site-title">
+                                    {{ main_banner.title_p2_fa }}
+                                </h2>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-lg-4">
+                            {% if main_banner.subtitle_fa %}
+                                <p>
+                                    {{ main_banner.subtitle_fa }}
+                                </p>
+                            {% endif %}
+                        </div>
+
+                        {% if main_banner.image %}
+                            <div class="col-lg-4">
+                                <div class="choose-img">
+                                    <img alt="" src="{{ main_banner.image.url }}">
+                                </div>
+                            </div>
+                        {% endif %}
+
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        {% home_blog_recent_fa %}
+
+        {% if group_companies %}
+            <div class="instagram-area pb-100">
+                <div class="container wow fadeInUp" data-wow-delay=".25s">
+
+                    <!-- SECTION TITLE -->
+                    <div class="row">
+                        <div class="col-lg-6 mx-auto">
+                            <div class="site-heading text-center">
+                                <h2 class="site-title">
+                                    شرکت‌های <span>هم‌گروه</span>
+                                </h2>
+                                <div class="text-center mt-2 all-products-wrapper">
+                                    <a href="{% url 'app_reports:companies' %}" class="all-products-link">
+                                        مشاهده تمام شرکت ها
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SLIDER -->
+                    <div class="instagram-slider owl-carousel owl-theme" dir="ltr">
+
+                        {% for company in group_companies %}
+                            {% if company.is_active and company.logo %}
+                                <div class="instagram-item" dir="rtl">
+                                    <div class="instagram-img">
+
+                                        {% if company.website %}
+                                            <a href="{{ company.website }}"
+                                               target="_blank"
+                                               rel="noopener noreferrer"
+                                               class="company-link">
+
+                                                <img src="{{ company.logo.url }}"
+                                                     alt="{{ company.name }}"
+                                                     loading="lazy">
+
+                                                <div class="company-name">
+                                                    {{ company.name }}
+                                                </div>
+
+                                            </a>
+
+                                            <a href="{{ company.website }}"
+                                               target="_blank"
+                                               rel="noopener noreferrer"
+                                               class="hover-link">
+                                                🔗
+                                            </a>
+                                        {% else %}
+                                            <img src="{{ company.logo.url }}"
+                                                 alt="{{ company.name }}"
+                                                 loading="lazy">
+                                            <div class="company-name">
+                                                {{ company.name }}
+                                            </div>
+                                        {% endif %}
+
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+            </div>
+        {% endif %}
+
+
+    </main>
+{% endblock %}

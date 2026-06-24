@@ -1,0 +1,30 @@
+{% load static %}
+
+<div class="widget recent-post">
+    <h5 class="widget-title">مزایده‌های فعال</h5>
+
+    {% for auction in auctions %}
+        <div class="recent-post-item">
+
+            <div class="recent-post-img">
+                <a href="{% url 'app_auction:auction_single' auction.id %}">
+                    <img src="{{ auction.poster.url }}">
+                </a>
+            </div>
+
+            <div class="recent-post-bio">
+                <h6>
+                    <a href="{% url 'app_auction:auction_single' auction.id %}">
+                        {{ auction.title_fa|truncatechars:25 }}
+                    </a>
+                </h6>
+
+                <span>
+                    <i class="far fa-clock"></i>
+                    {{ auction.start_date_fa }}
+                </span>
+            </div>
+
+        </div>
+    {% endfor %}
+</div>

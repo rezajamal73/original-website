@@ -1,0 +1,30 @@
+{% load static %}
+
+<div class="widget recent-post">
+    <h5 class="widget-title">مناقصه‌های فعال</h5>
+
+    {% for tender in tenders %}
+        <div class="recent-post-item">
+
+            <div class="recent-post-img">
+                <a href="{% url 'app_tender:tender_single' tender.id %}">
+                    <img src="{{ tender.poster.url }}">
+                </a>
+            </div>
+
+            <div class="recent-post-bio">
+                <h6>
+                    <a href="{% url 'app_tender:tender_single' tender.id %}">
+                        {{ tender.title_fa|truncatechars:25 }}
+                    </a>
+                </h6>
+
+                <span>
+                    <i class="far fa-clock"></i>
+                    {{ tender.start_date_fa }}
+                </span>
+            </div>
+
+        </div>
+    {% endfor %}
+</div>

@@ -1,0 +1,69 @@
+{% extends 'RTL/core/base.html' %}
+{% load static %}
+{% block content %}
+    <main class="main">
+        <!-- breadcrumb -->
+        <div class="site-breadcrumb">
+            <div class="site-breadcrumb-bg" style="background: url('{{ banner.image.url }}')">
+            </div>
+            <div class="container">
+                <div class="site-breadcrumb-wrap">
+                    <h4 class="breadcrumb-title">
+                        شرکت ها
+                    </h4>
+                    <ul class="breadcrumb-menu">
+                        <li>
+                            <a href="{% url 'app_core:home' %}">
+                                <i class="far fa-home">
+                                </i>
+                                خانه
+                            </a>
+                        </li>
+                        <li class="active">
+                            هم گروه
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- breadcrumb end -->
+
+        {% if group_companies %}
+<div class="container pb-100">
+    <div class="row g-4">
+
+        {% for company in group_companies %}
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="company-card text-center">
+
+                {% if company.website %}
+                <a href="{{ company.website }}" target="_blank" rel="noopener noreferrer">
+                {% endif %}
+
+                    <div class="company-logo">
+                        <img src="{{ company.logo.url }}"
+                             alt="{{ company.name }}"
+                             loading="lazy">
+                    </div>
+
+                    <h5 class="company-title">
+                        {{ company.name }}
+                    </h5>
+
+                {% if company.website %}
+                </a>
+                {% endif %}
+
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+</div>
+{% endif %}
+
+
+
+
+    </main>
+{% endblock %}
