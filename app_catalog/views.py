@@ -1,6 +1,5 @@
 # app_catalog/views.py
 from django.shortcuts import render
-from django.http import Http404
 from django.db.models import Count, Q
 
 from .models import CompanyCatalog
@@ -9,7 +8,7 @@ from app_reports.models import FollowUsLink, SiteMainInfo
 from app_product.models import ProductCategory
 
 
-def get_common_context():
+def get_common_context() -> dict:
     return {
         "categories": (
             ProductCategory.objects
@@ -34,12 +33,10 @@ def get_common_context():
 
 
 def company_catalog_view(request):
-    catalog = CompanyCatalog.objects.first()
-    if not catalog:
-        raise Http404("Catalog not found")
+    catalog = CompanyCatalog.objects.first()  # None اگر نبود
 
     context = {
-        "catalog": catalog,
+        "catalog": catalog,  # ممکنه None باشه — template باید چک کنه
         **get_common_context(),
     }
 
