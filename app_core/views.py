@@ -7,6 +7,11 @@ from app_product.models import Product, ProductCategory
 from app_reports.models import CorporateSection, CorporateStatistic, GroupCompany, FollowUsLink, SiteMainInfo
 from app_media.models import Media
 
+from django.db.models import Q
+
+
+from app_news.models import News
+
 
 def home(request, slug=None):
     banners = HeroBanner.objects.filter(
@@ -416,3 +421,58 @@ def home_en(request, slug=None):
     }
 
     return render(request, "LTR/core/home.html", context)
+
+def search(request):
+    q = request.GET.get("q", "").strip()
+
+    products = Product.objects.filter(
+        Q(title_fa__icontains=q) |
+        Q(title_en__icontains=q),
+        status="published"
+    )
+
+    blogs = blog.objects.filter(
+        Q(title_fa__icontains=q) |
+        Q(title_en__icontains=q),
+        status="published"
+    )
+
+    news = News.objects.filter(
+        Q(title_fa__icontains=q) |
+        Q(title_en__icontains=q),
+        status="published"
+    )
+
+    context = {
+        "query": q,
+        "products": products,
+        "blogs": blogs,
+        "news": news,
+
+        # داده‌های منو و فوتر
+        "categories": (
+            ProductCategory.objects
+            .annotate(
+                product_count=Count(
+                    "products",
+                    filter=Q(products__status="published")
+                )
+            )
+            .filter(product_count__gt=0)
+            .order_by("priority", "title_fa")
+        ),
+        "site_info": SiteMainInfo.objects.first(),
+        "banner": OtherBanner.objects.filter(status="published").first(),
+        "follow_links": (
+            FollowUsLink.objects
+            .filter(is_active=True, svg_icon__isnull=False)
+            .exclude(url="")
+            .order_by("display_order")
+        ),
+    }
+
+    return render(
+        request,
+        "RTL/core/search.html",
+        context
+    )

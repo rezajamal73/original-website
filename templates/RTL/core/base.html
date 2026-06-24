@@ -331,11 +331,36 @@
                         </ul>
                         <!-- nav-right -->
                         <div class="nav-right icon">
-                            <a class="nav-right-link search-box-outer" href="#">
-                                <i class="far fa-search">
-                                </i>
-                            </a>
+
+                            <form action="{% url 'app_core:search' %}" method="get"
+                                  style="display:flex;align-items:center;gap:8px;">
+
+                                <input
+                                        type="text"
+                                        name="q"
+                                        placeholder="جستجو..."
+                                        style="
+                width:180px;
+                height:38px;
+                border:1px solid #ddd;
+                border-radius:25px;
+                padding:0 15px;
+                outline:none;
+            ">
+
+                                <button
+                                        type="submit"
+                                        class="nav-right-link"
+                                        style="border:none;background:none;padding:0;cursor:pointer;">
+
+                                    <i class="far fa-search"></i>
+
+                                </button>
+
+                            </form>
+
                         </div>
+
                     </div>
                 </div>
             </div>
@@ -350,14 +375,20 @@
 	<span class="far fa-times">
 	</span>
     </button>
-    <form action="#">
+    <form action="{% url 'app_core:search' %}" method="get">
         <div class="form-group">
-            <input class="form-control" name="search-field" placeholder="اینجا جستجو کنید ..." required=""
-                   type="search"/>
+
+            <input
+                    class="form-control"
+                    type="search"
+                    name="q"
+                    placeholder="اینجا جستجو کنید ..."
+                    required>
+
             <button type="submit">
-                <i class="far fa-search">
-                </i>
+                <i class="far fa-search"></i>
             </button>
+
         </div>
     </form>
 </div>
