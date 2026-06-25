@@ -1,0 +1,59 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block content_title %}<h1>داشبورد مدیریت</h1>{% endblock %}
+
+{% block content %}
+<style>
+    .dash-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px; }
+    .stat-card { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border-right: 4px solid #1A73E8; text-align: center; text-decoration: none; color: inherit; display: block; transition: transform 0.2s; }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+    .stat-icon { font-size: 32px; margin-bottom: 8px; }
+    .stat-label { font-size: 13px; color: #666; margin-bottom: 4px; }
+    .stat-count { font-size: 28px; font-weight: bold; color: #1A73E8; }
+    .stat-pub { font-size: 11px; color: #4CAF50; margin-top: 4px; }
+
+    .links-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; margin-bottom: 32px; }
+    .quick-link { background: #f8f9ff; border: 1px solid #e0e7ff; border-radius: 10px; padding: 14px; text-align: center; text-decoration: none; color: #333; font-size: 13px; transition: all 0.2s; }
+    .quick-link:hover { background: #1A73E8; color: white; border-color: #1A73E8; }
+    .quick-link .link-icon { font-size: 22px; display: block; margin-bottom: 6px; }
+
+    .section-title { font-size: 16px; font-weight: bold; color: #333; margin: 24px 0 12px; border-right: 3px solid #1A73E8; padding-right: 10px; }
+
+    .server-box { background: #f8f9fa; border-radius: 10px; padding: 16px; display: flex; gap: 24px; flex-wrap: wrap; font-size: 13px; color: #555; }
+    .server-item strong { color: #333; }
+</style>
+
+<!-- آمار کلی -->
+<div class="section-title">📊 آمار کلی</div>
+<div class="dash-grid">
+    {% for s in stats %}
+    <a href="{{ s.url }}" class="stat-card">
+        <div class="stat-icon">{{ s.icon }}</div>
+        <div class="stat-label">{{ s.label }}</div>
+        <div class="stat-count">{{ s.count }}</div>
+        <div class="stat-pub">{{ s.published }} منتشر شده</div>
+    </a>
+    {% endfor %}
+</div>
+
+<!-- لینک‌های سریع -->
+<div class="section-title">⚡ دسترسی سریع</div>
+<div class="links-grid">
+    {% for link in quick_links %}
+    <a href="{{ link.url }}" class="quick-link">
+        <span class="link-icon">{{ link.icon }}</span>
+        {{ link.label }}
+    </a>
+    {% endfor %}
+</div>
+
+<!-- اطلاعات سرور -->
+<div class="section-title">🖥️ اطلاعات سیستم</div>
+<div class="server-box">
+    <div><strong>Python:</strong> {{ server_info.python }}</div>
+    <div><strong>سیستم‌عامل:</strong> {{ server_info.os }}</div>
+    <div><strong>زمان سرور:</strong> {{ server_info.time }}</div>
+</div>
+
+{% endblock %}

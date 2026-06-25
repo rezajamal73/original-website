@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>ورود — پنل مدیریت داروپخش</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <link rel="stylesheet" href="{% static 'admin/css/admin.css' %}">
+</head>
+<body>
+<div class="login-page">
+    <div class="login-box">
+        <div class="login-logo">
+            <div class="login-logo-circle"><i class="ti ti-pill"></i></div>
+            <div class="login-title">پنل مدیریت داروپخش</div>
+            <div class="login-sub">برای ادامه وارد شوید</div>
+        </div>
+
+        {% if error %}
+        <div class="login-error">
+            <i class="ti ti-alert-circle"></i>{{ error }}
+        </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
+
+            <div class="form-group">
+                <label class="form-label">نام کاربری</label>
+                <input type="text" name="username" class="form-input" autofocus placeholder="نام کاربری خود را وارد کنید">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">رمز عبور</label>
+                <input type="password" name="password" class="form-input" placeholder="رمز عبور خود را وارد کنید">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">سوال امنیتی</label>
+                <div class="captcha-box">{{ captcha_q }} = ?</div>
+                <input type="number" name="captcha_answer" class="form-input"
+                       placeholder="جواب را وارد کنید" autocomplete="off">
+            </div>
+
+            <button type="submit" class="login-btn">
+                <i class="ti ti-login"></i>ورود به پنل
+            </button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,85 @@
+{% extends "admin/base.html" %}
+
+{% block title %}داشبورد — پنل مدیریت داروپخش{% endblock %}
+{% block page_icon %}ti-layout-dashboard{% endblock %}
+{% block page_title %}داشبورد مدیریت{% endblock %}
+
+{% block content %}
+
+<!-- آمار -->
+<div class="stats-grid">
+    {% for s in stats %}
+    <a href="{{ s.url }}" class="stat-card" style="border-right-color:{{ s.color }}">
+        <div class="stat-top">
+            <div class="stat-icon" style="background:{{ s.bg }};color:{{ s.color }}">
+                <i class="ti {{ s.icon }}"></i>
+            </div>
+            <span class="stat-badge">فعال</span>
+        </div>
+        <div class="stat-count">{{ s.count }}</div>
+        <div class="stat-label">{{ s.label }}</div>
+        {% if s.published %}
+        <div class="stat-pub"><span class="dot"></span>{{ s.published }} منتشر شده</div>
+        {% endif %}
+    </a>
+    {% endfor %}
+</div>
+
+<div class="two-col">
+
+    <!-- دسترسی سریع -->
+    <div class="card">
+        <div class="card-head"><i class="ti ti-bolt"></i>دسترسی سریع</div>
+        <div class="card-body">
+            <div class="links-grid">
+                <a href="/admin/app_product/product/" class="quick-link"><i class="ti ti-pill"></i>محصولات</a>
+                <a href="/admin/app_product/product/add/" class="quick-link"><i class="ti ti-plus"></i>محصول جدید</a>
+                <a href="/admin/app_blog/blog/" class="quick-link"><i class="ti ti-pencil"></i>بلاگ</a>
+                <a href="/admin/app_news/news/" class="quick-link"><i class="ti ti-speakerphone"></i>اخبار</a>
+                <a href="/admin/app_media/media/" class="quick-link"><i class="ti ti-movie"></i>رسانه</a>
+                <a href="/admin/app_tender/tender/" class="quick-link"><i class="ti ti-file-text"></i>مناقصه</a>
+                <a href="/admin/app_auction/auction/" class="quick-link"><i class="ti ti-gavel"></i>مزایده</a>
+                <a href="/admin/app_inquiry/purchaseinquiry/" class="quick-link"><i class="ti ti-search"></i>استعلام</a>
+                <a href="/admin/app_sale/salesreport/" class="quick-link"><i class="ti ti-currency-dollar"></i>فروش</a>
+                <a href="/admin/app_catalog/companycatalog/" class="quick-link"><i class="ti ti-book"></i>کاتالوگ</a>
+                <a href="/admin/app_hr/jobopportunity/" class="quick-link"><i class="ti ti-briefcase"></i>شغلی</a>
+                <a href="/admin/app_reports/sitemaininfo/" class="quick-link"><i class="ti ti-settings"></i>تنظیمات</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- اطلاعات سیستم -->
+    <div class="card">
+        <div class="card-head"><i class="ti ti-server"></i>اطلاعات سیستم</div>
+        <div class="card-body" style="padding:0 16px">
+            <div class="srv-grid">
+                <div class="srv-row">
+                    <div class="srv-label"><i class="ti ti-brand-python"></i>Python</div>
+                    <div class="srv-val">{{ server_info.python }}</div>
+                </div>
+                <div class="srv-row">
+                    <div class="srv-label"><i class="ti ti-brand-django"></i>Django</div>
+                    <div class="srv-val">{{ server_info.django }}</div>
+                </div>
+                <div class="srv-row">
+                    <div class="srv-label"><i class="ti ti-server"></i>سرور</div>
+                    <div class="srv-val"><span class="online"><span class="dot"></span>آنلاین</span></div>
+                </div>
+                <div class="srv-row">
+                    <div class="srv-label"><i class="ti ti-database"></i>دیتابیس</div>
+                    <div class="srv-val"><span class="online"><span class="dot"></span>متصل</span></div>
+                </div>
+                <div class="srv-row">
+                    <div class="srv-label"><i class="ti ti-clock"></i>زمان سرور</div>
+                    <div class="srv-val">{{ server_info.time }}</div>
+                </div>
+                <div class="srv-row">
+                    <div class="srv-label"><i class="ti ti-device-desktop"></i>سیستم‌عامل</div>
+                    <div class="srv-val">{{ server_info.os }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

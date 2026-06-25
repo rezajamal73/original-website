@@ -3,12 +3,12 @@ from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
 from django.contrib.sitemaps.views import sitemap
-from django.shortcuts import render  # ✅ مهم
+from django.shortcuts import render
 
 from app_core.sitemaps import StaticViewSitemap
 from app_blog.sitemaps import BlogSitemap
 from app_product.sitemaps import ProductSitemap
-
+from app_admin.views import admin_login
 
 sitemaps = {
     "static": StaticViewSitemap,
@@ -17,16 +17,16 @@ sitemaps = {
 }
 
 
-# ==================================================
-# CUSTOM 404 HANDLER (GLOBAL)
-# ==================================================
 def custom_404_view(request, exception):
     return render(request, "404.html", status=404)
 
+
 handler404 = custom_404_view
 
-
 urlpatterns = [
+    path("admin/login/", admin_login, name="admin_login"),  # ← قبل از admin/ باشه
+    path("dp-admin/", include("app_admin.urls")),
+    path("admin/login/", include("app_admin.urls")),
     path("admin/", admin.site.urls),
 
     path("", include("app_core.urls")),

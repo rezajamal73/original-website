@@ -31,8 +31,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    # 'multi.captcha_admin',
-    "jazzmin",
+    # "jazzmin",
+    'app_admin',
     'adminsortable2',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -154,42 +154,39 @@ MEDIA_URL = '/media/'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
-
-JAZZMIN_SETTINGS = {
-
-    # ================================
-    # 1) لوگو، عنوان و برندینگ اصلی
-    # ================================
-    "site_title": "پنل مدیریت",
-    "site_header": "سیستم مدیریت مرکزی داروپخش",
-    "site_brand": "داشبورد مدیریت",
-    "welcome_sign": "به پنل مدیریت شرکت داروپخش خوش آمدید",
-    "copyright":
-        "© 2025 | تمامی حقوق برای شرکت کارخانجات داروپخش محفوظ است.",
-
-    # ================================
-    # 2) لوگو
-    # ================================
-    "site_logo": "admin-custom/images/logo.png",
-    "login_logo": "admin-custom/images/logo.png",
-
-    # ================================
-    # 3) لینک‌های بالای صفحه (سایدبار بالا)
-    # ================================
-    "topmenu_links": [
-        {
-            "name": "👁️ مشاهده سایت",
-            "url": "/",
-            "new_window": True,
-        },
-    ],
-
-    # ================================
-    # 4) فایل‌های سفارشی
-    # ================================
-    "custom_css": "admin-custom/css/admin-custom.css",
-
-}
+#
+# JAZZMIN_SETTINGS = {
+#
+#     # ================================
+#     # 1) لوگو، عنوان و برندینگ اصلی
+#     # ================================
+#     "site_title": "پنل مدیریت",
+#     "site_header": "سیستم مدیریت مرکزی داروپخش",
+#     "site_brand": "داشبورد مدیریت",
+#     "welcome_sign": "به پنل مدیریت شرکت داروپخش خوش آمدید",
+#     "copyright":
+#         "© 2025 | تمامی حقوق برای شرکت کارخانجات داروپخش محفوظ است.",
+#
+#     # ================================
+#     # 2) لوگو
+#     # ================================
+#     "site_logo": "admin-custom1/images/logo.png",
+#     "login_logo": "admin-custom1/images/logo.png",
+#
+#     # ================================
+#     # 3) لینک‌های بالای صفحه (سایدبار بالا)
+#     # ================================
+#     "topmenu_links": [
+#         {"name": "👁️ مشاهده سایت", "url": "/", "new_window": True},
+#         {"name": "📊 داشبورد", "url": "/admin/dashboard/"},  # ← اضافه کن
+#     ],
+#
+#     # ================================
+#     # 4) فایل‌های سفارشی
+#     # ================================
+#     "custom_css": "admin-custom1/css/admin-custom1.css",
+#
+# }
 
 
 

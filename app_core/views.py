@@ -1,14 +1,11 @@
 import random
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Count, Q
-from app_banner.models import HeroBanner, OtherBanner, SpecialProductBanner,MainBanner,HeroSliderSetting
+from app_banner.models import HeroBanner, OtherBanner, SpecialProductBanner, MainBanner, HeroSliderSetting
 from app_blog.models import blog
 from app_product.models import Product, ProductCategory
 from app_reports.models import CorporateSection, CorporateStatistic, GroupCompany, FollowUsLink, SiteMainInfo
 from app_media.models import Media
-
-from django.db.models import Q
-
 
 from app_news.models import News
 
@@ -85,8 +82,8 @@ def home(request, slug=None):
     home_medias = (
         Media.objects
         .filter(
-            status="published",   # ✅ منتشر شده
-            is_special=True,      # ✅ نمایش در صفحه اصلی
+            status="published",  # ✅ منتشر شده
+            is_special=True,  # ✅ نمایش در صفحه اصلی
         )
         .prefetch_related("images", "videos")
         .order_by("order")
@@ -149,9 +146,6 @@ def about(request):
     return render(request, "RTL/core/history.html", context)
 
 
-
-
-
 def _generate_captcha():
     return "".join(random.choice("0123456789") for _ in range(5))
 
@@ -194,9 +188,6 @@ def contact(request):
     }
 
     return render(request, "RTL/core/contact.html", context)
-
-
-
 
 
 def contact_security(request):
@@ -246,7 +237,6 @@ def contact_security(request):
     )
 
 
-
 def error(request):
     banner = OtherBanner.objects.filter(status="published").first()
     categories = (
@@ -278,7 +268,6 @@ def error(request):
     }
 
     return render(request, "../templates/404.html", context)
-
 
 
 def home_en(request, slug=None):
@@ -422,6 +411,7 @@ def home_en(request, slug=None):
 
     return render(request, "LTR/core/home.html", context)
 
+
 def search(request):
     q = request.GET.get("q", "").strip()
 
@@ -476,3 +466,5 @@ def search(request):
         "RTL/core/search.html",
         context
     )
+
+
