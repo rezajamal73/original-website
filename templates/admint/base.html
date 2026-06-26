@@ -1,0 +1,343 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block extrastyle %}
+{{ block.super }}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600&display=swap');
+
+:root {
+    --primary: #1e40af;
+    --sidebar-bg: #0f172a;
+    --sidebar-border: #1e293b;
+    --content-bg: #f1f5f9;
+    --card-bg: #ffffff;
+    --text: #1e293b;
+    --text-light: #64748b;
+    --border: #e2e8f0;
+}
+
+* { font-family: Tahoma, Arial, sans-serif !important; }
+body { direction: rtl; background: var(--content-bg) !important; }
+
+/* مخفی کردن header و nav پیش‌فرض Django */
+#header { display: none !important; }
+#nav-sidebar { display: none !important; }
+.toggle-nav-sidebar { display: none !important; }
+
+/* ساید‌بار سفارشی */
+.custom-sidebar {
+    width: 220px;
+    background: var(--sidebar-bg);
+    position: fixed;
+    right: 0; top: 0; bottom: 0;
+    z-index: 1000;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.custom-sidebar .logo {
+    padding: 16px;
+    border-bottom: 1px solid var(--sidebar-border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.custom-sidebar .logo-circle {
+    width: 36px; height: 36px;
+    background: var(--primary);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 18px; flex-shrink: 0;
+}
+
+.custom-sidebar .logo-title { color: #fff; font-size: 13px; font-weight: 600; }
+.custom-sidebar .logo-sub   { color: #64748b; font-size: 10px; }
+
+.nav-sec {
+    padding: 12px 14px 4px;
+    font-size: 9px; color: #475569;
+    letter-spacing: 1.5px; text-transform: uppercase;
+}
+
+.nav-item {
+    display: flex; align-items: center;
+    justify-content: space-between;
+    padding: 9px 14px;
+    color: #94a3b8; font-size: 12px;
+    border-right: 2px solid transparent;
+    cursor: pointer; transition: all 0.15s;
+    text-decoration: none !important;
+}
+
+.nav-item:hover  { background: #1e293b !important; color: #e2e8f0 !important; }
+.nav-item.active { background: #1e3a8a !important; color: #fff !important; border-right-color: #60a5fa; }
+.nav-item-left   { display: flex; align-items: center; gap: 8px; }
+.nav-item i      { font-size: 15px; width: 18px; }
+
+.nav-arrow { font-size: 10px; color: #475569; transition: transform 0.2s; }
+.nav-arrow.open  { transform: rotate(180deg); }
+
+.sub-nav { overflow: hidden; max-height: 0; transition: max-height 0.25s ease; }
+.sub-nav.open    { max-height: 300px; }
+
+.sub-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 14px 7px 38px;
+    color: #64748b; font-size: 11px;
+    cursor: pointer; border-right: 2px solid transparent;
+    transition: all 0.15s; text-decoration: none !important;
+}
+.sub-item:hover { background: #1e293b !important; color: #e2e8f0 !important; }
+.sub-item i     { font-size: 12px; }
+
+/* تاپ‌بار سفارشی */
+.custom-topbar {
+    height: 54px;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border);
+    position: fixed;
+    top: 0; left: 0; right: 220px;
+    display: flex; align-items: center;
+    justify-content: space-between;
+    padding: 0 20px; z-index: 999;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.topbar-title {
+    font-size: 14px; font-weight: 600;
+    color: var(--text); display: flex;
+    align-items: center; gap: 8px;
+}
+.topbar-title i { color: var(--primary); font-size: 16px; }
+
+.topbar-actions { display: flex; align-items: center; gap: 8px; }
+
+.topbar-user {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; color: var(--text-light);
+    padding: 5px 10px;
+    background: var(--content-bg);
+    border-radius: 6px;
+    border: 1px solid var(--border);
+}
+
+.topbar-btn {
+    display: flex; align-items: center; gap: 5px;
+    padding: 6px 12px; border-radius: 6px;
+    font-size: 11px; border: 1px solid var(--border);
+    background: var(--card-bg); color: var(--text);
+    cursor: pointer; text-decoration: none !important;
+    font-family: inherit; transition: all 0.15s;
+}
+.topbar-btn.primary {
+    background: var(--primary); color: #fff;
+    border-color: var(--primary);
+}
+
+/* محتوای اصلی */
+#container, #main, .main { margin-right: 220px !important; }
+#content { margin-top: 54px !important; padding: 20px !important; }
+.breadcrumbs { margin-right: 220px !important; margin-top: 54px !important; }
+
+/* بهبود ظاهر فرم‌ها */
+.module h2, .module caption { background: var(--primary) !important; }
+
+input[type=text], input[type=password], input[type=email],
+input[type=number], input[type=url], select, textarea {
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    font-family: inherit !important;
+    font-size: 13px !important;
+}
+
+.submit-row { background: #f8fafc !important; border-radius: 8px !important; }
+
+input[type=submit], .button, .default {
+    background: var(--primary) !important;
+    border-radius: 8px !important;
+}
+
+/* فیلتر سایدبار ادمین */
+#changelist-filter {
+    float: left !important;
+    margin-left: 0 !important;
+    margin-right: 16px !important;
+}
+</style>
+{% endblock %}
+
+{% block usertools %}{% endblock %}
+{% block nav-global %}{% endblock %}
+
+{% block content_title %}
+<!-- SIDEBAR -->
+<div class="custom-sidebar">
+    <div class="logo">
+        <div class="logo-circle"><i class="ti ti-pill"></i></div>
+        <div>
+            <div class="logo-title">داروپخش</div>
+            <div class="logo-sub">پنل مدیریت</div>
+        </div>
+    </div>
+    <nav>
+        <div class="nav-sec">عمومی</div>
+        <a href="/dp-admin/dashboard/" class="nav-item">
+            <div class="nav-item-left"><i class="ti ti-layout-dashboard"></i>داشبورد</div>
+        </a>
+        <a href="/" target="_blank" class="nav-item">
+            <div class="nav-item-left"><i class="ti ti-world"></i>مشاهده سایت</div>
+        </a>
+
+        <div class="nav-sec">محتوا</div>
+
+        <div class="nav-item" onclick="toggle('product')">
+            <div class="nav-item-left"><i class="ti ti-pill"></i>محصولات</div>
+            <i class="ti ti-chevron-down nav-arrow" id="arr-product"></i>
+        </div>
+        <div class="sub-nav" id="sub-product">
+            <a href="/admin/app_product/product/" class="sub-item"><i class="ti ti-list"></i>همه محصولات</a>
+            <a href="/admin/app_product/product/add/" class="sub-item"><i class="ti ti-plus"></i>افزودن محصول</a>
+            <a href="/admin/app_product/productcategory/" class="sub-item"><i class="ti ti-folder"></i>دسته‌بندی</a>
+            <a href="/admin/app_product/producttag/" class="sub-item"><i class="ti ti-tag"></i>برچسب‌ها</a>
+        </div>
+
+        <div class="nav-item" onclick="toggle('blog')">
+            <div class="nav-item-left"><i class="ti ti-pencil"></i>بلاگ</div>
+            <i class="ti ti-chevron-down nav-arrow" id="arr-blog"></i>
+        </div>
+        <div class="sub-nav" id="sub-blog">
+            <a href="/admin/app_blog/blog/" class="sub-item"><i class="ti ti-list"></i>همه مقالات</a>
+            <a href="/admin/app_blog/blog/add/" class="sub-item"><i class="ti ti-plus"></i>افزودن مقاله</a>
+            <a href="/admin/app_blog/blog_category/" class="sub-item"><i class="ti ti-folder"></i>دسته‌بندی</a>
+            <a href="/admin/app_blog/blog_tag/" class="sub-item"><i class="ti ti-tag"></i>برچسب‌ها</a>
+        </div>
+
+        <div class="nav-item" onclick="toggle('news')">
+            <div class="nav-item-left"><i class="ti ti-speakerphone"></i>اخبار</div>
+            <i class="ti ti-chevron-down nav-arrow" id="arr-news"></i>
+        </div>
+        <div class="sub-nav" id="sub-news">
+            <a href="/admin/app_news/news/" class="sub-item"><i class="ti ti-list"></i>همه اخبار</a>
+            <a href="/admin/app_news/news/add/" class="sub-item"><i class="ti ti-plus"></i>افزودن خبر</a>
+            <a href="/admin/app_news/newscategory/" class="sub-item"><i class="ti ti-folder"></i>دسته‌بندی</a>
+        </div>
+
+        <a href="/admin/app_media/media/" class="nav-item">
+            <div class="nav-item-left"><i class="ti ti-movie"></i>رسانه</div>
+        </a>
+
+        <div class="nav-sec">تجاری</div>
+
+        <div class="nav-item" onclick="toggle('tender')">
+            <div class="nav-item-left"><i class="ti ti-file-text"></i>مناقصه</div>
+            <i class="ti ti-chevron-down nav-arrow" id="arr-tender"></i>
+        </div>
+        <div class="sub-nav" id="sub-tender">
+            <a href="/admin/app_tender/tender/" class="sub-item"><i class="ti ti-list"></i>همه مناقصه‌ها</a>
+            <a href="/admin/app_tender/tender/add/" class="sub-item"><i class="ti ti-plus"></i>افزودن مناقصه</a>
+            <a href="/admin/app_tender_holding/holding/" class="sub-item"><i class="ti ti-building"></i>مناقصه‌گزاری</a>
+        </div>
+
+        <a href="/admin/app_auction/auction/" class="nav-item">
+            <div class="nav-item-left"><i class="ti ti-gavel"></i>مزایده</div>
+        </a>
+        <a href="/admin/app_inquiry/purchaseinquiry/" class="nav-item">
+            <div class="nav-item-left"><i class="ti ti-search"></i>استعلام</div>
+        </a>
+        <a href="/admin/app_sale/salesreport/" class="nav-item">
+            <div class="nav-item-left"><i class="ti ti-currency-dollar"></i>فروش</div>
+        </a>
+        <a href="/admin/app_catalog/companycatalog/" class="nav-item">
+            <div class="nav-item-left"><i class="ti ti-book"></i>کاتالوگ</div>
+        </a>
+
+        <div class="nav-sec">سازمانی</div>
+
+        <div class="nav-item" onclick="toggle('hr')">
+            <div class="nav-item-left"><i class="ti ti-users"></i>منابع انسانی</div>
+            <i class="ti ti-chevron-down nav-arrow" id="arr-hr"></i>
+        </div>
+        <div class="sub-nav" id="sub-hr">
+            <a href="/admin/app_hr/jobopportunity/" class="sub-item"><i class="ti ti-briefcase"></i>فرصت‌های شغلی</a>
+            <a href="/admin/app_hr/jobapplication/" class="sub-item"><i class="ti ti-file-cv"></i>درخواست‌ها</a>
+        </div>
+
+        <a href="/admin/app_chart/person/" class="nav-item">
+            <div class="nav-item-left"><i class="ti ti-sitemap"></i>چارت سازمانی</div>
+        </a>
+        <a href="/admin/app_chart/boardmember/" class="nav-item">
+            <div class="nav-item-left"><i class="ti ti-user-check"></i>هیأت‌مدیره</div>
+        </a>
+
+        <div class="nav-sec">تنظیمات</div>
+
+        <div class="nav-item" onclick="toggle('settings')">
+            <div class="nav-item-left"><i class="ti ti-settings"></i>تنظیمات سایت</div>
+            <i class="ti ti-chevron-down nav-arrow" id="arr-settings"></i>
+        </div>
+        <div class="sub-nav" id="sub-settings">
+            <a href="/admin/app_reports/sitemaininfo/" class="sub-item"><i class="ti ti-info-circle"></i>اطلاعات سایت</a>
+            <a href="/admin/app_banner/herobanner/" class="sub-item"><i class="ti ti-photo"></i>بنر اصلی</a>
+            <a href="/admin/app_banner/otherbanner/" class="sub-item"><i class="ti ti-layout"></i>بنر صفحات</a>
+            <a href="/admin/app_reports/followuslink/" class="sub-item"><i class="ti ti-link"></i>لینک‌های شبکه</a>
+        </div>
+
+        <a href="/admin/app_contact/contactmessage/" class="nav-item">
+            <div class="nav-item-left"><i class="ti ti-phone"></i>پیام‌های تماس</div>
+        </a>
+        <a href="/admin/app_security/securitycontact/" class="nav-item">
+            <div class="nav-item-left"><i class="ti ti-shield"></i>تماس امنیتی</div>
+        </a>
+    </nav>
+</div>
+
+<!-- TOPBAR -->
+<div class="custom-topbar">
+    <div class="topbar-title">
+        <i class="ti ti-layout-dashboard"></i>
+        پنل مدیریت داروپخش
+    </div>
+    <div class="topbar-actions">
+        <div class="topbar-user">
+            <i class="ti ti-user" style="font-size:13px"></i>
+            {{ user.username }}
+        </div>
+        <a href="/admin/password_change/" class="topbar-btn">
+            <i class="ti ti-key" style="font-size:12px"></i>تغییر رمز
+        </a>
+        <a href="/dp-admin/logout/" class="topbar-btn primary">
+            <i class="ti ti-logout" style="font-size:12px"></i>خروج
+        </a>
+    </div>
+</div>
+
+<h1>{% block content_title_text %}{% endblock %}</h1>
+{% endblock %}
+
+{% block footer %}
+<script>
+function toggle(id) {
+    const sub = document.getElementById('sub-' + id);
+    const arr = document.getElementById('arr-' + id);
+    if (!sub) return;
+    const isOpen = sub.classList.contains('open');
+    document.querySelectorAll('.sub-nav.open').forEach(el => el.classList.remove('open'));
+    document.querySelectorAll('.nav-arrow.open').forEach(el => el.classList.remove('open'));
+    if (!isOpen) { sub.classList.add('open'); arr.classList.add('open'); }
+}
+
+// باز کردن خودکار منوی فعال
+const path = window.location.pathname;
+if (path.includes('product')) toggle('product');
+else if (path.includes('blog')) toggle('blog');
+else if (path.includes('news')) toggle('news');
+else if (path.includes('tender')) toggle('tender');
+else if (path.includes('hr') || path.includes('job')) toggle('hr');
+else if (path.includes('reports') || path.includes('banner')) toggle('settings');
+</script>
+{% endblock %}
