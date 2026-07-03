@@ -8,7 +8,9 @@ from django.shortcuts import render
 from app_core.sitemaps import StaticViewSitemap
 from app_blog.sitemaps import BlogSitemap
 from app_product.sitemaps import ProductSitemap
-# from app_admin.views import admin_login
+from app_core.views import admin_login  # ← اضافه کن
+
+
 
 sitemaps = {
     "static": StaticViewSitemap,
@@ -24,9 +26,8 @@ def custom_404_view(request, exception):
 handler404 = custom_404_view
 
 urlpatterns = [
-    # path("admin/login/", admin_login, name="admin_login"),  # ← قبل از admin/ باشه
-    # path("dp-admin/", include("app_admin.urls")),
-    # path("admin/login/", include("app_admin.urls")),
+    path("admin/login/", admin_login, name="admin_login"),  # ← قبل از admin/ باشه
+
     path("admin/", admin.site.urls),
 
     path("", include("app_core.urls")),

@@ -32,7 +32,7 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     "jazzmin",
-    # 'app_admin',
+
     'adminsortable2',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_jalali',
     'django.contrib.humanize',
-
     'app_core.apps.AppBaseConfig',
     'app_banner.apps.AppBannerConfig',
     'app_blog.apps.AppBlogConfig',
@@ -158,11 +157,11 @@ from django.urls import reverse_lazy
 
 JAZZMIN_SETTINGS = {
     # ─── برندینگ ───────────────────────────────────────────
-    "site_title":       "داروپخش",
-    "site_header":      "سیستم مدیریت داروپخش",
-    "site_brand":       "داروپخش",
+    "site_title":       "",
+    "site_header":      "سیستم مدیریت ",
+    "site_brand":       "",
     "welcome_sign":     "خوش آمدید",
-    "copyright":        "© 1404 — کارخانجات داروپخش",
+    "copyright":        "RJ",
     "site_logo":        "admin-custom/images/logo.png",
     "login_logo":       "admin-custom/images/logo.png",
     "login_logo_dark":  "admin-custom/images/logo.png",
