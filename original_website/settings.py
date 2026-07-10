@@ -15,7 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
@@ -26,7 +25,6 @@ SECRET_KEY = 'django-insecure-gs9k^w59&yy8$%+^g8q=%0d@3fhsn3=y6u&p_p^k$=o3&ir(2$
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -96,7 +94,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'original_website.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
@@ -106,7 +103,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
@@ -126,7 +122,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
@@ -137,7 +132,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
@@ -157,21 +151,21 @@ from django.urls import reverse_lazy
 
 JAZZMIN_SETTINGS = {
     # ─── برندینگ ───────────────────────────────────────────
-    "site_title":       "",
-    "site_header":      "سیستم مدیریت ",
-    "site_brand":       "",
-    "welcome_sign":     "خوش آمدید",
-    "copyright":        "RJ",
-    "site_logo":        "admin-custom/images/logo.png",
-    "login_logo":       "admin-custom/images/logo.png",
-    "login_logo_dark":  "admin-custom/images/logo.png",
+    "site_title": "",
+    "site_header": "سیستم مدیریت ",
+    "site_brand": "",
+    "welcome_sign": "خوش آمدید",
+    "copyright": "RJ",
+    "site_logo": "admin-custom/images/logo.png",
+    "login_logo": "admin-custom/images/logo.png",
+    "login_logo_dark": "admin-custom/images/logo.png",
     "site_logo_classes": "img-circle elevation-2",
-    "site_icon":        "admin-custom/images/logo.png",
+    "site_icon": "admin-custom/images/logo.png",
 
     # ─── منوی بالا ─────────────────────────────────────────
     "topmenu_links": [
-        {"name": "مشاهده سایت",  "url": "/",                   "new_window": True},
-        {"name": "داشبورد",       "url": "/dp-admin/dashboard/"},
+        {"name": "مشاهده سایت", "url": "/", "new_window": True},
+        {"name": "داشبورد", "url": "/dp-admin/dashboard/"},
         {"app": "app_product"},
         {"app": "app_blog"},
     ],
@@ -183,10 +177,10 @@ JAZZMIN_SETTINGS = {
     ],
 
     # ─── سایدبار ───────────────────────────────────────────
-    "show_sidebar":          True,
-    "navigation_expanded":   False,
-    "hide_apps":             [],
-    "hide_models":           [],
+    "show_sidebar": True,
+    "navigation_expanded": False,
+    "hide_apps": [],
+    "hide_models": [],
 
     "order_with_respect_to": [
         "app_product",
@@ -211,128 +205,127 @@ JAZZMIN_SETTINGS = {
     # ─── آیکون‌ها ───────────────────────────────────────────
     "icons": {
         # محتوا
-        "app_product":                    "fas fa-pills",
-        "app_product.Product":            "fas fa-capsules",
-        "app_product.ProductCategory":    "fas fa-folder",
-        "app_product.ProductTag":         "fas fa-tag",
-        "app_product.ProductCategory2":   "fas fa-folder-open",
+        "app_product": "fas fa-pills",
+        "app_product.Product": "fas fa-capsules",
+        "app_product.ProductCategory": "fas fa-folder",
+        "app_product.ProductTag": "fas fa-tag",
+        "app_product.ProductCategory2": "fas fa-folder-open",
 
-        "app_blog":                       "fas fa-pen-nib",
-        "app_blog.blog":                  "fas fa-file-alt",
-        "app_blog.blog_Category":         "fas fa-folder",
-        "app_blog.blog_Tag":              "fas fa-tag",
+        "app_blog": "fas fa-pen-nib",
+        "app_blog.blog": "fas fa-file-alt",
+        "app_blog.blog_Category": "fas fa-folder",
+        "app_blog.blog_Tag": "fas fa-tag",
 
-        "app_news":                       "fas fa-newspaper",
-        "app_news.News":                  "fas fa-rss",
-        "app_news.NewsCategory":          "fas fa-folder",
-        "app_news.NewsTag":               "fas fa-tag",
+        "app_news": "fas fa-newspaper",
+        "app_news.News": "fas fa-rss",
+        "app_news.NewsCategory": "fas fa-folder",
+        "app_news.NewsTag": "fas fa-tag",
 
-        "app_media":                      "fas fa-photo-video",
-        "app_media.Media":                "fas fa-film",
+        "app_media": "fas fa-photo-video",
+        "app_media.Media": "fas fa-film",
 
         # تجاری
-        "app_tender":                     "fas fa-file-contract",
-        "app_tender.Tender":              "fas fa-file-signature",
-        "app_tender.TenderCategory":      "fas fa-folder",
+        "app_tender": "fas fa-file-contract",
+        "app_tender.Tender": "fas fa-file-signature",
+        "app_tender.TenderCategory": "fas fa-folder",
 
-        "app_tender_holding":             "fas fa-building",
-        "app_tender_holding.Holding":     "fas fa-industry",
+        "app_tender_holding": "fas fa-building",
+        "app_tender_holding.Holding": "fas fa-industry",
 
-        "app_auction":                    "fas fa-gavel",
-        "app_auction.Auction":            "fas fa-hammer",
+        "app_auction": "fas fa-gavel",
+        "app_auction.Auction": "fas fa-hammer",
 
-        "app_inquiry":                    "fas fa-search-dollar",
-        "app_inquiry.PurchaseInquiry":    "fas fa-file-invoice",
+        "app_inquiry": "fas fa-search-dollar",
+        "app_inquiry.PurchaseInquiry": "fas fa-file-invoice",
 
-        "app_sale":                       "fas fa-chart-line",
-        "app_sale.SalesReport":           "fas fa-file-invoice-dollar",
+        "app_sale": "fas fa-chart-line",
+        "app_sale.SalesReport": "fas fa-file-invoice-dollar",
 
-        "app_catalog":                    "fas fa-book-open",
-        "app_catalog.CompanyCatalog":     "fas fa-book",
+        "app_catalog": "fas fa-book-open",
+        "app_catalog.CompanyCatalog": "fas fa-book",
 
         # سازمانی
-        "app_chart":                      "fas fa-sitemap",
-        "app_chart.Person":               "fas fa-user-tie",
-        "app_chart.BoardMember":          "fas fa-users",
+        "app_chart": "fas fa-sitemap",
+        "app_chart.Person": "fas fa-user-tie",
+        "app_chart.BoardMember": "fas fa-users",
 
-        "app_hr":                         "fas fa-user-friends",
-        "app_hr.JobOpportunity":          "fas fa-briefcase",
-        "app_hr.JobApplication":          "fas fa-file-user",
+        "app_hr": "fas fa-user-friends",
+        "app_hr.JobOpportunity": "fas fa-briefcase",
+        "app_hr.JobApplication": "fas fa-file-user",
 
         # ارتباطات
-        "app_contact":                    "fas fa-envelope",
-        "app_contact.ContactMessage":     "fas fa-comment-dots",
+        "app_contact": "fas fa-envelope",
+        "app_contact.ContactMessage": "fas fa-comment-dots",
 
-        "app_security":                   "fas fa-shield-alt",
-        "app_security.SecurityContact":   "fas fa-lock",
+        "app_security": "fas fa-shield-alt",
+        "app_security.SecurityContact": "fas fa-lock",
 
         # تنظیمات
-        "app_banner":                     "fas fa-image",
-        "app_banner.HeroBanner":          "fas fa-images",
-        "app_banner.OtherBanner":         "fas fa-portrait",
-        "app_banner.MainBanner":          "fas fa-panorama",
+        "app_banner": "fas fa-image",
+        "app_banner.HeroBanner": "fas fa-images",
+        "app_banner.OtherBanner": "fas fa-portrait",
+        "app_banner.MainBanner": "fas fa-panorama",
         "app_banner.SpecialProductBanner": "fas fa-star",
-        "app_banner.HeroSliderSetting":   "fas fa-sliders-h",
+        "app_banner.HeroSliderSetting": "fas fa-sliders-h",
 
-        "app_reports":                    "fas fa-chart-bar",
-        "app_reports.SiteMainInfo":       "fas fa-info-circle",
-        "app_reports.FollowUsLink":       "fas fa-link",
+        "app_reports": "fas fa-chart-bar",
+        "app_reports.SiteMainInfo": "fas fa-info-circle",
+        "app_reports.FollowUsLink": "fas fa-link",
         "app_reports.CorporateStatistic": "fas fa-poll",
-        "app_reports.CorporateSection":   "fas fa-layer-group",
-        "app_reports.GroupCompany":       "fas fa-building",
-        "app_reports.DepartmentContact":  "fas fa-phone",
+        "app_reports.CorporateSection": "fas fa-layer-group",
+        "app_reports.GroupCompany": "fas fa-building",
+        "app_reports.DepartmentContact": "fas fa-phone",
 
         # احراز هویت
-        "auth":                           "fas fa-users-cog",
-        "auth.User":                      "fas fa-user",
-        "auth.Group":                     "fas fa-users",
+        "auth": "fas fa-users-cog",
+        "auth.User": "fas fa-user",
+        "auth.Group": "fas fa-users",
     },
 
-    "default_icon_parents":  "fas fa-folder",
+    "default_icon_parents": "fas fa-folder",
     "default_icon_children": "fas fa-circle",
 
     # ─── UI ────────────────────────────────────────────────
     "related_modal_active": True,
-    "custom_css":           "admin-custom/css/admin-custom.css",
-    "use_google_fonts_cdn": False,   # فونت از CSS لود می‌شود
-    "show_ui_builder":      False,   # در production باید False باشد
-    "changeform_format":    "horizontal_tabs",
+    "custom_css": "admin-custom/css/admin-custom.css",
+    "use_google_fonts_cdn": False,  # فونت از CSS لود می‌شود
+    "show_ui_builder": False,  # در production باید False باشد
+    "changeform_format": "horizontal_tabs",
     "changeform_format_overrides": {
         "auth.user": "collapsible",
     },
     "language_chooser": False,
 }
 
-
 JAZZMIN_UI_TWEAKS = {
-    "navbar_small_text":          False,
-    "footer_small_text":          False,
-    "body_small_text":            False,
-    "brand_small_text":           False,
-    "brand_colour":               False,    # ← بود "navbar-primary" — خاموش شد تا با تم خودمون تداخل نکنه
-    "accent":                     False,    # ← بود "accent-primary" — خاموش شد
-    "navbar":                     False,    # ← بود "navbar-dark" — خاموش شد
-    "no_navbar_border":           True,
-    "navbar_fixed":               True,
-    "layout_boxed":               False,
-    "footer_fixed":               False,
-    "sidebar_fixed":              True,
-    "sidebar":                    False,    # ← بود "sidebar-dark-primary" — خاموش شد
-    "sidebar_nav_small_text":     False,
-    "sidebar_disable_expand":     False,
-    "sidebar_nav_child_indent":   True,
-    "sidebar_nav_compact_style":  False,
-    "sidebar_nav_legacy_style":   False,
-    "sidebar_nav_flat_style":     False,
-    "theme":                      "default",  # ← بود "darkly" — حذف شد، چون با متغیرهای CSS خودمون تداخل رنگی ایجاد می‌کرد
-    "dark_mode_theme":            None,        # ← بود "darkly" — خاموش شد
+    "navbar_small_text": False,
+    "footer_small_text": False,
+    "body_small_text": False,
+    "brand_small_text": False,
+    "brand_colour": False,  # ← بود "navbar-primary" — خاموش شد تا با تم خودمون تداخل نکنه
+    "accent": False,  # ← بود "accent-primary" — خاموش شد
+    "navbar": False,  # ← بود "navbar-dark" — خاموش شد
+    "no_navbar_border": True,
+    "navbar_fixed": True,
+    "layout_boxed": False,
+    "footer_fixed": False,
+    "sidebar_fixed": True,
+    "sidebar": False,  # ← بود "sidebar-dark-primary" — خاموش شد
+    "sidebar_nav_small_text": False,
+    "sidebar_disable_expand": False,
+    "sidebar_nav_child_indent": True,
+    "sidebar_nav_compact_style": False,
+    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_flat_style": False,
+    "theme": "default",  # ← بود "darkly" — حذف شد، چون با متغیرهای CSS خودمون تداخل رنگی ایجاد می‌کرد
+    "dark_mode_theme": None,  # ← بود "darkly" — خاموش شد
     "button_classes": {
-        "primary":   "btn-primary",
+        "primary": "btn-primary",
         "secondary": "btn-secondary",
-        "info":      "btn-info",
-        "warning":   "btn-warning",
-        "danger":    "btn-danger",
-        "success":   "btn-success",
+        "info": "btn-info",
+        "warning": "btn-warning",
+        "danger": "btn-danger",
+        "success": "btn-success",
     },
     "actions_sticky_top": True,
 }

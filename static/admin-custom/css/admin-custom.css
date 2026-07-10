@@ -1,0 +1,648 @@
+/*!
+ * داروپخش — Enterprise Admin Pro  v2.0 (Structure Only — No Custom Colors)
+ * RTL · Jalali Calendar · فقط ساختار، بدون رنگ سفارشی (رنگ از تم پیش‌فرض بوت‌استرپ/جازمین)
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap');
+
+/* ══════════════════════════════════════════════════════
+   1-2. DESIGN TOKENS — حذف شد (بدون رنگ سفارشی)
+   فقط توکن‌های غیررنگی (شکل/فاصله/ترنزیشن) نگه داشته شد
+══════════════════════════════════════════════════════ */
+:root {
+    /* شکل */
+    --dp-radius:        12px;
+    --dp-radius-sm:     8px;
+    --dp-radius-xs:     6px;
+    --dp-transition:    all 0.22s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ══════════════════════════════════════════════════════
+   3. RESET / BASE
+══════════════════════════════════════════════════════ */
+* {
+    font-family: 'Vazirmatn', 'Tahoma', 'Arial', sans-serif !important;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: auto;
+    overflow-x: hidden !important;
+}
+
+body {
+    direction: rtl !important;
+    line-height: 1.6 !important;
+    overflow-x: hidden !important;
+}
+
+a {
+    transition: var(--dp-transition) !important;
+}
+
+a:hover {
+    text-decoration: none !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   4. SCROLLBAR
+══════════════════════════════════════════════════════ */
+::-webkit-scrollbar       { width: 5px; height: 5px; }
+::-webkit-scrollbar-thumb { border-radius: 3px; }
+
+/* ══════════════════════════════════════════════════════
+   5. NAVBAR
+══════════════════════════════════════════════════════ */
+.main-header.navbar,
+.main-header {
+    padding: 0 20px !important;
+    transition: background 0.35s ease !important;
+}
+
+.navbar-brand {
+    font-size: 15px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.3px !important;
+}
+
+.navbar-brand img {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 8px !important;
+    margin-left: 10px !important;
+}
+
+.nav-link {
+    font-size: 13px !important;
+    border-radius: var(--dp-radius-sm) !important;
+    padding: 6px 12px !important;
+    transition: var(--dp-transition) !important;
+}
+
+.nav-link:hover {
+}
+
+/* ── ساعت navbar ── */
+.dp-clock-widget {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    padding: 4px 14px;
+    margin-right: 6px;
+    user-select: none;
+}
+
+.dp-clock-time {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    line-height: 1.2;
+}
+
+.dp-clock-fa {
+    font-size: 11px;
+    line-height: 1.4;
+}
+
+.dp-clock-en {
+    font-size: 10px;
+}
+
+/* ── دکمه تغییر تم ── */
+.dp-theme-btn {
+    border-radius: 50% !important;
+    width: 34px !important;
+    height: 34px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+    transition: var(--dp-transition) !important;
+    margin: 0 6px !important;
+}
+
+.dp-theme-btn:hover {
+    transform: rotate(20deg) !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   6. SIDEBAR
+══════════════════════════════════════════════════════ */
+.main-sidebar {
+    transition: background 0.35s ease !important;
+}
+
+.brand-link {
+    padding: 14px 18px !important;
+}
+
+.brand-text {
+    font-weight: 700 !important;
+    font-size: 14px !important;
+}
+
+/* nav items */
+.nav-sidebar .nav-item > .nav-link {
+    border-radius: var(--dp-radius-sm) !important;
+    margin: 2px 8px !important;
+    padding: 9px 14px !important;
+    font-size: 13px !important;
+    border-right: 2px solid transparent !important;
+    transition: var(--dp-transition) !important;
+    position: relative;
+}
+
+.nav-sidebar .nav-link .nav-icon {
+    width: 20px !important;
+    font-size: 14px !important;
+    transition: var(--dp-transition) !important;
+}
+
+.nav-header {
+    font-size: 9.5px !important;
+    letter-spacing: 1.8px !important;
+    padding: 14px 18px 4px !important;
+    text-transform: uppercase !important;
+    font-weight: 600 !important;
+}
+
+/* submenu */
+.nav-sidebar .nav-treeview {
+    margin-right: 12px !important;
+    border-radius: 0 0 6px 6px !important;
+}
+
+.nav-sidebar .nav-treeview .nav-link {
+    font-size: 12px !important;
+    padding: 7px 14px 7px 10px !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   7. CONTENT
+══════════════════════════════════════════════════════ */
+.content-wrapper {
+    min-height: 100vh !important;
+    transition: background 0.35s ease !important;
+}
+
+.content-header {
+    padding: 14px 20px !important;
+    transition: background 0.35s ease !important;
+}
+
+.content-header h1 {
+    font-size: 19px !important;
+    font-weight: 700 !important;
+}
+
+.breadcrumb {
+    font-size: 12px !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   8. CARDS
+══════════════════════════════════════════════════════ */
+.card {
+    border-radius: var(--dp-radius) !important;
+    transition: var(--dp-transition) !important;
+}
+
+.card-header {
+    border-radius: var(--dp-radius) var(--dp-radius) 0 0 !important;
+    padding: 13px 18px !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   9. TABLES
+══════════════════════════════════════════════════════ */
+#result_list {
+    border-radius: var(--dp-radius) !important;
+    overflow: hidden !important;
+    width: 100% !important;
+}
+
+#result_list thead th {
+    font-size: 11.5px !important;
+    font-weight: 600 !important;
+    padding: 11px 14px !important;
+    border: none !important;
+    white-space: nowrap !important;
+    letter-spacing: 0.3px !important;
+    text-transform: uppercase !important;
+}
+
+#result_list tbody tr {
+    transition: var(--dp-transition) !important;
+    cursor: pointer;
+}
+
+#result_list tbody tr.dp-row-selected {
+    border-right: 2px solid currentColor !important;
+}
+
+#result_list tbody td {
+    font-size: 13px !important;
+    padding: 10px 14px !important;
+    border: none !important;
+    vertical-align: middle !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   10. FORMS & INPUTS
+══════════════════════════════════════════════════════ */
+.form-control,
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="number"],
+input[type="url"],
+input[type="search"],
+select,
+textarea {
+    border-radius: var(--dp-radius-sm) !important;
+    padding: 9px 13px !important;
+    font-size: 13px !important;
+    transition: var(--dp-transition) !important;
+    direction: rtl !important;
+}
+
+.form-control:focus,
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none !important;
+}
+
+label,
+.form-group label {
+    font-size: 12px !important;
+    font-weight: 500 !important;
+    margin-bottom: 5px !important;
+}
+
+fieldset {
+    border-radius: var(--dp-radius) !important;
+    padding: 16px 20px !important;
+    margin-bottom: 20px !important;
+}
+
+fieldset legend,
+fieldset h2 {
+    padding: 5px 14px !important;
+    border-radius: var(--dp-radius-xs) !important;
+    font-size: 12.5px !important;
+    font-weight: 600 !important;
+}
+
+/* ── Date wrapper با تقویم شمسی ── */
+.dp-date-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.dp-jalali-hint {
+    font-size: 11.5px;
+    margin-top: 3px;
+    display: block;
+    width: 100%;
+    transition: color 0.2s;
+}
+
+.dp-cal-icon-btn {
+    border-radius: var(--dp-radius-xs) !important;
+    width: 32px !important;
+    height: 32px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    font-size: 13px !important;
+    transition: var(--dp-transition) !important;
+    flex-shrink: 0 !important;
+}
+
+.dp-cal-icon-btn:hover {
+    transform: scale(1.05) !important;
+}
+
+/* ── تقویم پاپ‌آپ ── */
+.dp-cal-popup {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 9999;
+    border-radius: var(--dp-radius);
+    padding: 16px;
+    min-width: 240px;
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+    transition: opacity 0.22s ease, transform 0.22s ease;
+    pointer-events: none;
+}
+
+.dp-cal-popup.dp-cal-popup--open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+.dp-cal-header {
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+}
+
+.dp-cal-today-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.dp-cal-today-fa {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.dp-cal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.dp-cal-btn {
+    padding: 7px 14px;
+    border-radius: var(--dp-radius-sm);
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: var(--dp-transition);
+    font-family: inherit;
+    text-align: right;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.dp-cal-btn-today:hover {
+    transform: translateY(-1px);
+}
+
+.dp-cal-btn-close {
+    background: transparent;
+}
+
+/* ══════════════════════════════════════════════════════
+   11. BUTTONS
+══════════════════════════════════════════════════════ */
+.btn-primary,
+input[type="submit"].default,
+.submit-row input[type="submit"] {
+    border: none !important;
+    border-radius: var(--dp-radius-sm) !important;
+    padding: 9px 22px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    transition: var(--dp-transition) !important;
+    cursor: pointer !important;
+}
+
+.btn-primary:hover,
+input[type="submit"].default:hover,
+.submit-row input[type="submit"]:hover {
+    transform: translateY(-2px) !important;
+}
+
+.btn-danger,
+.deletelink {
+    border: none !important;
+    border-radius: var(--dp-radius-sm) !important;
+    padding: 6px 13px !important;
+    font-size: 12px !important;
+    transition: var(--dp-transition) !important;
+}
+
+.btn-secondary {
+    border-radius: var(--dp-radius-sm) !important;
+}
+
+.submit-row {
+    border-radius: var(--dp-radius) !important;
+    padding: 13px 18px !important;
+    margin-top: 20px !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   12. FILTER SIDEBAR
+══════════════════════════════════════════════════════ */
+#changelist-filter {
+    border-radius: var(--dp-radius) !important;
+    padding: 16px !important;
+    min-width: 200px !important;
+}
+
+#changelist-filter h2 {
+    padding: 7px 12px !important;
+    border-radius: var(--dp-radius-xs) !important;
+    font-size: 11.5px !important;
+    margin-bottom: 10px !important;
+    font-weight: 600 !important;
+}
+
+#changelist-filter h3 {
+    font-size: 10.5px !important;
+    letter-spacing: 1.2px !important;
+    text-transform: uppercase !important;
+    margin: 12px 0 5px !important;
+}
+
+#changelist-filter ul li a {
+    font-size: 12px !important;
+    padding: 4px 8px !important;
+    border-radius: var(--dp-radius-xs) !important;
+    display: block !important;
+    transition: var(--dp-transition) !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   13. SEARCH
+══════════════════════════════════════════════════════ */
+#toolbar {
+    border-radius: var(--dp-radius) !important;
+    padding: 10px 16px !important;
+    margin-bottom: 16px !important;
+}
+
+#searchbar {
+    border-radius: var(--dp-radius-sm) !important;
+    padding: 8px 13px !important;
+    font-size: 13px !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   14. TOAST NOTIFICATIONS
+══════════════════════════════════════════════════════ */
+.dp-toast {
+    position: fixed;
+    left: 20px;
+    bottom: var(--dp-toast-offset, 20px);
+    padding: 12px 18px;
+    border-radius: var(--dp-radius);
+    font-size: 12.5px;
+    opacity: 0;
+    transform: translateX(-20px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    z-index: 99999;
+    max-width: 300px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.dp-toast--visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* ══════════════════════════════════════════════════════
+   15. MESSAGES
+══════════════════════════════════════════════════════ */
+.alert-success,
+.messagelist .success,
+.alert-danger,
+.messagelist .error,
+.alert-warning,
+.messagelist .warning {
+    border-radius: var(--dp-radius-sm) !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   16. LOGIN PAGE
+══════════════════════════════════════════════════════ */
+.login-page,
+body.login {
+    min-height: 100vh !important;
+}
+
+.login-box {
+    border-radius: 16px !important;
+}
+
+.login-box-msg {
+    font-size: 13px !important;
+}
+
+.login-box-body {
+}
+
+/* ══════════════════════════════════════════════════════
+   17. INLINE ADMIN
+══════════════════════════════════════════════════════ */
+.inline-group {
+    border-radius: var(--dp-radius) !important;
+    margin-bottom: 20px !important;
+}
+
+.inline-group h2 {
+    padding: 10px 16px !important;
+    border-radius: var(--dp-radius) var(--dp-radius) 0 0 !important;
+    font-size: 13px !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   18. PAGINATION
+══════════════════════════════════════════════════════ */
+.paginator {
+    font-size: 13px !important;
+}
+
+.paginator a {
+    border-radius: var(--dp-radius-xs) !important;
+    padding: 4px 10px !important;
+    margin: 0 2px !important;
+    transition: var(--dp-transition) !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   19. FOOTER
+══════════════════════════════════════════════════════ */
+.main-footer {
+    font-size: 12px !important;
+    padding: 12px 20px !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   20. SELECT2
+══════════════════════════════════════════════════════ */
+.select2-container--default .select2-selection--single {
+    border-radius: var(--dp-radius-sm) !important;
+    height: 38px !important;
+}
+
+.select2-container--default .select2-results__option {
+    font-size: 12.5px !important;
+}
+
+.select2-dropdown {
+    border-radius: var(--dp-radius-sm) !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   21. TABS
+══════════════════════════════════════════════════════ */
+.nav-tabs .nav-link {
+    border: 1px solid transparent !important;
+    border-radius: 8px 8px 0 0 !important;
+    font-size: 13px !important;
+    transition: var(--dp-transition) !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   22. CALENDAR WIDGET (Django native)
+══════════════════════════════════════════════════════ */
+.calendar td.today a {
+    border-radius: 4px !important;
+}
+.calendar caption {
+    font-weight: 600 !important;
+}
+.calendarbox {
+    border-radius: var(--dp-radius-sm) !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   23. CHECKBOX / RADIO
+══════════════════════════════════════════════════════ */
+input[type="checkbox"],
+input[type="radio"] {
+    width: 15px !important;
+    height: 15px !important;
+}
+
+/* ══════════════════════════════════════════════════════
+   24. RESPONSIVE
+══════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+    .dp-clock-widget { display: none !important; }
+    .content-header h1 { font-size: 15px !important; }
+    #result_list tbody td { font-size: 12px !important; }
+}
+
+.vjDateField,
+.vDateField,
+.hasDatepicker {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    z-index: 999999 !important;
+}
+
+.ui-datepicker {
+    z-index: 999999 !important;
+}
