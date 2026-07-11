@@ -468,7 +468,7 @@ class FollowUsLinkAdmin(SortableAdminMixin, admin.ModelAdmin):
 
     fieldsets = (
         ("📌 وضعیت انتشار", {
-            "fields": ("is_active", "display_order"),
+            "fields": ("is_active",),
         }),
         ("🌐 اطلاعات لینک شبکه اجتماعی", {
             "fields": ("title", "url"),

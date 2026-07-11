@@ -6097,7 +6097,11 @@ label {
 /*====================
 35. About css
 ======================*/
-
+.about-img img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 .about-left{
   position: relative;
 }
@@ -6261,7 +6265,7 @@ label {
 }
 
 .counter-box .icon img {
-  filter: brightness(0) invert(1);
+
   width: 55px;
 }
 
