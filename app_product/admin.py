@@ -168,9 +168,16 @@ class ProductAdmin(SortableAdminMixin, admin.ModelAdmin):
         "generic_name_fa",
         "generic_name_en",
         "sku",
+        "meta_title",
+
     )
 
-    list_filter = ("status", "category")
+    list_filter = (
+        "status",
+        "special",
+        "category",
+        "category2",
+    )
 
     list_display = (
         "priority",
@@ -195,41 +202,90 @@ class ProductAdmin(SortableAdminMixin, admin.ModelAdmin):
     formfield_overrides = {
         models.TextField: {"widget": Textarea(attrs={"rows": 4})}
     }
-
     fieldsets = (
-        ("📌 وضعیت", {"fields": ("status", "special")}),
-        ("🆔 هویت محصول", {"fields": ( "sku","title_fa", "title_en", "generic_name_fa", "generic_name_en","summary_fa",)}),
-        ("🖼️ تصویر", {"fields": ("main_image", "main_image_preview")}),
-        ("📂️ دسته‌بندی", {"fields": ("category","category2", "tags")}),
+        ("📌 وضعیت", {
+            "fields": ("status", "special"),
+        }),
 
-        ("📄 فارسی", {
+        ("🆔 هویت محصول", {
             "fields": (
-                "composition_fa",
-                "indications_fa",
-                "contra_fa",
-                "warnings_fa",
-                "pregnancy_use_fa",
-                "instructions_fa",
-                "description_fa",
+                "sku",
+                "title_fa",
+                "title_en",
+                "generic_name_fa",
+                "generic_name_en",
+                "summary_fa",
+                "summary_en",
+                "slug",
             ),
         }),
 
-        ("📄 انگلیسی", {
+        ("🖼️ تصویر", {
             "fields": (
-                "composition_en",
-                "indications_en",
-                "contra_en",
-                "warnings_en",
-                "pregnancy_use_en",
-                "instructions_en",
-                "description_en",
+                "main_image",
+                "main_image_preview",
             ),
-            "classes": ("collapse",),
         }),
 
-        ("QR Code 🔐", {
-            "fields": ("qr_data", "qr_preview"),
+        ("📂 دسته‌بندی", {
+            "fields": (
+                "category",
+                "category2",
+                "tags",
+            ),
+        }),
+
+        # ==========================
+        # SEO
+        # ==========================
+        ("🌐 سئو (SEO)", {
             "classes": ("collapse",),
+            "description": "در صورت خالی بودن، این مقادیر به صورت خودکار از نام و خلاصه محصول ساخته می‌شوند.",
+            "fields": (
+                "meta_title",
+                "meta_description",
+
+                "robots",
+            ),
+        }),
+
+        ("📄 توضیحات فارسی", {
+            "fields": (
+                "description_1_fa",
+                "description_2_fa",
+                "description_3_fa",
+                "description_4_fa",
+                "description_5_fa",
+                "description_6_fa",
+                "description_7_fa",
+                "description_8_fa",
+                "description_9_fa",
+                "description_10_fa",
+            ),
+        }),
+
+        ("📄 توضیحات انگلیسی", {
+            "classes": ("collapse",),
+            "fields": (
+                "description_1_en",
+                "description_2_en",
+                "description_3_en",
+                "description_4_en",
+                "description_5_en",
+                "description_6_en",
+                "description_7_en",
+                "description_8_en",
+                "description_9_en",
+                "description_10_en",
+            ),
+        }),
+
+        ("🔐 QR Code", {
+            "classes": ("collapse",),
+            "fields": (
+                "qr_data",
+                "qr_preview",
+            ),
         }),
     )
 

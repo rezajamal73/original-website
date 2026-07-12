@@ -48,8 +48,8 @@ class ProductCategory(models.Model):
     priority = models.IntegerField("ترتیب نمایش", default=0)
 
     class Meta:
-        verbose_name = "شکل دارویی"
-        verbose_name_plural = "شکل دارویی"
+        verbose_name = "شکل محصول"
+        verbose_name_plural = "شکل محصول"
         ordering = ["priority", "title_fa"]
 
     def save(self, *args, **kwargs):
@@ -73,8 +73,8 @@ class ProductCategory2(models.Model):
     priority = models.IntegerField("ترتیب نمایش", default=0)
 
     class Meta:
-        verbose_name = "دسته بندی دارویی"
-        verbose_name_plural = "دسته بندی دارویی"
+        verbose_name = "دسته بندی"
+        verbose_name_plural = "دسته بندی"
         ordering = ["priority", "title_fa"]
 
     def save(self, *args, **kwargs):
@@ -98,8 +98,8 @@ class ProductTag(models.Model):
     priority = models.IntegerField("ترتیب نمایش", default=0)
 
     class Meta:
-        verbose_name = "برچسب دارویی"
-        verbose_name_plural = "برچسب‌های دارویی"
+        verbose_name = "برچسب "
+        verbose_name_plural = "برچسب‌های "
         ordering = ["priority", "title_fa"]
 
     def save(self, *args, **kwargs):
@@ -124,7 +124,7 @@ class Product(models.Model):
     # دسته‌بندی اصلی
     category = models.ForeignKey(
         ProductCategory,
-        verbose_name="شکل دارویی",
+        verbose_name="شکل محصول",
         related_name="products",
         on_delete=models.SET_NULL,
         null=True,
@@ -134,7 +134,7 @@ class Product(models.Model):
     #دسته‌بندی دوم
     category2 = models.ForeignKey(
         ProductCategory2,
-        verbose_name="دسته بندی دارویی",
+        verbose_name="دسته بندی",
         related_name="products2",
         on_delete=models.SET_NULL,
         null=True,
@@ -154,27 +154,50 @@ class Product(models.Model):
     qr_data = models.CharField("QR data", max_length=255, blank=True)
     generic_name_fa = models.CharField("نام ژنریک (فارسی)", max_length=255, blank=True)
     generic_name_en = models.CharField("نام ژنریک (انگلیسی)", max_length=255, blank=True)
-    composition_fa = models.TextField("ترکیبات (فارسی)", blank=True)
-    composition_en = models.TextField("ترکیبات (انگلیسی)", blank=True)
-    indications_fa = models.TextField("موارد مصرف (فارسی)", blank=True)
-    indications_en = models.TextField("موارد مصرف (انگلیسی)", blank=True)
-    contra_fa = models.TextField("موارد منع مصرف (فارسی)", blank=True)
-    contra_en = models.TextField("موارد منع مصرف (انگلیسی)", blank=True)
-    warnings_fa = models.TextField("هشدارها (فارسی)", blank=True)
-    warnings_en = models.TextField("هشدارها (انگلیسی)", blank=True)
-    pregnancy_use_fa = models.TextField("مصرف در بارداری (فارسی)", blank=True)
-    pregnancy_use_en = models.TextField("مصرف در بارداری (انگلیسی)", blank=True)
-    instructions_fa = models.TextField("نحوه مصرف (فارسی)", blank=True)
-    instructions_en = models.TextField("نحوه مصرف (انگلیسی)", blank=True)
-    interactions_fa = models.TextField("تداخلات (فارسی)", blank=True)
-    interactions_en = models.TextField("تداخلات (انگلیسی)", blank=True)
-    description_fa = models.TextField("توضیحات (فارسی)", blank=True)
-    description_en = models.TextField("توضیحات (انگلیسی)", blank=True)
+    description_1_fa = models.TextField("توضیحات ۱ (فارسی)", blank=True)
+    description_1_en = models.TextField("Description 1 (English)", blank=True)
+
+    description_2_fa = models.TextField("توضیحات ۲ (فارسی)", blank=True)
+    description_2_en = models.TextField("Description 2 (English)", blank=True)
+
+    description_3_fa = models.TextField("توضیحات ۳ (فارسی)", blank=True)
+    description_3_en = models.TextField("Description 3 (English)", blank=True)
+
+    description_4_fa = models.TextField("توضیحات ۴ (فارسی)", blank=True)
+    description_4_en = models.TextField("Description 4 (English)", blank=True)
+
+    description_5_fa = models.TextField("توضیحات ۵ (فارسی)", blank=True)
+    description_5_en = models.TextField("Description 5 (English)", blank=True)
+
+    description_6_fa = models.TextField("توضیحات ۶ (فارسی)", blank=True)
+    description_6_en = models.TextField("Description 6 (English)", blank=True)
+
+    description_7_fa = models.TextField("توضیحات ۷ (فارسی)", blank=True)
+    description_7_en = models.TextField("Description 7 (English)", blank=True)
+
+    description_8_fa = models.TextField("توضیحات ۸ (فارسی)", blank=True)
+    description_8_en = models.TextField("Description 8 (English)", blank=True)
+
+    description_9_fa = models.TextField("توضیحات ۹ (فارسی)", blank=True)
+    description_9_en = models.TextField("Description 9 (English)", blank=True)
+
+    description_10_fa = models.TextField("توضیحات ۱۰ (فارسی)", blank=True)
+    description_10_en = models.TextField("Description 10 (English)", blank=True)
+
     sku = models.CharField("کد محصول", max_length=128)
     priority = models.IntegerField("ترتیب نمایش", default=0)
 
     created_at = models.DateTimeField("ایجاد", auto_now_add=True)
     updated_at = models.DateTimeField("ویرایش", auto_now=True)
+
+    # ===========================
+    # SEO
+    # ===========================
+    meta_title = models.CharField("Meta Title", max_length=70, blank=True)
+    meta_description = models.CharField("Meta Description", max_length=170, blank=True)
+    robots = models.CharField("Robots", max_length=30, default="index,follow")
+
+
 
     status = models.CharField(
         max_length=20,
@@ -222,6 +245,13 @@ class Product(models.Model):
 
         if not self.slug or slugify(self.slug) != slugify(base):
             self.slug = generate_unique_slug(self, "slug", base)
+
+        if not self.meta_title:
+            self.meta_title = self.title_fa[:70]
+
+        if not self.meta_description:
+            seo_text = (self.summary_fa or self.description_1_fa or self.title_fa).replace("\n"," ")
+            self.meta_description = seo_text[:160]
 
         super().save(*args, **kwargs)
 

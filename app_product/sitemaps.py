@@ -1,16 +1,24 @@
-
 from django.contrib.sitemaps import Sitemap
 from app_product.models import Product
-from django.urls import reverse
+
+
 class ProductSitemap(Sitemap):
+    protocol = "https"
+
     changefreq = "weekly"
-    priority = 0.5
+    priority = 0.8
 
     def items(self):
-        return Product.objects.filter(status="published")
+        return (
+            Product.objects
+            .filter(status="published")
+            .select_related("category", "category2")
+            .prefetch_related("tags")
+            .order_by("-updated_at")
+        )
 
     def lastmod(self, obj):
-        return obj.created_at
+        return obj.updated_at
 
-    def location(self, item):
-        return reverse("app_product:product_single", kwargs={"pid": item.id})
+    def location(self, obj):
+        return obj.get_absolute_url()
