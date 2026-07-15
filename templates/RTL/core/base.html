@@ -199,11 +199,11 @@
                                             تیم اجرایی و چارت سازمانی
                                         </a>
                                     </li>
-                                    <li>
-                                        <a class="dropdown-item" href="{% url 'app_reports:governance' %}">
-                                            اعضاء کمیته ها
-                                        </a>
-                                    </li>
+{#                                    <li>#}
+{#                                        <a class="dropdown-item" href="{% url 'app_reports:governance' %}">#}
+{#                                            اعضاء کمیته ها#}
+{#                                        </a>#}
+{#                                    </li>#}
                                     <li>
                                         <a class="dropdown-item" href="{% url 'app_reports:sustainability' %}">
                                             حاکمیت شرکت
@@ -219,26 +219,26 @@
                                             گواهینامه ها و استاندارد ها
                                         </a>
                                     </li>
-                                    <li>
-                                        <a class="dropdown-item" href="{% url 'app_reports:financial' %}">
-                                            اطلاعیه ها و گزارشات مالی
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="{% url 'app_reports:shareholder' %}">
-                                            امور سهام
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="{% url 'app_reports:companies' %}">
-                                            شرکت های هم گروه
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item" href="{% url 'app_sale:sales_chart' %}">
-                                            نمودار فروش
-                                        </a>
-                                    </li>
+{#                                    <li>#}
+{#                                        <a class="dropdown-item" href="{% url 'app_reports:financial' %}">#}
+{#                                            اطلاعیه ها و گزارشات مالی#}
+{#                                        </a>#}
+{#                                    </li>#}
+{#                                    <li>#}
+{#                                        <a class="dropdown-item" href="{% url 'app_reports:shareholder' %}">#}
+{#                                            امور سهام#}
+{#                                        </a>#}
+{#                                    </li>#}
+{#                                    <li>#}
+{#                                        <a class="dropdown-item" href="{% url 'app_reports:companies' %}">#}
+{#                                            شرکت های هم گروه#}
+{#                                        </a>#}
+{#                                    </li>#}
+{#                                    <li>#}
+{#                                        <a class="dropdown-item" href="{% url 'app_sale:sales_chart' %}">#}
+{#                                            نمودار فروش#}
+{#                                        </a>#}
+{#                                    </li>#}
 
                                 </ul>
 
@@ -253,35 +253,35 @@
                             </li>
 
                             <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
-                                    مناقصات و مزایدات
-                                </a>
-                                <ul class="dropdown-menu fade-down">
-                                    <li>
-                                        <a class="dropdown-item"
-                                           href="{% url 'app_tender:tender_home' %}">
-                                            مناقصات
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item"
-                                           href="{% url 'app_auction:auction_home' %}">
-                                            مزایدات
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item"
-                                           href="{% url 'app_inquiry:home' %}">
-                                            استعلام خرید
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item"
-                                           href="{% url 'app_tender_holding:tender_holding_home' %}">
-                                            مناقصه های هلدینگ
-                                        </a>
-                                    </li>
-                                </ul>
+{#                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">#}
+{#                                    مناقصات و مزایدات#}
+{#                                </a>#}
+{#                                <ul class="dropdown-menu fade-down">#}
+{#                                    <li>#}
+{#                                        <a class="dropdown-item"#}
+{#                                           href="{% url 'app_tender:tender_home' %}">#}
+{#                                            مناقصات#}
+{#                                        </a>#}
+{#                                    </li>#}
+{#                                    <li>#}
+{#                                        <a class="dropdown-item"#}
+{#                                           href="{% url 'app_auction:auction_home' %}">#}
+{#                                            مزایدات#}
+{#                                        </a>#}
+{#                                    </li>#}
+{#                                    <li>#}
+{#                                        <a class="dropdown-item"#}
+{#                                           href="{% url 'app_inquiry:home' %}">#}
+{#                                            استعلام خرید#}
+{#                                        </a>#}
+{#                                    </li>#}
+{#                                    <li>#}
+{#                                        <a class="dropdown-item"#}
+{#                                           href="{% url 'app_tender_holding:tender_holding_home' %}">#}
+{#                                            مناقصه های هلدینگ#}
+{#                                        </a>#}
+{#                                    </li>#}
+{#                                </ul>#}
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'app_media:home' %}">
                                     رسانه
@@ -303,11 +303,11 @@
                                     ارتباط با ما
                                 </a>
                                 <ul class="dropdown-menu fade-down">
-                                    <li>
-                                        <a class="dropdown-item" href="{% url 'app_hr:hr_home' %}">
-                                            فرصت های شغلی
-                                        </a>
-                                    </li>
+{#                                    <li>#}
+{#                                        <a class="dropdown-item" href="{% url 'app_hr:hr_home' %}">#}
+{#                                            فرصت های شغلی#}
+{#                                        </a>#}
+{#                                    </li>#}
                                     {% if site_info and site_info.phone_security_1 or site_info.phone_security_2 or site_info.phone_security_3 or site_info.email_security or site_info.fax_security %}
                                         <li>
                                             <a class="dropdown-item"
@@ -316,11 +316,11 @@
                                             </a>
                                         </li>
                                     {% endif %}
-                                    <li>
-                                        <a class="dropdown-item" href="{% url 'app_reports:department_contact_list' %}">
-                                            دپارتمان ها
-                                        </a>
-                                    </li>
+{#                                    <li>#}
+{#                                        <a class="dropdown-item" href="{% url 'app_reports:department_contact_list' %}">#}
+{#                                            دپارتمان ها#}
+{#                                        </a>#}
+{#                                    </li>#}
                                     <li>
                                         <a class="dropdown-item" href="{% url 'app_core:contact' %}">
                                             تماس با ما
@@ -518,11 +518,11 @@
                                     تیم اجرایی و چارت سازمانی
                                 </a>
                             </li>
-                            <li>
-                                <a href="{% url 'app_reports:governance' %}">
-                                    اعضاء کمیته
-                                </a>
-                            </li>
+{#                            <li>#}
+{#                                <a href="{% url 'app_reports:governance' %}">#}
+{#                                    اعضاء کمیته#}
+{#                                </a>#}
+{#                            </li>#}
                             <li>
                                 <a href="{% url 'app_reports:sustainability' %}">
                                     حاکمیت شرکت
@@ -538,26 +538,26 @@
                                     گواهینامه ها و استاندارد ها
                                 </a>
                             </li>
-                            <li>
-                                <a href="{% url 'app_reports:financial' %}">
-                                    اطلاعیه ها و گزارشات مالی
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{% url 'app_reports:shareholder' %}">
-                                    امور سهام
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{% url 'app_reports:companies' %}">
-                                    شرکت های هم گروه
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{% url 'app_sale:sales_chart' %}">
-                                    نمودار فروش
-                                </a>
-                            </li>
+{#                            <li>#}
+{#                                <a href="{% url 'app_reports:financial' %}">#}
+{#                                    اطلاعیه ها و گزارشات مالی#}
+{#                                </a>#}
+{#                            </li>#}
+{#                            <li>#}
+{#                                <a href="{% url 'app_reports:shareholder' %}">#}
+{#                                    امور سهام#}
+{#                                </a>#}
+{#                            </li>#}
+{#                            <li>#}
+{#                                <a href="{% url 'app_reports:companies' %}">#}
+{#                                    شرکت های هم گروه#}
+{#                                </a>#}
+{#                            </li>#}
+{#                            <li>#}
+{#                                <a href="{% url 'app_sale:sales_chart' %}">#}
+{#                                    نمودار فروش#}
+{#                                </a>#}
+{#                            </li>#}
 
                         </ul>
                     </div>
@@ -578,26 +578,26 @@
                                     اخبار شرکت
                                 </a>
                             </li>
-                            <li>
-                                <a href="{% url 'app_tender:tender_home' %}">
-                                    مناقصه
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{% url 'app_auction:auction_home' %}">
-                                    مزایده
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{% url 'app_inquiry:home' %}">
-                                    استعلام خرید
-                                </a>
-                            </li>
-                            <li>
-                                <a href="{% url 'app_tender_holding:tender_holding_home' %}">
-                                    مناقصه های هلدینگ
-                                </a>
-                            </li>
+{#                            <li>#}
+{#                                <a href="{% url 'app_tender:tender_home' %}">#}
+{#                                    مناقصه#}
+{#                                </a>#}
+{#                            </li>#}
+{#                            <li>#}
+{#                                <a href="{% url 'app_auction:auction_home' %}">#}
+{#                                    مزایده#}
+{#                                </a>#}
+{#                            </li>#}
+{#                            <li>#}
+{#                                <a href="{% url 'app_inquiry:home' %}">#}
+{#                                    استعلام خرید#}
+{#                                </a>#}
+{#                            </li>#}
+{#                            <li>#}
+{#                                <a href="{% url 'app_tender_holding:tender_holding_home' %}">#}
+{#                                    مناقصه های هلدینگ#}
+{#                                </a>#}
+{#                            </li>#}
                             <li>
                                 <a href="{% url 'app_media:home' %}">
                                     رسانه
@@ -614,11 +614,11 @@
                                     مقالات
                                 </a>
                             </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'app_hr:hr_home' %}">
-                                    فرصت های شغلی
-                                </a>
-                            </li>
+{#                            <li>#}
+{#                                <a class="dropdown-item" href="{% url 'app_hr:hr_home' %}">#}
+{#                                    فرصت های شغلی#}
+{#                                </a>#}
+{#                            </li>#}
 
                             {% if site_info.phone_security_1 or site_info.phone_security_2 or site_info.phone_security_3 or site_info.email_security or site_info.fax_security %}
                                 <li>

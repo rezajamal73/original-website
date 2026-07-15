@@ -109,41 +109,6 @@ class CorporateText(models.Model):
 
 
 # =====================================================
-# CORPORATE IMAGE
-# =====================================================
-class CorporateImage(models.Model):
-    """
-    تصاویر مرتبط با بلاک متنی
-    """
-
-    text = models.ForeignKey(
-        CorporateText,
-        on_delete=models.CASCADE,
-        related_name="images",
-        verbose_name="بلاک متنی مربوطه"
-    )
-
-    image = models.ImageField(
-        upload_to="corporate/images/",
-        verbose_name="تصویر",
-        help_text="تصویر مرتبط با این بلاک متنی"
-    )
-
-    display_order = models.PositiveIntegerField(
-        default=0,
-        verbose_name="ترتیب نمایش تصویر"
-    )
-
-    class Meta:
-        ordering = ["display_order"]
-        verbose_name = "تصویر"
-        verbose_name_plural = "تصاویر"
-
-    def __str__(self):
-        return "تصویر بلاک متنی"
-
-
-# =====================================================
 # CORPORATE ATTACHMENT
 # =====================================================
 class CorporateAttachment(models.Model):

@@ -2,7 +2,7 @@ import random
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Count, Q
-from app_banner.models import HeroBanner, OtherBanner, SpecialProductBanner, MainBanner, HeroSliderSetting
+from app_banner.models import HeroBanner, OtherBanner, SpecialProductBanner, MainBanner, AboutBanner,HeroSliderSetting
 from app_blog.models import blog
 from app_product.models import Product, ProductCategory
 from app_reports.models import CorporateSection, CorporateStatistic, GroupCompany, FollowUsLink, SiteMainInfo
@@ -67,6 +67,9 @@ def home(request, slug=None):
         .select_related("about_year")
         .first()
     )
+    about_banner = AboutBanner.objects.filter(
+        status="published"
+    ).first()
 
     group_companies = GroupCompany.objects.filter(
         is_active=True
@@ -91,6 +94,7 @@ def home(request, slug=None):
     )
     context = {
         "banners": banners,
+        "about_banner": about_banner,
         "active_slider": active_slider,
         "blogs": blogs,
         "special_products": special_products,
@@ -114,10 +118,7 @@ def about(request):
 
     section = (
         CorporateSection.objects
-        .prefetch_related(
-            "texts__images",
-            "texts__attachments",
-        )
+        .prefetch_related("texts__attachments")
         .filter(
             section_type="history",
             is_published=True,
@@ -136,10 +137,17 @@ def about(request):
         .order_by("priority", "title_fa")
     )
     site_info = SiteMainInfo.objects.first()  # ✅ اضافه شد
-
+    follow_links = (
+        FollowUsLink.objects
+        .filter(is_active=True)
+        .exclude(url="")
+        .exclude(svg_icon="")
+        .order_by("display_order")
+    )
     context = {
         "categories": categories,
         "banner": banner,
+        "follow_links": follow_links,
         "section": section,
         "site_info": site_info,  # ✅ مهم
     }
@@ -468,59 +476,3 @@ def search(request):
         context
     )
 
-
-# در انتهای app_core/views.py اضافه کن
-
-from django.contrib.auth import authenticate, login as auth_login
-
-
-def admin_login(request):
-    if request.user.is_authenticated and request.user.is_staff:
-        return redirect("/admin/")
-
-    error = None
-    captcha_q = request.session.get("captcha_q", "")
-
-    # تولید کپچای جدید برای GET
-    if request.method == "GET":
-        a, b = random.randint(1, 9), random.randint(1, 9)
-        request.session["captcha"] = a + b
-        request.session["captcha_q"] = f"{a} + {b}"
-        captcha_q = request.session["captcha_q"]
-
-    if request.method == "POST":
-        username = request.POST.get("username", "")
-        password = request.POST.get("password", "")
-
-        # بررسی کپچا
-        try:
-            answer = int(request.POST.get("captcha_answer", ""))
-        except ValueError:
-            answer = None
-
-        if answer != request.session.get("captcha"):
-            error = "پاسخ سوال امنیتی اشتباه است."
-            # کپچای جدید بساز
-            a, b = random.randint(1, 9), random.randint(1, 9)
-            request.session["captcha"] = a + b
-            request.session["captcha_q"] = f"{a} + {b}"
-            captcha_q = request.session["captcha_q"]
-        else:
-            user = authenticate(request, username=username, password=password)
-            if user and user.is_staff:
-                auth_login(request, user)
-                next_url = request.POST.get("next", "/admin/")
-                return redirect(next_url)
-            else:
-                error = "نام کاربری یا رمز عبور اشتباه است."
-                # کپچای جدید بساز
-                a, b = random.randint(1, 9), random.randint(1, 9)
-                request.session["captcha"] = a + b
-                request.session["captcha_q"] = f"{a} + {b}"
-                captcha_q = request.session["captcha_q"]
-
-    return render(request, "admin/login.html", {
-        "captcha_q": captcha_q,
-        "error": error,
-        "next": request.GET.get("next", "/admin/"),
-    })

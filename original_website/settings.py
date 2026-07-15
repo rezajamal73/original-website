@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'app_tender_holding.apps.AppTenderHoldingConfig',
     'app_inquiry.apps.AppInquiryConfig',
 
+    'app_admin',
     'app_auction.apps.AppAuctionConfig',
     'app_security.apps.AppSecurityConfig',
     'app_contact.apps.AppContactConfig',
@@ -150,7 +151,7 @@ MEDIA_URL = '/media/'
 from django.urls import reverse_lazy
 
 JAZZMIN_SETTINGS = {
-    # ─── برندینگ ───────────────────────────────────────────
+
     "site_title": "",
     "site_header": "سیستم مدیریت ",
     "site_brand": "",
@@ -183,23 +184,93 @@ JAZZMIN_SETTINGS = {
     "hide_models": [],
 
     "order_with_respect_to": [
+        # محصولات
         "app_product",
+        "app_product.Product",
+        "app_product.ProductTag",
+        "app_product.ProductCategory",
+        "app_product.ProductCategory2",
+
+        # وبلاگ
         "app_blog",
+        "app_blog.blog",
+        "app_blog.blog_Tag",
+        "app_blog.blog_Category",
+
+        # اخبار
         "app_news",
+        "app_news.News",
+        "app_news.NewsTag",
+        "app_news.NewsCategory",
+
+        # رسانه
         "app_media",
+        "app_media.Media",
+
+        # مناقصه
         "app_tender",
+        "app_tender.Tender",
+        "app_tender.TenderCategory",
+
+        # هلدینگ
         "app_tender_holding",
+        "app_tender_holding.Holding",
+
+        # مزایده
         "app_auction",
+        "app_auction.Auction",
+
+        # استعلام
         "app_inquiry",
+        "app_inquiry.PurchaseInquiry",
+
+        # فروش
         "app_sale",
+        "app_sale.SalesReport",
+
+        # کاتالوگ
         "app_catalog",
+        "app_catalog.CompanyCatalog",
+
+        # چارت
         "app_chart",
+        "app_chart.Person",
+        "app_chart.BoardMember",
+
+        # منابع انسانی
         "app_hr",
+        "app_hr.JobOpportunity",
+        "app_hr.JobApplication",
+
+        # ارتباط
         "app_contact",
+        "app_contact.ContactMessage",
+
+        # امنیت
         "app_security",
+        "app_security.SecurityContact",
+
+        # بنر
         "app_banner",
+        "app_banner.HeroSliderSetting",
+        "app_banner.HeroBanner",
+        "app_banner.MainBanner",
+        "app_banner.OtherBanner",
+        "app_banner.SpecialProductBanner",
+
+        # گزارشات
         "app_reports",
+        "app_reports.SiteMainInfo",
+        "app_reports.CorporateSection",
+        "app_reports.CorporateStatistic",
+        "app_reports.GroupCompany",
+        "app_reports.DepartmentContact",
+        "app_reports.FollowUsLink",
+
+        # کاربران
         "auth",
+        "auth.User",
+        "auth.Group",
     ],
 
     # ─── آیکون‌ها ───────────────────────────────────────────

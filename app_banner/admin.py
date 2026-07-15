@@ -9,6 +9,7 @@ from app_banner.models import (
     SpecialProductBanner,
     MainBanner,
     HeroSliderSetting,
+    AboutBanner,
 )
 
 
@@ -298,3 +299,79 @@ class MainBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
     def admin_delete(self, obj):
         return admin_delete_button(obj)
     admin_delete.short_description = "حذف"
+
+    @admin.register(AboutBanner)
+    class AboutBannerAdmin(admin.ModelAdmin):
+        actions = None
+
+        list_display = (
+            "image1_icon",
+            "image2_icon",
+            "status",
+            "admin_delete",
+        )
+
+        readonly_fields = (
+            "image1_preview",
+            "image2_preview",
+        )
+
+        fieldsets = (
+            ("📌 وضعیت", {
+                "fields": ("status",),
+            }),
+            ("🖼️ تصویر اول", {
+                "fields": ("image_1", "image1_preview"),
+            }),
+            ("🖼️ تصویر دوم", {
+                "fields": ("image_2", "image2_preview"),
+            }),
+        )
+
+        def has_add_permission(self, request):
+            return not AboutBanner.objects.exists()
+
+        def image1_icon(self, obj):
+            if obj.image_1:
+                return format_html(
+                    "<img src='{}' width='50' style='border-radius:6px;'>",
+                    obj.image_1.url,
+                )
+            return "—"
+
+        image1_icon.short_description = "تصویر اول"
+
+        def image2_icon(self, obj):
+            if obj.image_2:
+                return format_html(
+                    "<img src='{}' width='50' style='border-radius:6px;'>",
+                    obj.image_2.url,
+                )
+            return "—"
+
+        image2_icon.short_description = "تصویر دوم"
+
+        def image1_preview(self, obj):
+            if obj.image_1:
+                return format_html(
+                    "<img src='{}' width='250' style='border-radius:10px;'>",
+                    obj.image_1.url,
+                )
+            return "تصویری وجود ندارد"
+
+        image1_preview.short_description = "پیش‌نمایش تصویر اول"
+
+        def image2_preview(self, obj):
+            if obj.image_2:
+                return format_html(
+                    "<img src='{}' width='250' style='border-radius:10px;'>",
+                    obj.image_2.url,
+                )
+            return "تصویری وجود ندارد"
+
+        image2_preview.short_description = "پیش‌نمایش تصویر دوم"
+
+        def admin_delete(self, obj):
+            return admin_delete_button(obj)
+
+        admin_delete.short_description = "حذف"

@@ -2998,8 +2998,9 @@ label {
 }
 
 .category-info .icon img{
-  width: 58px;
-  filter: brightness(0) invert(1);
+    width: 58px;
+    filter: none;
+    transition: var(--transition);
 }
 
 .category-info:hover .icon img{

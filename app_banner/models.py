@@ -2,8 +2,8 @@ from django.db import models
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
 
-class HeroSliderSetting(models.Model):
 
+class HeroSliderSetting(models.Model):
     HERO_TYPE_CHOICES = (
         ("hs_1", "اسلایدر مدل ۱(کوچک،وسط)"),
         ("hs_2", "اسلایدر مدل ۲(تمام صفحه)"),
@@ -32,11 +32,12 @@ class HeroSliderSetting(models.Model):
 
     def __str__(self):
         return "تنظیمات اسلایدر صفحه اصلی"
+
+
 # ============================================================
 #   بنر اصلی (اسلایدر صفحه خانه)
 # ============================================================
 class HeroBanner(models.Model):
-
     STATUS_CHOICES = (
         ("draft", "پیش‌نویس"),
         ("published", "منتشر شده"),
@@ -85,7 +86,8 @@ class HeroBanner(models.Model):
     )
 
     image = models.ImageField(
-        upload_to="banner/image/", verbose_name="تصویر بنر"
+        upload_to="banners/hero/",
+        verbose_name="تصویر بنر"
     )
 
     status = models.CharField(
@@ -123,7 +125,6 @@ class HeroBanner(models.Model):
 #   بنر صفحات داخلی
 # ============================================================
 class OtherBanner(models.Model):
-
     STATUS_CHOICES = (
         ("draft", "پیش‌نویس"),
         ("published", "منتشر شده"),
@@ -138,7 +139,8 @@ class OtherBanner(models.Model):
     slug = models.SlugField(unique=True, blank=True, verbose_name="اسلاگ")
 
     image = models.ImageField(
-        upload_to="banner/image/", verbose_name="تصویر بنر"
+        upload_to="banners/other/",
+        verbose_name="تصویر بنر"
     )
 
     status = models.CharField(
@@ -168,7 +170,6 @@ class OtherBanner(models.Model):
 #   بنر محصولات ویژه (فقط یک فعال)
 # ============================================================
 class SpecialProductBanner(models.Model):
-
     STATUS_CHOICES = (
         ("draft", "پیش‌نویس"),
         ("published", "منتشر شده"),
@@ -181,7 +182,8 @@ class SpecialProductBanner(models.Model):
     slug = models.SlugField(unique=True, blank=True, verbose_name="اسلاگ")
 
     image = models.ImageField(
-        upload_to="banners/special-products/", verbose_name="تصویر بنر"
+        upload_to="banners/special-products/",
+        verbose_name="تصویر بنر"
     )
 
     order = models.PositiveSmallIntegerField(default=0, verbose_name="اولویت نمایش")
@@ -221,7 +223,6 @@ class SpecialProductBanner(models.Model):
 #   بنر اصلی صفحات داخلی (فقط یک فعال)
 # ============================================================
 class MainBanner(models.Model):
-
     STATUS_CHOICES = (
         ("draft", "پیش‌نویس"),
         ("published", "منتشر شده"),
@@ -232,7 +233,8 @@ class MainBanner(models.Model):
     slug = models.SlugField(unique=True, blank=True, verbose_name="اسلاگ")
 
     image = models.ImageField(
-        upload_to="banner/image/", verbose_name="تصویر بنر"
+        upload_to="banners/main/",
+        verbose_name="تصویر بنر"
     )
 
     # ---------- فارسی ----------
@@ -287,3 +289,48 @@ class MainBanner(models.Model):
 
     def __str__(self):
         return self.title_p1_fa or f"بنر داخلی اصلی #{self.pk}"
+
+class AboutBanner(models.Model):
+    STATUS_CHOICES = (
+        ("draft", "پیش‌نویس"),
+        ("published", "منتشر شده"),
+    )
+
+    image_1 = models.ImageField(
+        upload_to="banners/about/",
+        verbose_name="تصویر اول"
+    )
+
+    image_2 = models.ImageField(
+        upload_to="banners/about/",
+        verbose_name="تصویر دوم"
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="draft",
+        verbose_name="وضعیت انتشار"
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "تصاویر درباره ما"
+        verbose_name_plural = "تصاویر درباره ما"
+
+    def clean(self):
+        if self.status == "published":
+            qs = AboutBanner.objects.filter(status="published")
+            if self.pk:
+                qs = qs.exclude(pk=self.pk)
+            if qs.exists():
+                raise ValidationError("فقط یک بنر درباره ما می‌تواند منتشر شده باشد.")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return "تصاویر درباره ما"
