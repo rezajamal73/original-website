@@ -167,9 +167,9 @@ JAZZMIN_SETTINGS = {
     # ═══ برندینگ ═══
     "site_title": "پنل مدیریت پیشرفته",
     "site_header": "پنل مدیریت",
-    "site_brand": "مدیریت",
-    "welcome_sign": "به پنل مدیریت خوش آمدید 👋",
-    "copyright": "© ۱۴۰۵ - تمامی حقوق محفوظ است",
+    "site_brand": " داشبورد مدیریت",
+    "welcome_sign": "👋",
+    "copyright": "RJ ۱۴۰۵ - تمامی حقوق محفوظ است",
 
     "site_logo": "admin-custom/images/logos/logo.png",
     "login_logo": "admin-custom/images/logos/logo.png",
