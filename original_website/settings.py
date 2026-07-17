@@ -67,6 +67,9 @@ SITE_ID = 2
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+
+    'django.middleware.locale.LocaleMiddleware',
+
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -126,7 +129,10 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'fa'
+LANGUAGES = [
+    ("fa", "فارسی"),
+]
 
 TIME_ZONE = 'UTC'
 
@@ -150,107 +156,116 @@ MEDIA_URL = '/media/'
 
 from django.urls import reverse_lazy
 
+from django.urls import reverse_lazy
+
+# ═══════════════════════════════════════════════════════════
+# 1. تنظیمات اصلی JAZZMIN
+# ═══════════════════════════════════════════════════════════
+
 JAZZMIN_SETTINGS = {
 
-    "site_title": "",
-    # "site_header": "سیستم مدیریت ",
-    "site_brand": "",
-    "welcome_sign": "خوش آمدید",
-    "copyright": "RJ",
-    # "site_logo": "admin-custom/images/logo.png",
-    # "login_logo": "admin-custom/images/logo.png",
-    # "login_logo_dark": "admin-custom/images/logo.png",
-    "site_logo_classes": "img-circle elevation-2",
-    # "site_icon": "admin-custom/images/logo.png",
+    # ═══ برندینگ ═══
+    "site_title": "پنل مدیریت پیشرفته",
+    "site_header": "پنل مدیریت",
+    "site_brand": "مدیریت",
+    "welcome_sign": "به پنل مدیریت خوش آمدید 👋",
+    "copyright": "© ۱۴۰۵ - تمامی حقوق محفوظ است",
 
-    # ─── منوی بالا ─────────────────────────────────────────
+    "site_logo": "admin-custom/images/logos/logo.png",
+    "login_logo": "admin-custom/images/logos/logo.png",
+    "login_logo_dark": "admin-custom/images/logos/logo.png",
+    "site_icon": "admin-custom/images/logos/favicon.ico",
+
+    # ═══ منوی بالای هدر ═══
     "topmenu_links": [
-        {"name": "مشاهده سایت", "url": "/", "new_window": True},
-        {"name": "داشبورد", "url": "/dp-admin/dashboard/"},
-        {"app": "app_product"},
-        {"app": "app_blog"},
-    ],
-
-    # ─── منوی کاربر ────────────────────────────────────────
-    "usermenu_links": [
-        {"name": "مشاهده سایت", "url": "/", "new_window": True},
-        {"model": "auth.user"},
-    ],
-
-    # ─── سایدبار ───────────────────────────────────────────
-    "show_sidebar": True,
-    "navigation_expanded": False,
-    "hide_apps": [],
-    "hide_models": [],
-
-    "order_with_respect_to": [
+        {"name": "🏠 مشاهده سایت", "url": "/", "new_window": True},
         # محصولات
+        {"app": "app_product", "label": "🛍️ محصولات"},
+        # وبلاگ
+        {"app": "app_blog", "label": "📝 وبلاگ"},
+        # اخبار
+        {"app": "app_news", "label": "📰 اخبار"},
+        # رسانه
+        {"app": "app_media", "label": "🖼️ رسانه"},
+        # کاتالوگ
+        {"app": "app_catalog", "label": "📚 کاتالوگ"},
+
+        # بنرها
+        {"app": "app_banner", "label": "🖼️ بنرها"},
+        # گزارشات
+        {"app": "app_reports", "label": "📊 گزارشات"},
+
+    ],
+
+    # ═══ منوی کاربری (گوشه بالا) ═══
+
+
+    # ═══ سایدبار ═══
+    "show_sidebar": True,
+    "navigation_expanded": False,  # برای باز بودن همه منوها True کنید
+    "hide_apps": [],  # اپ‌هایی که نمی‌خواهید نمایش داده شوند
+    "hide_models": [],  # مدل‌هایی که نمی‌خواهید نمایش داده شوند
+
+    # ═══ ترتیب نمایش (ساختار گروه‌بندی شده) ═══
+    "order_with_respect_to": [
+        # ─── ۱. مدیریت کاربران ───
+        "auth",
+        "auth.User",
+        "auth.Group",
+
+        # ─── ۲. فروش و محصولات ───
         "app_product",
         "app_product.Product",
-        "app_product.ProductTag",
         "app_product.ProductCategory",
         "app_product.ProductCategory2",
+        "app_product.ProductTag",
 
-        # وبلاگ
+        # ─── ۳. محتوا و رسانه ───
         "app_blog",
         "app_blog.blog",
-        "app_blog.blog_Tag",
         "app_blog.blog_Category",
-
-        # اخبار
+        "app_blog.blog_Tag",
         "app_news",
         "app_news.News",
-        "app_news.NewsTag",
         "app_news.NewsCategory",
-
-        # رسانه
+        "app_news.NewsTag",
         "app_media",
         "app_media.Media",
 
-        # مناقصه
+        # ─── ۴. مناقصات و مزایدات ───
         "app_tender",
         "app_tender.Tender",
         "app_tender.TenderCategory",
-
-        # هلدینگ
         "app_tender_holding",
         "app_tender_holding.Holding",
-
-        # مزایده
         "app_auction",
         "app_auction.Auction",
 
-        # استعلام
+        # ─── ۵. استعلام و فروش ───
         "app_inquiry",
         "app_inquiry.PurchaseInquiry",
-
-        # فروش
         "app_sale",
         "app_sale.SalesReport",
 
-        # کاتالوگ
+        # ─── ۶. کاتالوگ و چارت ───
         "app_catalog",
         "app_catalog.CompanyCatalog",
-
-        # چارت
         "app_chart",
         "app_chart.Person",
         "app_chart.BoardMember",
 
-        # منابع انسانی
+        # ─── ۷. منابع انسانی ───
         "app_hr",
         "app_hr.JobOpportunity",
         "app_hr.JobApplication",
 
-        # ارتباط
+        # ─── ۸. ارتباطات ───
         "app_contact",
         "app_contact.ContactMessage",
-
-        # امنیت
         "app_security",
         "app_security.SecurityContact",
 
-        # بنر
+        # ─── ۹. تنظیمات و بنرها ───
         "app_banner",
         "app_banner.HeroSliderSetting",
         "app_banner.HeroBanner",
@@ -258,7 +273,7 @@ JAZZMIN_SETTINGS = {
         "app_banner.OtherBanner",
         "app_banner.SpecialProductBanner",
 
-        # گزارشات
+        # ─── ۱۰. گزارشات ───
         "app_reports",
         "app_reports.SiteMainInfo",
         "app_reports.CorporateSection",
@@ -266,139 +281,188 @@ JAZZMIN_SETTINGS = {
         "app_reports.GroupCompany",
         "app_reports.DepartmentContact",
         "app_reports.FollowUsLink",
-
-        # کاربران
-        "auth",
-        "auth.User",
-        "auth.Group",
     ],
 
-    # ─── آیکون‌ها ───────────────────────────────────────────
+    # ═══ آیکون‌های Font Awesome ───
     "icons": {
-        # محتوا
-        "app_product": "fas fa-pills",
-        "app_product.Product": "fas fa-capsules",
-        "app_product.ProductCategory": "fas fa-folder",
-        "app_product.ProductTag": "fas fa-tag",
-        "app_product.ProductCategory2": "fas fa-folder-open",
 
-        "app_blog": "fas fa-pen-nib",
-        "app_blog.blog": "fas fa-file-alt",
+        # کاربران
+        "auth": "fas fa-users",
+        "auth.User": "fas fa-user",
+        "auth.Group": "fas fa-user-friends",
+
+        # محصولات
+        "app_product": "",
+        "app_product.Product": "fas fa-box-open",
+        "app_product.ProductCategory": "fas fa-folder",
+        "app_product.ProductCategory2": "fas fa-folder-open",
+        "app_product.ProductTag": "fas fa-tags",
+
+        # وبلاگ
+        "app_blog": "",
+        "app_blog.blog": "fas fa-edit",
         "app_blog.blog_Category": "fas fa-folder",
         "app_blog.blog_Tag": "fas fa-tag",
 
-        "app_news": "fas fa-newspaper",
-        "app_news.News": "fas fa-rss",
+        # اخبار
+        "app_news": "",
+        "app_news.News": "fas fa-bullhorn",
         "app_news.NewsCategory": "fas fa-folder",
         "app_news.NewsTag": "fas fa-tag",
 
-        "app_media": "fas fa-photo-video",
-        "app_media.Media": "fas fa-film",
+        # رسانه
+        "app_media": "",
+        "app_media.Media": "fas fa-image",
 
-        # تجاری
-        "app_tender": "fas fa-file-contract",
-        "app_tender.Tender": "fas fa-file-signature",
+        # مناقصه
+        "app_tender": "",
+        "app_tender.Tender": "fas fa-file-alt",
         "app_tender.TenderCategory": "fas fa-folder",
 
-        "app_tender_holding": "fas fa-building",
+        "app_tender_holding": "",
         "app_tender_holding.Holding": "fas fa-industry",
 
-        "app_auction": "fas fa-gavel",
-        "app_auction.Auction": "fas fa-hammer",
+        # مزایده
+        "app_auction": "",
+        "app_auction.Auction": "fas fa-gavel",
 
-        "app_inquiry": "fas fa-search-dollar",
+        # استعلام
+        "app_inquiry": "",
         "app_inquiry.PurchaseInquiry": "fas fa-file-invoice",
 
-        "app_sale": "fas fa-chart-line",
-        "app_sale.SalesReport": "fas fa-file-invoice-dollar",
+        # فروش
+        "app_sale":"",
+        "app_sale.SalesReport": "fas fa-chart-line",
 
-        "app_catalog": "fas fa-book-open",
-        "app_catalog.CompanyCatalog": "fas fa-book",
+        # کاتالوگ
+        "app_catalog": "",
+        "app_catalog.CompanyCatalog": "fas fa-book-open",
 
-        # سازمانی
-        "app_chart": "fas fa-sitemap",
+        # چارت سازمانی
+        "app_chart": "",
         "app_chart.Person": "fas fa-user-tie",
-        "app_chart.BoardMember": "fas fa-users",
+        "app_chart.BoardMember": "fas fa-user-shield",
 
-        "app_hr": "fas fa-user-friends",
+        # منابع انسانی
+        "app_hr": "",
         "app_hr.JobOpportunity": "fas fa-briefcase",
-        "app_hr.JobApplication": "fas fa-file-user",
+        "app_hr.JobApplication": "fas fa-file-signature",
 
-        # ارتباطات
-        "app_contact": "fas fa-envelope",
-        "app_contact.ContactMessage": "fas fa-comment-dots",
+        # ارتباط با ما
+        "app_contact": "",
+        "app_contact.ContactMessage": "fas fa-comments",
 
-        "app_security": "fas fa-shield-alt",
+        # امنیت
+        "app_security":"",
         "app_security.SecurityContact": "fas fa-lock",
 
-        # تنظیمات
-        "app_banner": "fas fa-image",
-        "app_banner.HeroBanner": "fas fa-images",
-        "app_banner.OtherBanner": "fas fa-portrait",
-        "app_banner.MainBanner": "fas fa-panorama",
+        # بنر
+        "app_banner": "",
+        "app_banner.HeroBanner": "fas fa-desktop",
+        "app_banner.OtherBanner": "fas fa-image",
+        "app_banner.MainBanner": "fas fa-flag",
         "app_banner.SpecialProductBanner": "fas fa-star",
         "app_banner.HeroSliderSetting": "fas fa-sliders-h",
 
-        "app_reports": "fas fa-chart-bar",
+        # گزارشات
+        "app_reports": "",
         "app_reports.SiteMainInfo": "fas fa-info-circle",
         "app_reports.FollowUsLink": "fas fa-link",
-        "app_reports.CorporateStatistic": "fas fa-poll",
+        "app_reports.CorporateStatistic": "fas fa-chart-pie",
         "app_reports.CorporateSection": "fas fa-layer-group",
-        "app_reports.GroupCompany": "fas fa-building",
+        "app_reports.GroupCompany": "fas fa-city",
         "app_reports.DepartmentContact": "fas fa-phone",
-
-        # احراز هویت
-        "auth": "fas fa-users-cog",
-        "auth.User": "fas fa-user",
-        "auth.Group": "fas fa-users",
     },
 
-    "default_icon_parents": "fas fa-folder",
+    # آیکون‌های پیش‌فرض
+    "default_icon_parents": "fas fa-folder-open",
     "default_icon_children": "fas fa-circle",
 
-    # ─── UI ────────────────────────────────────────────────
-    "related_modal_active": True,
+    # ═══ تنظیمات UI ═══
+    "related_modal_active": True,  # نمایش مدال برای روابط
     "custom_css": "admin-custom/css/admin-custom.css",
-    "use_google_fonts_cdn": False,  # فونت از CSS لود می‌شود
-    "show_ui_builder": False,  # در production باید False باشد
-    "changeform_format": "horizontal_tabs",
+    "use_google_fonts_cdn": False,
+    "show_ui_builder": False,
+
+    # فرم تغییر
+    "changeform_format": "horizontal_tabs",  # یا "vertical_tabs" یا "collapsible"
     "changeform_format_overrides": {
         "auth.user": "collapsible",
+        "auth.group": "collapsible",
     },
+
+    # زبان
     "language_chooser": False,
 }
 
+
 JAZZMIN_UI_TWEAKS = {
+
+    # ═══ تم‌ها ═══
+    "theme": "flatly",  # تم اصلی (نور)
+    "dark_mode_theme": "darkly",  # تم دارک (خودکار)
+
+    # ═══ رنگ‌بندی برند ═══
+    "brand_colour": "navbar-primary",  # یا "navbar-info", "navbar-success"
+    "accent": "accent-primary",  # رنگ تاکیدی
+    "navbar": "navbar-dark",  # نوار بالا (dark/light)
+    "sidebar": "sidebar-dark-primary",  # سایدبار
+
+    # ═══ اندازه فونت‌ها ═══
     "navbar_small_text": False,
     "footer_small_text": False,
     "body_small_text": False,
     "brand_small_text": False,
-    "brand_colour": False,  # ← بود "navbar-primary" — خاموش شد تا با تم خودمون تداخل نکنه
-    "accent": False,  # ← بود "accent-primary" — خاموش شد
-    "navbar": False,  # ← بود "navbar-dark" — خاموش شد
-    "no_navbar_border": True,
-    "navbar_fixed": True,
-    "layout_boxed": False,
-    "footer_fixed": False,
-    "sidebar_fixed": True,
-    "sidebar": False,  # ← بود "sidebar-dark-primary" — خاموش شد
     "sidebar_nav_small_text": False,
-    "sidebar_disable_expand": False,
-    "sidebar_nav_child_indent": True,
-    "sidebar_nav_compact_style": False,
-    "sidebar_nav_legacy_style": False,
-    "sidebar_nav_flat_style": False,
-    "theme": "default",  # ← بود "darkly" — حذف شد، چون با متغیرهای CSS خودمون تداخل رنگی ایجاد می‌کرد
-    "dark_mode_theme": None,  # ← بود "darkly" — خاموش شد
+
+    # ═══ نوار بالا ═══
+    "navbar_fixed": True,  # ثابت در بالا
+    "no_navbar_border": True,  # بدون حاشیه
+
+    # ═══ سایدبار ═══
+    "sidebar_fixed": True,  # ثابت
+    "sidebar_nav_child_indent": True,  # تورفتگی زیرمنوها
+    "sidebar_nav_compact_style": True,  # استایل فشرده
+    "sidebar_nav_legacy_style": False,  # غیرفعال کردن استایل قدیمی
+    "sidebar_nav_flat_style": True,  # استایل تخت و مدرن
+    "sidebar_disable_expand": False,  # قابلیت باز/بسته شدن
+
+    # ═══ فوتر ═══
+    "footer_fixed": False,
+
+    # ═══ چیدمان صفحه ═══
+    "layout_boxed": False,  # صفحه تمام‌عرض
+
+    # ═══ دکمه‌ها ═══
+    # "button_classes": {
+    #     "primary": "btn-primary",  # دکمه‌های کامل با رنگ
+    #     "secondary": "btn-secondary",
+    #     "info": "btn-info",
+    #     "warning": "btn-warning",
+    #     "danger": "btn-danger",
+    #     "success": "btn-success",
+    # },
     "button_classes": {
-        "primary": "btn-primary",
-        "secondary": "btn-secondary",
-        "info": "btn-info",
-        "warning": "btn-warning",
-        "danger": "btn-danger",
-        "success": "btn-success",
+        "primary": "btn-outline-primary",
+        "secondary": "btn-outline-secondary",
+        "info": "btn-outline-info",
+        "warning": "btn-outline-warning",
+        "danger": "btn-outline-danger",
+        "success": "btn-outline-success",
     },
-    "actions_sticky_top": True,
+
+    # ═══ ویژگی‌های اضافی ═══
+    "actions_sticky_top": True,  # دکمه‌های عملیاتی چسبنده
 }
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# ═══════════════════════════════════════════════════════════
+# 3. تنظیمات اختیاری برای جستجو و فیلتر
+# ═══════════════════════════════════════════════════════════
+
+JAZZMIN_SETTINGS["global_search"] = [
+    "app_product.Product",
+    "app_blog.blog",
+    "app_news.News",
+    "auth.User",
+]
+

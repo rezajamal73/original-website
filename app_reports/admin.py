@@ -85,7 +85,7 @@ class CorporateImageInline(SortableAdminMixin, admin.TabularInline):
     fields = ("preview", "image", "display_order")
     readonly_fields = ("preview",)
     ordering = ("display_order",)
-    verbose_name_plural = "🖼 تصاویر"
+    verbose_name_plural = "📸 تصاویر"
 
     def preview(self, obj):
         if obj.image:
@@ -183,7 +183,15 @@ class CorporateTextAdmin(admin.ModelAdmin):
         }),
     )
 
-    inlines = (CorporateImageInline, CorporateAttachmentInline)
+    def get_inlines(self, request, obj=None):
+        # برای بخش "درباره ما" هیچ تصویر و پیوستی نمایش نده
+        if obj and obj.section.section_type == "about":
+            return ()
+
+        return (
+            CorporateImageInline,
+            CorporateAttachmentInline,
+        )
 
     def text_title(self, obj):
         return obj.title_fa or obj.title_en or "—"
@@ -194,7 +202,6 @@ class CorporateTextAdmin(admin.ModelAdmin):
         return admin_delete_button(obj)
 
     delete_action.short_description = "حذف"
-
 
 # =====================================================
 # CORPORATE STATISTIC ADMIN
