@@ -15,6 +15,7 @@ from .models import (
     ProductCategory2,
     ProductTag,
     ProductScan,
+    ProductColor,
 )
 
 
@@ -150,6 +151,28 @@ class ProductScanInline(admin.TabularInline):
         return False
 
 
+class ProductColorInline(admin.TabularInline):
+    model = ProductColor
+    extra = 1
+    fields = (
+        "order",
+        "title",
+        "color_preview",
+        "color_code",
+    )
+    readonly_fields = ("color_preview",)
+    ordering = ("order",)
+
+    def color_preview(self, obj):
+        if obj.color_code:
+            return format_html(
+                '<div style="width:35px;height:35px;border-radius:50%;border:1px solid #ccc;background:{};"></div>',
+                obj.color_code
+            )
+        return "—"
+
+    color_preview.short_description = "نمونه"
+
 # ============================================================
 # PRODUCT ADMIN
 # ============================================================
@@ -160,8 +183,11 @@ class ProductAdmin(SortableAdminMixin, admin.ModelAdmin):
     actions = None
 
     autocomplete_fields = ("category", "tags")
-    inlines = (ProductImageInline, ProductScanInline)
-
+    inlines = (
+        ProductImageInline,
+        ProductColorInline,
+        ProductScanInline,
+    )
     search_fields = (
         "title_fa",
         "title_en",
@@ -355,3 +381,5 @@ class ProductAdmin(SortableAdminMixin, admin.ModelAdmin):
         return delete_button(obj)
 
     delete_col.short_description = ""
+
+

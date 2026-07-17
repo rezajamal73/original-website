@@ -169,63 +169,63 @@
                     <ul class="nav nav-tabs">
                         <li class="nav-item">
                             <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#desc1">
-                                توضیحات ۱
+                                مشخصات فنی
                             </button>
                         </li>
 
                         <li class="nav-item">
                             <button class="nav-link" data-bs-toggle="tab" data-bs-target="#desc2">
-                                توضیحات ۲
+                                قابلیت ها
                             </button>
                         </li>
 
                         <li class="nav-item">
                             <button class="nav-link" data-bs-toggle="tab" data-bs-target="#desc3">
-                                توضیحات ۳
+                                رنگ بندی های موجود
                             </button>
                         </li>
 
                         <li class="nav-item">
                             <button class="nav-link" data-bs-toggle="tab" data-bs-target="#desc4">
-                                توضیحات ۴
+                                رنگ بندی های سفارشی
                             </button>
                         </li>
 
-                        <li class="nav-item">
-                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#desc5">
-                                توضیحات ۵
-                            </button>
-                        </li>
-
-                        <li class="nav-item">
-                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#desc6">
-                                توضیحات ۶
-                            </button>
-                        </li>
-
-                        <li class="nav-item">
-                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#desc7">
-                                توضیحات ۷
-                            </button>
-                        </li>
-
-                        <li class="nav-item">
-                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#desc8">
-                                توضیحات ۸
-                            </button>
-                        </li>
-
-                        <li class="nav-item">
-                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#desc9">
-                                توضیحات ۹
-                            </button>
-                        </li>
-
-                        <li class="nav-item">
-                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#desc10">
-                                توضیحات ۱۰
-                            </button>
-                        </li>
+                        {#                        <li class="nav-item">#}
+                        {#                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#desc5">#}
+                        {#                                توضیحات ۵#}
+                        {#                            </button>#}
+                        {#                        </li>#}
+                        {##}
+                        {#                        <li class="nav-item">#}
+                        {#                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#desc6">#}
+                        {#                                توضیحات ۶#}
+                        {#                            </button>#}
+                        {#                        </li>#}
+                        {##}
+                        {#                        <li class="nav-item">#}
+                        {#                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#desc7">#}
+                        {#                                توضیحات ۷#}
+                        {#                            </button>#}
+                        {#                        </li>#}
+                        {##}
+                        {#                        <li class="nav-item">#}
+                        {#                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#desc8">#}
+                        {#                                توضیحات ۸#}
+                        {#                            </button>#}
+                        {#                        </li>#}
+                        {##}
+                        {#                        <li class="nav-item">#}
+                        {#                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#desc9">#}
+                        {#                                توضیحات ۹#}
+                        {#                            </button>#}
+                        {#                        </li>#}
+                        {##}
+                        {#                        <li class="nav-item">#}
+                        {#                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#desc10">#}
+                        {#                                توضیحات ۱۰#}
+                        {#                            </button>#}
+                        {#                        </li>#}
 
                         <li class="nav-item">
                             <button class="nav-link" data-bs-toggle="tab" data-bs-target="#qr-code">
@@ -255,12 +255,116 @@
                             {% endif %}
                         </div>
 
+                        <style>
+                            .color-list {
+                                display: flex;
+                                flex-wrap: wrap;
+                                gap: 18px;
+                                margin-top: 20px;
+                            }
+
+                            .color-card {
+                                width: 180px;
+                                padding: 14px 18px;
+                                display: flex;
+                                align-items: center;
+                                gap: 15px;
+                                background: #fff;
+                                border: 1px solid #e8e8e8;
+                                border-radius: 14px;
+                                box-shadow: 0 4px 12px rgba(0, 0, 0, .06);
+                                cursor: pointer;
+                                transition: .35s ease;
+                            }
+
+                            .color-card:hover {
+                                transform: translateY(-6px) scale(1.04);
+                                border-color: #0d6efd;
+                                box-shadow: 0 12px 28px rgba(13, 110, 253, .18);
+                            }
+
+                            .color-box {
+                                width: 48px;
+                                height: 48px;
+                                border-radius: 10px;
+                                border: 2px solid #ddd;
+                                flex-shrink: 0;
+                                transition: .35s;
+                            }
+
+                            .color-card:hover .color-box {
+                                transform: rotate(-8deg) scale(1.08);
+                            }
+
+                            .color-title {
+                                font-size: 15px;
+                                font-weight: 600;
+                                color: #333;
+                                transition: .3s;
+                            }
+
+                            .color-card:hover .color-title {
+                                font-size: 18px;
+                                color: #0d6efd;
+                                font-weight: 700;
+                            }
+
+                            .color-description {
+                                margin-bottom: 25px;
+                                padding: 18px;
+                                background: #f8f9fa;
+                                border-right: 5px solid #0d6efd;
+                                border-radius: 12px;
+                                line-height: 2;
+                                color: #555;
+                                font-size: 15px;
+                            }
+
+                            @media (max-width: 768px) {
+                                .color-card {
+                                    width: 100%;
+                                }
+                            }
+                        </style>
+
                         <div class="tab-pane fade" id="desc3">
+
                             {% if product.description_3_fa %}
-                                {{ product.description_3_fa|linebreaksbr }}
-                            {% else %}
-                                <p class="text-muted">اطلاعاتی ثبت نشده است.</p>
+                                <div class="color-description">
+                                    {{ product.description_3_fa|linebreaksbr }}
+                                </div>
                             {% endif %}
+
+                            {% if product.colors.all %}
+
+                                <div class="color-list">
+
+                                    {% for color in product.colors.all %}
+
+                                        <div class="color-card">
+
+                                            <div class="color-box"
+                                                 style="background: {{ color.color_code }};">
+                                            </div>
+
+                                            <span class="color-title">
+                        {{ color.title }}
+                    </span>
+
+                                        </div>
+
+                                    {% endfor %}
+
+                                </div>
+
+                            {% else %}
+
+                                <p class="text-muted">
+                                    رنگی ثبت نشده است.
+                                </p>
+
+                            {% endif %}
+
                         </div>
 
                         <div class="tab-pane fade" id="desc4">

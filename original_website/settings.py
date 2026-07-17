@@ -153,15 +153,15 @@ from django.urls import reverse_lazy
 JAZZMIN_SETTINGS = {
 
     "site_title": "",
-    "site_header": "سیستم مدیریت ",
+    # "site_header": "سیستم مدیریت ",
     "site_brand": "",
     "welcome_sign": "خوش آمدید",
     "copyright": "RJ",
-    "site_logo": "admin-custom/images/logo.png",
-    "login_logo": "admin-custom/images/logo.png",
-    "login_logo_dark": "admin-custom/images/logo.png",
+    # "site_logo": "admin-custom/images/logo.png",
+    # "login_logo": "admin-custom/images/logo.png",
+    # "login_logo_dark": "admin-custom/images/logo.png",
     "site_logo_classes": "img-circle elevation-2",
-    "site_icon": "admin-custom/images/logo.png",
+    # "site_icon": "admin-custom/images/logo.png",
 
     # ─── منوی بالا ─────────────────────────────────────────
     "topmenu_links": [

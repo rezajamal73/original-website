@@ -152,18 +152,18 @@ class Product(models.Model):
     main_image = models.ImageField("تصویر اصلی", upload_to="products/main/", blank=True, null=True)
     qr_code = models.ImageField("QR code", upload_to="products/qr/", blank=True, null=True)
     qr_data = models.CharField("QR data", max_length=255, blank=True)
-    generic_name_fa = models.CharField("نام ژنریک (فارسی)", max_length=255, blank=True)
-    generic_name_en = models.CharField("نام ژنریک (انگلیسی)", max_length=255, blank=True)
-    description_1_fa = models.TextField("توضیحات ۱ (فارسی)", blank=True)
+    generic_name_fa = models.CharField("مدل (فارسی)", max_length=255, blank=True)
+    generic_name_en = models.CharField("مدل (انگلیسی)", max_length=255, blank=True)
+    description_1_fa = models.TextField("مشخصات فنی (فارسی)", blank=True)
     description_1_en = models.TextField("Description 1 (English)", blank=True)
 
-    description_2_fa = models.TextField("توضیحات ۲ (فارسی)", blank=True)
+    description_2_fa = models.TextField("قابلیت ها (فارسی)", blank=True)
     description_2_en = models.TextField("Description 2 (English)", blank=True)
 
-    description_3_fa = models.TextField("توضیحات ۳ (فارسی)", blank=True)
+    description_3_fa = models.TextField("رنگ بندی های موجود", blank=True)
     description_3_en = models.TextField("Description 3 (English)", blank=True)
 
-    description_4_fa = models.TextField("توضیحات ۴ (فارسی)", blank=True)
+    description_4_fa = models.TextField("رنگ بندی های سفارشی (فارسی)", blank=True)
     description_4_en = models.TextField("Description 4 (English)", blank=True)
 
     description_5_fa = models.TextField("توضیحات ۵ (فارسی)", blank=True)
@@ -322,3 +322,37 @@ class ProductScan(models.Model):
 
     def __str__(self):
         return f"{self.product.title_fa} — {self.scanned_at}"
+
+
+class ProductColor(models.Model):
+    product = models.ForeignKey(
+        Product,
+        related_name="colors",
+        on_delete=models.CASCADE,
+        verbose_name="محصول"
+    )
+
+    title = models.CharField(
+        "نام رنگ",
+        max_length=100,
+        blank=True
+    )
+
+    color_code = models.CharField(
+        "کد رنگ",
+        max_length=7,
+        help_text="مثال: #FF0000"
+    )
+
+    order = models.PositiveIntegerField(
+        "ترتیب",
+        default=0
+    )
+
+    class Meta:
+        ordering = ["order"]
+        verbose_name = "رنگ محصول"
+        verbose_name_plural = "رنگ‌های محصول"
+
+    def __str__(self):
+        return self.title or self.color_code

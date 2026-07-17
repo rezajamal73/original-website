@@ -6,6 +6,7 @@ from adminsortable2.admin import SortableAdminMixin
 from .models import (
     CorporateSection,
     CorporateText,
+    CorporateImage,
     CorporateAttachment,
     CorporateStatistic,
     AboutYear,
@@ -73,6 +74,28 @@ class CorporateTextInline(SortableAdminMixin, admin.StackedInline):
     ordering = ("display_order",)
     show_change_link = True
     verbose_name_plural = "🧩 بلاک‌های متنی"
+
+
+# =====================================================
+# INLINE: تصاویر
+# =====================================================
+class CorporateImageInline(SortableAdminMixin, admin.TabularInline):
+    model = CorporateImage
+    extra = 1
+    fields = ("preview", "image", "display_order")
+    readonly_fields = ("preview",)
+    ordering = ("display_order",)
+    verbose_name_plural = "🖼 تصاویر"
+
+    def preview(self, obj):
+        if obj.image:
+            return format_html(
+                "<img src='{}' width='80' style='border-radius:6px;'>",
+                obj.image.url
+            )
+        return "—"
+
+    preview.short_description = "پیش‌نمایش تصویر"
 
 
 # =====================================================
@@ -160,7 +183,7 @@ class CorporateTextAdmin(admin.ModelAdmin):
         }),
     )
 
-    inlines = (CorporateAttachmentInline,)
+    inlines = (CorporateImageInline, CorporateAttachmentInline)
 
     def text_title(self, obj):
         return obj.title_fa or obj.title_en or "—"
@@ -445,7 +468,7 @@ class FollowUsLinkAdmin(SortableAdminMixin, admin.ModelAdmin):
 
     fieldsets = (
         ("📌 وضعیت انتشار", {
-            "fields": ("is_active",),
+            "fields": ("is_active", "display_order"),
         }),
         ("🌐 اطلاعات لینک شبکه اجتماعی", {
             "fields": ("title", "url"),

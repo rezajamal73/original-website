@@ -221,21 +221,21 @@
 
                                             {% if product.category %}
                                                 <li class="pt-3 mt-3 border-top">
-                                                    دسته‌بندی دارویی:
+                                                    محصول :
                                                     <span>{{ product.category.title_fa }}</span>
                                                 </li>
                                             {% endif %}
 
                                             {% if product.category2 %}
                                                 <li>
-                                                    شکل دارویی:
+                                                    دسته بندی :
                                                     <span>{{ product.category2.title_fa }}</span>
                                                 </li>
                                             {% endif %}
 
                                             {% if product.tags.exists %}
                                                 <li>
-                                                    گروه درمانی:
+                                                    برچسب :
                                                     <span>
                                             {% for tag in product.tags.all %}
                                                 {{ tag.title_fa }}{% if not forloop.last %}، {% endif %}
