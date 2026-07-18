@@ -282,6 +282,10 @@ JAZZMIN_SETTINGS = {
         "app_reports.GroupCompany",
         "app_reports.DepartmentContact",
         "app_reports.FollowUsLink",
+
+        # ─── ۱۱. آمار بازدیدها ───
+        "app_visit",
+        "app_visit.Visit",
     ],
 
     # ═══ آیکون‌های Font Awesome ───
@@ -373,6 +377,10 @@ JAZZMIN_SETTINGS = {
         "app_reports.CorporateSection": "fas fa-layer-group",
         "app_reports.GroupCompany": "fas fa-city",
         "app_reports.DepartmentContact": "fas fa-phone",
+
+        # آمار بازدیدها
+        "app_visit": "",  # آیکون برای اپ
+        "app_visit.Visit": "fas fa-eye",  # آیکون برای مدل Visit
     },
 
     # آیکون‌های پیش‌فرض
