@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'app_media.apps.AppMediaConfig',
     'app_sale.apps.AppSaleConfig',
     'app_catalog.apps.AppCatalogConfig',
+    'app_visit.apps.AppVisitConfig',
 
     'django.contrib.sites',
     'django.contrib.sitemaps',
@@ -75,6 +76,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "app_visit.middleware.VisitMiddleware",
 ]
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
@@ -198,7 +200,6 @@ JAZZMIN_SETTINGS = {
     ],
 
     # ═══ منوی کاربری (گوشه بالا) ═══
-
 
     # ═══ سایدبار ═══
     "show_sidebar": True,
@@ -331,7 +332,7 @@ JAZZMIN_SETTINGS = {
         "app_inquiry.PurchaseInquiry": "fas fa-file-invoice",
 
         # فروش
-        "app_sale":"",
+        "app_sale": "",
         "app_sale.SalesReport": "fas fa-chart-line",
 
         # کاتالوگ
@@ -353,7 +354,7 @@ JAZZMIN_SETTINGS = {
         "app_contact.ContactMessage": "fas fa-comments",
 
         # امنیت
-        "app_security":"",
+        "app_security": "",
         "app_security.SecurityContact": "fas fa-lock",
 
         # بنر
@@ -394,7 +395,6 @@ JAZZMIN_SETTINGS = {
     # زبان
     "language_chooser": False,
 }
-
 
 JAZZMIN_UI_TWEAKS = {
 
@@ -465,4 +465,3 @@ JAZZMIN_SETTINGS["global_search"] = [
     "app_news.News",
     "auth.User",
 ]
-
