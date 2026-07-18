@@ -531,3 +531,55 @@ class DepartmentContact(models.Model):
 
     def __str__(self) -> str:
         return f"{self.department_name_fa} | {self.phone_1}"
+
+
+# =====================================================
+# PROJECTS SECTION (پروژه‌های انجام شده)
+# =====================================================
+
+class Project(models.Model):
+    """
+    پروژه‌های انجام شده شرکت
+    """
+
+    name = models.CharField(
+        max_length=255,
+        verbose_name="نام پروژه",
+        help_text="نام کامل پروژه انجام شده"
+    )
+
+    svg_icon = models.FileField(
+        upload_to="projects/icons/",
+        verbose_name="آیکون پروژه (SVG)",
+        help_text="فایل SVG با پس‌زمینه شفاف"
+    )
+
+    display_order = models.PositiveIntegerField(
+        default=0,
+        verbose_name="ترتیب نمایش",
+        help_text="عدد کوچکتر زودتر نمایش داده می‌شود"
+    )
+
+    is_active = models.BooleanField(
+        default=True,
+        verbose_name="فعال",
+        help_text="در صورت غیرفعال بودن در سایت نمایش داده نمی‌شود"
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="تاریخ ایجاد"
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name="آخرین بروزرسانی"
+    )
+
+    class Meta:
+        ordering = ["display_order"]
+        verbose_name = "پروژه"
+        verbose_name_plural = "پروژه‌های انجام شده"
+
+    def __str__(self):
+        return self.name

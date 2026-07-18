@@ -14,6 +14,7 @@ from .models import (
     GroupCompany,
     SiteMainInfo,
     FollowUsLink,
+    Project,
     DepartmentContact
 )
 
@@ -203,6 +204,7 @@ class CorporateTextAdmin(admin.ModelAdmin):
 
     delete_action.short_description = "حذف"
 
+
 # =====================================================
 # CORPORATE STATISTIC ADMIN
 # =====================================================
@@ -228,7 +230,7 @@ class CorporateStatisticAdmin(SortableAdminMixin, admin.ModelAdmin):
             "fields": ("is_active", "display_order"),
         }),
         ("📊 اطلاعات آماری", {
-            "fields": ("title_fa",  "title_en", "value", "suffix"),
+            "fields": ("title_fa", "title_en", "value", "suffix"),
         }),
         ("🎨 آیکن", {
             "fields": ("icon_svg", "icon_preview"),
@@ -507,7 +509,6 @@ class FollowUsLinkAdmin(SortableAdminMixin, admin.ModelAdmin):
     delete_action.short_description = "حذف"
 
 
-
 @admin.register(DepartmentContact)
 class DepartmentContactAdmin(SortableAdminMixin, admin.ModelAdmin):
     list_display = (
@@ -562,10 +563,12 @@ class DepartmentContactAdmin(SortableAdminMixin, admin.ModelAdmin):
     # -------- نمایش‌های سفارشی --------
     def department_fa(self, obj):
         return format_html("<b>{}</b>", obj.department_name_fa)
+
     department_fa.short_description = "دپارتمان (FA)"
 
     def department_en(self, obj):
         return obj.department_name_en
+
     department_en.short_description = "Department (EN)"
 
     def phone_main(self, obj):
@@ -574,6 +577,7 @@ class DepartmentContactAdmin(SortableAdminMixin, admin.ModelAdmin):
             obj.phone_1,
             obj.phone_1
         )
+
     phone_main.short_description = "تماس اصلی"
 
     def phone_alt(self, obj):
@@ -584,6 +588,7 @@ class DepartmentContactAdmin(SortableAdminMixin, admin.ModelAdmin):
                 obj.phone_2
             )
         return "—"
+
     phone_alt.short_description = "تماس جایگزین"
 
     def delete_action(self, obj):
@@ -597,4 +602,83 @@ class DepartmentContactAdmin(SortableAdminMixin, admin.ModelAdmin):
             "font-weight:bold'>🗑 حذف</a>",
             url
         )
+
     delete_action.short_description = "حذف"
+
+    # =====================================================
+    # PROJECT ADMIN
+    # =====================================================
+
+    @admin.register(Project)
+    class ProjectAdmin(SortableAdminMixin, admin.ModelAdmin):
+        list_display = (
+            "display_order",
+            "icon_preview",
+            "name",
+            "is_active",
+            "delete_action",
+        )
+
+        # ✅ تنظیم لینک‌های قابل کلیک (برای ویرایش)
+        list_display_links = (
+            "name",  # با کلیک روی نام پروژه وارد ویرایش می‌شود
+        )
+
+        # ✅ فیلدهای قابل ویرایش مستقیم در لیست
+        list_editable = (
+            "is_active",
+            "display_order",
+        )
+
+        list_filter = ("is_active",)
+        search_fields = ("name",)
+        ordering = ("display_order",)
+        actions = None
+
+        readonly_fields = (
+            "icon_preview",
+            "created_at",
+            "updated_at",
+        )
+
+        fieldsets = (
+            ("📌 اطلاعات پروژه", {
+                "fields": (
+                    "name",
+                    "svg_icon",
+                    "icon_preview",
+                )
+            }),
+            ("🔢 تنظیمات نمایش", {
+                "fields": (
+                    "display_order",
+                    "is_active",
+                )
+            }),
+            ("⏱️ اطلاعات سیستمی", {
+                "fields": (
+                    "created_at",
+                    "updated_at",
+                )
+            }),
+        )
+
+        def icon_preview(self, obj):
+            """
+            پیش‌نمایش آیکون SVG
+            """
+            if obj.svg_icon:
+                return format_html(
+                    "<img src='{}' width='40' height='40' "
+                    "style='background:#f5f5f5;"
+                    "padding:6px;border-radius:8px;' />",
+                    obj.svg_icon.url
+                )
+            return "—"
+
+        icon_preview.short_description = "پیش‌نمایش آیکون"
+
+        def delete_action(self, obj):
+            return admin_delete_button(obj)
+
+        delete_action.short_description = "حذف"
