@@ -1,0 +1,81 @@
+{% extends 'RTL/core/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<main class="main">
+
+    <!-- breadcrumb -->
+    <div class="site-breadcrumb">
+        <div class="site-breadcrumb-bg" style="background:url('{{ banner.image.url }}')"></div>
+
+        <div class="container">
+            <div class="site-breadcrumb-wrap">
+                <h4 class="breadcrumb-title">
+                    رزومه پروژه‌ها
+                </h4>
+
+                <ul class="breadcrumb-menu">
+                    <li>
+                        <a href="{% url 'app_core:home' %}">
+                            <i class="far fa-home"></i>
+                            خانه
+                        </a>
+                    </li>
+
+                    <li class="active">
+                        رزومه
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <!-- breadcrumb end -->
+
+
+    <div class="container py-5">
+        <div class="row g-4">
+
+            {% for item in resumes %}
+
+                <div class="col-6 col-md-4 col-lg-3">
+
+                    <div class="card border-0 shadow-sm h-100 text-center p-4">
+
+                        <div class="mb-3">
+                            <img
+                                src="{{ item.svg_file.url }}"
+                                alt="{{ item.project_name_fa }}"
+                                style="width:90px;height:90px;object-fit:contain;"
+                            >
+                        </div>
+
+                        <h5 class="fw-bold mb-2">
+                            {{ item.project_name_fa }}
+                        </h5>
+
+                        <p class="text-muted mb-0">
+                            <i class="fal fa-map-marker-alt"></i>
+                            {{ item.province.province_name_fa }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+            {% empty %}
+
+                <div class="col-12">
+                    <div class="alert alert-info text-center">
+                        هنوز پروژه‌ای ثبت نشده است.
+                    </div>
+                </div>
+
+            {% endfor %}
+
+        </div>
+    </div>
+
+</main>
+
+{% endblock %}

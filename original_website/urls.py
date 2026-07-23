@@ -9,9 +9,6 @@ from app_core.sitemaps import StaticViewSitemap
 from app_blog.sitemaps import BlogSitemap
 from app_product.sitemaps import ProductSitemap
 
-
-
-
 sitemaps = {
     "static": StaticViewSitemap,
     "blog": BlogSitemap,
@@ -44,6 +41,7 @@ urlpatterns = [
     path("media/", include("app_media.urls")),
     path("sale/", include("app_sale.urls")),
     path("catalog/", include("app_catalog.urls")),
+    path("resume/", include("app_resume.urls")),
 
     path(
         "sitemap.xml",

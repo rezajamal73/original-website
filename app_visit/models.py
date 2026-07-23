@@ -74,8 +74,8 @@ class Visit(models.Model):
 
     class Meta:
         ordering = ("-last_seen",)
-        verbose_name = _("Visit")
-        verbose_name_plural = _("Visits")
+        verbose_name = "بازدید"
+        verbose_name_plural = "بازدیدها"
         indexes = [
             models.Index(fields=["ip", "created_at"]),
             models.Index(fields=["path", "created_at"]),

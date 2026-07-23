@@ -60,6 +60,8 @@ INSTALLED_APPS = [
     'app_sale.apps.AppSaleConfig',
     'app_catalog.apps.AppCatalogConfig',
     'app_visit.apps.AppVisitConfig',
+    'app_resume.apps.AppResumeConfig',
+
 
     'django.contrib.sites',
     'django.contrib.sitemaps',
@@ -76,7 +78,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "app_visit.middleware.VisitMiddleware",
+
 ]
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
@@ -196,6 +198,7 @@ JAZZMIN_SETTINGS = {
         {"app": "app_banner", "label": "🖼️ بنرها"},
         # گزارشات
         {"app": "app_reports", "label": "📊 گزارشات"},
+        {"app": "app_resume", "label": "📁 رزومه"},
 
     ],
 
@@ -286,6 +289,10 @@ JAZZMIN_SETTINGS = {
         # ─── ۱۱. آمار بازدیدها ───
         "app_visit",
         "app_visit.Visit",
+
+        "app_resume",
+        "app_resume.Resume",
+        "app_resume.ResumeProvince",
     ],
 
     # ═══ آیکون‌های Font Awesome ───
@@ -381,6 +388,10 @@ JAZZMIN_SETTINGS = {
         # آمار بازدیدها
         "app_visit": "",  # آیکون برای اپ
         "app_visit.Visit": "fas fa-eye",  # آیکون برای مدل Visit
+        # رزومه
+        "app_resume": "",
+        "app_resume.Resume": "fas fa-file-alt",
+        "app_resume.ResumeProvince": "fas fa-map-marker-alt",
     },
 
     # آیکون‌های پیش‌فرض

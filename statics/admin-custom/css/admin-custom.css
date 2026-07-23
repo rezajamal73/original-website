@@ -658,8 +658,8 @@ body.login {
 
 .login-logo img,
 .brand-image {
-    max-width: 78px !important;
-    max-height: 78px !important;
+    max-width: 48px !important;
+    max-height: 48px !important;
     width: auto !important;
     height: auto !important;
     object-fit: contain !important;
