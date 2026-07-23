@@ -61,7 +61,7 @@ INSTALLED_APPS = [
     'app_catalog.apps.AppCatalogConfig',
     'app_visit.apps.AppVisitConfig',
     'app_resume.apps.AppResumeConfig',
-
+    'app_log.apps.AppLogConfig',
 
     'django.contrib.sites',
     'django.contrib.sitemaps',
@@ -75,10 +75,14 @@ MIDDLEWARE = [
 
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+
+    # 👇 این را اضافه کن
+    'app_log.middleware.CurrentRequestMiddleware',
+
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
 ]
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
@@ -138,7 +142,9 @@ LANGUAGES = [
     ("fa", "فارسی"),
 ]
 
-TIME_ZONE = 'UTC'
+LANGUAGE_CODE = "fa"
+
+TIME_ZONE = "Asia/Tehran"
 
 USE_I18N = True
 
@@ -199,6 +205,7 @@ JAZZMIN_SETTINGS = {
         # گزارشات
         {"app": "app_reports", "label": "📊 گزارشات"},
         {"app": "app_resume", "label": "📁 رزومه"},
+        {"app": "app_log", "label": "📜 لاگ سیستم"},
 
     ],
 
@@ -293,6 +300,9 @@ JAZZMIN_SETTINGS = {
         "app_resume",
         "app_resume.Resume",
         "app_resume.ResumeProvince",
+
+        "app_log",
+        "app_log.SystemLog",
     ],
 
     # ═══ آیکون‌های Font Awesome ───
@@ -392,6 +402,9 @@ JAZZMIN_SETTINGS = {
         "app_resume": "",
         "app_resume.Resume": "fas fa-file-alt",
         "app_resume.ResumeProvince": "fas fa-map-marker-alt",
+        # لاگ سیستم
+        "app_log": "",
+        "app_log.SystemLog": "fas fa-history",
     },
 
     # آیکون‌های پیش‌فرض
