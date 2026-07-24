@@ -46,18 +46,21 @@ class SEOSettingAdmin(admin.ModelAdmin):
 
     list_per_page = 50
 
+
     readonly_fields = (
         "created_at",
         "updated_at",
         "og_preview",
-        "twitter_preview",
     )
+
 
     fieldsets = (
 
         (
-            "📌 اطلاعات پایه",
+            "📌 اتصال و مشخصات محتوا",
             {
+                "description":
+                    "مشخص کنید این تنظیمات SEO برای کدام صفحه، محصول یا محتوای سایت است.",
                 "fields": (
                     "content_type",
                     "page_key",
@@ -70,9 +73,12 @@ class SEOSettingAdmin(admin.ModelAdmin):
             }
         ),
 
+
         (
-            "🔍 Meta SEO",
+            "🔍 تنظیمات اصلی موتور جستجو (Meta SEO)",
             {
+                "description":
+                    "اطلاعاتی که موتورهای جستجو مانند گوگل برای نمایش صفحه استفاده می‌کنند.",
                 "fields": (
                     "title",
                     "description",
@@ -83,9 +89,12 @@ class SEOSettingAdmin(admin.ModelAdmin):
             }
         ),
 
+
         (
-            "🌐 Open Graph",
+            "🌐 شبکه‌های اجتماعی (Open Graph)",
             {
+                "description":
+                    "اطلاعات نمایش صفحه هنگام اشتراک‌گذاری در تلگرام، لینکدین، فیسبوک و سایر شبکه‌ها.",
                 "fields": (
                     "og_title",
                     "og_description",
@@ -96,47 +105,47 @@ class SEOSettingAdmin(admin.ModelAdmin):
             }
         ),
 
-        (
-            "🐦 Twitter",
-            {
-                "fields": (
-                    "twitter_title",
-                    "twitter_description",
-                    "twitter_card",
-                    "twitter_image",
-                    "twitter_preview",
-                )
-            }
-        ),
 
         (
-            "🧩 Schema.org",
+            "🧩 اطلاعات ساختاریافته گوگل (Schema JSON-LD)",
             {
+                "description":
+                    "داده‌های ساختاریافته برای نمایش بهتر در نتایج گوگل مانند محصول، مقاله و سازمان.",
                 "fields": (
                     "schema_json",
                 )
             }
         ),
 
+
         (
-            "🕒 اطلاعات سیستم",
+            "🕒 اطلاعات سیستمی",
             {
+                "description":
+                    "تاریخ ایجاد و آخرین تغییر این تنظیمات.",
                 "fields": (
                     "created_at",
                     "updated_at",
                 )
             }
         ),
+
     )
 
-    @admin.display(description="نوع")
+
+
+    @admin.display(description="نوع محتوا")
     def content_type_badge(self, obj):
+
         return obj.get_content_type_display()
+
+
 
     @admin.display(description="وضعیت")
     def status_badge(self, obj):
 
         if obj.is_active:
+
             return format_html(
                 '<span style="color:#198754;font-weight:bold;">● فعال</span>'
             )
@@ -145,30 +154,25 @@ class SEOSettingAdmin(admin.ModelAdmin):
             '<span style="color:#dc3545;font-weight:bold;">● غیرفعال</span>'
         )
 
-    @admin.display(description="Open Graph")
+
+
+    @admin.display(description="پیش‌نمایش تصویر OG")
     def og_preview(self, obj):
 
         if obj.og_image:
+
             return format_html(
                 '<img src="{}" style="max-width:350px;border-radius:8px;">',
                 obj.og_image.url,
             )
 
-        return "—"
+        return "تصویری انتخاب نشده"
 
-    @admin.display(description="Twitter")
-    def twitter_preview(self, obj):
 
-        if obj.twitter_image:
-            return format_html(
-                '<img src="{}" style="max-width:350px;border-radius:8px;">',
-                obj.twitter_image.url,
-            )
-
-        return "—"
 
     @admin.display(description="حذف")
     def delete_action(self, obj):
+
         return format_html(
             '<a href="{}delete/" style="color:#dc3545;font-weight:bold;">🗑 حذف</a>',
             obj.pk,

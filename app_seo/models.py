@@ -22,30 +22,34 @@ class SEOSetting(models.Model):
     )
 
 
-    # نوع محتوا
+    # =====================
+    # اتصال محتوا
+    # =====================
+
     content_type = models.CharField(
         max_length=30,
         choices=CONTENT_TYPES,
         default="page",
-        verbose_name="نوع محتوا"
+        verbose_name="نوع محتوا",
+        help_text="مشخص کنید این تنظیمات SEO برای چه نوع محتوایی است."
     )
 
 
-    # برای صفحات ثابت
     page_key = models.CharField(
         max_length=100,
         blank=True,
         null=True,
-        verbose_name="کلید صفحه"
+        verbose_name="کلید صفحه",
+        help_text="برای صفحات ثابت مانند درباره ما، تماس با ما و... یک شناسه یکتا وارد کنید."
     )
 
 
-    # اتصال به مدل‌ها
     app_label = models.CharField(
         max_length=100,
         blank=True,
         null=True,
-        verbose_name="نام اپلیکیشن"
+        verbose_name="نام اپلیکیشن",
+        help_text="نام اپلیکیشن Django مربوط به محتوا (مثلاً app_product)."
     )
 
 
@@ -53,22 +57,24 @@ class SEOSetting(models.Model):
         max_length=100,
         blank=True,
         null=True,
-        verbose_name="نام مدل"
+        verbose_name="نام مدل",
+        help_text="نام مدل Django مربوط به محتوا (مثلاً Product)."
     )
 
 
     object_id = models.PositiveBigIntegerField(
         blank=True,
         null=True,
-        verbose_name="شناسه محتوا"
+        verbose_name="شناسه محتوا",
+        help_text="شناسه رکورد مربوط به محصول، مقاله، خبر یا سایر محتواها."
     )
 
 
-    # URL دستی
     url = models.URLField(
         blank=True,
         null=True,
-        verbose_name="آدرس صفحه"
+        verbose_name="آدرس صفحه",
+        help_text="در صورت نیاز آدرس کامل صفحه را وارد کنید."
     )
 
 
@@ -78,32 +84,37 @@ class SEOSetting(models.Model):
 
     title = models.CharField(
         max_length=70,
-        verbose_name="عنوان SEO"
+        verbose_name="عنوان SEO",
+        help_text="عنوانی که در نتایج گوگل نمایش داده می‌شود. بهتر است کمتر از 70 کاراکتر باشد."
     )
 
 
     description = models.CharField(
         max_length=160,
-        verbose_name="توضیحات SEO"
+        verbose_name="توضیحات SEO",
+        help_text="توضیح کوتاه صفحه برای نمایش در موتورهای جستجو. بهتر است حدود 160 کاراکتر باشد."
     )
 
 
     keywords = models.TextField(
         blank=True,
-        verbose_name="کلمات کلیدی"
+        verbose_name="کلمات کلیدی",
+        help_text="کلمات مرتبط با محتوا را با کاما جدا کنید."
     )
 
 
     canonical = models.URLField(
         blank=True,
-        verbose_name="Canonical"
+        verbose_name="Canonical",
+        help_text="آدرس اصلی صفحه برای جلوگیری از محتوای تکراری."
     )
 
 
     robots = models.CharField(
         max_length=100,
         default="index,follow",
-        verbose_name="Robots"
+        verbose_name="Robots",
+        help_text="قوانین ایندکس شدن صفحه توسط موتورهای جستجو."
     )
 
 
@@ -114,14 +125,16 @@ class SEOSetting(models.Model):
     og_title = models.CharField(
         max_length=70,
         blank=True,
-        verbose_name="OG Title"
+        verbose_name="عنوان شبکه اجتماعی",
+        help_text="عنوانی که هنگام اشتراک لینک در شبکه‌های اجتماعی نمایش داده می‌شود."
     )
 
 
     og_description = models.CharField(
         max_length=160,
         blank=True,
-        verbose_name="OG Description"
+        verbose_name="توضیحات شبکه اجتماعی",
+        help_text="توضیح نمایش داده شده هنگام اشتراک لینک در شبکه‌های اجتماعی."
     )
 
 
@@ -129,47 +142,16 @@ class SEOSetting(models.Model):
         upload_to="seo/og/",
         blank=True,
         null=True,
-        verbose_name="OG Image"
+        verbose_name="تصویر شبکه اجتماعی",
+        help_text="تصویری که هنگام اشتراک صفحه در شبکه‌های اجتماعی نمایش داده می‌شود."
     )
 
 
     og_type = models.CharField(
         max_length=30,
         default="website",
-        verbose_name="OG Type"
-    )
-
-
-    # =====================
-    # Twitter
-    # =====================
-
-    twitter_title = models.CharField(
-        max_length=70,
-        blank=True,
-        verbose_name="Twitter Title"
-    )
-
-
-    twitter_description = models.CharField(
-        max_length=160,
-        blank=True,
-        verbose_name="Twitter Description"
-    )
-
-
-    twitter_image = models.ImageField(
-        upload_to="seo/twitter/",
-        blank=True,
-        null=True,
-        verbose_name="Twitter Image"
-    )
-
-
-    twitter_card = models.CharField(
-        max_length=50,
-        default="summary_large_image",
-        verbose_name="Twitter Card"
+        verbose_name="نوع Open Graph",
+        help_text="نوع محتوا برای شبکه‌های اجتماعی مانند website، article و..."
     )
 
 
@@ -180,7 +162,8 @@ class SEOSetting(models.Model):
     schema_json = models.JSONField(
         blank=True,
         null=True,
-        verbose_name="Schema JSON-LD"
+        verbose_name="Schema JSON-LD",
+        help_text="اطلاعات ساختاریافته برای گوگل مانند محصول، مقاله، سازمان و..."
     )
 
 
@@ -190,7 +173,8 @@ class SEOSetting(models.Model):
 
     is_active = models.BooleanField(
         default=True,
-        verbose_name="فعال"
+        verbose_name="فعال",
+        help_text="در صورت فعال بودن این تنظیمات SEO روی سایت اعمال می‌شود."
     )
 
 
@@ -209,6 +193,7 @@ class SEOSetting(models.Model):
     class Meta:
 
         verbose_name = "⚙️ تنظیم SEO"
+
         verbose_name_plural = "⚙️ تنظیمات SEO"
 
 
@@ -231,6 +216,7 @@ class SEOSetting(models.Model):
 
         ]
 
+
         constraints = [
 
             models.UniqueConstraint(
@@ -244,6 +230,7 @@ class SEOSetting(models.Model):
                 ),
                 name="unique_seo_object",
             ),
+
 
             models.UniqueConstraint(
                 fields=[
@@ -263,7 +250,9 @@ class SEOSetting(models.Model):
         if self.page_key:
             return f"📄 {self.page_key}"
 
+
         if self.object_id:
             return f"{self.model_name} - {self.object_id}"
+
 
         return self.title

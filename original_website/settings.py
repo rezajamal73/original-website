@@ -71,15 +71,15 @@ SITE_ID = 2
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-
     'django.middleware.locale.LocaleMiddleware',
-
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
 
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 
-    # 👇 این را اضافه کن
+    # ثبت بازدید
+    'app_visit.middleware.VisitMiddleware',
+
     'app_log.middleware.CurrentRequestMiddleware',
     'app_seo.middleware.SEOMiddleware',
 
@@ -176,6 +176,7 @@ from django.urls import reverse_lazy
 
 JAZZMIN_SETTINGS = {
 
+
     # ═══ برندینگ ═══
     "site_title": "پنل مدیریت پیشرفته",
     "site_header": "پنل مدیریت",
@@ -216,69 +217,80 @@ JAZZMIN_SETTINGS = {
     # ═══ سایدبار ═══
     "show_sidebar": True,
     "navigation_expanded": False,  # برای باز بودن همه منوها True کنید
-    "hide_apps": [],  # اپ‌هایی که نمی‌خواهید نمایش داده شوند
+    "hide_apps": [
+        "app_news",
+        "app_tender",
+        "app_auction",
+        "app_inquiry",
+        "app_security",
+        "app_catalog",
+        "app_tender_holding",
+    ], # اپ‌هایی که نمی‌خواهید نمایش داده شوند
     "hide_models": [],  # مدل‌هایی که نمی‌خواهید نمایش داده شوند
 
     # ═══ ترتیب نمایش (ساختار گروه‌بندی شده) ═══
     "order_with_respect_to": [
-        # ─── ۱. مدیریت کاربران ───
-        "auth",
-        "auth.User",
-        "auth.Group",
 
-        # ─── ۲. فروش و محصولات ───
+        # ─── ۱. فروش و محصولات ───
         "app_product",
         "app_product.Product",
         "app_product.ProductCategory",
         "app_product.ProductCategory2",
         "app_product.ProductTag",
 
-        # ─── ۳. محتوا و رسانه ───
+        # ─── ۲. محتوا و رسانه ───
         "app_blog",
         "app_blog.blog",
         "app_blog.blog_Category",
         "app_blog.blog_Tag",
+
         "app_news",
         "app_news.News",
         "app_news.NewsCategory",
         "app_news.NewsTag",
+
         "app_media",
         "app_media.Media",
 
-        # ─── ۴. مناقصات و مزایدات ───
+        # ─── ۳. مناقصات و مزایدات ───
         "app_tender",
         "app_tender.Tender",
         "app_tender.TenderCategory",
+
         "app_tender_holding",
         "app_tender_holding.Holding",
+
         "app_auction",
         "app_auction.Auction",
 
-        # ─── ۵. استعلام و فروش ───
+        # ─── ۴. استعلام و فروش ───
         "app_inquiry",
         "app_inquiry.PurchaseInquiry",
+
         "app_sale",
         "app_sale.SalesReport",
 
-        # ─── ۶. کاتالوگ و چارت ───
+        # ─── ۵. کاتالوگ و چارت سازمانی ───
         "app_catalog",
         "app_catalog.CompanyCatalog",
+
         "app_chart",
         "app_chart.Person",
         "app_chart.BoardMember",
 
-        # ─── ۷. منابع انسانی ───
+        # ─── ۶. منابع انسانی ───
         "app_hr",
         "app_hr.JobOpportunity",
         "app_hr.JobApplication",
 
-        # ─── ۸. ارتباطات ───
+        # ─── ۷. ارتباطات ───
         "app_contact",
         "app_contact.ContactMessage",
+
         "app_security",
         "app_security.SecurityContact",
 
-        # ─── ۹. تنظیمات و بنرها ───
+        # ─── ۸. مدیریت سایت و بنرها ───
         "app_banner",
         "app_banner.HeroSliderSetting",
         "app_banner.HeroBanner",
@@ -286,7 +298,7 @@ JAZZMIN_SETTINGS = {
         "app_banner.OtherBanner",
         "app_banner.SpecialProductBanner",
 
-        # ─── ۱۰. گزارشات ───
+        # ─── ۹. گزارشات و اطلاعات ───
         "app_reports",
         "app_reports.SiteMainInfo",
         "app_reports.CorporateSection",
@@ -295,14 +307,21 @@ JAZZMIN_SETTINGS = {
         "app_reports.DepartmentContact",
         "app_reports.FollowUsLink",
 
-        # ─── ۱۱. آمار بازدیدها ───
+        # ─── ۱۰. آمار بازدید ───
         "app_visit",
         "app_visit.Visit",
 
+        # ─── ۱۱. رزومه ───
         "app_resume",
         "app_resume.Resume",
         "app_resume.ResumeProvince",
 
+        # ─── ۱۲. کاربران (آخر) ───
+        "auth",
+        "auth.User",
+        "auth.Group",
+
+        # ─── ۱۳. لاگ سیستم (آخرین) ───
         "app_log",
         "app_log.SystemLog",
     ],
@@ -310,105 +329,104 @@ JAZZMIN_SETTINGS = {
     # ═══ آیکون‌های Font Awesome ───
     "icons": {
 
-        # کاربران
-        "auth": "fas fa-users",
-        "auth.User": "fas fa-user",
-        "auth.Group": "fas fa-user-friends",
-
-        # محصولات
+        # ─── محصولات ───
         "app_product": "",
         "app_product.Product": "fas fa-box-open",
         "app_product.ProductCategory": "fas fa-folder",
-        "app_product.ProductCategory2": "fas fa-folder-open",
+        "app_product.ProductCategory2": "fas fa-folder-tree",
         "app_product.ProductTag": "fas fa-tags",
 
-        # وبلاگ
+        # ─── محتوا و رسانه ───
         "app_blog": "",
-        "app_blog.blog": "fas fa-edit",
+        "app_blog.blog": "fas fa-pen-nib",
         "app_blog.blog_Category": "fas fa-folder",
-        "app_blog.blog_Tag": "fas fa-tag",
+        "app_blog.blog_Tag": "fas fa-tags",
 
-        # اخبار
         "app_news": "",
-        "app_news.News": "fas fa-bullhorn",
-        "app_news.NewsCategory": "fas fa-folder",
-        "app_news.NewsTag": "fas fa-tag",
+        "app_news.News": "fas fa-newspaper",
+        "app_news.NewsCategory": "fas fa-folder-open",
+        "app_news.NewsTag": "fas fa-tags",
 
-        # رسانه
         "app_media": "",
-        "app_media.Media": "fas fa-image",
+        "app_media.Media": "fas fa-photo-video",
 
-        # مناقصه
+        # ─── مناقصه و مزایده ───
         "app_tender": "",
-        "app_tender.Tender": "fas fa-file-alt",
+        "app_tender.Tender": "fas fa-file-contract",
         "app_tender.TenderCategory": "fas fa-folder",
 
         "app_tender_holding": "",
-        "app_tender_holding.Holding": "fas fa-industry",
+        "app_tender_holding.Holding": "fas fa-building",
 
-        # مزایده
         "app_auction": "",
         "app_auction.Auction": "fas fa-gavel",
 
-        # استعلام
+        # ─── استعلام و فروش ───
         "app_inquiry": "",
-        "app_inquiry.PurchaseInquiry": "fas fa-file-invoice",
+        "app_inquiry.PurchaseInquiry": "fas fa-file-invoice-dollar",
 
-        # فروش
         "app_sale": "",
         "app_sale.SalesReport": "fas fa-chart-line",
 
-        # کاتالوگ
+        # ─── کاتالوگ و چارت سازمانی ───
         "app_catalog": "",
-        "app_catalog.CompanyCatalog": "fas fa-book-open",
+        "app_catalog.CompanyCatalog": "fas fa-book",
 
-        # چارت سازمانی
         "app_chart": "",
         "app_chart.Person": "fas fa-user-tie",
         "app_chart.BoardMember": "fas fa-user-shield",
 
-        # منابع انسانی
+        # ─── منابع انسانی ───
         "app_hr": "",
         "app_hr.JobOpportunity": "fas fa-briefcase",
         "app_hr.JobApplication": "fas fa-file-signature",
 
-        # ارتباط با ما
+        # ─── ارتباطات و امنیت ───
         "app_contact": "",
-        "app_contact.ContactMessage": "fas fa-comments",
+        "app_contact.ContactMessage": "fas fa-envelope-open-text",
 
-        # امنیت
         "app_security": "",
-        "app_security.SecurityContact": "fas fa-lock",
+        "app_security.SecurityContact": "fas fa-shield-alt",
 
-        # بنر
+        # ─── مدیریت سایت و بنرها ───
         "app_banner": "",
-        "app_banner.HeroBanner": "fas fa-desktop",
-        "app_banner.OtherBanner": "fas fa-image",
-        "app_banner.MainBanner": "fas fa-flag",
-        "app_banner.SpecialProductBanner": "fas fa-star",
         "app_banner.HeroSliderSetting": "fas fa-sliders-h",
+        "app_banner.HeroBanner": "fas fa-desktop",
+        "app_banner.MainBanner": "fas fa-flag",
+        "app_banner.OtherBanner": "fas fa-image",
+        "app_banner.SpecialProductBanner": "fas fa-star",
 
-        # گزارشات
+        # ─── اطلاعات و گزارشات ───
         "app_reports": "",
         "app_reports.SiteMainInfo": "fas fa-info-circle",
-        "app_reports.FollowUsLink": "fas fa-link",
-        "app_reports.CorporateStatistic": "fas fa-chart-pie",
         "app_reports.CorporateSection": "fas fa-layer-group",
+        "app_reports.CorporateStatistic": "fas fa-chart-pie",
         "app_reports.GroupCompany": "fas fa-city",
-        "app_reports.DepartmentContact": "fas fa-phone",
+        "app_reports.DepartmentContact": "fas fa-phone-alt",
+        "app_reports.FollowUsLink": "fas fa-link",
 
-        # آمار بازدیدها
-        "app_visit": "",  # آیکون برای اپ
-        "app_visit.Visit": "fas fa-eye",  # آیکون برای مدل Visit
-        # رزومه
+        # ─── آمار بازدید ───
+        "app_visit": "",
+        "app_visit.Visit": "fas fa-eye",
+
+        # ─── رزومه ───
         "app_resume": "",
         "app_resume.Resume": "fas fa-file-alt",
         "app_resume.ResumeProvince": "fas fa-map-marker-alt",
-        # لاگ سیستم
+
+        # ─── سئو ───
+        "app_seo": "",
+        "app_seo.SEOSetting": "fas fa-search",
+
+        # ─── کاربران (آخر) ───
+        "auth": "",
+        "auth.User": "fas fa-user",
+        "auth.Group": "fas fa-user-friends",
+
+        # ─── لاگ سیستم ───
         "app_log": "",
         "app_log.SystemLog": "fas fa-history",
-        "app_seo": "",
-        "app_seo.SEOSetting": "fas fa-globe",
+
     },
 
     # آیکون‌های پیش‌فرض
