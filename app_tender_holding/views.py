@@ -2,43 +2,18 @@ from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Q
 from .models import Holding, HoldingCategory, HoldingTag
-from app_banner.models import OtherBanner
-from app_reports.models import FollowUsLink, SiteMainInfo
+from app_seo.utils import SEOManager
 
-# =====================================================
-# COMMON CONTEXT
-# =====================================================
-def get_common_context():
-    """
-    داده‌های عمومی مشترک برای صفحات هلدینگ
-    """
-    site_info = SiteMainInfo.objects.first()
 
-    follow_links = (
-        FollowUsLink.objects
-        .filter(is_active=True, svg_icon__isnull=False)
-        .exclude(url="")
-        .order_by("display_order")
-    )
-
-    banner = OtherBanner.objects.filter(status="published").first()
-
-    categories = (
-        HoldingCategory.objects
-        .prefetch_related("holdings")
-        .order_by("order", "-created_at_fa")
-    )
-
+def get_holding_context():
     return {
-        "categories": categories,
-        "site_info": site_info,
-        "banner": banner,
-        "follow_links": follow_links,
+        "holding_categories": (
+            HoldingCategory.objects
+            .prefetch_related("holdings")
+            .order_by("order", "-created_at_fa")
+        )
     }
 
-# =====================================================
-# PAGINATION HELPER
-# =====================================================
 def paginate_queryset(request, queryset, per_page=8):
     paginator = Paginator(queryset, per_page)
     page_number = request.GET.get("page")
@@ -72,9 +47,10 @@ def tender_holding_home(request, cat_name=None):
     holdings = paginate_queryset(request, holdings_qs)
 
     context = {
-        **get_common_context(),
-        "holdings": holdings,
-        "active_category": cat_name,
+    "holdings": holdings,
+    "active_category": cat_name,
+    "seo": SEOManager.get_page("tender_holding"),
+    **get_holding_context(),
     }
     return render(request, "RTL/tender_holding/tender-holding-home.html", context)
 
@@ -93,8 +69,9 @@ def tender_holding_single(request, pid):
     )
 
     context = {
-        **get_common_context(),
-        "holding": holding,
+    "holding": holding,
+    "seo": SEOManager.get_object(holding),
+    **get_holding_context(),
     }
     return render(request, "RTL/tender_holding/tender-holding-single.html", context)
 
@@ -121,9 +98,10 @@ def tender_holding_search(request):
     holdings = paginate_queryset(request, holdings_qs)
 
     context = {
-        **get_common_context(),
-        "holdings": holdings,
-        "search_query": query,
+    "holdings": holdings,
+    "search_query": query,
+    "seo": SEOManager.get_page("tender_holding"),
+    **get_holding_context(),
     }
     return render(request, "RTL/tender_holding/tender-holding-home.html", context)
 
@@ -147,8 +125,9 @@ def tender_holding_tag(request, slug):
     holdings = paginate_queryset(request, holdings_qs)
 
     context = {
-        **get_common_context(),
-        "tag": tag,
-        "holdings": holdings,
+    "tag": tag,
+    "holdings": holdings,
+    "seo": SEOManager.get_page("tender_holding"),
+    **get_holding_context(),
     }
     return render(request, "RTL/tender_holding/tender-holding-home.html", context)

@@ -1,50 +1,15 @@
 import random
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.contrib import messages
-from django.db.models import Count, Q
 
 from app_hr.models import JobOpportunity, JobApplication
-from app_banner.models import OtherBanner
-from app_reports.models import FollowUsLink, SiteMainInfo
-from app_product.models import ProductCategory
+from app_seo.utils import SEOManager
 
 
 def _generate_captcha():
     return "".join(random.choice("0123456789") for _ in range(5))
-
-
-# =====================================================
-# COMMON CONTEXT
-# =====================================================
-def get_common_context():
-    site_info = SiteMainInfo.objects.first()
-
-    follow_links = (
-        FollowUsLink.objects
-        .filter(is_active=True, svg_icon__isnull=False)
-        .exclude(url="")
-        .order_by("display_order")
-    )
-
-    banner = OtherBanner.objects.filter(status="published").first()
-
-    return {
-        "categories": (
-            ProductCategory.objects
-            .annotate(
-                product_count=Count(
-                    "products",
-                    filter=Q(products__status="published")
-                )
-            )
-            .filter(product_count__gt=0)
-            .order_by("priority", "title_fa")
-        ),
-        "site_info": site_info,
-        "follow_links": follow_links,
-        "banner": banner,
-    }
 
 
 # =====================================================
@@ -56,6 +21,7 @@ def hr_home(request):
         .filter(is_active=True)
         .order_by("-created_at_fa", "ordering")
     )
+
     paginator = Paginator(queryset, 8)
     page_number = request.GET.get("page")
 
@@ -65,11 +31,15 @@ def hr_home(request):
         job_list = paginator.get_page(1)
 
     context = {
-        **get_common_context(),
         "job_list": job_list,
+        "seo": SEOManager.get_page("hr"),
     }
 
-    return render(request, "RTL/hr/hr_home.html", context)
+    return render(
+        request,
+        "RTL/hr/hr_home.html",
+        context
+    )
 
 
 # =====================================================
@@ -86,14 +56,18 @@ def hr_single(request, pid):
         request.session["hr_captcha"] = _generate_captcha()
         request.session.modified = True
 
+
     if request.method == "POST" and job.recruitment_status == "open":
+
         user_captcha = request.POST.get("captcha", "").strip()
         real_captcha = request.session.get("hr_captcha")
+
 
         # ❌ بررسی کپچا
         if not real_captcha or user_captcha != real_captcha:
             messages.error(request, "کد امنیتی اشتباه است.")
             return redirect(request.path)
+
 
         # ✅ ذخیره درخواست شغلی
         JobApplication.objects.create(
@@ -111,10 +85,12 @@ def hr_single(request, pid):
             ip_address=request.META.get("REMOTE_ADDR"),
         )
 
+
         messages.success(
             request,
             "✅ درخواست شما با موفقیت ثبت شد و پس از بررسی با شما تماس گرفته خواهد شد."
         )
+
 
         # 🔄 تولید کپچای جدید بعد از ارسال
         request.session["hr_captcha"] = _generate_captcha()
@@ -122,10 +98,20 @@ def hr_single(request, pid):
 
         return redirect(request.path)
 
+
     context = {
-        **get_common_context(),
         "job": job,
         "captcha_code": request.session.get("hr_captcha"),
+        "seo": SEOManager.get_object(
+            "app_hr",
+            "JobOpportunity",
+            job.pk
+        ),
     }
 
-    return render(request, "RTL/hr/hr_single.html", context)
+
+    return render(
+        request,
+        "RTL/hr/hr_single.html",
+        context
+    )

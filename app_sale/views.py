@@ -1,38 +1,7 @@
 from django.shortcuts import render
-from django.db.models import Count, Q
 
 from .models import SalesReport
-from app_banner.models import OtherBanner
-from app_reports.models import FollowUsLink, SiteMainInfo
-from app_product.models import ProductCategory
-
-
-# -------------------------------------------------
-#  Context مشترک (مشابه الگوی پروژه)
-# -------------------------------------------------
-def get_common_context():
-    return {
-        "categories": (
-            ProductCategory.objects
-            .annotate(
-                product_count=Count(
-                    "products",
-                    filter=Q(products__status="published")
-                )
-            )
-            .filter(product_count__gt=0)
-            .order_by("priority", "title_fa")
-        ),
-        "site_info": SiteMainInfo.objects.first(),
-        "banner": OtherBanner.objects.filter(status="published").first(),
-        "follow_links": (
-            FollowUsLink.objects
-            .filter(is_active=True, svg_icon__isnull=False)
-            .exclude(url="")
-            .order_by("display_order")
-        ),
-    }
-
+from app_seo.utils import SEOManager
 
 # -------------------------------------------------
 #  گزارش فروش (نمودار)
@@ -61,7 +30,7 @@ def sales_chart_view(request):
     context = {
         "labels": labels,
         "sales_data": sales_data,
-        **get_common_context(),
+        "seo": SEOManager.get_page("sale"),
     }
 
     return render(request, "RTL/sale/sale_chart.html", context)

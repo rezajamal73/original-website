@@ -5,7 +5,7 @@ from .models import Resume
 from app_product.models import ProductCategory
 from app_banner.models import OtherBanner
 from app_reports.models import FollowUsLink, SiteMainInfo
-
+from app_seo.utils import SEOManager
 
 def get_common_context():
     """
@@ -35,16 +35,22 @@ def get_common_context():
 
 
 def resume_home(request):
-    # ترتیب نمایش مطابق Drag & Drop در ادمین
     resumes = (
         Resume.objects
         .select_related("province")
         .order_by("display_order")
     )
 
+    seo = SEOManager.get_page("resume")
+
     context = {
-        "resumes": resumes,
         **get_common_context(),
+        "resumes": resumes,
+        "seo": seo,
     }
 
-    return render(request, "RTL/resume/resume.html", context)
+    return render(
+        request,
+        "RTL/resume/resume.html",
+        context,
+    )

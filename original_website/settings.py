@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'app_visit.apps.AppVisitConfig',
     'app_resume.apps.AppResumeConfig',
     'app_log.apps.AppLogConfig',
+    'app_seo.apps.AppSeoConfig',
 
     'django.contrib.sites',
     'django.contrib.sitemaps',
@@ -80,6 +81,7 @@ MIDDLEWARE = [
 
     # 👇 این را اضافه کن
     'app_log.middleware.CurrentRequestMiddleware',
+    'app_seo.middleware.SEOMiddleware',
 
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -99,6 +101,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                "app_seo.context_processors.seo",
+                "app_core.context_processors.common_context",
             ],
         },
     },
@@ -141,8 +145,6 @@ LANGUAGE_CODE = 'fa'
 LANGUAGES = [
     ("fa", "فارسی"),
 ]
-
-LANGUAGE_CODE = "fa"
 
 TIME_ZONE = "Asia/Tehran"
 
@@ -405,6 +407,8 @@ JAZZMIN_SETTINGS = {
         # لاگ سیستم
         "app_log": "",
         "app_log.SystemLog": "fas fa-history",
+        "app_seo": "",
+        "app_seo.SEOSetting": "fas fa-globe",
     },
 
     # آیکون‌های پیش‌فرض

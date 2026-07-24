@@ -5,15 +5,15 @@ from django.conf import settings
 from django.contrib.sitemaps.views import sitemap
 from django.shortcuts import render
 
-from app_core.sitemaps import StaticViewSitemap
-from app_blog.sitemaps import BlogSitemap
-from app_product.sitemaps import ProductSitemap
-
-sitemaps = {
-    "static": StaticViewSitemap,
-    "blog": BlogSitemap,
-    "app_product": ProductSitemap,
-}
+# from app_core.sitemaps import StaticViewSitemap
+# from app_blog.sitemaps import BlogSitemap
+# from app_product.sitemaps import ProductSitemap
+#
+# sitemaps = {
+#     "static": StaticViewSitemap,
+#     "blog": BlogSitemap,
+#     "app_product": ProductSitemap,
+# }
 
 
 def custom_404_view(request, exception):
@@ -42,13 +42,14 @@ urlpatterns = [
     path("sale/", include("app_sale.urls")),
     path("catalog/", include("app_catalog.urls")),
     path("resume/", include("app_resume.urls")),
+    path("", include("app_seo.urls")),
 
-    path(
-        "sitemap.xml",
-        sitemap,
-        {"sitemaps": sitemaps},
-        name="django.contrib.sitemaps.views.sitemap",
-    ),
+    # path(
+    #     "sitemap.xml",
+    #     sitemap,
+    #     {"sitemaps": sitemaps},
+    #     name="django.contrib.sitemaps.views.sitemap",
+    # ),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

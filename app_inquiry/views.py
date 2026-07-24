@@ -1,52 +1,29 @@
 # app_inquiry/views.py
+
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.db.models import Q, Count
-
-from app_product.models import ProductCategory
-from app_banner.models import OtherBanner
-from app_reports.models import FollowUsLink, SiteMainInfo
+from django.db.models import Q
 
 from .models import PurchaseInquiry, InquiryTag
+from app_seo.utils import SEOManager
 
 
-def get_common_context():
-    """
-    داده‌های مشترک تمام صفحات (دقیقاً مثل auction)
-    """
-    return {
-        "categories": (
-            ProductCategory.objects
-            .annotate(
-                product_count=Count(
-                    "products",
-                    filter=Q(products__status="published")
-                )
-            )
-            .filter(product_count__gt=0)
-            .order_by("priority", "title_fa")
-        ),
-        "site_info": SiteMainInfo.objects.first(),
-        "banner": OtherBanner.objects.filter(status="published").first(),
-        "follow_links": (
-            FollowUsLink.objects
-            .filter(is_active=True, svg_icon__isnull=False)
-            .exclude(url="")
-            .order_by("display_order")
-        ),
-    }
-
+# =====================================================
+# INQUIRY HOME
+# =====================================================
 
 def inquiry_home(request, slug=None):
+
     inquiries = (
         PurchaseInquiry.objects
         .select_related("category")
         .prefetch_related("tags")
     )
 
-    # ✅ فیلتر بر اساس category slug
     if slug:
-        inquiries = inquiries.filter(category__slug=slug)
+        inquiries = inquiries.filter(
+            category__slug=slug
+        )
 
     paginator = Paginator(inquiries, 8)
     page_number = request.GET.get("page")
@@ -56,33 +33,62 @@ def inquiry_home(request, slug=None):
     except PageNotAnInteger:
         inquiries = paginator.get_page(1)
     except EmptyPage:
-        inquiries = paginator.get_page(paginator.num_pages)
+        inquiries = paginator.get_page(
+            paginator.num_pages
+        )
 
     context = {
         "inquiries": inquiries,
-        **get_common_context(),
+        "seo": SEOManager.get_page("inquiry"),
     }
-    return render(request, "RTL/inquiry/inquiry-home.html", context)
+
+    return render(
+        request,
+        "RTL/inquiry/inquiry-home.html",
+        context
+    )
 
 
+# =====================================================
+# INQUIRY SINGLE
+# =====================================================
 
 def inquiry_single(request, pk):
+
     inquiry = get_object_or_404(
         PurchaseInquiry.objects
         .select_related("category")
-        .prefetch_related("tags", "gallery_images"),
+        .prefetch_related(
+            "tags",
+            "gallery_images"
+        ),
         pk=pk
     )
 
     context = {
         "inquiry": inquiry,
-        **get_common_context(),
+        "seo": SEOManager.get_object(
+            inquiry
+        ),
     }
-    return render(request, "RTL/inquiry/inquiry-single.html", context)
 
+    return render(
+        request,
+        "RTL/inquiry/inquiry-single.html",
+        context
+    )
+
+
+# =====================================================
+# INQUIRY TAG
+# =====================================================
 
 def inquiry_tag(request, slug):
-    tag = get_object_or_404(InquiryTag, slug=slug)
+
+    tag = get_object_or_404(
+        InquiryTag,
+        slug=slug
+    )
 
     inquiries = (
         PurchaseInquiry.objects
@@ -92,25 +98,36 @@ def inquiry_tag(request, slug):
     )
 
     paginator = Paginator(inquiries, 8)
-    page_number = request.GET.get("page")
 
-    try:
-        inquiries = paginator.get_page(page_number)
-    except PageNotAnInteger:
-        inquiries = paginator.get_page(1)
-    except EmptyPage:
-        inquiries = paginator.get_page(paginator.num_pages)
+    inquiries = paginator.get_page(
+        request.GET.get("page")
+    )
 
     context = {
         "tag": tag,
         "inquiries": inquiries,
-        **get_common_context(),
+        "seo": SEOManager.get_page(
+            "inquiry_tag"
+        ),
     }
-    return render(request, "RTL/inquiry/inquiry-home.html", context)
 
+    return render(
+        request,
+        "RTL/inquiry/inquiry-home.html",
+        context
+    )
+
+
+# =====================================================
+# INQUIRY SEARCH
+# =====================================================
 
 def inquiry_search(request):
-    s = request.GET.get("s", "").strip()
+
+    s = request.GET.get(
+        "s",
+        ""
+    ).strip()
 
     inquiries = (
         PurchaseInquiry.objects
@@ -127,19 +144,25 @@ def inquiry_search(request):
             | Q(inquiry_number__icontains=s)
         )
 
-    paginator = Paginator(inquiries, 8)
-    page_number = request.GET.get("page")
+    paginator = Paginator(
+        inquiries,
+        8
+    )
 
-    try:
-        inquiries = paginator.get_page(page_number)
-    except PageNotAnInteger:
-        inquiries = paginator.get_page(1)
-    except EmptyPage:
-        inquiries = paginator.get_page(paginator.num_pages)
+    inquiries = paginator.get_page(
+        request.GET.get("page")
+    )
 
     context = {
         "inquiries": inquiries,
         "search_query": s,
-        **get_common_context(),
+        "seo": SEOManager.get_page(
+            "inquiry_search"
+        ),
     }
-    return render(request, "RTL/inquiry/inquiry-home.html", context)
+
+    return render(
+        request,
+        "RTL/inquiry/inquiry-home.html",
+        context
+    )
