@@ -1160,3 +1160,139 @@ fieldset.module .addlink:hover {
 [data-lte-toggle="sidebar"] {
     display: none !important;
 }
+
+/* ==========================================
+   BACKUP ACTION BUTTONS
+========================================== */
+
+
+.object-tools,
+.d-flex.flex-wrap.gap-2.align-items-center.justify-content-between li {
+    list-style:none !important;
+}
+
+
+/* دکمه های بکاپ */
+
+.addlink[title="ایجاد نسخه پشتیبان جدید"],
+.addlink[title="بارگذاری فایل ZIP"] {
+
+    display:inline-flex !important;
+
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+
+    height:42px;
+
+    padding:0 22px !important;
+
+    border-radius:14px !important;
+
+    font-size:13px !important;
+
+    font-weight:700 !important;
+
+    color:white !important;
+
+    text-decoration:none !important;
+
+    border:none !important;
+
+    box-shadow:
+    0 8px 20px rgba(0,0,0,.15);
+
+    transition:
+    all .25s ease !important;
+
+    position:relative;
+
+    overflow:hidden;
+
+}
+
+
+/* ایجاد بکاپ */
+
+.addlink[title="ایجاد نسخه پشتیبان جدید"] {
+
+    background:
+    linear-gradient(
+        135deg,
+        #10b981,
+        #059669
+    ) !important;
+
+}
+
+
+/* آپلود */
+
+.addlink[title="بارگذاری فایل ZIP"] {
+
+    background:
+    linear-gradient(
+        135deg,
+        #2563eb,
+        #1d4ed8
+    ) !important;
+
+}
+
+
+
+/* Hover */
+
+.addlink[title="ایجاد نسخه پشتیبان جدید"]:hover,
+.addlink[title="بارگذاری فایل ZIP"]:hover {
+
+
+    transform:
+    translateY(-3px) !important;
+
+
+    box-shadow:
+    0 14px 30px rgba(0,0,0,.22);
+
+}
+
+
+/* افکت نور */
+
+.addlink[title="ایجاد نسخه پشتیبان جدید"]::before,
+.addlink[title="بارگذاری فایل ZIP"]::before {
+
+    content:"";
+
+    position:absolute;
+
+    top:0;
+    left:-120%;
+
+    width:70%;
+    height:100%;
+
+
+    background:
+    linear-gradient(
+        120deg,
+        transparent,
+        rgba(255,255,255,.4),
+        transparent
+    );
+
+
+    transition:.5s;
+
+}
+
+
+.addlink[title="ایجاد نسخه پشتیبان جدید"]:hover::before,
+.addlink[title="بارگذاری فایل ZIP"]:hover::before {
+
+    left:130%;
+
+}
+
+
+

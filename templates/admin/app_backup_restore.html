@@ -1,0 +1,102 @@
+from django.shortcuts import get_object_or_404, render
+
+
+####################################################
+# Restore Backup
+####################################################
+
+def restore_backup_view(
+    self,
+    request,
+    backup_id,
+):
+
+    changelist_url = reverse(
+        "admin:app_backup_backup_changelist",
+    )
+
+    ####################################################
+    # Permission
+    ####################################################
+
+    if not request.user.is_superuser:
+
+        self.message_user(
+            request,
+            "فقط مدیر سیستم مجاز به بازیابی نسخه پشتیبان است.",
+            messages.ERROR,
+        )
+
+        return HttpResponseRedirect(
+            changelist_url,
+        )
+
+    ####################################################
+    # Backup
+    ####################################################
+
+    backup = get_object_or_404(
+        Backup,
+        pk=backup_id,
+    )
+
+    if not backup.file_exists:
+
+        self.message_user(
+            request,
+            "فایل نسخه پشتیبان روی سرور وجود ندارد.",
+            messages.ERROR,
+        )
+
+        return HttpResponseRedirect(
+            changelist_url,
+        )
+
+    ####################################################
+    # Confirmation Page
+    ####################################################
+
+    if request.method != "POST":
+
+        return render(
+            request,
+            "admin/app_backup_restore.html",
+            {
+                "title": "بازیابی نسخه پشتیبان",
+                "backup": backup,
+            },
+        )
+
+    ####################################################
+    # Restore
+    ####################################################
+
+    try:
+
+        # ایجاد نسخه پشتیبان اضطراری
+        BackupService().create_backup()
+
+        # بازیابی فایل انتخاب شده
+        RestoreService(
+            backup,
+        ).restore()
+
+    except Exception as exc:
+
+        self.message_user(
+            request,
+            f"خطا در بازیابی نسخه پشتیبان:\n{exc}",
+            messages.ERROR,
+        )
+
+    else:
+
+        self.message_user(
+            request,
+            "نسخه پشتیبان با موفقیت بازیابی شد.",
+            messages.SUCCESS,
+        )
+
+    return HttpResponseRedirect(
+        changelist_url,
+    )

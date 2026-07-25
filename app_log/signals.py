@@ -124,7 +124,7 @@ def save_log(sender, instance, action):
     # حذف فقط یک لاگ قدیمی‌تر از یک سال
     # --------------------------------
 
-    expire_time = timezone.now() - timedelta(days=365)
+    expire_time = timezone.now() - timedelta(days=120)
 
 
     oldest_log = (

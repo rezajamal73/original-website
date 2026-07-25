@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User, Group
 
-from app_auction import models
+
 
 
 class UserProxy(User):
