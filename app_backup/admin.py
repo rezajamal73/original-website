@@ -132,7 +132,7 @@ class BackupAdmin(admin.ModelAdmin):
             )
 
         return format_html(
-            '<a class="button" style="background:#28a745;color:white;" href="{}">'
+            '<a class="backup-restore-btn" href="{}">'
             '🔄 بازیابی'
             '</a>',
             reverse(

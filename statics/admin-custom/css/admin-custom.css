@@ -614,7 +614,7 @@ input[type="submit"].default:hover,
 .dp-toast {
     position: fixed;
     left: 20px;
-    bottom: var(--dp-toast-offset, 20px);
+
     padding: 10px 16px;
     border-radius: var(--dp-radius);
     font-size: 12px;
@@ -1296,3 +1296,41 @@ fieldset.module .addlink:hover {
 
 
 
+td.field-restore_backup a.backup-restore-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+
+    min-width: 120px !important;
+    height: 42px !important;
+
+    padding: 0 22px !important;
+    border-radius: 14px !important;
+
+    background: linear-gradient(
+        135deg,
+        #22c55e,
+        #15803d
+    ) !important;
+
+    color: #fff !important;
+
+    font-size: 13px !important;
+    font-weight: 700 !important;
+
+    text-decoration: none !important;
+    border: none !important;
+
+    box-shadow: 0 8px 20px rgba(34,197,94,.25) !important;
+
+    transition: .25s ease !important;
+}
+
+td.field-restore_backup a.backup-restore-btn:hover {
+    transform: translateY(-3px) !important;
+    color:#fff !important;
+
+    box-shadow:
+    0 14px 30px rgba(34,197,94,.35) !important;
+}
