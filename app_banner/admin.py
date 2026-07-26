@@ -35,15 +35,18 @@ def admin_delete_button(obj):
         url,
     )
 
+
 admin_delete_button.short_description = "حذف"
 
 
 def make_status_icon(published_label: str, draft_label: str):
     """Factory تولید status_icon برای جلوگیری از تکرار کد"""
+
     def status_icon(self, obj):
         if obj.status == "published":
             return format_html("<b style='color:green;'>{}</b>", published_label)
         return format_html("<b style='color:red;'>{}</b>", draft_label)
+
     status_icon.short_description = "وضعیت"
     return status_icon
 
@@ -102,6 +105,7 @@ class HeroBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
 
     def display_title(self, obj):
         return obj.label_fa or obj.title_p1_fa or "— بدون عنوان —"
+
     display_title.short_description = "عنوان"
 
     def image_icon(self, obj):
@@ -111,6 +115,7 @@ class HeroBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
                 obj.image.url,
             )
         return "—"
+
     image_icon.short_description = "تصویر"
 
     def image_preview(self, obj):
@@ -120,12 +125,14 @@ class HeroBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
                 obj.image.url,
             )
         return "تصویری وجود ندارد"
+
     image_preview.short_description = "پیش‌نمایش تصویر"
 
     status_icon = make_status_icon("✅ منتشر شده", "⛔ پیش‌نویس")
 
     def admin_delete(self, obj):
         return admin_delete_button(obj)
+
     admin_delete.short_description = "حذف"
 
 
@@ -156,6 +163,7 @@ class OtherBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
 
     def display_title(self, obj):
         return obj.label_fa or "— بدون عنوان —"
+
     display_title.short_description = "عنوان"
 
     def image_icon(self, obj):
@@ -165,6 +173,7 @@ class OtherBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
                 obj.image.url,
             )
         return "—"
+
     image_icon.short_description = "تصویر"
 
     def image_preview(self, obj):
@@ -174,12 +183,14 @@ class OtherBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
                 obj.image.url,
             )
         return "تصویری وجود ندارد"
+
     image_preview.short_description = "پیش‌نمایش تصویر"
 
     status_icon = make_status_icon("✅ منتشر شده", "⛔ پیش‌نویس")
 
     def admin_delete(self, obj):
         return admin_delete_button(obj)
+
     admin_delete.short_description = "حذف"
 
 
@@ -208,6 +219,7 @@ class SpecialProductBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
 
     def display_title(self, obj):
         return obj.title_fa or "— بنر محصول ویژه —"
+
     display_title.short_description = "عنوان"
 
     def image_icon(self, obj):
@@ -217,6 +229,7 @@ class SpecialProductBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
                 obj.image.url,
             )
         return "—"
+
     image_icon.short_description = "تصویر"
 
     def image_preview(self, obj):
@@ -226,12 +239,14 @@ class SpecialProductBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
                 obj.image.url,
             )
         return "تصویری وجود ندارد"
+
     image_preview.short_description = "پیش‌نمایش تصویر"
 
     status_icon = make_status_icon("✅ فعال", "⛔ غیرفعال")
 
     def admin_delete(self, obj):
         return admin_delete_button(obj)
+
     admin_delete.short_description = "حذف"
 
 
@@ -268,12 +283,14 @@ class MainBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
         if obj.title_p1_fa or obj.title_p2_fa:
             return f"{obj.title_p1_fa or ''} | {obj.title_p2_fa or ''}"
         return "— بدون عنوان —"
+
     title_fa.short_description = "عنوان فارسی"
 
     def title_en(self, obj):
         if obj.title_p1_en or obj.title_p2_en:
             return f"{obj.title_p1_en or ''} | {obj.title_p2_en or ''}"
         return "—"
+
     title_en.short_description = "عنوان انگلیسی"
 
     def image_icon(self, obj):
@@ -283,6 +300,7 @@ class MainBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
                 obj.image.url,
             )
         return "—"
+
     image_icon.short_description = "تصویر"
 
     def image_preview(self, obj):
@@ -292,86 +310,89 @@ class MainBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
                 obj.image.url,
             )
         return "تصویری وجود ندارد"
+
     image_preview.short_description = "پیش‌نمایش تصویر"
 
     status_icon = make_status_icon("✅ منتشر شده", "⛔ پیش‌نویس")
 
     def admin_delete(self, obj):
         return admin_delete_button(obj)
+
     admin_delete.short_description = "حذف"
 
-    @admin.register(AboutBanner)
-    class AboutBannerAdmin(admin.ModelAdmin):
-        actions = None
 
-        list_display = (
-            "image1_icon",
-            "image2_icon",
-            "status",
-            "admin_delete",
-        )
+@admin.register(AboutBanner)
+class AboutBannerAdmin(admin.ModelAdmin):
+    actions = None
 
-        readonly_fields = (
-            "image1_preview",
-            "image2_preview",
-        )
+    list_display = (
+        "image1_icon",
+        "image2_icon",
+        "status",
+        "admin_delete",
+    )
 
-        fieldsets = (
-            ("📌 وضعیت", {
-                "fields": ("status",),
-            }),
-            ("🖼️ تصویر اول", {
-                "fields": ("image_1", "image1_preview"),
-            }),
-            ("🖼️ تصویر دوم", {
-                "fields": ("image_2", "image2_preview"),
-            }),
-        )
+    readonly_fields = (
+        "image1_preview",
+        "image2_preview",
+    )
 
-        def has_add_permission(self, request):
-            return not AboutBanner.objects.exists()
+    fieldsets = (
+        ("📌 وضعیت", {
+            "fields": ("status",),
+        }),
+        ("🖼️ تصویر اول", {
+            "fields": ("image_1", "image1_preview"),
+        }),
+        ("🖼️ تصویر دوم", {
+            "fields": ("image_2", "image2_preview"),
+        }),
+    )
 
-        def image1_icon(self, obj):
-            if obj.image_1:
-                return format_html(
-                    "<img src='{}' width='50' style='border-radius:6px;'>",
-                    obj.image_1.url,
-                )
-            return "—"
+    def has_add_permission(self, request):
+        return not AboutBanner.objects.exists()
 
-        image1_icon.short_description = "تصویر اول"
+    def image1_icon(self, obj):
+        if obj.image_1:
+            return format_html(
+                "<img src='{}' width='50' style='border-radius:6px;'>",
+                obj.image_1.url,
+            )
+        return "—"
 
-        def image2_icon(self, obj):
-            if obj.image_2:
-                return format_html(
-                    "<img src='{}' width='50' style='border-radius:6px;'>",
-                    obj.image_2.url,
-                )
-            return "—"
+    image1_icon.short_description = "تصویر اول"
 
-        image2_icon.short_description = "تصویر دوم"
+    def image2_icon(self, obj):
+        if obj.image_2:
+            return format_html(
+                "<img src='{}' width='50' style='border-radius:6px;'>",
+                obj.image_2.url,
+            )
+        return "—"
 
-        def image1_preview(self, obj):
-            if obj.image_1:
-                return format_html(
-                    "<img src='{}' width='250' style='border-radius:10px;'>",
-                    obj.image_1.url,
-                )
-            return "تصویری وجود ندارد"
+    image2_icon.short_description = "تصویر دوم"
 
-        image1_preview.short_description = "پیش‌نمایش تصویر اول"
+    def image1_preview(self, obj):
+        if obj.image_1:
+            return format_html(
+                "<img src='{}' width='250' style='border-radius:10px;'>",
+                obj.image_1.url,
+            )
+        return "تصویری وجود ندارد"
 
-        def image2_preview(self, obj):
-            if obj.image_2:
-                return format_html(
-                    "<img src='{}' width='250' style='border-radius:10px;'>",
-                    obj.image_2.url,
-                )
-            return "تصویری وجود ندارد"
+    image1_preview.short_description = "پیش‌نمایش تصویر اول"
 
-        image2_preview.short_description = "پیش‌نمایش تصویر دوم"
+    def image2_preview(self, obj):
+        if obj.image_2:
+            return format_html(
+                "<img src='{}' width='250' style='border-radius:10px;'>",
+                obj.image_2.url,
+            )
+        return "تصویری وجود ندارد"
 
-        def admin_delete(self, obj):
-            return admin_delete_button(obj)
+    image2_preview.short_description = "پیش‌نمایش تصویر دوم"
 
-        admin_delete.short_description = "حذف"
+    def admin_delete(self, obj):
+        return admin_delete_button(obj)
+
+    admin_delete.short_description = "حذف"
