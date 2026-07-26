@@ -102,11 +102,7 @@ def hr_single(request, pid):
     context = {
         "job": job,
         "captcha_code": request.session.get("hr_captcha"),
-        "seo": SEOManager.get_object(
-            "app_hr",
-            "JobOpportunity",
-            job.pk
-        ),
+        "seo": SEOManager.get_object(job),
     }
 
 

@@ -1,508 +1,649 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ورود به پنل مدیریت</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600&display=swap" rel="stylesheet">
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ورود به پنل مدیریت</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-:root {
-  --blue: #2563EB;
-  --blue-dark: #1D4ED8;
-  --blue-light: #EFF6FF;
-  --blue-mid: #BFDBFE;
-  --red: #DC2626;
-  --red-light: #FEF2F2;
-  --red-mid: #FECACA;
-  --green: #16A34A;
-  --green-light: #F0FDF4;
-  --gray-50: #F8FAFC;
-  --gray-100: #F1F5F9;
-  --gray-200: #E2E8F0;
-  --gray-300: #CBD5E1;
-  --gray-400: #94A3B8;
-  --gray-500: #64748B;
-  --gray-600: #475569;
-  --gray-700: #334155;
-  --gray-800: #1E293B;
-  --gray-900: #0F172A;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
-  --shadow-md: 0 4px 16px rgba(0,0,0,.10), 0 2px 6px rgba(0,0,0,.06);
-  --shadow-lg: 0 20px 60px rgba(0,0,0,.12), 0 8px 24px rgba(0,0,0,.08);
-  --radius: 10px;
-  --radius-lg: 16px;
-}
+        :root {
+            --blue: #2563EB;
+            --blue-dark: #1D4ED8;
+            --blue-light: #EFF6FF;
+            --blue-mid: #BFDBFE;
+            --red: #DC2626;
+            --red-light: #FEF2F2;
+            --red-mid: #FECACA;
+            --green: #16A34A;
+            --green-light: #F0FDF4;
+            --gray-50: #F8FAFC;
+            --gray-100: #F1F5F9;
+            --gray-200: #E2E8F0;
+            --gray-300: #CBD5E1;
+            --gray-400: #94A3B8;
+            --gray-500: #64748B;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1E293B;
+            --gray-900: #0F172A;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, .08), 0 1px 2px rgba(0, 0, 0, .05);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, .10), 0 2px 6px rgba(0, 0, 0, .06);
+            --shadow-lg: 0 20px 60px rgba(0, 0, 0, .12), 0 8px 24px rgba(0, 0, 0, .08);
+            --radius: 10px;
+            --radius-lg: 16px;
+        }
 
-body {
-  font-family: 'Vazirmatn', Tahoma, Arial, sans-serif;
-  background: var(--gray-50);
-  min-height: 100vh;
-  display: flex;
-  align-items: stretch;
-}
+        body {
+            font-family: 'Vazirmatn', Tahoma, Arial, sans-serif;
+            background: var(--gray-50);
+            min-height: 100vh;
+            display: flex;
+            align-items: stretch;
+        }
 
-/* ─── Layout ─── */
-.page {
-  display: flex;
-  width: 100%;
-  min-height: 100vh;
-}
+        .captcha {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
 
-/* ─── Left panel (brand) ─── */
-.brand-panel {
-  flex: 1;
-  background: var(--gray-900);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: 3rem;
-  position: relative;
-  overflow: hidden;
-}
+        .captcha-top {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
 
-.brand-panel::before {
-  content: '';
-  position: absolute;
-  top: -120px; left: -120px;
-  width: 400px; height: 400px;
-  background: radial-gradient(circle, rgba(37,99,235,.25) 0%, transparent 70%);
-  pointer-events: none;
-}
+        .captcha img {
+            width: 220px;
+            height: 60px;
+            border: 1.5px solid var(--blue-mid);
+            border-radius: var(--radius);
+            background: #fff;
+            padding: 6px;
+        }
 
-.brand-panel::after {
-  content: '';
-  position: absolute;
-  bottom: -80px; right: -80px;
-  width: 320px; height: 320px;
-  background: radial-gradient(circle, rgba(37,99,235,.15) 0%, transparent 70%);
-  pointer-events: none;
-}
+        .captcha input {
+            width: 100%;
+            height: 46px;
+            padding: 0 14px;
+            border: 1.5px solid var(--gray-200);
+            border-radius: var(--radius);
+            background: var(--gray-50);
+            font-family: 'Vazirmatn', Tahoma, Arial, sans-serif;
+            font-size: 14px;
+            outline: none;
+            transition: .2s;
+        }
 
-.brand-logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  position: relative;
-  z-index: 1;
-}
+        .captcha input:focus {
+            border-color: var(--blue);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, .10);
+        }
 
-.brand-icon {
-  width: 46px;
-  height: 46px;
-  background: var(--blue);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 22px;
-  box-shadow: 0 4px 16px rgba(37,99,235,.4);
-}
+        .captcha-refresh {
+            width: 42px;
+            height: 42px;
+            border: none;
+            border-radius: 10px;
+            background: var(--blue);
+            color: #fff;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: .2s;
+        }
 
-.brand-name {
-  font-size: 20px;
-  font-weight: 600;
-  color: #fff;
-  line-height: 1.2;
-}
+        .captcha-refresh:hover {
+            background: var(--blue-dark);
+            transform: rotate(180deg);
+        }
 
-.brand-name span {
-  display: block;
-  font-size: 12px;
-  font-weight: 300;
-  color: var(--gray-400);
-  margin-top: 1px;
-}
+        .captcha-refresh:active {
+            transform: scale(.95);
+        }
 
-.brand-center {
-  position: relative;
-  z-index: 1;
-}
+        .errorlist {
+            list-style: none;
+            margin-bottom: 8px;
+        }
 
-.brand-headline {
-  font-size: 32px;
-  font-weight: 600;
-  color: #fff;
-  line-height: 1.4;
-  margin-bottom: 16px;
-}
+        .errorlist li {
+            color: var(--red);
+            font-size: 13px;
+        }
 
-.brand-headline em {
-  color: var(--blue);
-  font-style: normal;
-}
+        /* ─── Layout ─── */
+        .page {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+        }
 
-.brand-desc {
-  font-size: 14px;
-  color: var(--gray-400);
-  line-height: 1.8;
-  max-width: 360px;
-}
+        /* ─── Left panel (brand) ─── */
+        .brand-panel {
+            flex: 1;
+            background: var(--gray-900);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
 
-/* Stats row */
-.brand-stats {
-  display: flex;
-  gap: 24px;
-  margin-top: 40px;
-}
+        .brand-panel::before {
+            content: '';
+            position: absolute;
+            top: -120px;
+            left: -120px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(37, 99, 235, .25) 0%, transparent 70%);
+            pointer-events: none;
+        }
 
-.b-stat {
-  border-right: 2px solid var(--gray-700);
-  padding-right: 20px;
-}
+        .brand-panel::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            right: -80px;
+            width: 320px;
+            height: 320px;
+            background: radial-gradient(circle, rgba(37, 99, 235, .15) 0%, transparent 70%);
+            pointer-events: none;
+        }
 
-.b-stat:first-child { border-right: none; padding-right: 0; }
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            z-index: 1;
+        }
 
-.b-stat-val {
-  font-size: 26px;
-  font-weight: 600;
-  color: #fff;
-}
+        .brand-icon {
+            width: 46px;
+            height: 46px;
+            background: var(--blue);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            box-shadow: 0 4px 16px rgba(37, 99, 235, .4);
+        }
 
-.b-stat-lbl {
-  font-size: 12px;
-  color: var(--gray-500);
-  margin-top: 2px;
-}
+        .brand-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #fff;
+            line-height: 1.2;
+        }
 
-/* App list */
-.app-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  position: relative;
-  z-index: 1;
-}
+        .brand-name span {
+            display: block;
+            font-size: 12px;
+            font-weight: 300;
+            color: var(--gray-400);
+            margin-top: 1px;
+        }
 
-.chip {
-  background: rgba(255,255,255,.06);
-  border: 1px solid rgba(255,255,255,.1);
-  border-radius: 20px;
-  padding: 5px 12px;
-  font-size: 12px;
-  color: var(--gray-400);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  white-space: nowrap;
-}
+        .brand-center {
+            position: relative;
+            z-index: 1;
+        }
 
-/* ─── Right panel (form) ─── */
-.form-panel {
-  width: 480px;
-  flex-shrink: 0;
-  background: #fff;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 3rem 2.75rem;
-  border-right: 1px solid var(--gray-200);
-  position: relative;
-}
+        .brand-headline {
+            font-size: 32px;
+            font-weight: 600;
+            color: #fff;
+            line-height: 1.4;
+            margin-bottom: 16px;
+        }
 
-.form-header {
-  margin-bottom: 2rem;
-}
+        .brand-headline em {
+            color: var(--blue);
+            font-style: normal;
+        }
 
-.form-header h1 {
-  font-size: 22px;
-  font-weight: 600;
-  color: var(--gray-900);
-  margin-bottom: 6px;
-}
+        .brand-desc {
+            font-size: 14px;
+            color: var(--gray-400);
+            line-height: 1.8;
+            max-width: 360px;
+        }
 
-.form-header p {
-  font-size: 13px;
-  color: var(--gray-500);
-}
+        /* Stats row */
+        .brand-stats {
+            display: flex;
+            gap: 24px;
+            margin-top: 40px;
+        }
 
-/* ─── Error ─── */
-.error-box {
-  background: var(--red-light);
-  border: 1px solid var(--red-mid);
-  border-radius: var(--radius);
-  padding: 12px 14px;
-  margin-bottom: 20px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 13px;
-  color: var(--red);
-}
+        .b-stat {
+            border-right: 2px solid var(--gray-700);
+            padding-right: 20px;
+        }
 
-.error-box .e-icon {
-  font-size: 18px;
-  flex-shrink: 0;
-}
+        .b-stat:first-child {
+            border-right: none;
+            padding-right: 0;
+        }
 
-/* ─── Fields ─── */
-.field {
-  margin-bottom: 18px;
-}
+        .b-stat-val {
+            font-size: 26px;
+            font-weight: 600;
+            color: #fff;
+        }
 
-.field label {
-  display: block;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--gray-700);
-  margin-bottom: 7px;
-}
+        .b-stat-lbl {
+            font-size: 12px;
+            color: var(--gray-500);
+            margin-top: 2px;
+        }
 
-.input-wrap {
-  position: relative;
-}
+        /* App list */
+        .app-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            position: relative;
+            z-index: 1;
+        }
 
-.input-icon {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: var(--gray-400);
-  font-size: 17px;
-  pointer-events: none;
-  line-height: 1;
-}
+        .chip {
+            background: rgba(255, 255, 255, .06);
+            border: 1px solid rgba(255, 255, 255, .1);
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 12px;
+            color: var(--gray-400);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
 
-input[type="text"],
-input[type="password"],
-input[type="number"] {
-  width: 100%;
-  height: 46px;
-  padding: 0 42px 0 14px;
-  border: 1.5px solid var(--gray-200);
-  border-radius: var(--radius);
-  background: var(--gray-50);
-  font-family: 'Vazirmatn', Tahoma, Arial, sans-serif;
-  font-size: 14px;
-  color: var(--gray-800);
-  outline: none;
-  transition: border-color .15s, box-shadow .15s, background .15s;
-}
+        /* ─── Right panel (form) ─── */
+        .form-panel {
+            width: 480px;
+            flex-shrink: 0;
+            background: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 3rem 2.75rem;
+            border-right: 1px solid var(--gray-200);
+            position: relative;
+        }
 
-input:focus {
-  border-color: var(--blue);
-  background: #fff;
-  box-shadow: 0 0 0 4px rgba(37,99,235,.10);
-}
+        .form-header {
+            margin-bottom: 2rem;
+        }
 
-input::placeholder { color: var(--gray-300); }
+        .form-header h1 {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 6px;
+        }
 
-/* ─── Captcha ─── */
-.captcha-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--blue-light);
-  border: 1.5px solid var(--blue-mid);
-  border-radius: var(--radius);
-  padding: 10px 16px;
-  margin-bottom: 9px;
-}
+        .form-header p {
+            font-size: 13px;
+            color: var(--gray-500);
+        }
 
-.captcha-eq {
-  font-size: 22px;
-  font-weight: 600;
-  color: var(--blue);
-  letter-spacing: 3px;
-  direction: ltr;
-}
+        /* ─── Error ─── */
+        .error-box {
+            background: var(--red-light);
+            border: 1px solid var(--red-mid);
+            border-radius: var(--radius);
+            padding: 12px 14px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--red);
+        }
 
-.captcha-tag {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--blue);
-  background: rgba(37,99,235,.12);
-  border-radius: 20px;
-  padding: 3px 10px;
-}
+        .error-box .e-icon {
+            font-size: 18px;
+            flex-shrink: 0;
+        }
 
-/* ─── Submit button ─── */
-.submit-btn {
-  width: 100%;
-  height: 48px;
-  background: var(--blue);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius);
-  font-family: 'Vazirmatn', Tahoma, Arial, sans-serif;
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 24px;
-  transition: background .15s, transform .1s, box-shadow .15s;
-  box-shadow: 0 4px 14px rgba(37,99,235,.3);
-}
+        /* ─── Fields ─── */
+        .field {
+            margin-bottom: 18px;
+        }
 
-.submit-btn:hover {
-  background: var(--blue-dark);
-  box-shadow: 0 6px 20px rgba(37,99,235,.4);
-  transform: translateY(-1px);
-}
+        .field label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: 7px;
+        }
 
-.submit-btn:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(37,99,235,.3);
-}
+        .input-wrap {
+            position: relative;
+        }
 
-/* ─── Footer ─── */
-.form-footer {
-  margin-top: 2rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--gray-100);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+        .input-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-400);
+            font-size: 17px;
+            pointer-events: none;
+            line-height: 1;
+        }
 
-.security-note {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--gray-400);
-}
+        input[type="text"],
+        input[type="password"],
+        input[type="number"] {
+            width: 100%;
+            height: 46px;
+            padding: 0 42px 0 14px;
+            border: 1.5px solid var(--gray-200);
+            border-radius: var(--radius);
+            background: var(--gray-50);
+            font-family: 'Vazirmatn', Tahoma, Arial, sans-serif;
+            font-size: 14px;
+            color: var(--gray-800);
+            outline: none;
+            transition: border-color .15s, box-shadow .15s, background .15s;
+        }
 
-.security-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--green);
-}
+        input:focus {
+            border-color: var(--blue);
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, .10);
+        }
 
-/* ─── Responsive ─── */
-@media (max-width: 860px) {
-  .brand-panel { display: none; }
-  .form-panel { width: 100%; border-right: none; }
-}
-</style>
+        input::placeholder {
+            color: var(--gray-300);
+        }
+
+        /* ─── Captcha ─── */
+        .captcha-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--blue-light);
+            border: 1.5px solid var(--blue-mid);
+            border-radius: var(--radius);
+            padding: 10px 16px;
+            margin-bottom: 9px;
+        }
+
+        .captcha-eq {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--blue);
+            letter-spacing: 3px;
+            direction: ltr;
+        }
+
+        .captcha-tag {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--blue);
+            background: rgba(37, 99, 235, .12);
+            border-radius: 20px;
+            padding: 3px 10px;
+        }
+
+        /* ─── Submit button ─── */
+        .submit-btn {
+            width: 100%;
+            height: 48px;
+            background: var(--blue);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius);
+            font-family: 'Vazirmatn', Tahoma, Arial, sans-serif;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 24px;
+            transition: background .15s, transform .1s, box-shadow .15s;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, .3);
+        }
+
+        .submit-btn:hover {
+            background: var(--blue-dark);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, .4);
+            transform: translateY(-1px);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(37, 99, 235, .3);
+        }
+
+        /* ─── Footer ─── */
+        .form-footer {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .security-note {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: var(--gray-400);
+        }
+
+        .security-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--green);
+        }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 860px) {
+            .brand-panel {
+                display: none;
+            }
+
+            .form-panel {
+                width: 100%;
+                border-right: none;
+            }
+        }
+    </style>
 </head>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        function refreshCaptcha() {
+
+            const img = document.querySelector(".captcha img");
+
+            if (!img) return;
+
+            fetch("/captcha/refresh/", {
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            })
+                .then(r => r.json())
+                .then(data => {
+
+                    img.src = data.image_url;
+
+                    document.querySelector("input[name='captcha_0']").value = data.key;
+
+                    document.querySelector("input[name='captcha_1']").value = "";
+                });
+
+        }
+
+        document.addEventListener("click", function (e) {
+
+            if (
+                e.target.matches(".captcha img") ||
+                e.target.closest(".captcha-refresh")
+            ) {
+                e.preventDefault();
+                refreshCaptcha();
+            }
+
+        });
+
+    });
+</script>
 <body>
 <div class="page">
 
-  <!-- Brand panel -->
-  <div class="brand-panel">
-    <div class="brand-logo">
-      <div class="brand-icon">🏢</div>
-      <div class="brand-name">
-        پنل مدیریت
-        <span>سیستم جامع مدیریت محتوا</span>
-      </div>
+    <!-- Brand panel -->
+    <div class="brand-panel">
+        <div class="brand-logo">
+            <div class="brand-icon">🏢</div>
+            <div class="brand-name">
+                پنل مدیریت
+                <span>سیستم جامع مدیریت محتوا</span>
+            </div>
+        </div>
+
+        <div class="brand-center">
+            <div class="brand-headline">
+                مدیریت <em>هوشمند</em><br>در یک نگاه
+            </div>
+            <p class="brand-desc">
+                دسترسی کامل به تمام ماژول‌های سیستم از محصولات و مناقصات تا منابع انسانی و گزارش فروش — همه در یک پنل
+                یکپارچه.
+            </p>
+            <div class="brand-stats">
+                <div class="b-stat">
+                    <div class="b-stat-val">۱۷+</div>
+                    <div class="b-stat-lbl">ماژول فعال</div>
+                </div>
+                <div class="b-stat">
+                    <div class="b-stat-val">۶۰+</div>
+                    <div class="b-stat-lbl">بخش مدیریتی</div>
+                </div>
+                <div class="b-stat">
+                    <div class="b-stat-val">SSL</div>
+                    <div class="b-stat-lbl">اتصال امن</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="app-chips">
+            <span class="chip">📦 محصولات</span>
+            <span class="chip">📝 مقالات</span>
+            <span class="chip">📰 اخبار</span>
+            <span class="chip">📑 مناقصات</span>
+            <span class="chip">⚖️ مزایدات</span>
+            <span class="chip">🧾 استعلام</span>
+            <span class="chip">📊 گزارش فروش</span>
+            <span class="chip">👥 نیروی انسانی</span>
+            <span class="chip">📬 پیام‌ها</span>
+            <span class="chip">🎨 بنرها</span>
+            <span class="chip">🏢 چارت سازمانی</span>
+            <span class="chip">🔒 حراست</span>
+        </div>
     </div>
 
-    <div class="brand-center">
-      <div class="brand-headline">
-        مدیریت <em>هوشمند</em><br>در یک نگاه
-      </div>
-      <p class="brand-desc">
-        دسترسی کامل به تمام ماژول‌های سیستم از محصولات و مناقصات تا منابع انسانی و گزارش فروش — همه در یک پنل یکپارچه.
-      </p>
-      <div class="brand-stats">
-        <div class="b-stat">
-          <div class="b-stat-val">۱۷+</div>
-          <div class="b-stat-lbl">ماژول فعال</div>
+    <!-- Form panel -->
+    <div class="form-panel">
+        <div class="form-header">
+            <h1>ورود به سیستم</h1>
+            <p>اطلاعات حساب مدیری خود را وارد کنید</p>
         </div>
-        <div class="b-stat">
-          <div class="b-stat-val">۶۰+</div>
-          <div class="b-stat-lbl">بخش مدیریتی</div>
+
+        {% if error %}
+            <div class="error-box">
+                <span class="e-icon">⚠️</span>
+                <span>{{ error }}</span>
+            </div>
+        {% endif %}
+
+        <form method="post" autocomplete="off">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
+
+            <div class="field">
+                <label for="id_username">نام کاربری</label>
+                <div class="input-wrap">
+                    <span class="input-icon">👤</span>
+                    <input type="text" id="id_username" name="username"
+                           placeholder="نام کاربری را وارد کنید" autofocus>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="id_password">رمز عبور</label>
+                <div class="input-wrap">
+                    <span class="input-icon">🔑</span>
+                    <input type="password" id="id_password" name="password"
+                           placeholder="••••••••••">
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="{{ form.captcha.id_for_label }}">
+                    کد امنیتی
+                </label>
+
+                {{ form.captcha.errors }}
+
+                <div class="captcha">
+                    <div class="captcha-top">
+                        {{ form.captcha }}
+                        <button
+                                type="button"
+                                class="captcha-refresh"
+                                title="تغییر کد امنیتی">
+                            🔄
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">
+                <span>ورود به پنل مدیریت</span>
+                <span>←</span>
+            </button>
+        </form>
+
+        <div class="form-footer">
+            <div class="security-note">
+                <div class="security-dot"></div>
+                اتصال امن برقرار است
+            </div>
+            <div class="security-note">
+                🛡️ فقط مدیران مجاز
+            </div>
         </div>
-        <div class="b-stat">
-          <div class="b-stat-val">SSL</div>
-          <div class="b-stat-lbl">اتصال امن</div>
-        </div>
-      </div>
     </div>
-
-    <div class="app-chips">
-      <span class="chip">📦 محصولات</span>
-      <span class="chip">📝 مقالات</span>
-      <span class="chip">📰 اخبار</span>
-      <span class="chip">📑 مناقصات</span>
-      <span class="chip">⚖️ مزایدات</span>
-      <span class="chip">🧾 استعلام</span>
-      <span class="chip">📊 گزارش فروش</span>
-      <span class="chip">👥 نیروی انسانی</span>
-      <span class="chip">📬 پیام‌ها</span>
-      <span class="chip">🎨 بنرها</span>
-      <span class="chip">🏢 چارت سازمانی</span>
-      <span class="chip">🔒 حراست</span>
-    </div>
-  </div>
-
-  <!-- Form panel -->
-  <div class="form-panel">
-    <div class="form-header">
-      <h1>ورود به سیستم</h1>
-      <p>اطلاعات حساب مدیری خود را وارد کنید</p>
-    </div>
-
-    {% if error %}
-    <div class="error-box">
-      <span class="e-icon">⚠️</span>
-      <span>{{ error }}</span>
-    </div>
-    {% endif %}
-
-    <form method="post" autocomplete="off">
-      {% csrf_token %}
-      <input type="hidden" name="next" value="{{ next }}">
-
-      <div class="field">
-        <label for="id_username">نام کاربری</label>
-        <div class="input-wrap">
-          <span class="input-icon">👤</span>
-          <input type="text" id="id_username" name="username"
-                 placeholder="نام کاربری را وارد کنید" autofocus>
-        </div>
-      </div>
-
-      <div class="field">
-        <label for="id_password">رمز عبور</label>
-        <div class="input-wrap">
-          <span class="input-icon">🔑</span>
-          <input type="password" id="id_password" name="password"
-                 placeholder="••••••••••">
-        </div>
-      </div>
-
-      <div class="field">
-        <label>سوال امنیتی</label>
-        <div class="captcha-row">
-          <span class="captcha-eq">{{ captcha_q }} = ?</span>
-          <span class="captcha-tag">🔒 تایید هویت</span>
-        </div>
-        <div class="input-wrap">
-          <span class="input-icon">🧮</span>
-          <input type="number" name="captcha_answer"
-                 placeholder="جواب را اینجا وارد کنید"
-                 autocomplete="off">
-        </div>
-      </div>
-
-      <button type="submit" class="submit-btn">
-        <span>ورود به پنل مدیریت</span>
-        <span>←</span>
-      </button>
-    </form>
-
-    <div class="form-footer">
-      <div class="security-note">
-        <div class="security-dot"></div>
-        اتصال امن برقرار است
-      </div>
-      <div class="security-note">
-        🛡️ فقط مدیران مجاز
-      </div>
-    </div>
-  </div>
 
 </div>
 </body>

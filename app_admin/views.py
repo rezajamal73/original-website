@@ -1,43 +1,25 @@
-import random
-
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
+
 from app_reports.models import SiteMainInfo
-
-
-def generate_captcha(request):
-    a = random.randint(1, 9)
-    b = random.randint(1, 9)
-    request.session["captcha"] = a + b
-    request.session["captcha_q"] = f"{a} + {b}"
+from .forms import AdminLoginForm
 
 
 def admin_login(request):
+    # اگر قبلاً وارد شده باشد
     if request.user.is_authenticated and request.user.is_staff:
         return redirect("/admin/")
 
-    # اطلاعات سایت (لوگو و ...)
     site_info = SiteMainInfo.objects.first()
-
     error = None
 
-    if request.method == "GET":
-        generate_captcha(request)
+    if request.method == "POST":
+        form = AdminLoginForm(request.POST)
 
-    elif request.method == "POST":
-        username = request.POST.get("username", "").strip()
-        password = request.POST.get("password", "")
+        if form.is_valid():
+            username = form.cleaned_data["username"].strip()
+            password = form.cleaned_data["password"]
 
-        try:
-            answer = int(request.POST.get("captcha_answer", ""))
-        except (TypeError, ValueError):
-            answer = None
-
-        if answer != request.session.get("captcha"):
-            error = "پاسخ سوال امنیتی اشتباه است."
-            generate_captcha(request)
-
-        else:
             user = authenticate(
                 request,
                 username=username,
@@ -46,17 +28,19 @@ def admin_login(request):
 
             if user and user.is_staff:
                 login(request, user)
-                return redirect(request.POST.get("next", "/admin/"))
+                return redirect(request.POST.get("next") or "/admin/")
 
             error = "نام کاربری یا رمز عبور اشتباه است."
-            generate_captcha(request)
+
+    else:
+        form = AdminLoginForm()
 
     return render(
         request,
         "admin/login.html",
         {
             "site_info": site_info,
-            "captcha_q": request.session.get("captcha_q"),
+            "form": form,
             "error": error,
             "next": request.GET.get("next", "/admin/"),
         },

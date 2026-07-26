@@ -29,6 +29,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    "captcha",
     "jazzmin",
 
     'adminsortable2',
@@ -166,9 +167,34 @@ MEDIA_URL = '/media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
+# تعداد کاراکترها
+CAPTCHA_LENGTH = 5
 
-from django.urls import reverse_lazy
+# اعتبار (دقیقه)
+CAPTCHA_TIMEOUT = 5
 
+# اندازه تصویر
+CAPTCHA_IMAGE_SIZE = (220, 70)
+
+# اندازه فونت
+CAPTCHA_FONT_SIZE = 34
+
+# چرخش کم برای خوانایی بیشتر
+CAPTCHA_LETTER_ROTATION = (-8, 8)
+
+# فقط نویز نقطه‌ای
+CAPTCHA_NOISE_FUNCTIONS = (
+    "captcha.helpers.noise_dots",
+)
+
+# بدون فیلتر اضافی
+CAPTCHA_FILTER_FUNCTIONS = ()
+
+# رنگ‌ها
+CAPTCHA_BACKGROUND_COLOR = "#ffffff"
+CAPTCHA_FOREGROUND_COLOR = "#111111"
+
+from django.templatetags.static import static
 from django.urls import reverse_lazy
 
 # ═══════════════════════════════════════════════════════════
@@ -477,6 +503,7 @@ JAZZMIN_SETTINGS = {
     # ═══ تنظیمات UI ═══
     "related_modal_active": True,  # نمایش مدال برای روابط
     "custom_css": "admin-custom/css/admin-custom.css",
+    "custom_js": "admin-custom/js/admin-custom.js",  # اضافه کنید
     "use_google_fonts_cdn": False,
     "show_ui_builder": False,
 

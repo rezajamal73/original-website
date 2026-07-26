@@ -902,11 +902,21 @@ input[type="radio"] {
 }
 
 .form-group > .row {
-    display: grid !important;
-    grid-template-columns: 180px 1fr;
-    align-items: center;
-    gap: 16px;
+    display: flex !important;
+    align-items: flex-start !important;
     margin: 0 !important;
+}
+
+.form-group > .row > label {
+    flex: 0 0 180px !important;
+    max-width: 180px !important;
+    text-align: right !important;
+    padding-left: 15px !important;
+}
+
+.form-group > .row > [class*="col-"] {
+    flex: 1 !important;
+    max-width: calc(100% - 180px) !important;
 }
 
 .form-group > .row > label {
@@ -1156,10 +1166,7 @@ fieldset.module .addlink:hover {
     }
 }
 
-/* مخفی کردن دکمه همبرگری سایدبار */
-[data-lte-toggle="sidebar"] {
-    display: none !important;
-}
+
 
 /* ==========================================
    BACKUP ACTION BUTTONS

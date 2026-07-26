@@ -1,7 +1,7 @@
 import random
 
 from django.shortcuts import render, get_object_or_404
-from django.db.models import Count, Q
+from django.db.models import Q
 
 from app_banner.models import (
     HeroBanner,
