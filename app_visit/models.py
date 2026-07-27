@@ -1,15 +1,17 @@
 from django.db import models
+from django.db.models import Sum
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+import jdatetime
 
 
 class Visit(models.Model):
     """مدل ثبت بازدیدهای سایت"""
 
-    # فیلدهای اصلی
     ip = models.GenericIPAddressField(
         db_index=True,
-        verbose_name=_("IP"),
-        help_text=_("آدرس IP بازدیدکننده"),
+        verbose_name="IP",
+        help_text="آدرس IP بازدیدکننده",
     )
 
     path = models.CharField(
@@ -17,59 +19,51 @@ class Visit(models.Model):
         blank=True,
         default="",
         db_index=True,
-        verbose_name=_("Page"),
-        help_text=_("مسیر درخواستی"),
+        verbose_name="مسیر صفحه",
     )
 
     method = models.CharField(
         max_length=10,
-        blank=True,
         default="GET",
-        verbose_name=_("HTTP Method"),
-        help_text=_("متود درخواست HTTP"),
+        blank=True,
+        verbose_name="متد",
     )
 
     user_agent = models.CharField(
         max_length=500,
         blank=True,
         default="",
-        verbose_name=_("User Agent"),
-        help_text=_("مرورگر و دستگاه کاربر"),
+        verbose_name="مرورگر",
     )
 
     referer = models.URLField(
         max_length=500,
         blank=True,
         default="",
-        verbose_name=_("Referer"),
-        help_text=_("صفحه مبدا"),
+        verbose_name="ارجاع‌دهنده",
     )
 
-    # فیلدهای زمانی
     created_at = models.DateTimeField(
         auto_now_add=True,
         db_index=True,
-        verbose_name=_("First Visit"),
+        verbose_name="اولین بازدید",
     )
 
     last_seen = models.DateTimeField(
         auto_now=True,
         db_index=True,
-        verbose_name=_("Last Activity"),
+        verbose_name="آخرین فعالیت",
     )
 
-    # فیلدهای آماری
     visit_count = models.PositiveIntegerField(
         default=1,
-        verbose_name=_("Visit Count"),
-        help_text=_("تعداد بازدیدهای این IP از همان مسیر"),
+        verbose_name="تعداد بازدید",
     )
 
     is_bot = models.BooleanField(
         default=False,
         db_index=True,
-        verbose_name=_("Is Bot"),
-        help_text=_("آیا این بازدید توسط ربات است؟"),
+        verbose_name="ربات",
     )
 
     class Meta:
@@ -83,52 +77,108 @@ class Visit(models.Model):
         ]
 
     def __str__(self):
-        return f"{self.ip} - {self.path} - {self.created_at.strftime('%Y-%m-%d %H:%M')}"
+        return f"{self.ip} | {self.page_name}"
+
+    @property
+    def page_name(self):
+        """
+        نمایش نام فارسی صفحه
+        """
+
+        pages = {
+            "/": "صفحه اصلی",
+
+            "/about/": "درباره ما",
+            "/contact/": "تماس با ما",
+
+            "/blog/": "وبلاگ",
+            "/news/": "اخبار",
+
+            "/product/": "محصولات",
+            "/catalog/": "کاتالوگ",
+            "/sale/": "فروش",
+
+            "/chart/": "چارت سازمانی",
+
+            "/tender/": "مناقصات",
+            "/tender-holding/": "مناقصات هلدینگ",
+            "/auction/": "مزایدات",
+            "/inquiry/": "استعلام‌ها",
+
+            "/reports/": "گزارش‌ها",
+
+            "/hr/": "فرصت‌های شغلی",
+            "/resume/": "رزومه‌ها",
+
+            "/media/": "رسانه",
+        }
+
+        return pages.get(self.path, self.path)
+
+    @property
+    def created_at_j(self):
+        if not self.created_at:
+            return "-"
+
+        return jdatetime.datetime.fromgregorian(
+            datetime=self.created_at
+        ).strftime("%Y/%m/%d %H:%M")
+
+    @property
+    def last_seen_j(self):
+        if not self.last_seen:
+            return "-"
+
+        return jdatetime.datetime.fromgregorian(
+            datetime=self.last_seen
+        ).strftime("%Y/%m/%d %H:%M")
 
     @classmethod
     def get_stats(cls, days=30):
-        """دریافت آمار بازدیدها"""
-        from django.db.models import Count, Q
-        from django.utils import timezone
+        start_date = timezone.now() - timezone.timedelta(days=days)
 
-        now = timezone.now()
-        start_date = now - timezone.timedelta(days=days)
+        qs = cls.objects.filter(created_at__gte=start_date)
 
-        # آمار کلی
-        total = cls.objects.count()
-        today = cls.objects.filter(created_at__date=now.date()).count()
+        total = cls.objects.aggregate(
+            total=Sum("visit_count")
+        )["total"] or 0
 
-        # آمار مسیرها
-        top_paths = cls.objects.filter(
-            created_at__gte=start_date
-        ).values('path').annotate(
-            count=Count('id')
-        ).order_by('-count')[:10]
+        today = cls.objects.filter(
+            created_at__date=timezone.localdate()
+        ).aggregate(
+            total=Sum("visit_count")
+        )["total"] or 0
 
-        # آمار IP‌ها
-        top_ips = cls.objects.filter(
-            created_at__gte=start_date
-        ).values('ip').annotate(
-            count=Count('id')
-        ).order_by('-count')[:10]
+        bot_count = qs.filter(
+            is_bot=True
+        ).aggregate(
+            total=Sum("visit_count")
+        )["total"] or 0
 
-        # آمار ربات‌ها
-        bot_count = cls.objects.filter(
-            is_bot=True,
-            created_at__gte=start_date
-        ).count()
+        unique_visitors = (
+            qs.values("ip")
+            .distinct()
+            .count()
+        )
 
-        # بازدیدهای منحصر به فرد
-        unique_visitors = cls.objects.filter(
-            created_at__gte=start_date
-        ).values('ip').distinct().count()
+        top_paths = (
+            qs.values("path")
+            .annotate(visits=Sum("visit_count"))
+            .order_by("-visits")[:10]
+        )
+
+        top_ips = (
+            qs.values("ip")
+            .annotate(visits=Sum("visit_count"))
+            .order_by("-visits")[:10]
+        )
 
         return {
-            'total': total,
-            'today': today,
-            'unique_visitors': unique_visitors,
-            'bot_count': bot_count,
-            'top_paths': top_paths,
-            'top_ips': top_ips,
-            'period_days': days,
+            "total": total,
+            "today": today,
+            "unique_visitors": unique_visitors,
+            "bot_count": bot_count,
+            "top_paths": top_paths,
+            "top_ips": top_ips,
+            "period_days": days,
         }

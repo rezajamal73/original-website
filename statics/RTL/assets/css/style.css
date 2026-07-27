@@ -1362,9 +1362,10 @@ label {
   margin-left: 0;
 }
 
-.navbar-brand img {
-  width: 180px;
-  max-width: 60px;
+.navbar-brand img{
+    width: 180px !important;
+    max-width: 90px !important;
+    height: auto !important;
 }
 
 .navbar .dropdown-toggle::after {

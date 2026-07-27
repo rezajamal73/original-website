@@ -1341,3 +1341,240 @@ td.field-restore_backup a.backup-restore-btn:hover {
     box-shadow:
     0 14px 30px rgba(34,197,94,.35) !important;
 }
+
+/* ===========================
+   Date Filter Buttons
+=========================== */
+
+a.btn-outline-primary,
+.btn-outline-primary,
+.btn-outline-primary:link,
+.btn-outline-primary:visited {
+    color: #2563eb !important;
+    background: #ffffff !important;
+    border: 1px solid #2563eb !important;
+    border-radius: 10px !important;
+    padding: 7px 16px !important;
+    font-weight: 700 !important;
+    font-size: 13px !important;
+    text-decoration: none !important;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    transition: all .25s ease;
+}
+
+a.btn-outline-primary:hover,
+.btn-outline-primary:hover {
+    background: linear-gradient(135deg,#2563eb,#1d4ed8) !important;
+    color: #ffffff !important;
+    border-color: #1d4ed8 !important;
+    box-shadow: 0 8px 20px rgba(37,99,235,.25);
+    transform: translateY(-2px);
+}
+
+a.btn-outline-primary:focus,
+.btn-outline-primary:focus {
+    color: #ffffff !important;
+    background: #2563eb !important;
+    border-color: #2563eb !important;
+    box-shadow: 0 0 0 4px rgba(37,99,235,.18) !important;
+}
+
+a.btn-outline-primary.active,
+.btn-outline-primary.active {
+    background: linear-gradient(135deg,#2563eb,#1d4ed8) !important;
+    color: #ffffff !important;
+    border-color: #1d4ed8 !important;
+}
+
+
+
+/* دکمه‌های وسط */
+
+.selector-chooser{
+    width:56px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    gap:12px;
+    margin:0;
+    padding:0;
+}
+
+.selector-chooser li{
+    list-style:none;
+}
+
+/* متن را مخفی کن */
+.selector-chooser button{
+    position:relative;
+    width:44px;
+    height:44px;
+
+    overflow:hidden;
+    white-space:nowrap;
+    text-indent:-9999px;
+
+    border:1px solid var(--color-border,#d9dde3);
+    border-radius:10px;
+    background:var(--color-bg,#fff);
+    cursor:pointer;
+    transition:.2s;
+}
+
+/* آیکون‌ها */
+.selector-add::before,
+.selector-remove::before{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    text-indent:0;
+    font-size:20px;
+    font-weight:700;
+}
+
+.selector-add::before{
+    content:"❯";
+}
+
+.selector-remove::before{
+    content:"❮";
+}
+
+.selector-chooser button:hover{
+    border-color:#2563eb;
+    color:#2563eb;
+}
+
+.selector-chooser button:disabled{
+    opacity:.45;
+    cursor:not-allowed;
+}
+/* ==========================
+   Django Selector (Groups & Permissions)
+========================== */
+
+.related-widget-wrapper .selector{
+    display:flex;
+    align-items:stretch;
+    gap:18px;
+    width:100%;
+}
+
+.related-widget-wrapper .selector-available,
+.related-widget-wrapper .selector-chosen{
+    flex:1 1 0;
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+
+    background:var(--color-bg,#fff);
+    border:1px solid var(--color-border,#d9dde3);
+    border-radius:12px;
+    overflow:hidden;
+}
+
+/* عنوان */
+
+.selector-available-title,
+.selector-chosen-title{
+    padding:14px 16px;
+    border-bottom:1px solid var(--color-border,#d9dde3);
+    background:var(--color-bg-secondary,#f8fafc);
+}
+
+.selector-available-title label,
+.selector-chosen-title label{
+    display:block;
+    font-size:14px;
+    font-weight:700;
+    color:var(--color-foreground,#111827);
+}
+
+.selector .helptext{
+    display:none;
+}
+
+/* جستجو */
+
+.selector-filter{
+    padding:12px;
+    border-bottom:1px solid var(--color-border,#d9dde3);
+}
+
+.selector-filter input{
+    width:100%;
+    height:40px;
+    padding:0 12px;
+    border-radius:8px;
+    border:1px solid var(--color-border,#d9dde3);
+    background:transparent;
+    color:var(--color-foreground,#111827);
+}
+
+.selector-filter input::placeholder{
+    color:#9ca3af;
+}
+
+/* لیست */
+
+.selector select{
+    flex:1;
+    height:520px !important;
+    border:0 !important;
+    padding:8px;
+    background:transparent;
+    color:var(--color-foreground,#111827);
+    font-size:14px;
+    line-height:1.8;
+}
+
+.selector option{
+    color:var(--color-foreground,#111827);
+    padding:8px 10px;
+}
+
+.selector option:checked{
+    background:#2563eb;
+    color:#fff;
+}
+
+/* دکمه های وسط */
+
+.selector-chooser{
+    width:48px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    gap:10px;
+    margin:0;
+    padding:0;
+}
+
+.selector-chooser li{
+    list-style:none;
+}
+
+.selector-chooser button{
+    width:42px;
+    height:42px;
+    border-radius:8px;
+}
+
+/* پایین */
+
+.selector-chooseall,
+.selector-clearall{
+    margin:10px;
+}
+
+/* حذف متن اضافی */
+
+.list-footer-display{
+    display:none;
+}
+

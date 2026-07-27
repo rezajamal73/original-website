@@ -14,9 +14,7 @@ from app_log.middleware import get_current_request
 from .models import SystemLog
 
 
-
 def serialize_instance(instance):
-
     data = {}
 
     for field in instance._meta.get_fields():
@@ -30,7 +28,6 @@ def serialize_instance(instance):
 
         except Exception:
             continue
-
 
         # فایل‌ها (تصویر، PDF، SVG، ویدئو و...)
         if isinstance(value, FieldFile):
@@ -79,53 +76,37 @@ def serialize_instance(instance):
             except Exception:
                 data[field.name] = str(value)
 
-
     return data
 
 
-
-
-
 def save_log(sender, instance, action):
-
-
     # جلوگیری از ثبت خود جدول لاگ
     if sender == SystemLog:
         return
 
-
-
     # جلوگیری از ثبت اپ‌های سیستمی Django
     if sender._meta.app_label in (
-        "admin",
-        "auth",
-        "contenttypes",
-        "sessions",
+            "admin",
+            "auth",
+            "contenttypes",
+            "sessions",
+            "app_visit",  # عدم ثبت لاگ بازدیدها
     ):
         return
-
-
 
     # جلوگیری از ثبت هنگام migrate
     if "migrate" in sys.argv:
         return
 
-
-
     # جلوگیری از خطا قبل از ساخته شدن جدول لاگ
     if "app_log_systemlog" not in connection.introspection.table_names():
         return
-
-
-
-
 
     # --------------------------------
     # حذف فقط یک لاگ قدیمی‌تر از یک سال
     # --------------------------------
 
     expire_time = timezone.now() - timedelta(days=120)
-
 
     oldest_log = (
         SystemLog.objects
@@ -134,13 +115,8 @@ def save_log(sender, instance, action):
         .first()
     )
 
-
     if oldest_log:
         oldest_log.delete()
-
-
-
-
 
     # --------------------------------
     # دریافت کاربر و IP
@@ -148,26 +124,20 @@ def save_log(sender, instance, action):
 
     request = get_current_request()
 
-
     user = None
     ip = None
 
-
     if request:
 
-
         if (
-            hasattr(request, "user")
-            and request.user.is_authenticated
+                hasattr(request, "user")
+                and request.user.is_authenticated
         ):
             user = request.user
-
-
 
         forwarded = request.META.get(
             "HTTP_X_FORWARDED_FOR"
         )
-
 
         if forwarded:
 
@@ -179,18 +149,11 @@ def save_log(sender, instance, action):
                 "REMOTE_ADDR"
             )
 
-
-
-
-
-
-
     # --------------------------------
     # نام امن اپلیکیشن
     # --------------------------------
 
     app_config = sender._meta.app_config
-
 
     if app_config:
 
@@ -200,13 +163,7 @@ def save_log(sender, instance, action):
 
         app_name = sender._meta.app_label
 
-
-
     model_name = sender._meta.verbose_name
-
-
-
-
 
     # --------------------------------
     # ثبت لاگ
@@ -242,17 +199,11 @@ def save_log(sender, instance, action):
     )
 
 
-
-
-
-
-
 @receiver(
     post_save,
     dispatch_uid="app_log_post_save"
 )
 def log_create_update(sender, instance, created, **kwargs):
-
     save_log(
 
         sender=sender,
@@ -267,17 +218,11 @@ def log_create_update(sender, instance, created, **kwargs):
     )
 
 
-
-
-
-
-
 @receiver(
     post_delete,
     dispatch_uid="app_log_post_delete"
 )
 def log_delete(sender, instance, **kwargs):
-
     save_log(
 
         sender=sender,

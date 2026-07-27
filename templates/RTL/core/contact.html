@@ -53,44 +53,52 @@
 
 
                                     {% if site_info and site_info.phone_1 or site_info.phone_2 or site_info.phone_3 or site_info.phone_4 or site_info.phone_5 %}
-    <div class="col-md-6">
-        <div class="contact-info text-center">
-            <div class="contact-info-icon" style="justify-content:center;">
-                <i class="fal fa-headset"></i>
-            </div>
+                                        <div class="col-md-6">
+                                            <div class="contact-info text-center">
+                                                <div class="contact-info-icon" style="justify-content:center;">
+                                                    <i class="fal fa-headset"></i>
+                                                </div>
 
-            <div class="contact-info-content">
-                <h5 class="text-center">با ما تماس بگیرید</h5>
+                                                <div class="contact-info-content">
+                                                    <h5 class="text-center">با ما تماس بگیرید</h5>
 
-                {% if site_info.phone_1 %}<p class="text-center">{{ site_info.phone_1 }}</p>{% endif %}
-                {% if site_info.phone_2 %}<p class="text-center">{{ site_info.phone_2 }}</p>{% endif %}
-                {% if site_info.phone_3 %}<p class="text-center">{{ site_info.phone_3 }}</p>{% endif %}
-                {% if site_info.phone_4 %}<p class="text-center">{{ site_info.phone_4 }}</p>{% endif %}
-                {% if site_info.phone_5 %}<p class="text-center">{{ site_info.phone_5 }}</p>{% endif %}
-            </div>
-        </div>
-    </div>
-{% endif %}
+                                                    {% if site_info.phone_1 %}
+                                                        <p class="text-center">{{ site_info.phone_1 }}</p>{% endif %}
+                                                    {% if site_info.phone_2 %}
+                                                        <p class="text-center">{{ site_info.phone_2 }}</p>{% endif %}
+                                                    {% if site_info.phone_3 %}
+                                                        <p class="text-center">{{ site_info.phone_3 }}</p>{% endif %}
+                                                    {% if site_info.phone_4 %}
+                                                        <p class="text-center">{{ site_info.phone_4 }}</p>{% endif %}
+                                                    {% if site_info.phone_5 %}
+                                                        <p class="text-center">{{ site_info.phone_5 }}</p>{% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
 
 
 
                                     {% if site_info and site_info.fax_1 or site_info.fax_2 or site_info.fax_3 %}
-    <div class="col-md-6">
-        <div class="contact-info text-center">
-            <div class="contact-info-icon" style="justify-content:center;">
-                <i class="fal fa-fax"></i>
-            </div>
+                                        <div class="col-md-6">
+                                            <div class="contact-info text-center">
+                                                <div class="contact-info-icon" style="justify-content:center;">
+                                                    <i class="fal fa-fax"></i>
+                                                </div>
 
-            <div class="contact-info-content">
-                <h5 class="text-center">فکس</h5>
+                                                <div class="contact-info-content">
+                                                    <h5 class="text-center">فکس</h5>
 
-                {% if site_info.fax_1 %}<p class="text-center">{{ site_info.fax_1 }}</p>{% endif %}
-                {% if site_info.fax_2 %}<p class="text-center">{{ site_info.fax_2 }}</p>{% endif %}
-                {% if site_info.fax_3 %}<p class="text-center">{{ site_info.fax_3 }}</p>{% endif %}
-            </div>
-        </div>
-    </div>
-{% endif %}
+                                                    {% if site_info.fax_1 %}
+                                                        <p class="text-center">{{ site_info.fax_1 }}</p>{% endif %}
+                                                    {% if site_info.fax_2 %}
+                                                        <p class="text-center">{{ site_info.fax_2 }}</p>{% endif %}
+                                                    {% if site_info.fax_3 %}
+                                                        <p class="text-center">{{ site_info.fax_3 }}</p>{% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
 
 
 
@@ -238,13 +246,15 @@
         <!-- end contact area -->
         <!-- map -->
         <div class="contact-map">
-            <iframe
-                    loading="lazy"
-                    allowfullscreen
-                    referrerpolicy="no-referrer-when-downgrade"
-                    src="https://www.google.com/maps?q=35.73423478295848,51.15102356744643&z=15&output=embed"
-                    style="border:0; width:100%; height:400px;">
-            </iframe>
+            {% if site_info.latitude and site_info.longitude %}
+                <iframe
+                        loading="lazy"
+                        allowfullscreen
+                        referrerpolicy="no-referrer-when-downgrade"
+                        src="https://www.google.com/maps?q={{ site_info.latitude }},{{ site_info.longitude }}&z=16&output=embed"
+                        style="border:0;width:100%;height:400px;">
+                </iframe>
+            {% endif %}
         </div>
 
         <!-- end map -->

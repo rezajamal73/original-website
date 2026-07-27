@@ -3,21 +3,7 @@ from django.utils.html import format_html
 from django.urls import reverse
 from adminsortable2.admin import SortableAdminMixin
 
-from .models import (
-    CorporateSection,
-    CorporateText,
-    CorporateImage,
-    CorporateAttachment,
-    CorporateStatistic,
-    AboutYear,
-    AboutItem,
-    GroupCompany,
-    SiteMainInfo,
-    FollowUsLink,
-    Project,
-    DepartmentContact
-)
-
+from .models import *
 
 # =====================================================
 # دکمه حذف عمومی
@@ -383,6 +369,8 @@ class SiteMainInfoAdmin(admin.ModelAdmin):
             "fields": (
                 "address_fa",
                 "address_en",
+                "latitude",
+                "longitude",
             ),
         }),
         ("🛡️ تماس حراست", {

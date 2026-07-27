@@ -424,9 +424,26 @@ class SiteMainInfo(models.Model):
 
     work_days_fa = models.CharField(blank=True, null=True, max_length=255, verbose_name="روز کاری فارسی")
     work_days_en = models.CharField(blank=True, null=True, max_length=255, verbose_name="روز کاری انگلیسی")
+    latitude = models.DecimalField(
+        max_digits=10,
+        decimal_places=7,
+        blank=True,
+        null=True,
+        verbose_name="عرض جغرافیایی (Latitude)"
+    )
+
+    longitude = models.DecimalField(
+        max_digits=10,
+        decimal_places=7,
+        blank=True,
+        null=True,
+        verbose_name="طول جغرافیایی (Longitude)"
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+
 
     class Meta:
         verbose_name = "ساختار سایت"
