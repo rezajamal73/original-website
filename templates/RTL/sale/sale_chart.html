@@ -2,135 +2,186 @@
 {% load static %}
 
 {% block content %}
-<main class="main">
+    <main class="main">
 
-    <!-- breadcrumb -->
-    <div class="site-breadcrumb">
-        <div class="site-breadcrumb-bg"
-             style="background: url('{{ banner.image.url }}')">
-        </div>
+        <!-- breadcrumb -->
+        <div class="site-breadcrumb">
+            <div class="site-breadcrumb-bg"
+                 style="background: url('{{ banner.image.url }}')">
+            </div>
 
-        <div class="container">
-            <div class="site-breadcrumb-wrap">
-                <h4 class="breadcrumb-title">گزارش‌ها</h4>
-                <ul class="breadcrumb-menu">
-                    <li>
-                        <a href="{% url 'app_core:home' %}">
-                            <i class="far fa-home"></i>
-                            خانه
-                        </a>
-                    </li>
-                    <li class="active">گزارش فروش</li>
-                </ul>
+            <div class="container">
+                <div class="site-breadcrumb-wrap">
+                    <h4 class="breadcrumb-title">گزارش‌ها</h4>
+                    <ul class="breadcrumb-menu">
+                        <li>
+                            <a href="{% url 'app_core:home' %}">
+                                <i class="far fa-home"></i>
+                                خانه
+                            </a>
+                        </li>
+                        <li class="active">گزارش فروش</li>
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
-    <!-- breadcrumb end -->
+        <!-- breadcrumb end -->
 
-    <!-- chart -->
-    <section class="container my-5">
-        <h3 class="mb-4 text-center">
-            نمودار فروش ماهیانه (شمسی)
-        </h3>
+        <!-- chart -->
+        <section class="container my-5">
+            <h3 class="mb-4 text-center">
+                نمودار فروش ماهیانه (شمسی)
+            </h3>
 
-        <canvas id="salesChart" height="120"></canvas>
-    </section>
+            <canvas id="salesChart" height="120"></canvas>
+        </section>
 
-    <!-- table -->
-    <section class="container my-5">
-        <h4 class="mb-3 text-center">
-            جدول فروش ماهانه
-        </h4>
+        <!-- table -->
+        <section class="container my-5">
+            <h4 class="mb-3 text-center">
+                جدول فروش ماهانه
+            </h4>
 
-        <div class="table-responsive">
-            <table class="table table-bordered table-striped text-center align-middle">
-                <thead class="table-dark">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped text-center align-middle">
+                    <thead class="table-dark">
                     <tr>
                         <th>ردیف</th>
                         <th>ماه</th>
                         <th>مبلغ فروش (تومان)</th>
                     </tr>
-                </thead>
-                <tbody id="sales-table-body">
-                    <!-- JS fills rows -->
-                </tbody>
-            </table>
-        </div>
-    </section>
+                    </thead>
 
-</main>
+                    <tbody>
+                    {% for report in reports %}
+                        <tr>
+                            <td>{{ reports.start_index|add:forloop.counter0 }}</td>
+                            <td>{{ report.jalali_month_name }} {{ report.jalali_year }}</td>
+                            <td>{{ report.total_sales|floatformat:0 }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="3">
+                                اطلاعاتی وجود ندارد.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
 
-<!-- Chart.js (Local) -->
-<script src="{% static 'RTL/sale/chart.umd.min.js' %}"></script>
+            {% if reports.has_other_pages %}
+                <nav class="mt-4">
+                    <ul class="pagination justify-content-center">
 
-<script>
-    const labels = {{ labels|safe }};
-    const salesData = {{ sales_data|safe }};
+                        {% if reports.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ reports.previous_page_number }}">
+                                    قبلی
+                                </a>
+                            </li>
+                        {% endif %}
 
-    /* =========================
-       Chart
-    ========================== */
-    const ctx = document.getElementById('salesChart').getContext('2d');
+                        {% for num in reports.paginator.page_range %}
+                            {% if reports.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                            {% else %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}">
+                                        {{ num }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
 
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'مبلغ فروش',
-                data: salesData,
-                tension: 0.4,
-                fill: false,
-                pointRadius: 4,
-                pointHoverRadius: 6
-            }]
-        },
-        options: {
-            responsive: true,
-            layout: {
-                padding: {
-                    left: 20,
-                    right: 20,
-                    top: 10,
-                    bottom: 10
-                }
+                        {% if reports.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ reports.next_page_number }}">
+                                    بعدی
+                                </a>
+                            </li>
+                        {% endif %}
+
+                    </ul>
+                </nav>
+            {% endif %}
+        </section>
+
+    </main>
+
+    <!-- Chart.js (Local) -->
+    <script src="{% static 'RTL/sale/chart.umd.min.js' %}"></script>
+
+    <script>
+        const labels = {{ labels|safe }};
+        const salesData = {{ sales_data|safe }};
+
+        /* =========================
+           Chart
+        ========================== */
+        const ctx = document.getElementById('salesChart').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'مبلغ فروش',
+                    data: salesData,
+                    tension: 0.4,
+                    fill: false,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
             },
-            plugins: {
-                legend: {
-                    display: true,
-                    position: 'top'
-                }
-            },
-            scales: {
-                x: {
-                    offset: true
+            options: {
+                responsive: true,
+                layout: {
+                    padding: {
+                        left: 20,
+                        right: 20,
+                        top: 10,
+                        bottom: 10
+                    }
                 },
-                y: {
-                    ticks: {
-                        callback: function (value) {
-                            return value.toLocaleString() + ' تومان';
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    }
+                },
+                scales: {
+                    x: {
+                        offset: true
+                    },
+                    y: {
+                        ticks: {
+                            callback: function (value) {
+                                return value.toLocaleString() + ' تومان';
+                            }
                         }
                     }
                 }
             }
-        }
-    });
+        });
 
-    /* =========================
-       Table (Reuse Chart Data)
-    ========================== */
-    const tableBody = document.getElementById('sales-table-body');
+        /* =========================
+           Table (Reuse Chart Data)
+        ========================== */
+        const tableBody = document.getElementById('sales-table-body');
 
-    labels.forEach((month, index) => {
-        const tr = document.createElement('tr');
+        labels.forEach((month, index) => {
+            const tr = document.createElement('tr');
 
-        tr.innerHTML = `
+            tr.innerHTML = `
             <td>${index + 1}</td>
             <td>${month}</td>
             <td>${salesData[index].toLocaleString()} تومان</td>
         `;
 
-        tableBody.appendChild(tr);
-    });
-</script>
+            tableBody.appendChild(tr);
+        });
+    </script>
 {% endblock %}

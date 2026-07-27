@@ -91,6 +91,7 @@ def save_log(sender, instance, action):
             "contenttypes",
             "sessions",
             "app_visit",  # عدم ثبت لاگ بازدیدها
+            "captcha",
     ):
         return
 
