@@ -9,7 +9,13 @@ class CurrentRequestMiddleware:
 
     def __call__(self, request):
         _thread_locals.request = request
-        response = self.get_response(request)
+
+        try:
+            response = self.get_response(request)
+        finally:
+            if hasattr(_thread_locals, "request"):
+                del _thread_locals.request
+
         return response
 
 

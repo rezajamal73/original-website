@@ -5,7 +5,7 @@ import json
 import sys
 
 from django.db import connection
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import pre_save, post_save, post_delete
 from django.dispatch import receiver
 from django.db.models.fields.files import FieldFile
 from django.utils import timezone
@@ -25,73 +25,81 @@ def serialize_instance(instance):
 
         try:
             value = getattr(instance, field.name)
-
         except Exception:
             continue
 
-        # فایل‌ها (تصویر، PDF، SVG، ویدئو و...)
+        # فایل‌ها
         if isinstance(value, FieldFile):
-
-            data[field.name] = (
-                value.name
-                if value
-                else None
-            )
-
+            data[field.name] = value.name if value else None
 
         # ForeignKey
         elif hasattr(value, "_meta"):
-
-            data[field.name] = (
-                value.pk
-                if value
-                else None
-            )
-
+            data[field.name] = value.pk if value else None
 
         # تاریخ و زمان
         elif isinstance(value, (datetime, date, time)):
-
             data[field.name] = value.isoformat()
-
 
         # Decimal
         elif isinstance(value, Decimal):
-
             data[field.name] = float(value)
-
 
         # UUID
         elif isinstance(value, UUID):
-
             data[field.name] = str(value)
 
-
         else:
-
             try:
                 json.dumps(value)
                 data[field.name] = value
-
             except Exception:
                 data[field.name] = str(value)
 
     return data
 
 
-def save_log(sender, instance, action):
+@receiver(pre_save, dispatch_uid="app_log_pre_save")
+def cache_old_instance(sender, instance, **kwargs):
+    """
+    قبل از ذخیره، نسخه قبلی رکورد را نگه می‌داریم.
+    """
+
+    if sender == SystemLog:
+        return
+
+    if sender._meta.app_label in (
+        "admin",
+        "auth",
+        "contenttypes",
+        "sessions",
+        "app_visit",
+        "captcha",
+    ):
+        return
+
+    if not instance.pk:
+        return
+
+    try:
+        instance._old_instance = sender.objects.get(pk=instance.pk)
+    except sender.DoesNotExist:
+        instance._old_instance = None
+
+
+def save_log(sender, instance, action, old_data=None):
+
     # جلوگیری از ثبت خود جدول لاگ
     if sender == SystemLog:
         return
 
     # جلوگیری از ثبت اپ‌های سیستمی Django
     if sender._meta.app_label in (
-            "admin",
-            "auth",
-            "contenttypes",
-            "sessions",
-            "app_visit",  # عدم ثبت لاگ بازدیدها
-            "captcha",
+        "admin",
+        "auth",
+        "contenttypes",
+        "sessions",
+        "app_visit",
+        "captcha",
     ):
         return
 
@@ -103,10 +111,7 @@ def save_log(sender, instance, action):
     if "app_log_systemlog" not in connection.introspection.table_names():
         return
 
-    # --------------------------------
-    # حذف فقط یک لاگ قدیمی‌تر از یک سال
-    # --------------------------------
-
+    # حذف یک لاگ قدیمی‌تر از 120 روز
     expire_time = timezone.now() - timedelta(days=120)
 
     oldest_log = (
@@ -119,10 +124,7 @@ def save_log(sender, instance, action):
     if oldest_log:
         oldest_log.delete()
 
-    # --------------------------------
     # دریافت کاربر و IP
-    # --------------------------------
-
     request = get_current_request()
 
     user = None
@@ -130,105 +132,70 @@ def save_log(sender, instance, action):
 
     if request:
 
-        if (
-                hasattr(request, "user")
-                and request.user.is_authenticated
-        ):
+        if hasattr(request, "user") and request.user.is_authenticated:
             user = request.user
 
-        forwarded = request.META.get(
-            "HTTP_X_FORWARDED_FOR"
-        )
+        forwarded = request.META.get("HTTP_X_FORWARDED_FOR")
 
         if forwarded:
-
             ip = forwarded.split(",")[0].strip()
-
         else:
+            ip = request.META.get("REMOTE_ADDR")
 
-            ip = request.META.get(
-                "REMOTE_ADDR"
-            )
-
-    # --------------------------------
-    # نام امن اپلیکیشن
-    # --------------------------------
-
+    # نام اپ و مدل
     app_config = sender._meta.app_config
 
-    if app_config:
-
-        app_name = app_config.verbose_name
-
-    else:
-
-        app_name = sender._meta.app_label
+    app_name = (
+        app_config.verbose_name
+        if app_config
+        else sender._meta.app_label
+    )
 
     model_name = sender._meta.verbose_name
 
-    # --------------------------------
     # ثبت لاگ
-    # --------------------------------
-
     SystemLog.objects.create(
-
         app_name=app_name,
-
         model_name=model_name,
-
         object_id=instance.pk,
-
         object_name=str(instance),
-
         action=action,
-
         user=user,
-
         ip_address=ip,
-
-        old_data=(
-            serialize_instance(instance)
-            if action == "delete"
-            else None
-        ),
-
+        old_data=old_data,
         new_data=(
-            serialize_instance(instance)
-            if action != "delete"
-            else None
+            None
+            if action == "delete"
+            else serialize_instance(instance)
         ),
     )
 
 
-@receiver(
-    post_save,
-    dispatch_uid="app_log_post_save"
-)
+@receiver(post_save, dispatch_uid="app_log_post_save")
 def log_create_update(sender, instance, created, **kwargs):
+
+    old_data = None
+
+    if not created:
+        old_instance = getattr(instance, "_old_instance", None)
+
+        if old_instance:
+            old_data = serialize_instance(old_instance)
+
     save_log(
-
         sender=sender,
-
         instance=instance,
-
-        action=(
-            "create"
-            if created
-            else "update"
-        ),
+        action="create" if created else "update",
+        old_data=old_data,
     )
 
 
-@receiver(
-    post_delete,
-    dispatch_uid="app_log_post_delete"
-)
+@receiver(post_delete, dispatch_uid="app_log_post_delete")
 def log_delete(sender, instance, **kwargs):
+
     save_log(
-
         sender=sender,
-
         instance=instance,
-
         action="delete",
+        old_data=serialize_instance(instance),
     )
