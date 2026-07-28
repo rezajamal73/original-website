@@ -275,8 +275,15 @@ JAZZMIN_SETTINGS = {
         "app_security",
         "app_catalog",
         "app_tender_holding",
-    ],  # اپ‌هایی که نمی‌خواهید نمایش داده شوند
-    "hide_models": [],  # مدل‌هایی که نمی‌خواهید نمایش داده شوند
+        "app_hr",
+        "app_sale",
+    ],
+
+    "hide_models": [
+        "app_reports.GroupCompany",
+        "app_reports.DepartmentContact",
+        "app_chart.BoardMember",
+    ],
 
     # ═══ ترتیب نمایش (ساختار گروه‌بندی شده) ═══
     "order_with_respect_to": [
@@ -356,15 +363,19 @@ JAZZMIN_SETTINGS = {
         "app_reports.GroupCompany",
         "app_reports.DepartmentContact",
         "app_reports.FollowUsLink",
+        "app_reports.Project",
+        "app_reports.CorporateText",
 
-        # ─── ۱۰. بازدید ───
-        "app_visit",
-        "app_visit.Visit",
+
 
         # ─── ۱۱. رزومه ───
         "app_resume",
         "app_resume.Resume",
         "app_resume.ResumeProvince",
+
+        # ─── ۱۰. بازدید ───
+        "app_visit",
+        "app_visit.Visit",
 
         # ─── ۱۲. سئو ───
         "app_seo",
@@ -464,6 +475,8 @@ JAZZMIN_SETTINGS = {
         "app_reports.GroupCompany": "fas fa-city",
         "app_reports.DepartmentContact": "fas fa-phone-alt",
         "app_reports.FollowUsLink": "fas fa-link",
+        "app_reports.CorporateText": "fas fa-align-left",
+        "app_reports.Project": "fas fa-project-diagram",
 
         "app_visit": "",
         "app_visit.Visit": "fas fa-eye",
