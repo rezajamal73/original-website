@@ -11587,3 +11587,16 @@ label {
     transform: scale(1.06);
     box-shadow: 0 25px 55px rgba(0,0,0,0.18);
 }
+
+.hospital-badge{
+    background: var(--theme-color2);
+    color: #fff;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.hospital-badge:hover{
+    background: var(--theme-color);
+    transition: .3s;
+}

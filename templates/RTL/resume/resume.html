@@ -3,79 +3,74 @@
 
 {% block content %}
 
-<main class="main">
+    <main class="main">
 
-    <!-- breadcrumb -->
-    <div class="site-breadcrumb">
-        <div class="site-breadcrumb-bg" style="background:url('{{ banner.image.url }}')"></div>
+        <!-- breadcrumb -->
+        <div class="site-breadcrumb">
+            <div class="site-breadcrumb-bg" style="background:url('{{ banner.image.url }}')"></div>
 
-        <div class="container">
-            <div class="site-breadcrumb-wrap">
-                <h4 class="breadcrumb-title">
-                    رزومه پروژه‌ها
-                </h4>
+            <div class="container">
+                <div class="site-breadcrumb-wrap">
+                    <h4 class="breadcrumb-title">
+                        رزومه پروژه‌ها
+                    </h4>
 
-                <ul class="breadcrumb-menu">
-                    <li>
-                        <a href="{% url 'app_core:home' %}">
-                            <i class="far fa-home"></i>
-                            خانه
-                        </a>
-                    </li>
+                    <ul class="breadcrumb-menu">
+                        <li>
+                            <a href="{% url 'app_core:home' %}">
+                                <i class="far fa-home"></i>
+                                خانه
+                            </a>
+                        </li>
 
-                    <li class="active">
-                        رزومه
-                    </li>
-                </ul>
+                        <li class="active">
+                            رزومه
+                        </li>
+                    </ul>
+                </div>
             </div>
         </div>
-    </div>
-    <!-- breadcrumb end -->
+        <!-- breadcrumb end -->
 
 
-    <div class="container py-5">
-        <div class="row g-4">
+        <div class="container py-5">
+            <div class="row g-2">
+                {% for item in resumes %}
+                    <div class="col-6 col-md-3 col-lg-2 col-xl-1">
+                        <div class="card h-100 border-0 shadow-sm text-center p-2">
 
-            {% for item in resumes %}
+<span class="badge rounded-pill mb-2 hospital-badge">
+    بیمارستان {{ forloop.counter }}
+</span>
 
-                <div class="col-6 col-md-4 col-lg-3">
-
-                    <div class="card border-0 shadow-sm h-100 text-center p-4">
-
-                        <div class="mb-3">
                             <img
-                                src="{{ item.svg_file.url }}"
-                                alt="{{ item.project_name_fa }}"
-                                style="width:90px;height:90px;object-fit:contain;"
+                                    src="{{ item.svg_file.url }}"
+                                    alt="{{ item.project_name_fa }}"
+                                    class="mx-auto mb-2"
+                                    style="width:50px;height:50px;object-fit:contain;"
                             >
+
+                            <h6 class="fw-bold small mb-1">
+                                {{ item.project_name_fa }}
+                            </h6>
+
+                            <p class="text-muted small mb-0">
+                                <i class="fal fa-map-marker-alt me-1"></i>
+                                {{ item.province.province_name_fa }}
+                            </p>
+
                         </div>
-
-                        <h5 class="fw-bold mb-2">
-                            {{ item.project_name_fa }}
-                        </h5>
-
-                        <p class="text-muted mb-0">
-                            <i class="fal fa-map-marker-alt"></i>
-                            {{ item.province.province_name_fa }}
-                        </p>
-
                     </div>
-
-                </div>
-
-            {% empty %}
-
-                <div class="col-12">
-                    <div class="alert alert-info text-center">
-                        هنوز پروژه‌ای ثبت نشده است.
+                {% empty %}
+                    <div class="col-12">
+                        <div class="alert alert-info text-center">
+                            هنوز پروژه‌ای ثبت نشده است.
+                        </div>
                     </div>
-                </div>
-
-            {% endfor %}
-
+                {% endfor %}
+            </div>
         </div>
-    </div>
 
-</main>
+    </main>
 
 {% endblock %}
