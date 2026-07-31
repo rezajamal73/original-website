@@ -16,8 +16,8 @@ DEBUG = False
 
 # دامنه‌های مجاز
 ALLOWED_HOSTS = [
-    "example.com",
-    "www.example.com",
+    "nkavosh.com",
+    "www.nkavosh.com",
 ]
 
 # -------------------------------------------------------------
