@@ -139,21 +139,15 @@ class Visit(models.Model):
 
         qs = cls.objects.filter(created_at__gte=start_date)
 
-        total = cls.objects.aggregate(
-            total=Sum("visit_count")
-        )["total"] or 0
+        total = cls.objects.count()
 
         today = cls.objects.filter(
             created_at__date=timezone.localdate()
-        ).aggregate(
-            total=Sum("visit_count")
-        )["total"] or 0
+        ).count()
 
         bot_count = qs.filter(
             is_bot=True
-        ).aggregate(
-            total=Sum("visit_count")
-        )["total"] or 0
+        ).count()
 
         unique_visitors = (
             qs.values("ip")

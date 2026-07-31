@@ -58,8 +58,8 @@ class VisitAdmin(admin.ModelAdmin):
     # ------------------------
     # Pagination
     # ------------------------
-    list_per_page = 10          # هر صفحه ۱۰ رکورد
-    list_max_show_all = 10      # گزینه «نمایش همه» بعد از ۱۰ رکورد غیرفعال می‌شود
+    list_per_page = 50          # هر صفحه ۱۰ رکورد
+    list_max_show_all = 50      # گزینه «نمایش همه» بعد از ۱۰ رکورد غیرفعال می‌شود
 
     date_hierarchy = "created_at"
 
@@ -173,9 +173,7 @@ class VisitAdmin(admin.ModelAdmin):
     # ------------------------
 
     def _sum(self, queryset):
-        return queryset.aggregate(
-            total=Sum("visit_count")
-        )["total"] or 0
+        return queryset.count()
 
     def get_visit_stats(self):
 

@@ -108,8 +108,8 @@ class VisitMiddleware:
             or "0.0.0.0"
         )
 
-    def get_visit_key(self, ip: str, path: str) -> str:
-        return f"visit:{ip}:{path}"
+    def get_visit_key(self, ip):
+        return f"visit:{ip}"
 
     def get_page_name(self, path: str) -> str:
         """
@@ -134,47 +134,37 @@ class VisitMiddleware:
             ip = self.get_ip(request)
             path = request.path[:255]
 
-            cache_key = self.get_visit_key(ip, path)
+            cache_key = self.get_visit_key(ip)
 
             if cache.get(cache_key):
-
-                visit = (
-                    Visit.objects.filter(
-                        ip=ip,
-                        path=path,
-                    )
-                    .only("id")
-                    .order_by("-created_at")
-                    .first()
+                Visit.objects.filter(
+                    ip=ip,
+                    path=path,
+                ).update(
+                    last_seen=timezone.now(),
                 )
 
-                if visit:
-                    Visit.objects.filter(pk=visit.pk).update(
-                        visit_count=F("visit_count") + 1,
-                        last_seen=timezone.now(),
-                    )
+                return
 
-                return visit
-
-            Visit.objects.create(
+            visit, created = Visit.objects.get_or_create(
                 ip=ip,
-                path=path,
-                method=request.method,
-                user_agent=request.META.get(
-                    "HTTP_USER_AGENT",
-                    "",
-                )[:500],
-                referer=request.META.get(
-                    "HTTP_REFERER",
-                    "",
-                )[:500],
-                is_bot=self.is_bot(
-                    request.META.get(
-                        "HTTP_USER_AGENT",
-                        "",
-                    )
-                ),
+                defaults={
+                    "path": path,
+                    "method": request.method,
+                    "user_agent": request.META.get("HTTP_USER_AGENT", "")[:500],
+                    "referer": request.META.get("HTTP_REFERER", "")[:500],
+                    "is_bot": self.is_bot(
+                        request.META.get("HTTP_USER_AGENT", "")
+                    ),
+                },
             )
+
+            if not created:
+                Visit.objects.filter(pk=visit.pk).update(
+                    last_seen=timezone.now(),
+                    path=path,
+                    method=request.method,
+                )
 
             cache.set(
                 cache_key,
