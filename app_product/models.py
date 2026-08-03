@@ -3,6 +3,7 @@ from django.utils.text import slugify
 from django.core.exceptions import ValidationError
 from django.urls import reverse
 
+from django.conf import settings
 # QR Code
 import qrcode
 from io import BytesIO
@@ -212,21 +213,28 @@ class Product(models.Model):
         ordering = ['priority', 'title_fa']
 
 
-    def get_absolute_url(self):
-        return reverse("app_product:product_single", kwargs={"pid": self.id})
 
     def __str__(self):
         return self.title_fa
 
     # جهت جلوگیری از محصول بدون نام
     def clean(self):
+        super().clean()
+
         if not self.title_fa and not self.title_en:
             raise ValidationError("نام محصول باید وارد شود.")
 
+        if Product.objects.filter(sku=self.sku).exclude(pk=self.pk).exists():
+            raise ValidationError({
+                "sku": f"کد محصول {self.sku} وجود دارد."
+            })
+
     # ساخت QR DATA
     def _build_qr_data(self):
-        identifier = self.sku if self.sku else str(self.id)
-        return f"PRODUCT:{identifier}"
+        return settings.SITE_URL + reverse(
+            "app_product:scan",
+            kwargs={"sku": self.sku}
+        )
 
     # ساخت تصویر QR
     def _generate_qr_image(self, data, filename):
@@ -241,6 +249,8 @@ class Product(models.Model):
 
     # ذخیره محصول + ساخت QR
     def save(self, *args, **kwargs):
+        self.full_clean()
+
         base = self.title_en or self.title_fa
 
         if not self.slug or slugify(self.slug) != slugify(base):

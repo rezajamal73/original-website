@@ -1,3 +1,4 @@
+import ipaddress
 import logging
 import re
 from datetime import timedelta
@@ -7,7 +8,6 @@ from django.conf import settings
 from django.core.cache import cache
 from django.db.models import F
 from django.http import HttpRequest, HttpResponse
-from django.urls import resolve, Resolver404
 from django.utils import timezone
 
 from .models import Visit
@@ -94,38 +94,50 @@ class VisitMiddleware:
 
         return any(p.search(user_agent) for p in self.bot_patterns)
 
-    def get_ip(self, request) -> str:
-
-        forwarded = request.META.get("HTTP_X_FORWARDED_FOR")
-
-        if forwarded:
-            return forwarded.split(",")[0].strip()
-
-        return (
-            request.META.get("HTTP_X_REAL_IP")
-            or request.META.get("HTTP_CF_CONNECTING_IP")
-            or request.META.get("REMOTE_ADDR")
-            or "0.0.0.0"
-        )
-
-    def get_visit_key(self, ip):
-        return f"visit:{ip}"
-
-    def get_page_name(self, path: str) -> str:
-        """
-        تبدیل مسیر به نام صفحه
-        """
-
+    def _valid_ip(self, ip: str) -> bool:
         try:
-            match = resolve(path)
+            ipaddress.ip_address(ip)
+            return True
+        except Exception:
+            return False
 
-            if match.url_name:
-                return match.url_name.replace("_", " ").title()
+    def get_ip(self, request) -> str:
+        """
+        دریافت IP واقعی کاربر
+        اولویت:
+        Cloudflare -> X-Real-IP -> X-Forwarded-For -> REMOTE_ADDR
+        """
 
-            return path
+        headers = [
+            "HTTP_CF_CONNECTING_IP",
+            "HTTP_X_REAL_IP",
+            "HTTP_X_FORWARDED_FOR",
+            "REMOTE_ADDR",
+        ]
 
-        except Resolver404:
-            return path
+        for header in headers:
+            value = request.META.get(header)
+
+            if not value:
+                continue
+
+            if header == "HTTP_X_FORWARDED_FOR":
+                ips = [i.strip() for i in value.split(",")]
+
+                for ip in ips:
+                    if self._valid_ip(ip):
+                        return ip
+
+            else:
+                value = value.strip()
+
+                if self._valid_ip(value):
+                    return value
+
+        return "0.0.0.0"
+
+    def get_visit_key(self, ip, path):
+        return f"visit:{ip}:{path}"
 
     def record_visit(self, request) -> Optional[Visit]:
 
@@ -134,22 +146,21 @@ class VisitMiddleware:
             ip = self.get_ip(request)
             path = request.path[:255]
 
-            cache_key = self.get_visit_key(ip)
+            cache_key = self.get_visit_key(ip, path)
 
             if cache.get(cache_key):
                 Visit.objects.filter(
                     ip=ip,
                     path=path,
                 ).update(
-                    last_seen=timezone.now(),
+                    last_seen=timezone.now()
                 )
-
                 return
 
             visit, created = Visit.objects.get_or_create(
                 ip=ip,
+                path=path,
                 defaults={
-                    "path": path,
                     "method": request.method,
                     "user_agent": request.META.get("HTTP_USER_AGENT", "")[:500],
                     "referer": request.META.get("HTTP_REFERER", "")[:500],
@@ -162,8 +173,10 @@ class VisitMiddleware:
             if not created:
                 Visit.objects.filter(pk=visit.pk).update(
                     last_seen=timezone.now(),
-                    path=path,
                     method=request.method,
+                    user_agent=request.META.get("HTTP_USER_AGENT", "")[:500],
+                    referer=request.META.get("HTTP_REFERER", "")[:500],
+                    visit_count=F("visit_count") + 1,
                 )
 
             cache.set(
@@ -175,15 +188,15 @@ class VisitMiddleware:
             if Visit.objects.count() % 1000 == 0:
                 self.cleanup_old_visits()
 
+            return visit
+
         except Exception:
             logger.exception("Visit middleware error")
-
-        return None
+            return None
 
     def cleanup_old_visits(self, days=90):
 
         try:
-
             Visit.objects.filter(
                 created_at__lt=timezone.now() - timedelta(days=days)
             ).delete()

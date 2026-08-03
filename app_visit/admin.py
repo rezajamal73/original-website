@@ -67,6 +67,7 @@ class VisitAdmin(admin.ModelAdmin):
         "export_as_csv",
         "mark_as_bot",
         "unmark_as_bot",
+
     )
 
     # ------------------------

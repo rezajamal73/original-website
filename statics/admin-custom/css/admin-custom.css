@@ -703,114 +703,165 @@ body.login {
     font-size: 11.5px !important;
     padding: 10px 16px !important;
 }
-
 /* ══════════════════════════════════════════════════════
    15. SELECT2
 ══════════════════════════════════════════════════════ */
+
+/* ---------- Single ---------- */
+
 .select2-container--default .select2-selection--single,
 .select2-container--admin-autocomplete .select2-selection--single {
     height: 42px !important;
     border: 1px solid #d6dbe4 !important;
     border-radius: 10px !important;
     background: #fff !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
+    color: #111827 !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,.04);
     transition: .25s;
     display: flex !important;
     align-items: center !important;
 }
 
 .select2-container--default .select2-selection--single:hover,
-.select2-container--admin-autocomplete .select2-selection--single:hover {
-    border-color: #4f8df7 !important;
+.select2-container--admin-autocomplete .select2-selection--single:hover{
+    border-color:#4f8df7 !important;
 }
 
 .select2-container--default.select2-container--focus .select2-selection--single,
-.select2-container--admin-autocomplete.select2-container--focus .select2-selection--single {
-    border-color: #4f8df7 !important;
-    box-shadow: 0 0 0 4px rgba(79, 141, 247, .12) !important;
+.select2-container--admin-autocomplete.select2-container--focus .select2-selection--single{
+    border-color:#4f8df7 !important;
+    box-shadow:0 0 0 4px rgba(79,141,247,.12) !important;
 }
 
-.select2-selection--single .select2-selection__rendered {
-    line-height: 40px !important;
-    padding-right: 14px !important;
-    padding-left: 36px !important;
-    font-size: 13px !important;
-    color: #2d3748 !important;
+.select2-selection--single .select2-selection__rendered{
+    line-height:40px !important;
+    padding-right:14px !important;
+    padding-left:36px !important;
+    font-size:13px !important;
+    color:#111827 !important;
 }
 
-.select2-selection--single .select2-selection__placeholder {
-    color: #9ca3af !important;
+.select2-selection--single .select2-selection__placeholder{
+    color:#9ca3af !important;
 }
 
-.select2-selection--single .select2-selection__arrow {
-    width: 34px !important;
-    height: 40px !important;
-    left: 6px !important;
-    right: auto !important;
+.select2-selection--single .select2-selection__arrow{
+    width:34px !important;
+    height:40px !important;
+    left:6px !important;
+    right:auto !important;
 }
 
-.select2-selection--single .select2-selection__arrow b {
-    border-width: 6px 5px 0 5px !important;
-    margin-top: -3px !important;
+.select2-selection--single .select2-selection__arrow b{
+    border-width:6px 5px 0 5px !important;
+    margin-top:-3px !important;
 }
+
+
+/* ---------- Multiple ---------- */
 
 .select2-container--default .select2-selection--multiple,
-.select2-container--admin-autocomplete .select2-selection--multiple {
-    min-height: 42px !important;
-    border: 1px solid #d6dbe4 !important;
-    border-radius: 10px !important;
-    background: #fff !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
-    padding: 4px 8px !important;
-    transition: .25s;
+.select2-container--admin-autocomplete .select2-selection--multiple{
+    min-height:42px !important;
+    border:1px solid #d6dbe4 !important;
+    border-radius:10px !important;
+    background:#fff !important;
+    color:#111827 !important;
+    box-shadow:0 2px 8px rgba(0,0,0,.04);
+    padding:4px 8px !important;
+    transition:.25s;
 }
 
 .select2-container--default .select2-selection--multiple:hover,
-.select2-container--admin-autocomplete .select2-selection--multiple:hover {
-    border-color: #4f8df7 !important;
+.select2-container--admin-autocomplete .select2-selection--multiple:hover{
+    border-color:#4f8df7 !important;
 }
 
 .select2-container--default.select2-container--focus .select2-selection--multiple,
-.select2-container--admin-autocomplete.select2-container--focus .select2-selection--multiple {
-    border-color: #4f8df7 !important;
-    box-shadow: 0 0 0 4px rgba(79, 141, 247, .12) !important;
+.select2-container--admin-autocomplete.select2-container--focus .select2-selection--multiple{
+    border-color:#4f8df7 !important;
+    box-shadow:0 0 0 4px rgba(79,141,247,.12) !important;
 }
 
-.select2-selection--multiple .select2-selection__rendered {
-    display: flex !important;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 6px;
-    padding: 0 !important;
+.select2-selection--multiple .select2-selection__rendered{
+    display:flex !important;
+    flex-wrap:wrap;
+    align-items:center;
+    gap:6px;
+    padding:0 !important;
 }
 
-.select2-selection--multiple .select2-search--inline {
-    margin: 0 !important;
+/* متن داخل باکس جستجو */
+.select2-selection--multiple .select2-search__field{
+    margin:0 !important;
+    padding:6px 4px !important;
+    font-size:13px !important;
+    min-width:120px !important;
+    color:#111827 !important;
 }
 
-.select2-selection--multiple .select2-search__field {
-    margin: 0 !important;
-    padding: 6px 4px !important;
-    font-size: 13px !important;
-    min-width: 120px !important;
+.select2-selection--multiple .select2-search__field::placeholder{
+    color:#9ca3af !important;
 }
 
-.select2-selection--multiple .select2-selection__choice {
-    border: none !important;
-    border-radius: 8px !important;
-    padding: 4px 10px !important;
-    font-size: 12px !important;
-    font-weight: 500;
+/* آیتم‌های انتخاب شده */
+.select2-selection--multiple .select2-selection__choice{
+    display:flex !important;
+    align-items:center;
+    gap:6px;
+
+    background:#e5e7eb !important;
+    border:1px solid #d1d5db !important;
+    border-radius:8px !important;
+
+    color:#111827 !important;
+
+    padding:4px 10px !important;
+    font-size:12px !important;
+    font-weight:600 !important;
 }
 
-.select2-selection--multiple .select2-selection__choice__remove {
-    margin-left: 6px !important;
+/* متن آیتم */
+.select2-selection__choice__display{
+    color:#111827 !important;
 }
 
-.select2-dropdown {
-    border-radius: var(--dp-radius-sm) !important;
+/* ضربدر حذف */
+.select2-selection__choice__remove{
+    color:#6b7280 !important;
+    margin-left:6px !important;
 }
 
+.select2-selection__choice__remove:hover{
+    color:#dc2626 !important;
+    background:transparent !important;
+}
+
+
+/* ---------- Dropdown ---------- */
+
+.select2-dropdown{
+    border:1px solid #d6dbe4 !important;
+    border-radius:10px !important;
+    background:#fff !important;
+}
+
+/* گزینه‌ها */
+.select2-results__option{
+    color:#111827 !important;
+    background:#fff !important;
+    font-size:13px !important;
+}
+
+.select2-results__option--highlighted[aria-selected]{
+    background:#2563eb !important;
+    color:#fff !important;
+}
+
+.select2-results__option[aria-selected="true"]{
+    background:#dbeafe !important;
+    color:#111827 !important;
+}
 /* ══════════════════════════════════════════════════════
    16. TABS, CALENDAR, CHECKBOX
 ══════════════════════════════════════════════════════ */
@@ -1578,3 +1629,121 @@ a.btn-outline-primary.active,
     display:none;
 }
 
+/* ==========================
+   jQuery UI DatePicker
+========================== */
+
+.ui-datepicker {
+    width: 320px !important;
+    padding: 14px !important;
+    border-radius: 14px !important;
+    background: #fff !important;
+    border: 1px solid #e5e7eb !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,.08) !important;
+}
+
+.ui-datepicker-header{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:10px;
+    margin-bottom:12px;
+}
+
+.ui-datepicker-title{
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:8px;
+    width:100%;
+}
+
+.ui-datepicker-title select{
+    flex:1;
+    min-width:110px;
+    max-width:140px;
+    margin:0 !important;
+    padding:6px 12px !important;
+
+    border:1px solid #d6dbe4 !important;
+    border-radius:8px !important;
+    background:#fff !important;
+
+    color:#1f2937 !important;      /* متن تیره */
+    font-size:13px !important;
+    font-family:Vazirmatn,Tahoma,sans-serif !important;
+
+    appearance:none;
+    -webkit-appearance:none;
+    -moz-appearance:none;
+
+    cursor:pointer;
+}
+
+.ui-datepicker-title select option{
+    color:#1f2937 !important;
+    background:#fff !important;
+}
+
+.ui-datepicker-month{
+    order:1;
+}
+
+.ui-datepicker-year{
+    order:2;
+}
+
+/* روزهای هفته */
+.ui-datepicker th{
+    color:#374151 !important;
+    font-weight:700;
+}
+
+/* سلول روزها */
+.ui-datepicker td a{
+    display:flex !important;
+    align-items:center;
+    justify-content:center;
+
+    width:36px;
+    height:36px;
+
+    margin:auto;
+    border-radius:8px;
+
+    color:#1f2937 !important;      /* متن روزها تیره */
+    text-decoration:none !important;
+    transition:.2s;
+}
+
+/* هاور */
+.ui-datepicker td a:hover{
+    background:#eff6ff !important;
+    color:#2563eb !important;
+}
+
+/* روز انتخاب شده */
+.ui-datepicker .ui-state-active{
+    background:#2563eb !important;
+    color:#fff !important;
+    border-radius:8px !important;
+}
+
+/* امروز */
+.ui-datepicker .ui-datepicker-today a{
+    background:#fef3c7 !important;
+    color:#b45309 !important;
+    font-weight:700;
+    border:2px solid #f59e0b !important;
+}
+
+/* اگر امروز انتخاب شده باشد */
+.ui-datepicker .ui-datepicker-today .ui-state-active{
+    background:#f59e0b !important;
+    color:#fff !important;
+}
+
+/* روزهای ماه‌های دیگر */
+.ui-datepicker .ui-datepicker-other-month a{
+    color:#9ca3af !important;
+}

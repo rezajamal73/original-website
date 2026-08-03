@@ -11,41 +11,37 @@ from app_seo.utils import SEOManager
 # =====================================================
 # BLOG HOME
 # =====================================================
-def blog_home(request, cat_name=None, author_username=None):
+def blog_home(request, slug=None, author_username=None):
 
     blogs_queryset = (
         blog.objects
         .filter(status="published")
+        .select_related("category", "author")
         .order_by("-publish_date_fa", "order")
     )
 
-    if cat_name:
+    # فیلتر بر اساس اسلاگ دسته‌بندی
+    if slug:
         blogs_queryset = blogs_queryset.filter(
-            category__title_fa=cat_name
+            category__slug=slug
         )
 
+    # فیلتر بر اساس نویسنده
     if author_username:
         blogs_queryset = blogs_queryset.filter(
             author__username=author_username
         )
 
-    paginator = Paginator(
-        blogs_queryset,
-        8
-    )
+    paginator = Paginator(blogs_queryset, 8)
 
     page_number = request.GET.get("page")
 
     try:
         blogs = paginator.get_page(page_number)
-
     except PageNotAnInteger:
         blogs = paginator.get_page(1)
-
     except EmptyPage:
-        blogs = paginator.get_page(
-            paginator.num_pages
-        )
+        blogs = paginator.get_page(paginator.num_pages)
 
     context = {
         "blogs": blogs,

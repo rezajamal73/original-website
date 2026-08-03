@@ -4635,7 +4635,9 @@ label {
   border-radius: 50%;
   margin: 0 3px;
 }
-
+.product-action a i{
+    color: #fff !important;
+}
 .product-action a:hover{
   background: var(--theme-color);
   color: var(--color-white);
@@ -8026,7 +8028,7 @@ label {
   }
 }
 
-/* user settings */
+/* user setting */
 .user-setting .form-check{
   margin-bottom: 10px;
 }
