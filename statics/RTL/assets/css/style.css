@@ -4635,9 +4635,7 @@ label {
   border-radius: 50%;
   margin: 0 3px;
 }
-.product-action a i{
-    color: #fff !important;
-}
+
 .product-action a:hover{
   background: var(--theme-color);
   color: var(--color-white);
@@ -8028,7 +8026,7 @@ label {
   }
 }
 
-/* user setting */
+/* user settings */
 .user-setting .form-check{
   margin-bottom: 10px;
 }
@@ -11590,15 +11588,15 @@ label {
     box-shadow: 0 25px 55px rgba(0,0,0,0.18);
 }
 
-.hospital-badge{
-    background: var(--theme-color2);
+.hospital-badge {
+    background-color: var(--theme-color);
     color: #fff;
     padding: 8px 14px;
     font-size: 12px;
     font-weight: 600;
+    transition: background-color .3s ease;
 }
 
-.hospital-badge:hover{
-    background: var(--theme-color);
-    transition: .3s;
+.hospital-badge:hover {
+    background-color: var(--theme-color2);
 }

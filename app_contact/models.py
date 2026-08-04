@@ -35,17 +35,22 @@ class ContactMessage(models.Model):
     def __str__(self):
         return f"{self.first_name} {self.last_name} | {self.subject}"
 
-    # ✅ تاریخ شمسی تمیز (فقط تاریخ + ساعت + دقیقه)
+    # ---------- تاریخ ایجاد (شمسی) ----------
     @property
     def created_at_fa(self):
         if not self.created_at:
             return "—"
+
         j_date = jdatetime.datetime.fromgregorian(
             datetime=self.created_at
         )
         return j_date.strftime("%Y/%m/%d %H:%M")
 
-    # 👤 نام کامل
+    created_at_fa.fget.short_description = "تاریخ ایجاد"
+
+    # ---------- نام و نام خانوادگی ----------
     @property
     def full_name(self):
         return f"{self.first_name} {self.last_name}"
+
+    full_name.fget.short_description = "نام و نام خانوادگی"

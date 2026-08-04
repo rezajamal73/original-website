@@ -128,10 +128,9 @@ class BackupService:
 
     def _backup_media(self, media_dir):
 
-        media_root = Path(settings.MEDIA_ROOT)
+        media_root = Path("/home/nkavoshc/public_html/media")
 
-        if media_root.is_dir():
-
+        if media_root.exists() and media_root.is_dir():
             shutil.copytree(
                 media_root,
                 media_dir,
