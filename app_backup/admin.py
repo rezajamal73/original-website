@@ -20,7 +20,6 @@ from .restore_service import RestoreService
 
 @admin.register(Backup)
 class BackupAdmin(admin.ModelAdmin):
-
     change_list_template = "admin/app_backup.html"
 
     list_display = (
@@ -65,27 +64,28 @@ class BackupAdmin(admin.ModelAdmin):
     ####################################################
 
     def created_at_jalali(self, obj):
+        # بررسی اینکه obj وجود دارد و created_at خالی نیست
+        if not obj or not obj.created_at:
+            return "تاریخ نامشخص"
 
-        local_time = timezone.localtime(
-            obj.created_at,
-        )
+        try:
+            local_time = timezone.localtime(obj.created_at)
+            jalali = jdatetime.datetime.fromgregorian(datetime=local_time)
 
-        jalali = jdatetime.datetime.fromgregorian(
-            datetime=local_time,
-        )
-
-        return format_html(
-            """
-            <div style="line-height:1.5">
-                <strong>{}</strong><br>
-                <span style="font-size:11px;color:#777;">
-                    {}
-                </span>
-            </div>
-            """,
-            jalali.strftime("%Y/%m/%d %H:%M:%S"),
-            local_time.strftime("%Y-%m-%d %H:%M:%S"),
-        )
+            return format_html(
+                """
+                <div style="line-height:1.5">
+                    <strong>{}</strong><br>
+                    <span style="font-size:11px;color:#777;">
+                        {}
+                    </span>
+                </div>
+                """,
+                jalali.strftime("%Y/%m/%d %H:%M:%S"),
+                local_time.strftime("%Y-%m-%d %H:%M:%S"),
+            )
+        except Exception:
+            return "تاریخ نامعتبر"
 
     created_at_jalali.short_description = "تاریخ"
 
@@ -95,7 +95,15 @@ class BackupAdmin(admin.ModelAdmin):
 
     @admin.display(description="حجم فایل")
     def file_size_display(self, obj):
-        return obj.size
+        # بررسی اینکه obj وجود دارد و file_size مقدار دارد
+        if not obj or not obj.file_size:
+            return "۰ بایت"
+
+        # استفاده از متد size مدل (که قبلاً وجود دارد)
+        try:
+            return obj.size
+        except Exception:
+            return f"{obj.file_size} بایت"
 
     ####################################################
     # Download
@@ -103,12 +111,8 @@ class BackupAdmin(admin.ModelAdmin):
 
     @admin.display(description="دانلود")
     def download_backup(self, obj):
-
-        if not obj.file_exists:
-
-            return format_html(
-                '<span style="color:red;">❌ فایل وجود ندارد</span>'
-            )
+        if not obj or not obj.file_exists:
+            return "❌ فایل وجود ندارد"
 
         return format_html(
             '<a class="button" href="{}">⬇ دانلود</a>',
@@ -124,12 +128,8 @@ class BackupAdmin(admin.ModelAdmin):
 
     @admin.display(description="بازیابی")
     def restore_backup(self, obj):
-
-        if not obj.file_exists:
-
-            return format_html(
-                '<span style="color:red;">❌ فایل وجود ندارد</span>'
-            )
+        if not obj or not obj.file_exists:
+            return "❌ فایل وجود ندارد"
 
         return format_html(
             '<a class="backup-restore-btn" href="{}">'
@@ -238,7 +238,7 @@ class BackupAdmin(admin.ModelAdmin):
         if request.method == "POST":
 
             uploaded_file = request.FILES.get(
-                  "backup",
+                "backup",
             )
 
             if uploaded_file is None:
@@ -311,9 +311,9 @@ class BackupAdmin(admin.ModelAdmin):
     ####################################################
 
     def download_backup_view(
-        self,
-        request,
-        backup_id,
+            self,
+            request,
+            backup_id,
     ):
 
         backup = get_object_or_404(
@@ -322,7 +322,6 @@ class BackupAdmin(admin.ModelAdmin):
         )
 
         if not backup.file_exists:
-
             self.message_user(
                 request,
                 "فایل نسخه پشتیبان وجود ندارد.",
@@ -346,13 +345,12 @@ class BackupAdmin(admin.ModelAdmin):
     ####################################################
 
     def restore_backup_view(
-        self,
-        request,
-        backup_id,
+            self,
+            request,
+            backup_id,
     ):
 
         if not request.user.is_superuser:
-
             self.message_user(
                 request,
                 "فقط مدیر سیستم مجاز است.",
