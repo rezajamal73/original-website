@@ -14,6 +14,7 @@ from app_banner.models import (
 
 from app_blog.models import blog
 from app_product.models import Product, ProductCategory
+
 from app_reports.models import (
     CorporateSection,
     CorporateStatistic,
@@ -28,14 +29,39 @@ from app_seo.utils import SEOManager
 # =====================================================
 # CAPTCHA
 # =====================================================
+
 def _generate_captcha():
-    return "".join(random.choice("0123456789") for _ in range(5))
+    return "".join(
+        random.choice("0123456789")
+        for _ in range(5)
+    )
 
 
 # =====================================================
 # HOME
 # =====================================================
+
 def home(request, slug=None):
+
+    # -------------------------------------------------
+    # Detect language
+    # -------------------------------------------------
+
+    is_english = request.path.startswith("/en/")
+
+    # -------------------------------------------------
+    # Template
+    # -------------------------------------------------
+
+    template = (
+        "LTR/core/home.html"
+        if is_english
+        else "RTL/core/home.html"
+    )
+
+    # -------------------------------------------------
+    # Hero Banners
+    # -------------------------------------------------
 
     banners = (
         HeroBanner.objects
@@ -43,44 +69,84 @@ def home(request, slug=None):
         .order_by("order", "id")
     )
 
+    # -------------------------------------------------
+    # Hero Slider
+    # -------------------------------------------------
+
     slider_setting = HeroSliderSetting.objects.first()
 
     active_slider = (
         slider_setting.active_slider
-        if slider_setting else "hs_1"
+        if slider_setting
+        else "hs_1"
     )
+
+    # -------------------------------------------------
+    # Blogs
+    # -------------------------------------------------
 
     blogs = (
         blog.objects
         .filter(status="published")
-        .order_by("-publish_date_fa", "-publish_date_en")[:3]
+        .order_by(
+            "-publish_date_fa",
+            "-publish_date_en"
+        )[:3]
     )
 
+    # -------------------------------------------------
+    # Category
+    # -------------------------------------------------
 
     active_category = None
-    product_filter = Q(status="published")
+
+    product_filter = Q(
+        status="published"
+    )
 
     if slug:
+
         active_category = get_object_or_404(
             ProductCategory,
             slug=slug
         )
-        product_filter &= Q(category=active_category)
 
+        product_filter &= Q(
+            category=active_category
+        )
+
+    # -------------------------------------------------
+    # Special Products
+    # -------------------------------------------------
 
     special_products = (
         Product.objects
-        .filter(product_filter, special=True)
-        .order_by("priority", "title_fa")[:12]
+        .filter(
+            product_filter,
+            special=True
+        )
+        .order_by(
+            "priority",
+            "title_fa"
+        )[:12]
     )
 
+    # -------------------------------------------------
+    # Special Product Banners
+    # -------------------------------------------------
 
     special_product_banners = (
         SpecialProductBanner.objects
         .filter(status="published")
-        .order_by("order", "created_at")[:4]
+        .order_by(
+            "order",
+            "created_at"
+        )[:4]
     )
 
+    # -------------------------------------------------
+    # Statistics
+    # -------------------------------------------------
 
     statistics = (
         CorporateStatistic.objects
@@ -88,6 +154,9 @@ def home(request, slug=None):
         .order_by("display_order")
     )
 
+    # -------------------------------------------------
+    # About Section
+    # -------------------------------------------------
 
     about_section = (
         CorporateSection.objects
@@ -105,6 +174,9 @@ def home(request, slug=None):
         .first()
     )
 
+    # -------------------------------------------------
+    # About Banner
+    # -------------------------------------------------
 
     about_banner = (
         AboutBanner.objects
@@ -112,6 +184,9 @@ def home(request, slug=None):
         .first()
     )
 
+    # -------------------------------------------------
+    # Group Companies
+    # -------------------------------------------------
 
     group_companies = (
         GroupCompany.objects
@@ -119,6 +194,9 @@ def home(request, slug=None):
         .order_by("display_order")
     )
 
+    # -------------------------------------------------
+    # Home Media
+    # -------------------------------------------------
 
     home_medias = (
         Media.objects
@@ -133,38 +211,73 @@ def home(request, slug=None):
         .order_by("order")
     )
 
+    # -------------------------------------------------
+    # Main Banner
+    # -------------------------------------------------
+
+    main_banner = (
+        MainBanner.objects
+        .filter(status="published")
+        .first()
+    )
+
+    # -------------------------------------------------
+    # Context
+    # -------------------------------------------------
 
     context = {
-        "banners": banners,
-        "about_banner": about_banner,
-        "active_slider": active_slider,
-        "blogs": blogs,
-        "special_products": special_products,
-        "special_product_banners": special_product_banners,
-        "active_category": active_category,
-        "statistics": statistics,
-        "section": about_section,
-        "group_companies": group_companies,
-        "home_medias": home_medias,
-        "main_banner": MainBanner.objects.filter(
-            status="published"
-        ).first(),
-        "seo": SEOManager.get_page("home"),
-    }
 
+        "banners": banners,
+
+        "about_banner": about_banner,
+
+        "active_slider": active_slider,
+
+        "blogs": blogs,
+
+        "special_products": special_products,
+
+        "special_product_banners": special_product_banners,
+
+        "active_category": active_category,
+
+        "statistics": statistics,
+
+        "section": about_section,
+
+        "group_companies": group_companies,
+
+        "home_medias": home_medias,
+
+        "main_banner": main_banner,
+
+        "seo": SEOManager.get_page("home"),
+
+        # Language
+        "is_english": is_english,
+
+    }
 
     return render(
         request,
-        "RTL/core/home.html",
+        template,
         context
     )
-
 
 
 # =====================================================
 # ABOUT
 # =====================================================
+
 def about(request):
+
+    is_english = request.path.startswith("/en/")
+
+    template = (
+        "LTR/core/history.html"
+        if is_english
+        else "RTL/core/history.html"
+    )
 
     section = (
         CorporateSection.objects
@@ -178,152 +291,203 @@ def about(request):
         .first()
     )
 
-
     context = {
-        "section": section,
-        "banner": OtherBanner.objects.filter(
-            status="published"
-        ).first(),
-        "seo": SEOManager.get_page("about"),
-    }
 
+        "section": section,
+
+        "banner": (
+            OtherBanner.objects
+            .filter(status="published")
+            .first()
+        ),
+
+        "seo": SEOManager.get_page("about"),
+
+        "is_english": is_english,
+    }
 
     return render(
         request,
-        "RTL/core/history.html",
+        template,
         context
     )
-
 
 
 # =====================================================
 # CONTACT
 # =====================================================
+
 def contact(request):
 
-    if "contact_captcha" not in request.session:
-        request.session["contact_captcha"] = _generate_captcha()
+    is_english = request.path.startswith("/en/")
 
+    template = (
+        "LTR/core/contact.html"
+        if is_english
+        else "RTL/core/contact.html"
+    )
+
+    if "contact_captcha" not in request.session:
+
+        request.session["contact_captcha"] = (
+            _generate_captcha()
+        )
 
     context = {
-        "captcha_code": request.session["contact_captcha"],
-        "seo": SEOManager.get_page("contact"),
-    }
 
+        "captcha_code": (
+            request.session["contact_captcha"]
+        ),
+
+        "seo": SEOManager.get_page("contact"),
+
+        "is_english": is_english,
+    }
 
     return render(
         request,
-        "RTL/core/contact.html",
+        template,
         context
     )
-
 
 
 # =====================================================
 # CONTACT SECURITY
 # =====================================================
+
 def contact_security(request):
 
-    if "security_captcha" not in request.session:
-        request.session["security_captcha"] = _generate_captcha()
+    is_english = request.path.startswith("/en/")
 
+    template = (
+        "LTR/core/contact_security.html"
+        if is_english
+        else "RTL/core/contact_security.html"
+    )
+
+    if "security_captcha" not in request.session:
+
+        request.session["security_captcha"] = (
+            _generate_captcha()
+        )
 
     context = {
-        "captcha_code": request.session["security_captcha"],
+
+        "captcha_code": (
+            request.session["security_captcha"]
+        ),
+
         "seo": SEOManager.get_page(
             "contact_security"
         ),
-    }
 
+        "is_english": is_english,
+    }
 
     return render(
         request,
-        "RTL/core/contact_security.html",
+        template,
         context
     )
-
 
 
 # =====================================================
 # 404
 # =====================================================
+
 def error(request):
 
+    is_english = request.path.startswith("/en/")
+
+    template = (
+        "LTR/core/404.html"
+        if is_english
+        else "RTL/core/404.html"
+    )
+
     return render(
         request,
-        "../templates/404.html",
+        template,
         {
-            "seo": SEOManager.get_page("404")
+            "seo": SEOManager.get_page("404"),
+            "is_english": is_english,
         }
     )
-
-
-
-# =====================================================
-# HOME EN
-# =====================================================
-def home_en(request, slug=None):
-
-    context = home(request, slug).context_data
-
-    return render(
-        request,
-        "LTR/core/home.html",
-        context
-    )
-
 
 
 # =====================================================
 # SEARCH
 # =====================================================
+
 def search(request):
+
+    is_english = request.path.startswith("/en/")
+
+    template = (
+        "LTR/core/search.html"
+        if is_english
+        else "RTL/core/search.html"
+    )
 
     q = request.GET.get(
         "q",
         ""
     ).strip()
 
-
     context = {
 
         "query": q,
 
+        # -------------------------------------------------
+        # Products
+        # -------------------------------------------------
+
         "products": Product.objects.filter(
             (
-                Q(title_fa__icontains=q) |
+                Q(title_fa__icontains=q)
+                |
                 Q(title_en__icontains=q)
             ),
             status="published"
         ),
 
+        # -------------------------------------------------
+        # Blogs
+        # -------------------------------------------------
 
         "blogs": blog.objects.filter(
             (
-                Q(title_fa__icontains=q) |
+                Q(title_fa__icontains=q)
+                |
                 Q(title_en__icontains=q)
             ),
             status="published"
         ),
 
+        # -------------------------------------------------
+        # News
+        # -------------------------------------------------
 
         "news": News.objects.filter(
             (
-                Q(title_fa__icontains=q) |
+                Q(title_fa__icontains=q)
+                |
                 Q(title_en__icontains=q)
             ),
             status="published"
         ),
 
+        # -------------------------------------------------
+        # SEO
+        # -------------------------------------------------
 
-        "seo": SEOManager.get_page(
-            "search"
-        ),
+        "seo": SEOManager.get_page("search"),
+
+        "is_english": is_english,
     }
-
 
     return render(
         request,
-        "RTL/core/search.html",
+        template,
         context
     )

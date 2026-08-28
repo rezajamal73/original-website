@@ -1,175 +1,1176 @@
+
 {% load static %}
+{% load seo_tags %}
 
 <!DOCTYPE html>
-<html dir="rtl" lang="fa">
+<html dir="RTL" lang="en">
+
 <head>
-    <!-- meta tags -->
+
+    <!-- Meta Tags -->
     <meta charset="utf-8"/>
     <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <meta content="" name="description"/>
-    <meta content="" name="keywords"/>
 
-    <title>
-        {% if site_info %}
-            {{ site_info.name_company_p1_fa }} {{ site_info.name_company_p2_fa }}
-        {% endif %}
-    </title>
+    <!-- SEO META -->
+    <title>{% seo_title %}</title>
 
+    <meta
+        name="description"
+        content="{% seo_description %}"
+    />
+
+    <meta
+        name="keywords"
+        content="{% seo_keywords %}"
+    />
+
+    <meta
+        name="robots"
+        content="{% seo_robots %}"
+    />
+
+    <link
+        rel="canonical"
+        href="{% seo_canonical %}"
+    />
+
+    <!-- Open Graph -->
+
+    <meta
+        property="og:title"
+        content="{% seo_title %}"
+    />
+
+    <meta
+        property="og:description"
+        content="{% seo_description %}"
+    />
+
+    <meta
+        property="og:image"
+        content="{% seo_og_image %}"
+    />
+
+    <meta
+        property="og:type"
+        content="website"
+    />
+
+    <!-- Twitter -->
+
+    <meta
+        name="twitter:card"
+        content="summary_large_image"
+    />
+
+    <meta
+        name="twitter:title"
+        content="{% seo_title %}"
+    />
+
+    <meta
+        name="twitter:description"
+        content="{% seo_description %}"
+    />
+
+    <meta
+        name="twitter:image"
+        content="{% seo_og_image %}"
+    />
+
+    <!-- Schema.org -->
+    <script type="application/ld+json">
+        {% seo_schema %}
+    </script>
+
+    <!-- Favicon -->
     {% if site_info and site_info.header_logo %}
-        <link rel="icon" type="image/x-icon" href="{{ site_info.header_logo.url }}">
+        <link
+            rel="icon"
+            type="image/x-icon"
+            href="{{ site_info.header_logo.url }}"
+        >
     {% endif %}
 
-    <link href="{% static 'RTl/assets/css/bootstrap.min.css' %}" rel="stylesheet"/>
-    <link href="{% static 'RTl/assets/css/all-fontawesome.min.css' %}" rel="stylesheet"/>
-    <link href="{% static 'RTl/assets/css/animate.min.css' %}" rel="stylesheet"/>
-    <link href="{% static 'RTl/assets/css/magnific-popup.min.css' %}" rel="stylesheet"/>
-    <link href="{% static 'RTl/assets/css/owl.carousel.min.css' %}" rel="stylesheet"/>
-    <link href="{% static 'RTl/assets/css/jquery-ui.min.css' %}" rel="stylesheet"/>
-    <link href="{% static 'RTl/assets/css/nice-select.min.css' %}" rel="stylesheet"/>
-    <link href="{% static 'RTl/assets/css/style.css' %}" rel="stylesheet"/>
-    <link href="{% static 'RTl/assets/css/flex-slider.min.css' %}" rel="stylesheet"/>
+    <!-- CSS -->
+    <link href="{% static 'RTL/assets/css/bootstrap.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTL/assets/css/all-fontawesome.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTL/assets/css/animate.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTL/assets/css/magnific-popup.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTL/assets/css/owl.carousel.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTL/assets/css/jquery-ui.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTL/assets/css/nice-select.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTL/assets/css/style.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTL/assets/css/flex-slider.min.css' %}" rel="stylesheet"/>
+
 </head>
 
 <body class="home-5">
 
+<!-- Preloader -->
 <div class="preloader">
     <div class="loader-ripple">
         <div></div>
         <div></div>
     </div>
 </div>
+<!-- Preloader End -->
 
+
+<!-- Header Area -->
 <header class="header">
+
+    <!-- Header Top -->
     <div class="header-top black-bg">
+
         <div class="container">
-            <div class="row">
-                <div class="col-xl-5">
-                    <ul class="header-top-list">
-                        {% if site_info.email %}
-                            <li>
-                                <a href="mailto:{{ site_info.email }}">
-                                    <i class="far fa-envelopes"></i>
-                                    {{ site_info.email }}
-                                </a>
-                            </li>
-                        {% endif %}
-                        {% if site_info.phone_1 %}
-                            <li>
-                                <a href="tel:{{ site_info.phone_1 }}">
-                                    <i class="far fa-headset"></i>
-                                    {{ site_info.phone_1 }}
-                                </a>
-                            </li>
-                        {% endif %}
-                        {% if site_info.suport_phone %}
-                            <li class="help">
-                                <a href="tel:{{ site_info.suport_phone }}">
-                                    <i class="far fa-comment-question"></i>
-                                    Contact Support
-                                </a>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </div>
 
-                <div class="col-xl-7">
-                    <ul class="header-top-list">
-                        <li>
-                            <div class="dropdown">
-                                <a class="dropdown-toggle" data-bs-toggle="dropdown"
-                                   href="{% url 'app_core:home_en' %}">
-                                    <i class="far fa-globe-americas"></i>
-                                    English
-                                </a>
-                                <div class="dropdown-menu">
-                                    <a class="dropdown-item" href="{% url 'app_core:home' %}">
-                                        Persian
-                                    </a>
-                                </div>
-                            </div>
-                        </li>
+            <div class="header-top-wrap">
 
-                        {% if follow_links %}
-                            <li class="social">
-                                <span>Follow Us:</span>
-                                {% for link in follow_links %}
-                                    {% if link.svg_icon and link.url %}
-                                        <a href="{{ link.url }}" target="_blank">
-                                            <img src="{{ link.svg_icon.url }}" width="30" height="30"/>
+                <div class="row">
+
+                    <!-- Header Top Left -->
+                    <div class="col-12 col-md-6 col-lg-6 col-xl-5">
+
+                        <div class="header-top-left">
+
+                            <ul class="header-top-list">
+
+                                {% if site_info.email %}
+                                    <li>
+                                        <a href="mailto:{{ site_info.email }}">
+                                            <i class="far fa-envelopes"></i>
+                                            <span>{{ site_info.email }}</span>
                                         </a>
-                                    {% endif %}
-                                {% endfor %}
-                            </li>
-                        {% endif %}
-                    </ul>
+                                    </li>
+                                {% endif %}
+
+                                {% if site_info.phone_1 %}
+                                    <li>
+                                        <a href="tel:{{ site_info.phone_1 }}">
+                                            <i class="far fa-headset"></i>
+                                            {{ site_info.phone_1 }}
+                                        </a>
+                                    </li>
+                                {% endif %}
+
+                                {% if site_info.suport_phone %}
+                                    <li class="help">
+                                        <a href="tel:{{ site_info.suport_phone }}">
+                                            <i class="far fa-comment-question"></i>
+                                            Contact Support
+                                        </a>
+                                    </li>
+                                {% endif %}
+
+                            </ul>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Header Top Right -->
+                    <div class="col-12 col-md-6 col-lg-6 col-xl-7">
+
+                        <div class="header-top-right">
+
+                            <ul class="header-top-list">
+
+                                <!-- Language -->
+                                <li>
+
+                                    <div class="dropdown">
+
+                                        <a
+                                            aria-expanded="false"
+                                            class="dropdown-toggle"
+                                            data-bs-toggle="dropdown"
+                                            href="{% url 'app_core:home_en' %}"
+                                        >
+                                            <i class="far fa-globe-americas"></i>
+                                            English
+                                        </a>
+
+                                        <div class="dropdown-menu">
+
+                                            <a
+                                                class="dropdown-item"
+                                                href="{% url 'app_core:home' %}"
+                                            >
+                                                فارسی
+                                            </a>
+
+                                        </div>
+
+                                    </div>
+
+                                </li>
+
+
+                                <!-- Social Media -->
+                                {% if follow_links %}
+
+                                    <li class="social">
+
+                                        <div class="header-top-social">
+
+                                            <span>Follow Us:</span>
+
+                                            {% for link in follow_links %}
+
+                                                {% if link.svg_icon and link.url %}
+
+                                                    <a
+                                                        href="{{ link.url }}"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+
+                                                        <img
+                                                            src="{{ link.svg_icon.url }}"
+                                                            width="30"
+                                                            height="30"
+                                                            alt="Social Media"
+                                                        />
+
+                                                    </a>
+
+                                                {% endif %}
+
+                                            {% endfor %}
+
+                                        </div>
+
+                                    </li>
+
+                                {% endif %}
+
+                            </ul>
+
+                        </div>
+
+                    </div>
+
                 </div>
+
             </div>
+
         </div>
+
     </div>
+    <!-- Header Top End -->
 
+
+    <!-- Main Navigation -->
     <div class="main-navigation">
+
         <nav class="navbar navbar-expand-lg">
-            <div class="container">
-                <a class="navbar-brand" href="{% url 'app_core:home' %}">
+
+            <div class="container position-relative">
+
+                <!-- Logo -->
+                <a
+                    class="navbar-brand d-flex align-items-center"
+                    href="{% url 'app_core:home_en' %}"
+                >
+
                     {% if site_info.header_logo %}
-                        <img src="{{ site_info.header_logo.url }}" alt="logo">
-                    {% endif %}
-                </a>
-                <div class="d-flex flex-column company-brand-text">
-                    {% if site_info.name_company_p1_en %}
-                        <span class="line-1">{{ site_info.name_company_p1_en }}</span>
+
+                        <img
+                            alt="logo"
+                            src="{{ site_info.header_logo.url }}"
+                        >
+
                     {% endif %}
 
-                    {% if site_info.name_company_p2_fa %}
-                        <span class="line-2">{{ site_info.name_company_p2_en }}</span>
+                </a>
+
+
+                <!-- Company Name -->
+                <div class="d-flex flex-column company-brand-text">
+
+                    {% if site_info.name_company_p1_en %}
+
+                        <span class="line-1">
+                            {{ site_info.name_company_p1_en }}
+                        </span>
+
                     {% endif %}
+
+
+                    {% if site_info.name_company_p2_en %}
+
+                        <span class="line-2">
+                            {{ site_info.name_company_p2_en }}
+                        </span>
+
+                    {% endif %}
+
                 </div>
 
-                <ul class="navbar-nav">
-                    <li><a class="nav-link" href="{% url 'app_core:home' %}">Home</a></li>
-                    <li class="dropdown">
-                        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown">About Company</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="{% url 'app_core:about' %}">Company History</a></li>
-                            <li><a class="dropdown-item" href="{% url 'app_chart:board_home' %}">Board Members</a></li>
-                            <li><a class="dropdown-item" href="{% url 'app_chart:chart' %}">Organization Chart</a></li>
-                            <li><a class="dropdown-item" href="{% url 'app_reports:vision_missions' %}">Vision &
-                                Mission</a></li>
+
+                <!-- Mobile Menu Right -->
+                <div class="mobile-menu-right">
+
+                    <div class="mobile-menu-btn">
+
+                        <a
+                            class="nav-right-link search-box-outer"
+                            href="#"
+                        >
+                            <i class="far fa-search"></i>
+                        </a>
+
+                    </div>
+
+
+                    <button
+                        aria-controls="offcanvasNavbar"
+                        aria-label="Toggle navigation"
+                        class="navbar-toggler"
+                        data-bs-target="#offcanvasNavbar"
+                        data-bs-toggle="offcanvas"
+                        type="button"
+                    >
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+
+                </div>
+
+
+                <!-- Offcanvas Menu -->
+                <div
+                    aria-labelledby="offcanvasNavbarLabel"
+                    class="offcanvas offcanvas-start"
+                    id="offcanvasNavbar"
+                    tabindex="-1"
+                >
+
+                    <div class="offcanvas-header">
+
+                        <a
+                            class="offcanvas-brand"
+                            href="{% url 'app_core:home_en' %}"
+                            id="offcanvasNavbarLabel"
+                        >
+
+                            {% if site_info.sidebar_logo %}
+
+                                <img
+                                    alt="logo"
+                                    src="{{ site_info.sidebar_logo.url }}"
+                                >
+
+                            {% endif %}
+
+                        </a>
+
+
+                        <button
+                            aria-label="Close"
+                            class="btn-close"
+                            data-bs-dismiss="offcanvas"
+                            type="button"
+                        >
+                        </button>
+
+                    </div>
+
+
+                    <div class="offcanvas-body">
+
+                        <ul class="navbar-nav justify-content-end flex-grow-1">
+
+                            <!-- Home -->
+                            <li class="nav-item">
+
+                                <a
+                                    class="nav-link"
+                                    href="{% url 'app_core:home_en' %}"
+                                >
+                                    Home
+                                </a>
+
+                            </li>
+
+
+                            <!-- About Company -->
+                            <li class="nav-item dropdown">
+
+                                <a
+                                    class="nav-link dropdown-toggle"
+                                    data-bs-toggle="dropdown"
+                                    href="#"
+                                >
+                                    About Us
+                                </a>
+
+
+                                <ul class="dropdown-menu fade-down">
+
+                                    <li>
+
+                                        <a
+                                            class="dropdown-item"
+                                            href="{% url 'app_core:about_en' %}"
+                                        >
+                                            Company History
+                                        </a>
+
+                                    </li>
+
+
+                                    <li>
+
+                                        <a
+                                            class="dropdown-item"
+                                            href="{% url 'app_chart:chart' %}"
+                                        >
+                                            Executive Team & Organizational Chart
+                                        </a>
+
+                                    </li>
+
+
+                                    <li>
+
+                                        <a
+                                            class="dropdown-item"
+                                            href="{% url 'app_reports:sustainability' %}"
+                                        >
+                                            Corporate Governance
+                                        </a>
+
+                                    </li>
+
+
+                                    <li>
+
+                                        <a
+                                            class="dropdown-item"
+                                            href="{% url 'app_reports:vision_missions' %}"
+                                        >
+                                            Vision & Missions
+                                        </a>
+
+                                    </li>
+
+
+                                    <li>
+
+                                        <a
+                                            class="dropdown-item"
+                                            href="{% url 'app_reports:certificate' %}"
+                                        >
+                                            Certificates & Standards
+                                        </a>
+
+                                    </li>
+
+                                </ul>
+
+                            </li>
+
+
+                            <!-- Products -->
+                            <li class="nav-item">
+
+                                <a
+                                    class="nav-link"
+                                    href="{% url 'app_product:product_list' %}"
+                                >
+                                    Products
+                                </a>
+
+                            </li>
+
+
+                            <!-- Resume -->
+                            <li class="nav-item">
+
+                                <a
+                                    class="nav-link"
+                                    href="{% url 'app_resume:resume' %}"
+                                >
+                                    Resume
+                                </a>
+
+                            </li>
+
+
+                            <!-- Media -->
+                            <li class="nav-item">
+
+                                <a
+                                    class="nav-link"
+                                    href="{% url 'app_media:home' %}"
+                                >
+                                    Media
+                                </a>
+
+                            </li>
+
+
+                            <!-- Catalog -->
+                            <li class="nav-item">
+
+                                <a
+                                    class="nav-link"
+                                    href="{% url 'app_catalog:catalog' %}"
+                                >
+                                    Catalog
+                                </a>
+
+                            </li>
+
+
+                            <!-- Articles -->
+                            <li class="nav-item">
+
+                                <a
+                                    class="nav-link"
+                                    href="{% url 'app_blog:blog_home' %}"
+                                >
+                                    Articles
+                                </a>
+
+                            </li>
+
+
+                            <!-- Contact Us -->
+                            <li class="nav-item dropdown">
+
+                                <a
+                                    class="nav-link dropdown-toggle"
+                                    data-bs-toggle="dropdown"
+                                    href="#"
+                                >
+                                    Contact Us
+                                </a>
+
+
+                                <ul class="dropdown-menu fade-down">
+
+                                    {% if site_info and site_info.phone_security_1 or site_info.phone_security_2 or site_info.phone_security_3 or site_info.email_security or site_info.fax_security %}
+
+                                        <li>
+
+                                            <a
+                                                class="dropdown-item"
+                                                href="{% url 'app_core:contact_security_en' %}"
+                                            >
+                                                Contact Security Department
+                                            </a>
+
+                                        </li>
+
+                                    {% endif %}
+
+
+                                    <li>
+
+                                        <a
+                                            class="dropdown-item"
+                                            href="{% url 'app_core:contact_en' %}"
+                                        >
+                                            Contact Us
+                                        </a>
+
+                                    </li>
+
+                                </ul>
+
+                            </li>
+
                         </ul>
-                    </li>
 
-                    <li><a class="nav-link" href="{% url 'app_product:product_list' %}">Products</a></li>
-                    <li><a class="nav-link" href="{% url 'app_news:news_home' %}">Company News</a></li>
-                    <li><a class="nav-link" href="{% url 'app_media:home' %}">Media</a></li>
-                    <li><a class="nav-link" href="{% url 'app_blog:blog_home' %}">Articles</a></li>
-                    <li><a class="nav-link" href="{% url 'app_core:contact' %}">Contact Us</a></li>
-                </ul>
+
+                        <!-- Navigation Search -->
+                        <div class="nav-right icon">
+
+                            <form
+                                action="{% url 'app_core:search_en' %}"
+                                method="get"
+                                style="display:flex;align-items:center;gap:8px;"
+                            >
+
+                                <input
+                                    type="text"
+                                    name="q"
+                                    placeholder="Search..."
+                                    style="
+                                        width:180px;
+                                        height:38px;
+                                        border:1px solid #ddd;
+                                        border-radius:25px;
+                                        padding:0 15px;
+                                        outline:none;
+                                    "
+                                >
+
+                                <button
+                                    type="submit"
+                                    class="nav-right-link"
+                                    style="
+                                        border:none;
+                                        background:none;
+                                        padding:0;
+                                        cursor:pointer;
+                                    "
+                                >
+
+                                    <i class="far fa-search"></i>
+
+                                </button>
+
+                            </form>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
             </div>
+
         </nav>
+
     </div>
+    <!-- Main Navigation End -->
+
 </header>
+<!-- Header Area End -->
 
+
+<!-- Popup Search -->
 <div class="search-popup">
-    <button class="close-search"><i class="far fa-times"></i></button>
-    <input class="form-control" placeholder="Search here..." type="search"/>
+
+    <button class="close-search">
+
+        <span class="far fa-times"></span>
+
+    </button>
+
+
+    <form
+        action="{% url 'app_core:search_en' %}"
+        method="get"
+    >
+
+        <div class="form-group">
+
+            <input
+                class="form-control"
+                type="search"
+                name="q"
+                placeholder="Search here..."
+                required
+            >
+
+            <button type="submit">
+
+                <i class="far fa-search"></i>
+
+            </button>
+
+        </div>
+
+    </form>
+
 </div>
+<!-- Popup Search End -->
 
-{% block content %}{% endblock %}
 
+<!-- Main Content -->
+
+{% block content %}
+
+{% endblock %}
+
+<!-- Main Content End -->
+
+
+<!-- Footer Area -->
 <footer class="footer-area light">
-    <div class="container">
-        <p class="text-center">
-            {% if site_info.designer_name_fa %}
-                Designed by {{ site_info.designer_name_fa }}
-            {% endif %}
-        </p>
-    </div>
-</footer>
 
-<script src="{% static 'RTl/assets/js/jquery-3.7.1.min.js' %}"></script>
-<script src="{% static 'RTl/assets/js/bootstrap.bundle.min.js' %}"></script>
-<script src="{% static 'RTl/assets/js/main.js' %}"></script>
+    <div class="footer-widget">
+
+        <div class="container">
+
+            <div class="row footer-widget-wrapper pt-100 pb-40">
+
+
+                <!-- Company Information -->
+                <div class="col-md-6 col-lg-4">
+
+                    <div class="footer-widget-box about-us">
+
+                        <a
+                            class="navbar-brand d-flex align-items-center gap-2"
+                            href="{% url 'app_core:home_en' %}"
+                        >
+
+                            {% if site_info.footer_logo %}
+
+                                <img
+                                    alt="logo"
+                                    src="{{ site_info.footer_logo.url }}"
+                                    class="brand-logo"
+                                >
+
+                            {% endif %}
+
+
+                            {% if site_info.slogan_en %}
+
+                                <span class="brand-text">
+                                    {{ site_info.slogan_en }}
+                                </span>
+
+                            {% endif %}
+
+                        </a>
+
+
+                        <div class="d-flex flex-column company-brand-text">
+
+                            <span class="line-1">
+                                {{ site_info.name_company_p1_en }}
+                            </span>
+
+                            <span class="line-2">
+                                {{ site_info.name_company_p2_en }}
+                            </span>
+
+                        </div>
+
+
+                        <p></p>
+
+
+                        <ul class="footer-contact">
+
+                            <!-- Address -->
+                            {% if site_info.address_en %}
+
+                                <li>
+
+                                    <i class="far fa-map-marker-alt"></i>
+
+                                    {{ site_info.address_en }}
+
+                                </li>
+
+                            {% endif %}
+
+
+                            <!-- Phone -->
+                            {% if site_info.phone_1 or site_info.phone_2 or site_info.phone_3 or site_info.phone_4 or site_info.phone_5 %}
+
+                                <li class="footer-contact-phone">
+
+                                    <i class="far fa-phone"></i>
+
+
+                                    <div class="phone-wrapper">
+
+                                        <span class="phone-prefix"></span>
+
+
+                                        <div class="phone-line">
+
+                                            {% if site_info.phone_1 %}
+
+                                                <a href="tel:{{ site_info.phone_1 }}">
+                                                    {{ site_info.phone_1 }}
+                                                </a>
+
+                                            {% endif %}
+
+
+                                            {% if site_info.phone_2 %}
+
+                                                ,
+                                                <a href="tel:{{ site_info.phone_2 }}">
+                                                    {{ site_info.phone_2 }}
+                                                </a>
+
+                                            {% endif %}
+
+
+                                            {% if site_info.phone_3 %}
+
+                                                ,
+                                                <a href="tel:{{ site_info.phone_3 }}">
+                                                    {{ site_info.phone_3 }}
+                                                </a>
+
+                                            {% endif %}
+
+                                        </div>
+
+
+                                        {% if site_info.phone_4 or site_info.phone_5 %}
+
+                                            <div class="phone-line">
+
+                                                {% if site_info.phone_4 %}
+
+                                                    <a href="tel:{{ site_info.phone_4 }}">
+                                                        {{ site_info.phone_4 }}
+                                                    </a>
+
+                                                {% endif %}
+
+
+                                                {% if site_info.phone_5 %}
+
+                                                    {% if site_info.phone_4 %}, {% endif %}
+
+                                                    <a href="tel:{{ site_info.phone_5 }}">
+                                                        {{ site_info.phone_5 }}
+                                                    </a>
+
+                                                {% endif %}
+
+                                            </div>
+
+                                        {% endif %}
+
+                                    </div>
+
+                                </li>
+
+                            {% endif %}
+
+
+                            <!-- Email -->
+                            {% if site_info.email %}
+
+                                <li>
+
+                                    <a href="mailto:{{ site_info.email }}">
+
+                                        <i class="far fa-envelope"></i>
+
+                                        {{ site_info.email }}
+
+                                    </a>
+
+                                </li>
+
+                            {% endif %}
+
+
+                            <!-- Postal Code -->
+                            {% if site_info.postal_code %}
+
+                                <li>
+
+                                    <i class="far fa-sign-post"></i>
+
+                                    {{ site_info.postal_code }}
+
+                                </li>
+
+                            {% endif %}
+
+
+                            <!-- Working Days -->
+                            {% if site_info.work_days_en %}
+
+                                <li>
+
+                                    <i class="far fa-clock"></i>
+
+                                    {{ site_info.work_days_en }}
+
+                                </li>
+
+                            {% endif %}
+
+                        </ul>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Quick Links -->
+                <div class="col-md-6 col-lg-3">
+
+                    <div class="footer-widget-box list">
+
+                        <h4 class="footer-widget-title">
+                            Quick Links
+                        </h4>
+
+
+                        <ul class="footer-list">
+
+                            <li>
+                                <a href="{% url 'app_core:about_en' %}">
+                                    About Us
+                                </a>
+                            </li>
+
+
+                            <li>
+                                <a href="{% url 'app_chart:chart' %}">
+                                    Executive Team & Organizational Chart
+                                </a>
+                            </li>
+
+
+                            <li>
+                                <a href="{% url 'app_reports:sustainability' %}">
+                                    Corporate Governance
+                                </a>
+                            </li>
+
+
+                            <li>
+                                <a href="{% url 'app_reports:vision_missions' %}">
+                                    Vision & Missions
+                                </a>
+                            </li>
+
+
+                            <li>
+                                <a href="{% url 'app_reports:certificate' %}">
+                                    Certificates & Standards
+                                </a>
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Links -->
+                <div class="col-md-6 col-lg-3">
+
+                    <div class="footer-widget-box list">
+
+                        <h4 class="footer-widget-title">
+                            Links
+                        </h4>
+
+
+                        <ul class="footer-list">
+
+                            <li>
+                                <a href="{% url 'app_product:product_list' %}">
+                                    Products
+                                </a>
+                            </li>
+
+
+                            <li>
+                                <a href="{% url 'app_media:home' %}">
+                                    Media
+                                </a>
+                            </li>
+
+
+                            <li>
+                                <a href="{% url 'app_catalog:catalog' %}">
+                                    Catalog
+                                </a>
+                            </li>
+
+
+                            <li>
+                                <a href="{% url 'app_blog:blog_home' %}">
+                                    Articles
+                                </a>
+                            </li>
+
+
+                            <li>
+                                <a href="{% url 'app_resume:resume' %}">
+                                    Resume
+                                </a>
+                            </li>
+
+
+                            {% if site_info.phone_security_1 or site_info.phone_security_2 or site_info.phone_security_3 or site_info.email_security or site_info.fax_security %}
+
+                                <li>
+
+                                    <a href="{% url 'app_core:contact_security_en' %}">
+                                        Contact Security Department
+                                    </a>
+
+                                </li>
+
+                            {% endif %}
+
+
+                            <li>
+
+                                <a href="{% url 'app_core:contact_en' %}">
+                                    Contact Us
+                                </a>
+
+                            </li>
+
+                        </ul>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Product Categories -->
+                <div class="col-md-6 col-lg-2">
+
+                    <div class="footer-widget-box list">
+
+                        <h4 class="footer-widget-title">
+                            Product Categories
+                        </h4>
+
+
+                        {% for category in categories %}
+
+                            <ul class="footer-list">
+
+                                <li>
+
+                                    <a
+                                        href="{% url 'app_product:category' slug=category.slug %}"
+                                    >
+                                        {{ category.title_en }}
+                                    </a>
+
+                                </li>
+
+                            </ul>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Copyright -->
+    <div class="copyright">
+
+        <div class="container">
+
+            <div class="copyright-wrap">
+
+                <div class="row">
+
+
+                    {% if site_info and site_info.designer_name_en %}
+
+                        <div class="col-12 col-lg-6 align-self-center">
+
+                            <p class="copyright-text">
+
+                                Designed by:
+                                {{ site_info.designer_name_en }}
+
+                            </p>
+
+                        </div>
+
+                    {% endif %}
+
+
+                    {% if follow_links %}
+
+                        <div class="col-12 col-lg-6 align-self-center">
+
+                            <div class="header-top-social">
+
+                                <span>Follow Us:</span>
+
+
+                                {% for link in follow_links %}
+
+                                    {% if link.svg_icon and link.url %}
+
+                                        <a
+                                            href="{{ link.url }}"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+
+                                            <img
+                                                src="{{ link.svg_icon.url }}"
+                                                width="30"
+                                                height="30"
+                                                alt="Social Media"
+                                            />
+
+                                        </a>
+
+                                    {% endif %}
+
+                                {% endfor %}
+
+                            </div>
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</footer>
+<!-- Footer Area End -->
+
+
+<!-- Scroll Top -->
+<a href="#" id="scroll-top">
+
+    <i class="far fa-arrow-up-from-arc"></i>
+
+</a>
+<!-- Scroll Top End -->
+
+
+<!-- JS -->
+
+<script src="{% static 'RTL/assets/js/jquery-3.7.1.min.js' %}"></script>
+<script src="{% static 'RTL/assets/js/modernizr.min.js' %}"></script>
+<script src="{% static 'RTL/assets/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'RTL/assets/js/imagesloaded.pkgd.min.js' %}"></script>
+<script src="{% static 'RTL/assets/js/jquery.magnific-popup.min.js' %}"></script>
+<script src="{% static 'RTL/assets/js/isotope.pkgd.min.js' %}"></script>
+<script src="{% static 'RTL/assets/js/jquery.appear.min.js' %}"></script>
+<script src="{% static 'RTL/assets/js/jquery.easing.min.js' %}"></script>
+<script src="{% static 'RTL/assets/js/owl.carousel.min.js' %}"></script>
+<script src="{% static 'RTL/assets/js/counter-up.js' %}"></script>
+<script src="{% static 'RTL/assets/js/jquery-ui.min.js' %}"></script>
+<script src="{% static 'RTL/assets/js/jquery.nice-select.min.js' %}"></script>
+<script src="{% static 'RTL/assets/js/countdown.min.js' %}"></script>
+<script src="{% static 'RTL/assets/js/wow.min.js' %}"></script>
+<script src="{% static 'RTL/assets/js/flex-slider.js' %}"></script>
+<script src="{% static 'RTL/assets/js/main.js' %}"></script>
 
 </body>
 </html>
+
