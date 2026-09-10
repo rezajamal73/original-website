@@ -58,6 +58,10 @@ INSTALLED_APPS = [
     'app_seo.apps.AppSeoConfig',
     'app_backup.apps.AppBackupConfig',
 
+    'erp_requests.apps.ErpRequestsConfig',
+    'erp_execution.apps.ErpExecutionConfig',
+    'erp_warehouse.apps.ErpWarehouseConfig',
+
     'django.contrib.sites',
     'django.contrib.sitemaps',
 ]

@@ -1,0 +1,25 @@
+{% load static %}
+
+<div class="widget category">
+
+    <h5 class="widget-title">Categories</h5>
+
+    <div class="category-list">
+
+        {% for cat in categories %}
+
+            <a href="{% url 'app_blog:blog_category_en' cat.slug %}">
+
+                <i class="far fa-arrow-right"></i>
+
+                {{ cat.title }}
+
+                <span>({{ cat.count }})</span>
+
+            </a>
+
+        {% endfor %}
+
+    </div>
+
+</div>

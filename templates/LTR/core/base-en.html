@@ -1,4 +1,3 @@
-
 {% load static %}
 {% load seo_tags %}
 
@@ -16,67 +15,67 @@
     <title>{% seo_title %}</title>
 
     <meta
-        name="description"
-        content="{% seo_description %}"
+            name="description"
+            content="{% seo_description %}"
     />
 
     <meta
-        name="keywords"
-        content="{% seo_keywords %}"
+            name="keywords"
+            content="{% seo_keywords %}"
     />
 
     <meta
-        name="robots"
-        content="{% seo_robots %}"
+            name="robots"
+            content="{% seo_robots %}"
     />
 
     <link
-        rel="canonical"
-        href="{% seo_canonical %}"
+            rel="canonical"
+            href="{% seo_canonical %}"
     />
 
     <!-- Open Graph -->
 
     <meta
-        property="og:title"
-        content="{% seo_title %}"
+            property="og:title"
+            content="{% seo_title %}"
     />
 
     <meta
-        property="og:description"
-        content="{% seo_description %}"
+            property="og:description"
+            content="{% seo_description %}"
     />
 
     <meta
-        property="og:image"
-        content="{% seo_og_image %}"
+            property="og:image"
+            content="{% seo_og_image %}"
     />
 
     <meta
-        property="og:type"
-        content="website"
+            property="og:type"
+            content="website"
     />
 
     <!-- Twitter -->
 
     <meta
-        name="twitter:card"
-        content="summary_large_image"
+            name="twitter:card"
+            content="summary_large_image"
     />
 
     <meta
-        name="twitter:title"
-        content="{% seo_title %}"
+            name="twitter:title"
+            content="{% seo_title %}"
     />
 
     <meta
-        name="twitter:description"
-        content="{% seo_description %}"
+            name="twitter:description"
+            content="{% seo_description %}"
     />
 
     <meta
-        name="twitter:image"
-        content="{% seo_og_image %}"
+            name="twitter:image"
+            content="{% seo_og_image %}"
     />
 
     <!-- Schema.org -->
@@ -87,9 +86,9 @@
     <!-- Favicon -->
     {% if site_info and site_info.header_logo %}
         <link
-            rel="icon"
-            type="image/x-icon"
-            href="{{ site_info.header_logo.url }}"
+                rel="icon"
+                type="image/x-icon"
+                href="{{ site_info.header_logo.url }}"
         >
     {% endif %}
 
@@ -184,10 +183,10 @@
                                     <div class="dropdown">
 
                                         <a
-                                            aria-expanded="false"
-                                            class="dropdown-toggle"
-                                            data-bs-toggle="dropdown"
-                                            href="{% url 'app_core:home_en' %}"
+                                                aria-expanded="false"
+                                                class="dropdown-toggle"
+                                                data-bs-toggle="dropdown"
+                                                href="{% url 'app_core:home_en' %}"
                                         >
                                             <i class="far fa-globe-americas"></i>
                                             English
@@ -196,8 +195,8 @@
                                         <div class="dropdown-menu">
 
                                             <a
-                                                class="dropdown-item"
-                                                href="{% url 'app_core:home' %}"
+                                                    class="dropdown-item"
+                                                    href="{% url 'app_core:home' %}"
                                             >
                                                 فارسی
                                             </a>
@@ -223,16 +222,16 @@
                                                 {% if link.svg_icon and link.url %}
 
                                                     <a
-                                                        href="{{ link.url }}"
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
+                                                            href="{{ link.url }}"
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
                                                     >
 
                                                         <img
-                                                            src="{{ link.svg_icon.url }}"
-                                                            width="30"
-                                                            height="30"
-                                                            alt="Social Media"
+                                                                src="{{ link.svg_icon.url }}"
+                                                                width="30"
+                                                                height="30"
+                                                                alt="Social Media"
                                                         />
 
                                                     </a>
@@ -272,15 +271,15 @@
 
                 <!-- Logo -->
                 <a
-                    class="navbar-brand d-flex align-items-center"
-                    href="{% url 'app_core:home_en' %}"
+                        class="navbar-brand d-flex align-items-center"
+                        href="{% url 'app_core:home_en' %}"
                 >
 
                     {% if site_info.header_logo %}
 
                         <img
-                            alt="logo"
-                            src="{{ site_info.header_logo.url }}"
+                                alt="logo"
+                                src="{{ site_info.header_logo.url }}"
                         >
 
                     {% endif %}
@@ -317,8 +316,8 @@
                     <div class="mobile-menu-btn">
 
                         <a
-                            class="nav-right-link search-box-outer"
-                            href="#"
+                                class="nav-right-link search-box-outer"
+                                href="#"
                         >
                             <i class="far fa-search"></i>
                         </a>
@@ -327,12 +326,12 @@
 
 
                     <button
-                        aria-controls="offcanvasNavbar"
-                        aria-label="Toggle navigation"
-                        class="navbar-toggler"
-                        data-bs-target="#offcanvasNavbar"
-                        data-bs-toggle="offcanvas"
-                        type="button"
+                            aria-controls="offcanvasNavbar"
+                            aria-label="Toggle navigation"
+                            class="navbar-toggler"
+                            data-bs-target="#offcanvasNavbar"
+                            data-bs-toggle="offcanvas"
+                            type="button"
                     >
                         <span></span>
                         <span></span>
@@ -344,25 +343,25 @@
 
                 <!-- Offcanvas Menu -->
                 <div
-                    aria-labelledby="offcanvasNavbarLabel"
-                    class="offcanvas offcanvas-start"
-                    id="offcanvasNavbar"
-                    tabindex="-1"
+                        aria-labelledby="offcanvasNavbarLabel"
+                        class="offcanvas offcanvas-start"
+                        id="offcanvasNavbar"
+                        tabindex="-1"
                 >
 
                     <div class="offcanvas-header">
 
                         <a
-                            class="offcanvas-brand"
-                            href="{% url 'app_core:home_en' %}"
-                            id="offcanvasNavbarLabel"
+                                class="offcanvas-brand"
+                                href="{% url 'app_core:home_en' %}"
+                                id="offcanvasNavbarLabel"
                         >
 
                             {% if site_info.sidebar_logo %}
 
                                 <img
-                                    alt="logo"
-                                    src="{{ site_info.sidebar_logo.url }}"
+                                        alt="logo"
+                                        src="{{ site_info.sidebar_logo.url }}"
                                 >
 
                             {% endif %}
@@ -371,10 +370,10 @@
 
 
                         <button
-                            aria-label="Close"
-                            class="btn-close"
-                            data-bs-dismiss="offcanvas"
-                            type="button"
+                                aria-label="Close"
+                                class="btn-close"
+                                data-bs-dismiss="offcanvas"
+                                type="button"
                         >
                         </button>
 
@@ -389,8 +388,8 @@
                             <li class="nav-item">
 
                                 <a
-                                    class="nav-link"
-                                    href="{% url 'app_core:home_en' %}"
+                                        class="nav-link"
+                                        href="{% url 'app_core:home_en' %}"
                                 >
                                     Home
                                 </a>
@@ -402,9 +401,9 @@
                             <li class="nav-item dropdown">
 
                                 <a
-                                    class="nav-link dropdown-toggle"
-                                    data-bs-toggle="dropdown"
-                                    href="#"
+                                        class="nav-link dropdown-toggle"
+                                        data-bs-toggle="dropdown"
+                                        href="#"
                                 >
                                     About Us
                                 </a>
@@ -415,8 +414,8 @@
                                     <li>
 
                                         <a
-                                            class="dropdown-item"
-                                            href="{% url 'app_core:about_en' %}"
+                                                class="dropdown-item"
+                                                href="{% url 'app_core:about_en' %}"
                                         >
                                             Company History
                                         </a>
@@ -427,8 +426,8 @@
                                     <li>
 
                                         <a
-                                            class="dropdown-item"
-                                            href="{% url 'app_chart:chart' %}"
+                                                class="dropdown-item"
+                                                href="{% url 'app_chart:chart' %}"
                                         >
                                             Executive Team & Organizational Chart
                                         </a>
@@ -439,8 +438,8 @@
                                     <li>
 
                                         <a
-                                            class="dropdown-item"
-                                            href="{% url 'app_reports:sustainability' %}"
+                                                class="dropdown-item"
+                                                href="{% url 'app_reports:sustainability' %}"
                                         >
                                             Corporate Governance
                                         </a>
@@ -451,8 +450,8 @@
                                     <li>
 
                                         <a
-                                            class="dropdown-item"
-                                            href="{% url 'app_reports:vision_missions' %}"
+                                                class="dropdown-item"
+                                                href="{% url 'app_reports:vision_missions' %}"
                                         >
                                             Vision & Missions
                                         </a>
@@ -463,8 +462,8 @@
                                     <li>
 
                                         <a
-                                            class="dropdown-item"
-                                            href="{% url 'app_reports:certificate' %}"
+                                                class="dropdown-item"
+                                                href="{% url 'app_reports:certificate' %}"
                                         >
                                             Certificates & Standards
                                         </a>
@@ -480,8 +479,8 @@
                             <li class="nav-item">
 
                                 <a
-                                    class="nav-link"
-                                    href="{% url 'app_product:product_list' %}"
+                                        class="nav-link"
+                                        href="{% url 'app_product:product_list' %}"
                                 >
                                     Products
                                 </a>
@@ -493,8 +492,8 @@
                             <li class="nav-item">
 
                                 <a
-                                    class="nav-link"
-                                    href="{% url 'app_resume:resume' %}"
+                                        class="nav-link"
+                                        href="{% url 'app_resume:resume' %}"
                                 >
                                     Resume
                                 </a>
@@ -506,8 +505,8 @@
                             <li class="nav-item">
 
                                 <a
-                                    class="nav-link"
-                                    href="{% url 'app_media:home' %}"
+                                        class="nav-link"
+                                        href="{% url 'app_media:home' %}"
                                 >
                                     Media
                                 </a>
@@ -519,8 +518,8 @@
                             <li class="nav-item">
 
                                 <a
-                                    class="nav-link"
-                                    href="{% url 'app_catalog:catalog' %}"
+                                        class="nav-link"
+                                        href="{% url 'app_catalog:catalog' %}"
                                 >
                                     Catalog
                                 </a>
@@ -532,8 +531,8 @@
                             <li class="nav-item">
 
                                 <a
-                                    class="nav-link"
-                                    href="{% url 'app_blog:blog_home' %}"
+                                        class="nav-link"
+                                        href="{% url 'app_blog:blog_home_en' %}"
                                 >
                                     Articles
                                 </a>
@@ -545,9 +544,9 @@
                             <li class="nav-item dropdown">
 
                                 <a
-                                    class="nav-link dropdown-toggle"
-                                    data-bs-toggle="dropdown"
-                                    href="#"
+                                        class="nav-link dropdown-toggle"
+                                        data-bs-toggle="dropdown"
+                                        href="#"
                                 >
                                     Contact Us
                                 </a>
@@ -560,8 +559,8 @@
                                         <li>
 
                                             <a
-                                                class="dropdown-item"
-                                                href="{% url 'app_core:contact_security_en' %}"
+                                                    class="dropdown-item"
+                                                    href="{% url 'app_core:contact_security_en' %}"
                                             >
                                                 Contact Security Department
                                             </a>
@@ -574,8 +573,8 @@
                                     <li>
 
                                         <a
-                                            class="dropdown-item"
-                                            href="{% url 'app_core:contact_en' %}"
+                                                class="dropdown-item"
+                                                href="{% url 'app_core:contact_en' %}"
                                         >
                                             Contact Us
                                         </a>
@@ -593,16 +592,16 @@
                         <div class="nav-right icon">
 
                             <form
-                                action="{% url 'app_core:search_en' %}"
-                                method="get"
-                                style="display:flex;align-items:center;gap:8px;"
+                                    action="{% url 'app_core:search_en' %}"
+                                    method="get"
+                                    style="display:flex;align-items:center;gap:8px;"
                             >
 
                                 <input
-                                    type="text"
-                                    name="q"
-                                    placeholder="Search..."
-                                    style="
+                                        type="text"
+                                        name="q"
+                                        placeholder="Search..."
+                                        style="
                                         width:180px;
                                         height:38px;
                                         border:1px solid #ddd;
@@ -613,9 +612,9 @@
                                 >
 
                                 <button
-                                    type="submit"
-                                    class="nav-right-link"
-                                    style="
+                                        type="submit"
+                                        class="nav-right-link"
+                                        style="
                                         border:none;
                                         background:none;
                                         padding:0;
@@ -657,18 +656,18 @@
 
 
     <form
-        action="{% url 'app_core:search_en' %}"
-        method="get"
+            action="{% url 'app_core:search_en' %}"
+            method="get"
     >
 
         <div class="form-group">
 
             <input
-                class="form-control"
-                type="search"
-                name="q"
-                placeholder="Search here..."
-                required
+                    class="form-control"
+                    type="search"
+                    name="q"
+                    placeholder="Search here..."
+                    required
             >
 
             <button type="submit">
@@ -710,16 +709,16 @@
                     <div class="footer-widget-box about-us">
 
                         <a
-                            class="navbar-brand d-flex align-items-center gap-2"
-                            href="{% url 'app_core:home_en' %}"
+                                class="navbar-brand d-flex align-items-center gap-2"
+                                href="{% url 'app_core:home_en' %}"
                         >
 
                             {% if site_info.footer_logo %}
 
                                 <img
-                                    alt="logo"
-                                    src="{{ site_info.footer_logo.url }}"
-                                    class="brand-logo"
+                                        alt="logo"
+                                        src="{{ site_info.footer_logo.url }}"
+                                        class="brand-logo"
                                 >
 
                             {% endif %}
@@ -987,7 +986,7 @@
 
 
                             <li>
-                                <a href="{% url 'app_blog:blog_home' %}">
+                                <a href="{% url 'app_blog:blog_home_en' %}">
                                     Articles
                                 </a>
                             </li>
@@ -1045,7 +1044,7 @@
                                 <li>
 
                                     <a
-                                        href="{% url 'app_product:category' slug=category.slug %}"
+                                            href="{% url 'app_product:category' slug=category.slug %}"
                                     >
                                         {{ category.title_en }}
                                     </a>
@@ -1107,16 +1106,16 @@
                                     {% if link.svg_icon and link.url %}
 
                                         <a
-                                            href="{{ link.url }}"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
+                                                href="{{ link.url }}"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
                                         >
 
                                             <img
-                                                src="{{ link.svg_icon.url }}"
-                                                width="30"
-                                                height="30"
-                                                alt="Social Media"
+                                                    src="{{ link.svg_icon.url }}"
+                                                    width="30"
+                                                    height="30"
+                                                    alt="Social Media"
                                             />
 
                                         </a>

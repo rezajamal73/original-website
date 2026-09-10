@@ -1,0 +1,188 @@
+{% load static %}
+
+{% if blogs %}
+
+<div class="blog-area py-100">
+
+    <div class="container">
+
+        <!-- ===================================================== -->
+        <!-- TITLE -->
+        <!-- ===================================================== -->
+
+        <div class="row">
+
+            <div
+                class="col-lg-6 mx-auto wow fadeInDown"
+                data-wow-delay=".25s"
+            >
+
+                <div class="site-heading text-center">
+
+                    <h2 class="site-title">
+                        Latest <span>Articles</span>
+                    </h2>
+
+                    <div class="text-center mt-2 all-products-wrapper">
+
+                        <a
+                            href="{% url 'app_blog:blog_home_en' %}"
+                            class="all-products-link"
+                        >
+                            View All Articles
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ===================================================== -->
+        <!-- BLOG ITEMS -->
+        <!-- ===================================================== -->
+
+        <div class="row g-4">
+
+            {% for item in blogs %}
+
+            <div class="col-md-6 col-lg-4">
+
+                <div
+                    class="blog-item wow fadeInUp"
+                    data-wow-delay=".25s"
+                >
+
+                    <!-- IMAGE -->
+
+                    <div class="blog-item-img">
+
+                        {% if item.image %}
+
+                            <a
+                                href="{% url 'app_blog:blog_single_en' item.id %}"
+                            >
+
+                                <img
+                                    src="{{ item.image.url }}"
+                                    alt="{{ item.title_en }}"
+                                >
+
+                            </a>
+
+                        {% endif %}
+
+
+                        {% if item.publish_date_en %}
+
+                            <span class="blog-date">
+
+                                <i class="far fa-calendar-alt"></i>
+
+                                {{ item.publish_date_en }}
+
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- CONTENT -->
+
+                    <div class="blog-item-info">
+
+
+                        <!-- AUTHOR -->
+
+                        <div class="blog-item-meta">
+
+                            <ul>
+
+                                <li>
+
+                                    <i class="far fa-user-circle"></i>
+
+                                    Author:
+
+                                    {% if item.author %}
+
+                                        {% if item.author.get_full_name %}
+
+                                            {{ item.author.get_full_name }}
+
+                                        {% else %}
+
+                                            {{ item.author.username }}
+
+                                        {% endif %}
+
+                                    {% else %}
+
+                                        {{ site_info.name_company_p1_en }}
+                                        {{ site_info.name_company_p2_en }}
+
+                                    {% endif %}
+
+                                </li>
+
+                            </ul>
+
+                        </div>
+
+
+                        <!-- TITLE -->
+
+                        <h4 class="blog-title">
+
+                            <a
+                                href="{% url 'app_blog:blog_single_en' item.id %}"
+                            >
+
+                                {{ item.title_en }}
+
+                            </a>
+
+                        </h4>
+
+
+                        <!-- DESCRIPTION -->
+
+                        <p>
+
+                            {{ item.content_1_en|striptags|truncatechars:120 }}
+
+                        </p>
+
+
+                        <!-- READ MORE -->
+
+                        <a
+                            class="theme-btn"
+                            href="{% url 'app_blog:blog_single_en' item.id %}"
+                        >
+
+                            Read More
+
+                            <i class="fas fa-arrow-right"></i>
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endif %}

@@ -1,0 +1,83 @@
+{% load static %}
+
+<div class="widget search">
+
+    <h5 class="widget-title">Search Blog</h5>
+
+    <form
+        class="search-form"
+        id="blogSearchForm"
+        method="GET"
+        action="{% url 'app_blog:search_en' %}"
+    >
+
+        <input
+            class="form-control"
+            type="text"
+            name="s"
+            id="searchInput"
+            placeholder="Search here ..."
+            value="{{ request.GET.s|default:'' }}"
+        >
+
+        <button type="submit">
+            <i class="far fa-search"></i>
+        </button>
+
+    </form>
+
+
+    {% if request.GET.s and request.GET.s|length > 0 and blogs|length == 0 %}
+
+        <p
+            style="
+                margin-top:10px;
+                padding:10px;
+                background:#ffe3e3;
+                color:#c40000;
+                border-radius:6px;
+                font-size:14px;
+            "
+        >
+
+            <a
+                href="{% url 'app_blog:blog_home_en' %}"
+                style="color:#c40000; text-decoration:none;"
+            >
+                ❌
+            </a>
+
+            No results found for
+            "<b>{{ request.GET.s }}</b>".
+
+        </p>
+
+    {% endif %}
+
+</div>
+
+
+<script>
+
+document
+    .getElementById("blogSearchForm")
+    .addEventListener("submit", function (e) {
+
+        const input =
+            document
+                .getElementById("searchInput")
+                .value
+                .trim();
+
+        // اگر سرچ خالی بود → به صفحه اصلی انگلیسی وبلاگ برگرد
+        if (input === "") {
+
+            e.preventDefault();
+
+            window.location.href =
+                "{% url 'app_blog:blog_home_en' %}";
+        }
+
+    });
+
+</script>
