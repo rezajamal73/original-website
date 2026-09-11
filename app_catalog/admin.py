@@ -12,13 +12,13 @@ class CompanyCatalogAdmin(admin.ModelAdmin):
     # List View
     # ================================
     list_display = (
-        "title",
+        "title_fa",
         "updated_at_jalali_display",
         "updated_at_gregorian_display",
     )
 
     ordering = ("-updated_at",)
-    search_fields = ("title",)
+    search_fields = ("title_fa",)
 
     readonly_fields = (
         "updated_at",
@@ -31,7 +31,7 @@ class CompanyCatalogAdmin(admin.ModelAdmin):
     # ================================
     fieldsets = (
         ("📘 اطلاعات کاتالوگ", {
-            "fields": ("title", "description", "pdf_file"),
+            "fields": ("title_fa","title_en", "description_fa", "description_en","pdf_file"),
         }),
         ("🕒 بروزرسانی", {
             "fields": (
@@ -62,9 +62,9 @@ class CompanyCatalogAdmin(admin.ModelAdmin):
             obj.updated_at_jalali
         )
 
-    updated_at_jalali_display.short_description = "آخرین بروزرسانی (شمسی)"
+    updated_at_jalali_display.short_description_fa = "آخرین بروزرسانی (شمسی)"
 
     def updated_at_gregorian_display(self, obj):
         return obj.updated_at_gregorian
 
-    updated_at_gregorian_display.short_description = "آخرین بروزرسانی (میلادی)"
+    updated_at_gregorian_display.short_description_fa = "آخرین بروزرسانی (میلادی)"

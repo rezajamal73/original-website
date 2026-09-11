@@ -1,0 +1,14 @@
+<div class="widget sidebar-tag">
+    <h5 class="widget-title">Tags</h5>
+
+    <div class="tag-list">
+        {% for tag in tags %}
+            <a href="{% url 'app_product:product_tag_en' slug=tag.slug %}">
+                {{ tag.title_en }}
+                {% if tag.product_count %}
+                    ({{ tag.product_count }})
+                {% endif %}
+            </a>
+        {% endfor %}
+    </div>
+</div>

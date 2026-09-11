@@ -202,8 +202,15 @@ ul {
 }
 
 li {
-  text-align: right !important;
-  list-style: none;
+    list-style: none;
+}
+
+html[lang="fa"] li {
+    text-align: right;
+}
+
+html[lang="en"] li {
+    text-align: left;
 }
 
 h1,
@@ -244,8 +251,19 @@ h6 {
 }
 
 p {
-  margin: 0px;
-  text-align: justify;
+    margin: 0;
+}
+
+html[lang="fa"] p {
+    text-align: right;
+}
+
+html[lang="en"] p {
+    text-align: left;
+}
+
+.mb-10 {
+    margin-bottom: 10px;
 }
 
 .img,

@@ -1,0 +1,626 @@
+{% extends 'LTR/core/base-en.html' %}
+{% load static %}
+{% load product_tags %}
+
+{% block content %}
+
+    <main class="main">
+
+        <!-- breadcrumb -->
+        <div class="site-breadcrumb">
+
+            {% if banner and banner.image %}
+                <div class="site-breadcrumb-bg"
+                     style="background: url('{{ banner.image.url }}')">
+                </div>
+            {% endif %}
+
+            <div class="container">
+
+                <div class="site-breadcrumb-wrap">
+
+                    <h4 class="breadcrumb-title">
+                        Product
+                    </h4>
+
+                    <ul class="breadcrumb-menu">
+
+                        <li>
+                            <a href="{% url 'app_core:home_en' %}">
+                                <i class="far fa-home"></i>
+                                Home
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{% url 'app_product:product_list_en' %}">
+                                <i class="far"></i>
+                                All Products
+                            </a>
+                        </li>
+
+                        <li class="active">
+                            {{ product.title_en }}
+                        </li>
+
+                    </ul>
+
+                </div>
+
+            </div>
+
+        </div>
+        <!-- breadcrumb end -->
+
+
+        <!-- shop single -->
+        <div class="shop-single2 bg-2 py-100">
+
+            <div class="container">
+
+                <div class="row g-5">
+
+                    <!-- ===== Gallery ===== -->
+                    <div class="col-lg-5">
+
+                        <div class="shop-single-gallery">
+
+                            <div class="flexslider-thumbnails" dir="ltr">
+
+                                <ul class="slides">
+
+                                    {% if product.main_image or product.images.exists %}
+
+                                        {% if product.main_image %}
+
+                                            <li data-thumb="{{ product.main_image.url }}">
+
+                                                <img src="{{ product.main_image.url }}"
+                                                     alt="{{ product.title_en }}">
+
+                                            </li>
+
+                                        {% endif %}
+
+
+                                        {% for img in product.images.all %}
+
+                                            <li data-thumb="{{ img.image.url }}">
+
+                                                <img src="{{ img.image.url }}"
+                                                     alt="{{ product.title_en }}">
+
+                                            </li>
+
+                                        {% endfor %}
+
+                                    {% endif %}
+
+                                </ul>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- ===== Info ===== -->
+                    <div class="col-lg-7">
+
+                        <div class="shop-single-info">
+
+                            <h3 class="shop-single-title mb-3">
+                                {{ product.title_en }}
+                            </h3>
+
+
+                            {% if product.generic_name_en %}
+
+                                <p class="text-muted">
+
+                                    <strong>Generic Name:</strong>
+
+                                    {{ product.generic_name_en }}
+
+                                </p>
+
+                            {% endif %}
+
+
+                            <ul class="list-unstyled shop-single-sortinfo">
+
+
+                                {% if product.summary_en %}
+
+                                    <li>
+
+                                        <strong>Short Description:</strong>
+
+                                        {{ product.summary_en }}
+
+                                    </li>
+
+                                {% endif %}
+
+
+                                <hr>
+
+
+                                <table cellpadding="10">
+
+                                    <tr>
+
+                                        <td>
+
+                                            <strong>Product Code:</strong>
+
+                                            {{ product.sku }}
+
+                                        </td>
+
+
+                                        <!-- Horizontal spacing -->
+                                        <td width="40"></td>
+
+
+                                        {% if product.category %}
+
+                                            <td>
+
+                                                <strong>Product Category:</strong>
+
+                                                {{ product.category.title_en }}
+
+                                            </td>
+
+                                        {% endif %}
+
+                                    </tr>
+
+
+                                    <tr>
+
+                                        <!-- Vertical spacing -->
+                                        <td height="20"></td>
+
+                                    </tr>
+
+
+                                    <tr>
+
+                                        {% if product.category2 %}
+
+                                            <td>
+
+                                                <strong>Dosage Form:</strong>
+
+                                                {{ product.category2.title_en }}
+
+                                            </td>
+
+                                        {% endif %}
+
+
+                                        <!-- Horizontal spacing -->
+                                        <td width="40"></td>
+
+
+                                        {% if product.tags.exists %}
+
+                                            <td>
+
+                                                <strong>Tags:</strong>
+
+                                                {% for tag in product.tags.all %}
+
+                                                    <span class="badge bg-secondary me-1">
+
+                                                        {{ tag.title_en }}
+
+                                                    </span>
+
+                                                {% endfor %}
+
+                                            </td>
+
+                                        {% endif %}
+
+                                    </tr>
+
+                                </table>
+
+                            </ul>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- ===== Tabs ===== -->
+                <div class="shop-single-details mt-5">
+
+                    <ul class="nav nav-tabs">
+
+                        <li class="nav-item">
+
+                            <button class="nav-link active"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#desc1">
+
+                                Technical Specifications
+
+                            </button>
+
+                        </li>
+
+
+                        <li class="nav-item">
+
+                            <button class="nav-link"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#desc2">
+
+                                Features
+
+                            </button>
+
+                        </li>
+
+
+                        <li class="nav-item">
+
+                            <button class="nav-link"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#desc3">
+
+                                Available Colors
+
+                            </button>
+
+                        </li>
+
+
+                        <li class="nav-item">
+
+                            <button class="nav-link"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#desc4">
+
+                                Custom Colors
+
+                            </button>
+
+                        </li>
+
+
+                        <li class="nav-item">
+
+                            <button class="nav-link"
+                                    data-bs-toggle="tab"
+                                    data-bs-target="#qr-code">
+
+                                Product QR Code
+
+                            </button>
+
+                        </li>
+
+                    </ul>
+
+
+                    <div class="tab-content p-4 bg-white border border-top-0">
+
+
+                        <div class="tab-pane fade show active" id="desc1">
+
+                            {% if product.description_1_en %}
+
+                                {{ product.description_1_en|linebreaksbr }}
+
+                            {% else %}
+
+                                <p class="text-muted">
+                                    No information has been provided.
+                                </p>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="tab-pane fade" id="desc2">
+
+                            {% if product.description_2_en %}
+
+                                {{ product.description_2_en|linebreaksbr }}
+
+                            {% else %}
+
+                                <p class="text-muted">
+                                    No information has been provided.
+                                </p>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <style>
+
+                            .color-list {
+                                display: flex;
+                                flex-wrap: wrap;
+                                gap: 18px;
+                                margin-top: 20px;
+                            }
+
+                            .color-card {
+                                width: 180px;
+                                padding: 14px 18px;
+                                display: flex;
+                                align-items: center;
+                                gap: 15px;
+                                background: #fff;
+                                border: 1px solid #e8e8e8;
+                                border-radius: 14px;
+                                box-shadow: 0 4px 12px rgba(0, 0, 0, .06);
+                                cursor: pointer;
+                                transition: .35s ease;
+                            }
+
+                            .color-card:hover {
+                                transform: translateY(-6px) scale(1.04);
+                                border-color: #0d6efd;
+                                box-shadow: 0 12px 28px rgba(13, 110, 253, .18);
+                            }
+
+                            .color-box {
+                                width: 48px;
+                                height: 48px;
+                                border-radius: 10px;
+                                border: 2px solid #ddd;
+                                flex-shrink: 0;
+                                transition: .35s;
+                            }
+
+                            .color-card:hover .color-box {
+                                transform: rotate(-8deg) scale(1.08);
+                            }
+
+                            .color-title {
+                                font-size: 15px;
+                                font-weight: 600;
+                                color: #333;
+                                transition: .3s;
+                            }
+
+                            .color-card:hover .color-title {
+                                font-size: 18px;
+                                color: #0d6efd;
+                                font-weight: 700;
+                            }
+
+                            .color-description {
+                                margin-bottom: 25px;
+                                padding: 18px;
+                                background: #f8f9fa;
+                                border-left: 5px solid #0d6efd;
+                                border-radius: 12px;
+                                line-height: 2;
+                                color: #555;
+                                font-size: 15px;
+                            }
+
+                            @media (max-width: 768px) {
+                                .color-card {
+                                    width: 100%;
+                                }
+                            }
+
+                        </style>
+
+
+                        <div class="tab-pane fade" id="desc3">
+
+                            {% if product.description_3_en %}
+
+                                <div class="color-description">
+
+                                    {{ product.description_3_en|linebreaksbr }}
+
+                                </div>
+
+                            {% endif %}
+
+
+                            {% if product.colors.all %}
+
+                                <div class="color-list">
+
+                                    {% for color in product.colors.all %}
+
+                                        <div class="color-card">
+
+                                            <div class="color-box"
+                                                 style="background: {{ color.color_code }};">
+                                            </div>
+
+                                            <span class="color-title">
+
+                                                {{ color.title }}
+
+                                            </span>
+
+                                        </div>
+
+                                    {% endfor %}
+
+                                </div>
+
+                            {% else %}
+
+                                <p class="text-muted">
+                                    No colors have been registered.
+                                </p>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="tab-pane fade" id="desc4">
+
+                            {% if product.description_4_en %}
+
+                                {{ product.description_4_en|linebreaksbr }}
+
+                            {% else %}
+
+                                <p class="text-muted">
+                                    No information has been provided.
+                                </p>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="tab-pane fade" id="desc5">
+
+                            {% if product.description_5_en %}
+
+                                {{ product.description_5_en|linebreaksbr }}
+
+                            {% else %}
+
+                                <p class="text-muted">
+                                    No information has been provided.
+                                </p>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="tab-pane fade" id="desc6">
+
+                            {% if product.description_6_en %}
+
+                                {{ product.description_6_en|linebreaksbr }}
+
+                            {% else %}
+
+                                <p class="text-muted">
+                                    No information has been provided.
+                                </p>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="tab-pane fade" id="desc7">
+
+                            {% if product.description_7_en %}
+
+                                {{ product.description_7_en|linebreaksbr }}
+
+                            {% else %}
+
+                                <p class="text-muted">
+                                    No information has been provided.
+                                </p>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="tab-pane fade" id="desc8">
+
+                            {% if product.description_8_en %}
+
+                                {{ product.description_8_en|linebreaksbr }}
+
+                            {% else %}
+
+                                <p class="text-muted">
+                                    No information has been provided.
+                                </p>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="tab-pane fade" id="desc9">
+
+                            {% if product.description_9_en %}
+
+                                {{ product.description_9_en|linebreaksbr }}
+
+                            {% else %}
+
+                                <p class="text-muted">
+                                    No information has been provided.
+                                </p>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="tab-pane fade" id="desc10">
+
+                            {% if product.description_10_en %}
+
+                                {{ product.description_10_en|linebreaksbr }}
+
+                            {% else %}
+
+                                <p class="text-muted">
+                                    No information has been provided.
+                                </p>
+
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="tab-pane fade" id="qr-code">
+
+                            {% if product.qr_code %}
+
+                                <div class="text-center">
+
+                                    <img src="{{ product.qr_code.url }}"
+                                         class="img-fluid"
+                                         style="max-width:150px"
+                                         alt="{{ product.title_en }}">
+
+                                </div>
+
+                            {% else %}
+
+                                <p class="text-muted">
+                                    No QR code is available for this product.
+                                </p>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+{% endblock %}

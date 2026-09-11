@@ -1,0 +1,16 @@
+{% load static %}
+
+<h4 class="shop-widget-title">Products</h4>
+
+<ul class="shop-category-list">
+    {% for cat in cat_list %}
+        <li>
+            <a href="{% url 'app_product:category_en' slug=cat.slug %}">
+                {{ cat.title_en }}
+                <span>({{ cat.product_count }})</span>
+            </a>
+        </li>
+    {% empty %}
+        <li>No categories found</li>
+    {% endfor %}
+</ul>

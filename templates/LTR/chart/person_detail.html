@@ -1,0 +1,187 @@
+{% extends 'LTR/core/base-en.html' %}
+{% load static %}
+{% load product_tags %}
+
+{% block content %}
+
+    <main class="main">
+
+        <!-- breadcrumb -->
+        <div class="site-breadcrumb">
+
+            {% if banner and banner.image %}
+                <div class="site-breadcrumb-bg"
+                     style="background: url('{{ banner.image.url }}')">
+                </div>
+            {% endif %}
+
+            <div class="container">
+                <div class="site-breadcrumb-wrap">
+
+                    <h4 class="breadcrumb-title">
+                        Information
+                    </h4>
+
+                    <ul class="breadcrumb-menu">
+
+                        <li>
+                            <a href="{% url 'app_core:home_en' %}">
+                                <i class="far fa-home"></i>
+                                Home
+                            </a>
+                        </li>
+
+                        <li>
+                            <a href="{% url 'app_chart:chart_en' %}">
+                                <i class="far"></i>
+                                Organization Chart and Executive Team
+                            </a>
+                        </li>
+
+                        <li class="active">
+                            Employee
+                        </li>
+
+                    </ul>
+
+                </div>
+            </div>
+        </div>
+        <!-- breadcrumb end -->
+
+
+        <!-- person single -->
+        <div class="shop-single2 bg-2 py-100">
+
+            <div class="container">
+
+                <div class="row">
+
+                    <div class="col-md-9 col-lg-6 col-xxl-5">
+
+                        <div class="shop-single-gallery">
+
+                            <div class="flexslider-thumbnails" dir="ltr">
+
+                                <ul class="slides">
+
+                                    <li data-thumb="{{ person.photo.url }}">
+
+                                        <img
+                                            src="{{ person.photo.url }}"
+                                            alt="{{ person.name_en }}"
+                                            style="
+                                                max-width: 300px;
+                                                width: 100%;
+                                                height: auto;
+                                                object-fit: cover;
+                                                border-radius: 8px;
+                                                box-shadow: 0 0 8px rgba(0,0,0,0.15);
+                                                display: block;
+                                                margin: 0 auto;
+                                            "
+                                        />
+
+                                    </li>
+
+                                </ul>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="col-md-12 col-lg-6 col-xxl-6">
+
+                        <div class="shop-single-info">
+
+                            <h4 class="shop-single-title">
+                                Full Name:
+                                <span>{{ person.name_en }}</span>
+                            </h4>
+
+                            <p>&nbsp;</p>
+
+                            <ul class="list-unstyled mb-3">
+
+                                <li>
+                                    Position:
+                                    <span>{{ person.position_en }}</span>
+                                </li>
+
+                            </ul>
+
+
+                            <div class="shop-single-sortinfo">
+
+                                <ul>
+                                    <li>
+                                        Email:
+                                        <span>
+                                            {% if person.email %}
+                                                {{ person.email }}
+                                            {% else %}
+                                                —
+                                            {% endif %}
+                                        </span>
+                                    </li>
+                                </ul>
+
+
+                                <ul>
+                                    <li>
+                                        Phone:
+                                        <span>
+                                            {% if person.phone %}
+                                                {{ person.phone }}
+                                            {% else %}
+                                                —
+                                            {% endif %}
+                                        </span>
+                                    </li>
+                                </ul>
+
+
+                                <ul>
+                                    <li>
+                                        Description:
+                                        <span>
+                                            {% if person.content_en %}
+                                                {{ person.content_en }}
+                                            {% else %}
+                                                —
+                                            {% endif %}
+                                        </span>
+                                    </li>
+                                </ul>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="shop-single-action">
+
+                            <div class="row align-items-center">
+
+                                <div class="col-md-6 col-lg-12 col-xl-6">
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+        <!-- person single end -->
+
+    </main>
+
+{% endblock %}

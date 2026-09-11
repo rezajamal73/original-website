@@ -8,14 +8,22 @@ class CompanyCatalog(models.Model):
     Single company catalog (PDF)
     """
 
-    title = models.CharField(
+    title_fa = models.CharField(
         max_length=200,
-        verbose_name="عنوان کاتالوگ"
+        verbose_name="عنوان فارسی"
+    )
+    title_en = models.CharField(
+        max_length=200,
+        verbose_name="عنوان انگلیسی"
     )
 
-    description = models.TextField(
+    description_fa = models.TextField(
         blank=True,
-        verbose_name="توضیحات"
+        verbose_name="توضیحات فارسی"
+    )
+    description_en = models.TextField(
+        blank=True,
+        verbose_name="توضیحات انگلیسی"
     )
 
     pdf_file = models.FileField(
@@ -34,7 +42,7 @@ class CompanyCatalog(models.Model):
         verbose_name_plural = "کاتالوگ شرکت"
 
     def __str__(self) -> str:
-        return self.title
+        return self.title_fa
 
     # =========================
     # Date Helpers (Professional)
