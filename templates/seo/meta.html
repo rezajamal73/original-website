@@ -1,0 +1,144 @@
+{% load static %}
+{% load seo_tags %}
+
+{# ===================================================== #}
+{#  SEO Meta Template  —  Yoast-style                     #}
+{#  فقط یک بار در base.html include شود.                  #}
+{# ===================================================== #}
+
+{% with seo=seo|default:request.seo %}
+
+{# ----------------------------------------------------- #}
+{#  1) Title                                              #}
+{# ----------------------------------------------------- #}
+
+{% if seo and seo.title %}
+    <title>{{ seo.title }}</title>
+{% else %}
+    <title>{% seo_title %}</title>
+{% endif %}
+
+
+{# ----------------------------------------------------- #}
+{#  2) Meta Description                                   #}
+{# ----------------------------------------------------- #}
+
+{% if seo and seo.description %}
+    <meta name="description" content="{{ seo.description }}">
+{% endif %}
+
+
+{# ----------------------------------------------------- #}
+{#  3) Meta Keywords                                      #}
+{# ----------------------------------------------------- #}
+
+{% if seo and seo.keywords %}
+    <meta name="keywords" content="{{ seo.keywords }}">
+{% endif %}
+
+
+{# ----------------------------------------------------- #}
+{#  4) Robots                                             #}
+{# ----------------------------------------------------- #}
+
+{% if seo and seo.robots %}
+    <meta name="robots" content="{{ seo.robots }}">
+{% endif %}
+
+
+{# ----------------------------------------------------- #}
+{#  5) Canonical                                          #}
+{# ----------------------------------------------------- #}
+
+{% if seo and seo.canonical %}
+    <link rel="canonical" href="{{ seo.canonical }}">
+{% endif %}
+
+
+{# ----------------------------------------------------- #}
+{#  6) Hreflang (Alternate)                               #}
+{# ----------------------------------------------------- #}
+
+{% if seo and seo.hreflang %}
+    {% for alt in seo.hreflang %}
+        {% if alt.url %}
+            <link rel="alternate"
+                  hreflang="{{ alt.lang }}"
+                  href="{{ alt.url }}">
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+
+{# ----------------------------------------------------- #}
+{#  7) Open Graph                                         #}
+{# ----------------------------------------------------- #}
+
+{% if seo %}
+
+    <meta property="og:type" content="{{ seo.og_type|default:'website' }}">
+
+    {% if seo.og_title %}
+        <meta property="og:title" content="{{ seo.og_title }}">
+    {% endif %}
+
+    {% if seo.og_description %}
+        <meta property="og:description" content="{{ seo.og_description }}">
+    {% endif %}
+
+    {% if seo.canonical %}
+        <meta property="og:url" content="{{ seo.canonical }}">
+    {% endif %}
+
+    {% if seo.og_image_url %}
+        <meta property="og:image" content="{{ seo.og_image_url }}">
+    {% endif %}
+
+    {% if seo.title %}
+        <meta property="og:site_name" content="{{ seo.title }}">
+    {% endif %}
+
+{% endif %}
+
+
+{# ----------------------------------------------------- #}
+{#  8) Twitter Card                                       #}
+{# ----------------------------------------------------- #}
+
+{% if seo %}
+
+    <meta name="twitter:card" content="{{ seo.twitter_card|default:'summary_large_image' }}">
+
+    {% if seo.twitter_title %}
+        <meta name="twitter:title" content="{{ seo.twitter_title }}">
+    {% endif %}
+
+    {% if seo.twitter_description %}
+        <meta name="twitter:description" content="{{ seo.twitter_description }}">
+    {% endif %}
+
+    {% if seo.twitter_image_url %}
+        <meta name="twitter:image" content="{{ seo.twitter_image_url }}">
+    {% endif %}
+
+{% endif %}
+
+
+{# ----------------------------------------------------- #}
+{#  9) Schema JSON-LD  ✅ اصلاح‌شده                        #}
+{# ----------------------------------------------------- #}
+
+{% if seo and seo.schema_json_ld %}
+    <script type="application/ld+json">
+        {{ seo.schema_json_ld|safe }}
+    </script>
+{% else %}
+    {% seo_schema as fallback_schema %}
+    {% if fallback_schema %}
+        <script type="application/ld+json">
+            {{ fallback_schema|safe }}
+        </script>
+    {% endif %}
+{% endif %}
+
+{% endwith %}

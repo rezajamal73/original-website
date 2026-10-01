@@ -15,11 +15,13 @@ class VisitAdmin(admin.ModelAdmin):
     list_display = (
         "ip",
         "page",
-        "method",
         "visit_count",
+        "device_type_badge",
+        "os_badge",
+        "browser_badge",
+        "device_model",
         "formatted_date",
         "last_seen_relative",
-        "is_bot_badge",
     )
 
     list_display_links = (
@@ -32,42 +34,42 @@ class VisitAdmin(admin.ModelAdmin):
         "path",
         "user_agent",
         "referer",
+        "device_model",
     )
 
     list_filter = (
         ("created_at", admin.DateFieldListFilter),
-        "is_bot",
-        "method",
+        "device_type",
+        "os",
+        "browser",
     )
 
     readonly_fields = (
         "ip",
         "page",
         "path",
-        "method",
         "user_agent",
         "referer",
         "created_at_j",
         "last_seen_j",
         "visit_count",
-        "is_bot",
+        "device_type",
+        "os",
+        "browser",
+        "device_model",
+        "screen_resolution",
+        "language",
     )
 
     ordering = ("-created_at",)
 
-    # ------------------------
-    # Pagination
-    # ------------------------
-    list_per_page = 50          # هر صفحه ۱۰ رکورد
-    list_max_show_all = 50      # گزینه «نمایش همه» بعد از ۱۰ رکورد غیرفعال می‌شود
+    list_per_page = 850
+    list_max_show_all = 850
 
     date_hierarchy = "created_at"
 
     actions = (
         "export_as_csv",
-        "mark_as_bot",
-        "unmark_as_bot",
-
     )
 
     # ------------------------
@@ -90,7 +92,6 @@ class VisitAdmin(admin.ModelAdmin):
 
     @admin.display(description="آخرین فعالیت", ordering="last_seen")
     def last_seen_relative(self, obj):
-
         delta = timezone.now() - obj.last_seen
 
         if delta < timedelta(minutes=1):
@@ -104,27 +105,48 @@ class VisitAdmin(admin.ModelAdmin):
 
         return obj.last_seen_j
 
-    @admin.display(boolean=True, description="ربات")
-    def is_bot_badge(self, obj):
-        return obj.is_bot
+    # ------------------------
+    # نمایش دستگاه
+    # ------------------------
 
+    @admin.display(description="دستگاه", ordering="device_type")
+    def device_type_badge(self, obj):
+        icons = {
+            "desktop": "🖥",
+            "mobile": "📱",
+            "tablet": "📲",
+            "bot": "🤖",
+            "unknown": "❓",
+        }
+        return f"{icons.get(obj.device_type, '❓')} {obj.get_device_type_display()}"
+
+    @admin.display(description="سیستم‌عامل", ordering="os")
+    def os_badge(self, obj):
+        return obj.get_os_display()
+
+    @admin.display(description="مرورگر", ordering="browser")
+    def browser_badge(self, obj):
+        return obj.get_browser_display()
+
+    # ------------------------
+    # Actions
     # ------------------------
 
     @admin.action(description="خروجی CSV")
     def export_as_csv(self, request, queryset):
-
         response = HttpResponse(content_type="text/csv")
         response["Content-Disposition"] = "attachment; filename=visits.csv"
 
         writer = csv.writer(response)
-
         writer.writerow([
             "IP",
             "Page",
             "Path",
-            "Method",
             "Visit Count",
-            "Bot",
+            "Device Type",
+            "OS",
+            "Browser",
+            "Device Model",
             "First Visit",
             "Last Activity",
         ])
@@ -134,9 +156,11 @@ class VisitAdmin(admin.ModelAdmin):
                 visit.ip,
                 visit.page_name,
                 visit.path,
-                visit.method,
                 visit.visit_count,
-                "Yes" if visit.is_bot else "No",
+                visit.get_device_type_display(),
+                visit.get_os_display(),
+                visit.get_browser_display(),
+                visit.device_model,
                 visit.created_at_j,
                 visit.last_seen_j,
             ])
@@ -149,35 +173,14 @@ class VisitAdmin(admin.ModelAdmin):
 
         return response
 
-    @admin.action(description="علامت‌گذاری به عنوان ربات")
-    def mark_as_bot(self, request, queryset):
-
-        updated = queryset.update(is_bot=True)
-
-        self.message_user(
-            request,
-            f"{updated} رکورد بروزرسانی شد.",
-            level=messages.SUCCESS,
-        )
-
-    @admin.action(description="لغو علامت ربات")
-    def unmark_as_bot(self, request, queryset):
-
-        updated = queryset.update(is_bot=False)
-
-        self.message_user(
-            request,
-            f"{updated} رکورد بروزرسانی شد.",
-            level=messages.SUCCESS,
-        )
-
+    # ------------------------
+    # آمار
     # ------------------------
 
     def _sum(self, queryset):
         return queryset.count()
 
     def get_visit_stats(self):
-
         now = timezone.now()
         today = timezone.localdate()
 
@@ -188,9 +191,7 @@ class VisitAdmin(admin.ModelAdmin):
                 last_seen__gte=now - timedelta(minutes=5)
             ).values("ip").distinct().count(),
 
-            "today": self._sum(
-                qs.filter(created_at__date=today)
-            ),
+            "today": self._sum(qs.filter(created_at__date=today)),
 
             "yesterday": self._sum(
                 qs.filter(created_at__date=today - timedelta(days=1))
@@ -213,25 +214,29 @@ class VisitAdmin(admin.ModelAdmin):
             "unique_today": qs.filter(
                 created_at__date=today
             ).values("ip").distinct().count(),
+
+            "desktop": qs.filter(device_type="desktop").count(),
+            "mobile": qs.filter(device_type="mobile").count(),
+            "tablet": qs.filter(device_type="tablet").count(),
         }
 
-    # ------------------------
-
     def changelist_view(self, request, extra_context=None):
-
         stats = self.get_visit_stats()
 
         self.message_user(
             request,
             (
                 f"🟢 آنلاین: {stats['online']} | "
-                f"👤 بازدیدکننده یکتا: {stats['unique_today']} | "
+                f"👤 یکتا: {stats['unique_today']} | "
+                f"🖥 دسکتاپ: {stats['desktop']} | "
+                f"📱 موبایل: {stats['mobile']} | "
+                f"📲 تبلت: {stats['tablet']} | "
                 f"📅 امروز: {stats['today']} | "
                 f"📆 دیروز: {stats['yesterday']} | "
                 f"🗓 هفته: {stats['week']} | "
                 f"📈 ماه: {stats['month']} | "
                 f"📊 سال: {stats['year']} | "
-                f"📦 کل بازدیدها: {stats['total']}"
+                f"📦 کل: {stats['total']}"
             ),
             level=messages.INFO,
         )

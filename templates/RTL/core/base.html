@@ -9,92 +9,8 @@
     <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <!-- SEO META -->
-    <title>
-        {% seo_title %}
-    </title>
 
-
-    <meta
-            name="description"
-            content="{% seo_description %}"
-    />
-
-
-    <meta
-            name="keywords"
-            content="{% seo_keywords %}"
-    />
-
-
-    <meta
-            name="robots"
-            content="{% seo_robots %}"
-    />
-
-
-    <link
-            rel="canonical"
-            href="{% seo_canonical %}"
-    />
-
-
-    <!-- Open Graph -->
-
-    <meta
-            property="og:title"
-            content="{% seo_title %}"
-    />
-
-
-    <meta
-            property="og:description"
-            content="{% seo_description %}"
-    />
-
-
-    <meta
-            property="og:image"
-            content="{% seo_og_image %}"
-    />
-
-
-    <meta
-            property="og:type"
-            content="website"
-    />
-
-
-    <!-- Twitter -->
-
-    <meta
-            name="twitter:card"
-            content="summary_large_image"
-    />
-
-
-    <meta
-            name="twitter:title"
-            content="{% seo_title %}"
-    />
-
-
-    <meta
-            name="twitter:description"
-            content="{% seo_description %}"
-    />
-
-
-    <meta
-            name="twitter:image"
-            content="{% seo_og_image %}"
-    />
-
-
-    <!-- Schema.org -->
-
-    <script type="application/ld+json">
-{% seo_schema %}
-</script>
+    {% include "seo/meta.html" %}
     <!-- title -->
     <title>
         {% if site_info %}
@@ -332,11 +248,11 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'app_product:product_list' %}">محصولات</a>
                             </li>
-{#                            <li class="nav-item">#}
-{#                                <a class="nav-link" href="{% url 'app_news:news_home' %}">#}
-{#                                    اخبار شرکت#}
-{#                                </a>#}
-{#                            </li>#}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'app_news:news_home' %}">
+                                    اخبار شرکت
+                                </a>
+                            </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'app_resume:resume' %}">
                                     رزومه
@@ -394,11 +310,11 @@
                                     ارتباط با ما
                                 </a>
                                 <ul class="dropdown-menu fade-down">
-                                    {#                                    <li>#}
-                                    {#                                        <a class="dropdown-item" href="{% url 'app_hr:hr_home' %}">#}
-                                    {#                                            فرصت های شغلی#}
-                                    {#                                        </a>#}
-                                    {#                                    </li>#}
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'app_hr:hr_home' %}">
+                                            فرصت های شغلی
+                                        </a>
+                                    </li>
                                     {% if site_info and site_info.phone_security_1 or site_info.phone_security_2 or site_info.phone_security_3 or site_info.email_security or site_info.fax_security %}
                                         <li>
                                             <a class="dropdown-item"
@@ -664,11 +580,11 @@
                                     محصولات
                                 </a>
                             </li>
-{#                            <li>#}
-{#                                <a href="{% url 'app_news:news_home' %}">#}
-{#                                    اخبار شرکت#}
-{#                                </a>#}
-{#                            </li>#}
+                            <li>
+                                <a href="{% url 'app_news:news_home' %}">
+                                    اخبار شرکت
+                                </a>
+                            </li>
                             {#                            <li>#}
                             {#                                <a href="{% url 'app_tender:tender_home' %}">#}
                             {#                                    مناقصه#}
@@ -710,11 +626,11 @@
                                     رزومه
                                 </a>
                             </li>
-                            {#                            <li>#}
-                            {#                                <a class="dropdown-item" href="{% url 'app_hr:hr_home' %}">#}
-                            {#                                    فرصت های شغلی#}
-                            {#                                </a>#}
-                            {#                            </li>#}
+                                                        <li>
+                                                            <a class="dropdown-item" href="{% url 'app_hr:hr_home' %}">
+                                                                فرصت های شغلی
+                                                            </a>
+                                                        </li>
 
                             {% if site_info.phone_security_1 or site_info.phone_security_2 or site_info.phone_security_3 or site_info.email_security or site_info.fax_security %}
                                 <li>

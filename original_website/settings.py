@@ -14,9 +14,8 @@ from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-#------------------------------------------------------------qrcode
+
 SITE_URL = "https://nkavosh.com"
-#------------------------------------------------------------qrcode
 
 # Application definition
 
@@ -58,10 +57,6 @@ INSTALLED_APPS = [
     'app_seo.apps.AppSeoConfig',
     'app_backup.apps.AppBackupConfig',
 
-    'erp_requests.apps.ErpRequestsConfig',
-    'erp_execution.apps.ErpExecutionConfig',
-    'erp_warehouse.apps.ErpWarehouseConfig',
-
     'django.contrib.sites',
     'django.contrib.sitemaps',
 ]
@@ -76,12 +71,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 
     # ثبت بازدید
-    'app_visit.middleware.VisitMiddleware',
+    'app_visit.middleware.VisitMiddleware',   # ← اینجا
 
     'app_log.middleware.CurrentRequestMiddleware',
     'app_seo.middleware.SEOMiddleware',
 
-    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',  # ← بعد از Visit
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -254,14 +249,12 @@ JAZZMIN_SETTINGS = {
     "show_sidebar": True,
     "navigation_expanded": False,  # برای باز بودن همه منوها True کنید
     "hide_apps": [
-        "app_news",
         "app_tender",
         "app_auction",
         "app_inquiry",
         "app_security",
-
         "app_tender_holding",
-        "app_hr",
+
         "app_sale",
     ],
 
@@ -500,7 +493,7 @@ JAZZMIN_SETTINGS = {
     "default_icon_children": "fas fa-circle",
 
     # ═══ تنظیمات UI ═══
-    "related_modal_active": True,  # نمایش مدال برای روابط
+    "related_modal_active": False,  # نمایش مدال برای روابط
     "custom_css": "admin-custom/css/admin-custom.css",
     "custom_js": "admin-custom/js/admin-custom.js",  # اضافه کنید
     "use_google_fonts_cdn": False,

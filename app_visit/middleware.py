@@ -11,6 +11,7 @@ from django.http import HttpRequest, HttpResponse
 from django.utils import timezone
 
 from .models import Visit
+from .device_detector import DeviceDetector
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +45,15 @@ class VisitMiddleware:
         r"python",
         r"aiohttp",
         r"headless",
+        r"masscan",
+        r"nmap",
+        r"nikto",
+        r"sqlmap",
+        r"acunetix",
+        r"nessus",
+        r"dirbuster",
+        r"gobuster",
+        r"wfuzz",
     ]
 
     SKIP_PATHS = (
@@ -51,6 +61,16 @@ class VisitMiddleware:
         r"^/media/",
         r"^/favicon\.ico$",
         r"^/robots\.txt$",
+        r"^/sitemap\.xml$",
+        r"^/captcha/",
+        r"^/admin",
+        r"^/__debug__/",
+        r"^/health",
+        r"^/metrics",
+        r"^/wp-",
+        r"^/xmlrpc\.php",
+        r"^/\.env",
+        r"^/\.git",
     )
 
     def __init__(self, get_response):
@@ -76,11 +96,16 @@ class VisitMiddleware:
 
         path = request.path
 
-        if path.startswith("/admin/"):
+        if path == "/admin" or path.startswith("/admin/"):
             return True
 
         if path.startswith("/api/"):
             return True
+
+        # کاربران لاگین‌شده (staff) را ثبت نکن
+        if hasattr(request, "user") and request.user.is_authenticated:
+            if request.user.is_staff or request.user.is_superuser:
+                return True
 
         if request.headers.get("X-Requested-With") == "XMLHttpRequest":
             return True
@@ -145,8 +170,13 @@ class VisitMiddleware:
 
             ip = self.get_ip(request)
             path = request.path[:255]
+            user_agent = request.META.get("HTTP_USER_AGENT", "")
+            is_bot = self.is_bot(user_agent)
 
             cache_key = self.get_visit_key(ip, path)
+
+            # تشخیص دستگاه
+            device_info = DeviceDetector.detect_all(user_agent, is_bot)
 
             if cache.get(cache_key):
                 Visit.objects.filter(
@@ -162,11 +192,14 @@ class VisitMiddleware:
                 path=path,
                 defaults={
                     "method": request.method,
-                    "user_agent": request.META.get("HTTP_USER_AGENT", "")[:500],
+                    "user_agent": user_agent[:500],
                     "referer": request.META.get("HTTP_REFERER", "")[:500],
-                    "is_bot": self.is_bot(
-                        request.META.get("HTTP_USER_AGENT", "")
-                    ),
+                    "is_bot": is_bot,
+                    "device_type": device_info["device_type"],
+                    "os": device_info["os"],
+                    "browser": device_info["browser"],
+                    "device_model": device_info["device_model"][:100],
+                    "language": request.META.get("HTTP_ACCEPT_LANGUAGE", "")[:10],
                 },
             )
 
@@ -174,9 +207,14 @@ class VisitMiddleware:
                 Visit.objects.filter(pk=visit.pk).update(
                     last_seen=timezone.now(),
                     method=request.method,
-                    user_agent=request.META.get("HTTP_USER_AGENT", "")[:500],
+                    user_agent=user_agent[:500],
                     referer=request.META.get("HTTP_REFERER", "")[:500],
                     visit_count=F("visit_count") + 1,
+                    # بروزرسانی اطلاعات دستگاه
+                    device_type=device_info["device_type"],
+                    os=device_info["os"],
+                    browser=device_info["browser"],
+                    device_model=device_info["device_model"][:100],
                 )
 
             cache.set(

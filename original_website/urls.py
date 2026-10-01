@@ -25,7 +25,7 @@ urlpatterns = [
     path("security_contact/", include("app_security.urls")),
     path("contact/", include("app_contact.urls")),
     path("reports/", include("app_reports.urls")),
-    # path("hr/", include("app_hr.urls")),
+    path("hr/", include("app_hr.urls")),
     path("media/", include("app_media.urls")),
     # path("sale/", include("app_sale.urls")),
     path("catalog/", include("app_catalog.urls")),
