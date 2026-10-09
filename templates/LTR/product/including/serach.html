@@ -3,7 +3,7 @@
 <div class="shop-search-form widget search">
     <h5 class="widget-title">Search Products</h5>
 
-    <form class="search-form" id="productSearchForm" method="GET" action="{% url 'app_product:product_search_en' %}">
+    <form class="search-form" id="productSearchForm" method="GET" action="{% url 'app_product_en:product_search_en' %}">
         <div class="form-group">
             <input
                 class="form-control"
@@ -21,7 +21,7 @@
 
     {% if request.GET.q and request.GET.q|length > 0 and products|length == 0 %}
         <p style="margin-top:10px; padding:10px; background:#ffe3e3; color:#c40000; border-radius:6px; font-size:14px;">
-            <a href="{% url 'app_product:product_list_en' %}" style="color:#c40000; text-decoration:none;">❌</a>
+            <a href="{% url 'app_product_en:product_list_en' %}" style="color:#c40000; text-decoration:none;">❌</a>
             No results found for "<b>{{ request.GET.q }}</b>".
         </p>
     {% endif %}
@@ -34,7 +34,7 @@
         // If the search field is empty → return to the product page
         if (input === "") {
             e.preventDefault();
-            window.location.href = "{% url 'app_product:product_list_en' %}";
+            window.location.href = "{% url 'app_product_en:product_list_en' %}";
         }
     });
 </script>

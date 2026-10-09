@@ -1,4 +1,3 @@
-
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from django.http import HttpRequest
@@ -7,41 +6,8 @@ from django.db.models import Q
 from app_product.models import Product, ProductTag, ProductScan
 from app_seo.utils import SEOManager
 
-
-# =====================================================
-# LANGUAGE DETECTION
-# =====================================================
-
-def is_english_request(request):
-    """
-    Detect English pages based on URL name.
-
-    Persian:
-        product_list
-        category
-        category_form
-        product_tag
-        product_search
-        product_single
-        scan
-
-    English:
-        product_list_en
-        category_en
-        category_form_en
-        product_tag_en
-        product_search_en
-        product_single_en
-        scan_en
-    """
-
-    url_name = getattr(
-        request.resolver_match,
-        "url_name",
-        ""
-    )
-
-    return url_name.endswith("_en")
+# ✅ is_english_request از app_core میاد
+from app_core.url_helpers import is_english_request
 
 
 # =====================================================
@@ -60,15 +26,13 @@ def product_list(request, slug=None):
     )
 
     if slug:
-        products_qs = products_qs.filter(
-            category__slug=slug
-        )
+        if is_english:
+            products_qs = products_qs.filter(category__slug_en=slug)
+        else:
+            products_qs = products_qs.filter(category__slug=slug)
 
     paginator = Paginator(products_qs, 8)
-
-    products = paginator.get_page(
-        request.GET.get("page")
-    )
+    products = paginator.get_page(request.GET.get("page"))
 
     template_name = (
         "LTR/product/product_home.html"
@@ -83,11 +47,7 @@ def product_list(request, slug=None):
         "is_english": is_english,
     }
 
-    return render(
-        request,
-        template_name,
-        context
-    )
+    return render(request, template_name, context)
 
 
 # =====================================================
@@ -98,21 +58,23 @@ def product_list_by_form(request, slug):
 
     is_english = is_english_request(request)
 
-    products_qs = (
-        Product.objects
-        .filter(
-            status="published",
-            category2__slug=slug
+    if is_english:
+        products_qs = (
+            Product.objects
+            .filter(status="published", category2__slug_en=slug)
+            .select_related("category", "category2")
+            .order_by("priority", "title_fa")
         )
-        .select_related("category", "category2")
-        .order_by("priority", "title_fa")
-    )
+    else:
+        products_qs = (
+            Product.objects
+            .filter(status="published", category2__slug=slug)
+            .select_related("category", "category2")
+            .order_by("priority", "title_fa")
+        )
 
     paginator = Paginator(products_qs, 8)
-
-    products = paginator.get_page(
-        request.GET.get("page")
-    )
+    products = paginator.get_page(request.GET.get("page"))
 
     template_name = (
         "LTR/product/product_home.html"
@@ -127,11 +89,7 @@ def product_list_by_form(request, slug):
         "is_english": is_english,
     }
 
-    return render(
-        request,
-        template_name,
-        context
-    )
+    return render(request, template_name, context)
 
 
 # =====================================================
@@ -141,11 +99,7 @@ def product_list_by_form(request, slug):
 def product_search(request):
 
     is_english = is_english_request(request)
-
-    query = request.GET.get(
-        "q",
-        ""
-    ).strip()
+    query = request.GET.get("q", "").strip()
 
     products_qs = (
         Product.objects
@@ -155,7 +109,6 @@ def product_search(request):
     )
 
     if query:
-
         products_qs = products_qs.filter(
             Q(title_fa__icontains=query) |
             Q(title_en__icontains=query) |
@@ -166,14 +119,8 @@ def product_search(request):
             Q(summary_en__icontains=query)
         ).distinct()
 
-    paginator = Paginator(
-        products_qs,
-        8
-    )
-
-    products = paginator.get_page(
-        request.GET.get("page")
-    )
+    paginator = Paginator(products_qs, 8)
+    products = paginator.get_page(request.GET.get("page"))
 
     template_name = (
         "LTR/product/product_home.html"
@@ -188,11 +135,7 @@ def product_search(request):
         "is_english": is_english,
     }
 
-    return render(
-        request,
-        template_name,
-        context
-    )
+    return render(request, template_name, context)
 
 
 # =====================================================
@@ -203,29 +146,20 @@ def product_tag(request, slug):
 
     is_english = is_english_request(request)
 
-    tag = get_object_or_404(
-        ProductTag,
-        slug=slug
-    )
+    if is_english:
+        tag = get_object_or_404(ProductTag, slug_en=slug)
+    else:
+        tag = get_object_or_404(ProductTag, slug=slug)
 
     products_qs = (
         Product.objects
-        .filter(
-            tags=tag,
-            status="published"
-        )
+        .filter(tags=tag, status="published")
         .select_related("category")
         .order_by("priority", "title_fa")
     )
 
-    paginator = Paginator(
-        products_qs,
-        8
-    )
-
-    products = paginator.get_page(
-        request.GET.get("page")
-    )
+    paginator = Paginator(products_qs, 8)
+    products = paginator.get_page(request.GET.get("page"))
 
     template_name = (
         "LTR/product/product_home.html"
@@ -241,28 +175,36 @@ def product_tag(request, slug):
         "is_english": is_english,
     }
 
-    return render(
-        request,
-        template_name,
-        context
-    )
+    return render(request, template_name, context)
 
 
 # =====================================================
 # PRODUCT SINGLE
 # =====================================================
 
-def product_single(request, pid: int):
+def product_single(request, pid: int, slug: str):
+    """
+    فارسی:    /product/3/آویز-سرم-بیمارستانی/
+    انگلیسی:  /en/product/3/hospital-iv-pole/
+    """
 
     is_english = is_english_request(request)
 
     product = get_object_or_404(
-        Product.objects.select_related(
-            "category"
-        ),
+        Product.objects.select_related("category", "category2"),
         pk=pid,
         status="published"
     )
+
+    correct_slug = product.slug_en if is_english else product.slug
+
+    if correct_slug != slug:
+        target = (
+            "app_product_en:product_single_en"
+            if is_english
+            else "app_product:product_single"
+        )
+        return redirect(target, pid=pid, slug=correct_slug, permanent=True)
 
     template_name = (
         "LTR/product/product_single.html"
@@ -276,42 +218,51 @@ def product_single(request, pid: int):
         "is_english": is_english,
     }
 
-    return render(
-        request,
-        template_name,
-        context
+    return render(request, template_name, context)
+
+
+# =====================================================
+# PRODUCT SINGLE REDIRECT — از URL قدیمی /product/3/
+# =====================================================
+
+def product_single_redirect(request, pid: int):
+    """
+    Redirect 301 از URL قدیمی (بدون slug) به URL جدید (با slug).
+    """
+
+    is_english = is_english_request(request)
+
+    product = get_object_or_404(
+        Product,
+        pk=pid,
+        status="published"
     )
+
+    if is_english:
+        target = "app_product_en:product_single_en"
+        redirect_slug = product.slug_en or product.slug
+    else:
+        target = "app_product:product_single"
+        redirect_slug = product.slug
+
+    return redirect(target, pid=pid, slug=redirect_slug, permanent=True)
 
 
 # =====================================================
 # QR SCAN TRACKING
 # =====================================================
 
-def scan_product(
-    request: HttpRequest,
-    sku: str
-):
+def scan_product(request: HttpRequest, sku: str):
 
-    product = get_object_or_404(
-        Product,
-        sku=sku
-    )
+    product = get_object_or_404(Product, sku=sku)
 
-    ip = request.META.get(
-        "HTTP_X_FORWARDED_FOR"
-    )
-
+    ip = request.META.get("HTTP_X_FORWARDED_FOR")
     if ip:
         ip = ip.split(",")[0].strip()
     else:
-        ip = request.META.get(
-            "REMOTE_ADDR"
-        )
+        ip = request.META.get("REMOTE_ADDR")
 
-    user_agent = request.META.get(
-        "HTTP_USER_AGENT",
-        ""
-    )
+    user_agent = request.META.get("HTTP_USER_AGENT", "")
 
     ProductScan.objects.create(
         product=product,
@@ -319,7 +270,4 @@ def scan_product(
         user_agent=user_agent
     )
 
-    return redirect(
-        product.get_absolute_url()
-    )
-
+    return redirect(product.get_absolute_url())

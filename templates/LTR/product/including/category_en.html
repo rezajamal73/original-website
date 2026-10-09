@@ -5,7 +5,7 @@
 <ul class="shop-category-list">
     {% for cat in cat_list %}
         <li>
-            <a href="{% url 'app_product:category_en' slug=cat.slug %}">
+            <a href="{% url 'app_product_en:category_en' slug=cat.slug %}">
                 {{ cat.title_en }}
                 <span>({{ cat.product_count }})</span>
             </a>

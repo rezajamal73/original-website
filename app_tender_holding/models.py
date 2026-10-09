@@ -1,7 +1,8 @@
-# app/models.py
+# app_tender_holding/models.py
 from django.db import models
 from django.utils.text import slugify
 from django.contrib.auth.models import User
+from django.urls import reverse                          # ✅ اضافه شد
 from django_jalali.db import models as jmodels
 
 
@@ -10,16 +11,13 @@ from django_jalali.db import models as jmodels
 # ---------------------------------------
 def generate_unique_slug(instance, value, slug_field_name="slug"):
     """
-    ایجاد اسلاگ یکتا برای یک instance.
-    - value: متنِ پایه برای اسلاگ (مثلاً title_en یا title_fa)
-    - خروجی: اسلاگ یکتا (اگر تکراری شد، با -1, -2, ... ادامه می‌یابد)
+    ایجاد اسلاگ یکتا با پشتیبانی از فارسی.
     """
-    base_slug = slugify(value) or "item"
+    base_slug = slugify(value, allow_unicode=True) or "item"   # ✅ allow_unicode
     slug = base_slug
     ModelClass = instance.__class__
     counter = 1
 
-    # exclude current instance to allow update بدون تصادم با خودش
     while ModelClass.objects.filter(**{slug_field_name: slug}).exclude(pk=instance.pk).exists():
         slug = f"{base_slug}-{counter}"
         counter += 1
@@ -47,7 +45,24 @@ class TimeStampedModel(models.Model):
 class HoldingCategory(TimeStampedModel):
     title_fa = models.CharField(max_length=255, verbose_name="عنوان فارسی")
     title_en = models.CharField(max_length=255, verbose_name="عنوان انگلیسی")
-    slug = models.SlugField(unique=True, blank=True, editable=False)
+
+    # ✅ اسلاگ فارسی
+    slug = models.SlugField(
+        "اسلاگ (فارسی)",
+        unique=True,
+        blank=True,
+        editable=False,
+        allow_unicode=True,
+    )
+
+    # ✅ اسلاگ انگلیسی
+    slug_en = models.SlugField(
+        "اسلاگ (انگلیسی)",
+        unique=True,
+        blank=True,
+        editable=False,
+        allow_unicode=False,
+    )
 
     order = models.PositiveIntegerField(default=0, verbose_name="ترتیب نمایش")
 
@@ -56,19 +71,13 @@ class HoldingCategory(TimeStampedModel):
         verbose_name_plural = "دسته‌بندی‌های هلدینگ"
         ordering = ["-created_at_fa"]
 
-    def _get_slug_source(self):
-        """اولویت: title_en سپس title_fa"""
-        return self.title_en or self.title_fa or ""
-
     def save(self, *args, **kwargs):
-        source = self._get_slug_source()
-        base = slugify(source) or "item"
-        if not self.slug:
-            self.slug = generate_unique_slug(self, source)
-        else:
-            current_base = self.slug.split("-")[0]
-            if current_base != base:
-                self.slug = generate_unique_slug(self, source)
+        if not self.slug and self.title_fa:
+            self.slug = generate_unique_slug(self, self.title_fa, "slug")
+
+        if not self.slug_en and self.title_en:
+            self.slug_en = generate_unique_slug(self, self.title_en, "slug_en")
+
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -81,7 +90,24 @@ class HoldingCategory(TimeStampedModel):
 class HoldingTag(TimeStampedModel):
     title_fa = models.CharField(max_length=255, verbose_name="عنوان فارسی")
     title_en = models.CharField(max_length=255, verbose_name="عنوان انگلیسی")
-    slug = models.SlugField(unique=True, blank=True, editable=False)
+
+    # ✅ اسلاگ فارسی
+    slug = models.SlugField(
+        "اسلاگ (فارسی)",
+        unique=True,
+        blank=True,
+        editable=False,
+        allow_unicode=True,
+    )
+
+    # ✅ اسلاگ انگلیسی
+    slug_en = models.SlugField(
+        "اسلاگ (انگلیسی)",
+        unique=True,
+        blank=True,
+        editable=False,
+        allow_unicode=False,
+    )
 
     order = models.PositiveIntegerField(default=0, verbose_name="ترتیب نمایش")
 
@@ -90,18 +116,11 @@ class HoldingTag(TimeStampedModel):
         verbose_name_plural = "برچسب‌های هلدینگ"
         ordering = ["-created_at_fa"]
 
-    def _get_slug_source(self):
-        return self.title_en or self.title_fa or ""
-
     def save(self, *args, **kwargs):
-        source = self._get_slug_source()
-        base = slugify(source) or "item"
-        if not self.slug:
-            self.slug = generate_unique_slug(self, source)
-        else:
-            current_base = self.slug.split("-")[0]
-            if current_base != base:
-                self.slug = generate_unique_slug(self, source)
+        if not self.slug and self.title_fa:
+            self.slug = generate_unique_slug(self, self.title_fa, "slug")
+        if not self.slug_en and self.title_en:
+            self.slug_en = generate_unique_slug(self, self.title_en, "slug_en")
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -117,16 +136,35 @@ class Holding(TimeStampedModel):
         ("extended", "تمدید شده"),
         ("finished", "پایان یافته"),
     )
+
     order = models.PositiveIntegerField(default=0, verbose_name="ترتیب نمایش")
     title_fa = models.CharField(max_length=255, verbose_name="عنوان فارسی")
     title_en = models.CharField(max_length=255, verbose_name="عنوان انگلیسی")
-    slug = models.SlugField(unique=True, blank=True, editable=False)
+
+    # ✅ اسلاگ فارسی
+    slug = models.SlugField(
+        "اسلاگ (فارسی)",
+        unique=True,
+        blank=True,
+        editable=False,
+        allow_unicode=True,
+    )
+
+    # ✅ اسلاگ انگلیسی
+    slug_en = models.SlugField(
+        "اسلاگ (انگلیسی)",
+        unique=True,
+        blank=True,
+        editable=False,
+        allow_unicode=False,
+    )
+
     call_number = models.CharField(max_length=100, unique=True, verbose_name="شماره فراخوان")
     start_date_fa = jmodels.jDateField(verbose_name="تاریخ شروع (شمسی)", help_text="1373-08-10")
     end_date_fa = jmodels.jDateField(verbose_name="تاریخ پایان (شمسی)", help_text="1373-08-10")
     start_date_en = models.DateField(verbose_name="تاریخ شروع (میلادی)")
     end_date_en = models.DateField(verbose_name="تاریخ پایان (میلادی)")
-    poster = models.ImageField(upload_to='holding/posters',verbose_name="تصویر")
+    poster = models.ImageField(upload_to='holding/posters', verbose_name="تصویر")
     upload_file = models.FileField(upload_to='holding/upload_file', null=True, blank=True, verbose_name="آپلود فایل")
     estimated_amount = models.BigIntegerField(null=True, blank=True, verbose_name="مبلغ ضمانت هلدینگ")
 
@@ -156,22 +194,32 @@ class Holding(TimeStampedModel):
         verbose_name = "هلدینگ"
         verbose_name_plural = "هلدینگ‌ها"
 
-    def _get_slug_source(self):
-        return self.title_en or self.title_fa or ""
-
     def save(self, *args, **kwargs):
-        source = self._get_slug_source()
-        base = slugify(source) or "item"
-        if not self.slug:
-            self.slug = generate_unique_slug(self, source)
-        else:
-            current_base = self.slug.split("-")[0]
-            if current_base != base:
-                self.slug = generate_unique_slug(self, source)
+        if not self.slug and self.title_fa:
+            self.slug = generate_unique_slug(self, self.title_fa, "slug")
+        if not self.slug_en and self.title_en:
+            self.slug_en = generate_unique_slug(self, self.title_en, "slug_en")
         super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.title_fa} - {self.call_number}"
+
+    # =====================================================
+    # URL ها
+    # =====================================================
+    def get_absolute_url(self):
+        """URL فارسی: /tender_holding/5/نام/"""
+        return reverse("app_tender_holding:tender_holding_single", kwargs={
+            "pid": self.pk,
+            "slug": self.slug,
+        })
+
+    def get_absolute_url_en(self):
+        """URL انگلیسی: /en/tender_holding/5/name/"""
+        return reverse("app_tender_holding_en:tender_holding_single_en", kwargs={
+            "pid": self.pk,
+            "slug": self.slug_en,
+        })
 
 
 # ---------------------------

@@ -16,7 +16,6 @@
         {% if site_info %}
             {{ site_info.name_company_p1_fa }} {{ site_info.name_company_p2_fa }}
         {% endif %}
-
     </title>
 
     <!-- favicon -->
@@ -24,28 +23,27 @@
         <link rel="icon" type="image/x-icon" href="{{ site_info.header_logo.url }}">
     {% endif %}
     <!-- css -->
-    <link href="{% static 'RTl/assets/css/bootstrap.min.css' %}" rel="stylesheet"/>
-    <link href="{% static 'RTl/assets/css/all-fontawesome.min.css' %}" rel="stylesheet"/>
-    <link href="{% static 'RTl/assets/css/animate.min.css' %}" rel="stylesheet"/>
-    <link href="{% static 'RTl/assets/css/magnific-popup.min.css' %}" rel="stylesheet"/>
-    <link href="{% static 'RTl/assets/css/owl.carousel.min.css' %}" rel="stylesheet"/>
-    <link href="{% static 'RTl/assets/css/jquery-ui.min.css' %}" rel="stylesheet"/>
-    <link href="{% static 'RTl/assets/css/nice-select.min.css' %}" rel="stylesheet"/>
-    <link href="{% static 'RTl/assets/css/style.css' %}" rel="stylesheet"/>
-    <link href="{% static 'RTl/assets/css/flex-slider.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTL/assets/css/bootstrap.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTL/assets/css/all-fontawesome.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTL/assets/css/animate.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTL/assets/css/magnific-popup.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTL/assets/css/owl.carousel.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTL/assets/css/jquery-ui.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTL/assets/css/nice-select.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTL/assets/css/style.css' %}" rel="stylesheet"/>
+    <link href="{% static 'RTL/assets/css/flex-slider.min.css' %}" rel="stylesheet"/>
 
 </head>
 <body class="home-5">
 <!-- preloader -->
 <div class="preloader">
     <div class="loader-ripple">
-        <div>
-        </div>
-        <div>
-        </div>
+        <div></div>
+        <div></div>
     </div>
 </div>
 <!-- preloader end -->
+
 <!-- header area -->
 <header class="header">
     <!-- header top -->
@@ -89,13 +87,15 @@
                                 <li>
                                     <div class="dropdown">
                                         <a aria-expanded="false" class="dropdown-toggle" data-bs-toggle="dropdown"
-                                           href="{% url 'app_core:home' %}">
-                                            <i class="far fa-globe-americas">
-                                            </i>
+                                           href="/">
+                                            <i class="far fa-globe-americas"></i>
                                             فارسی
                                         </a>
                                         <div class="dropdown-menu">
-                                            <a class="dropdown-item" href="{% url 'app_core:home_en' %}">
+                                            <a class="dropdown-item" href="/">
+                                                فارسی
+                                            </a>
+                                            <a class="dropdown-item" href="/en/">
                                                 English
                                             </a>
                                         </div>
@@ -128,6 +128,7 @@
         </div>
     </div>
     <!-- header top end -->
+
     <!-- navbar -->
     <div class="main-navigation">
         <nav class="navbar navbar-expand-lg">
@@ -141,28 +142,25 @@
                     {% if site_info.name_company_p1_fa %}
                         <span class="line-1">{{ site_info.name_company_p1_fa }}</span>
                     {% endif %}
-
                     {% if site_info.name_company_p2_fa %}
                         <span class="line-2">{{ site_info.name_company_p2_fa }}</span>
                     {% endif %}
                 </div>
-                </a>
 
                 <div class="mobile-menu-right">
                     <div class="mobile-menu-btn">
                         <a class="nav-right-link search-box-outer" href="#">
-                            <i class="far fa-search">
-                            </i>
+                            <i class="far fa-search"></i>
                         </a>
                     </div>
                     <button aria-controls="offcanvasNavbar" aria-label="Toggle navigation" class="navbar-toggler"
-                            data-bs-target="#offcanvasNavbar" data-bs-toggle="offcanvas" type="button"><span>
-
-                    </span>
+                            data-bs-target="#offcanvasNavbar" data-bs-toggle="offcanvas" type="button">
+                        <span></span>
                         <span></span>
                         <span></span>
                     </button>
                 </div>
+
                 <div aria-labelledby="offcanvasNavbarLabel" class="offcanvas offcanvas-start" id="offcanvasNavbar"
                      tabindex="-1">
                     <div class="offcanvas-header">
@@ -171,140 +169,175 @@
                                 <img alt="logo" src="{{ site_info.sidebar_logo.url }}">
                             {% endif %}
                         </a>
-                        <button aria-label="Close" class="btn-close" data-bs-dismiss="offcanvas" type="button">
-                        </button>
+                        <button aria-label="Close" class="btn-close" data-bs-dismiss="offcanvas" type="button"></button>
                     </div>
+
                     <div class="offcanvas-body">
                         <ul class="navbar-nav justify-content-end flex-grow-1">
+
+                            <!-- خانه -->
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'app_core:home' %}">
                                     خانه
                                 </a>
                             </li>
+
+                            <!-- درباره شرکت -->
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
                                     درباره شرکت
                                 </a>
                                 <ul class="dropdown-menu fade-down">
+
                                     <li>
                                         <a class="dropdown-item" href="{% url 'app_core:about' %}">
                                             تاریخچه شرکت
                                         </a>
                                     </li>
-{#                                    <li>#}
-{#                                        <a class="dropdown-item" href="{% url 'app_chart:board_home' %}">#}
-{#                                            اعضای هیئت مدیره#}
-{#                                        </a>#}
-{#                                    </li>#}
+
+                                    <!-- ✅ فعال شد -->
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'app_chart:board_home' %}">
+                                            اعضای هیئت مدیره
+                                        </a>
+                                    </li>
+
                                     <li>
                                         <a class="dropdown-item" href="{% url 'app_chart:chart' %}">
                                             تیم اجرایی و چارت سازمانی
                                         </a>
                                     </li>
-                                    {#                                    <li>#}
-                                    {#                                        <a class="dropdown-item" href="{% url 'app_reports:governance' %}">#}
-                                    {#                                            اعضاء کمیته ها#}
-                                    {#                                        </a>#}
-                                    {#                                    </li>#}
+
+                                    <!-- ✅ فعال شد -->
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'app_reports:governance' %}">
+                                            اعضاء کمیته ها
+                                        </a>
+                                    </li>
+
                                     <li>
                                         <a class="dropdown-item" href="{% url 'app_reports:sustainability' %}">
                                             حاکمیت شرکت
                                         </a>
                                     </li>
+
                                     <li>
                                         <a class="dropdown-item" href="{% url 'app_reports:vision_missions' %}">
                                             چشم انداز و ماموریت ها
                                         </a>
                                     </li>
+
                                     <li>
                                         <a class="dropdown-item" href="{% url 'app_reports:certificate' %}">
                                             گواهینامه ها و استاندارد ها
                                         </a>
                                     </li>
-                                    {#                                    <li>#}
-                                    {#                                        <a class="dropdown-item" href="{% url 'app_reports:financial' %}">#}
-                                    {#                                            اطلاعیه ها و گزارشات مالی#}
-                                    {#                                        </a>#}
-                                    {#                                    </li>#}
-                                    {#                                    <li>#}
-                                    {#                                        <a class="dropdown-item" href="{% url 'app_reports:shareholder' %}">#}
-                                    {#                                            امور سهام#}
-                                    {#                                        </a>#}
-                                    {#                                    </li>#}
-                                    {#                                    <li>#}
-                                    {#                                        <a class="dropdown-item" href="{% url 'app_reports:companies' %}">#}
-                                    {#                                            شرکت های هم گروه#}
-                                    {#                                        </a>#}
-                                    {#                                    </li>#}
-                                    {#                                    <li>#}
-                                    {#                                        <a class="dropdown-item" href="{% url 'app_sale:sales_chart' %}">#}
-                                    {#                                            نمودار فروش#}
-                                    {#                                        </a>#}
-                                    {#                                    </li>#}
+
+                                    <!-- ✅ فعال شد -->
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'app_reports:financial' %}">
+                                            اطلاعیه ها و گزارشات مالی
+                                        </a>
+                                    </li>
+
+                                    <!-- ✅ فعال شد -->
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'app_reports:shareholder' %}">
+                                            امور سهام
+                                        </a>
+                                    </li>
+
+                                    <!-- ✅ فعال شد -->
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'app_reports:companies' %}">
+                                            شرکت های هم گروه
+                                        </a>
+                                    </li>
+
+                                    <!-- ✅ فعال شد -->
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'app_sale:sales_chart' %}">
+                                            نمودار فروش
+                                        </a>
+                                    </li>
 
                                 </ul>
-
                             </li>
+
+                            <!-- محصولات -->
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'app_product:product_list' %}">محصولات</a>
                             </li>
+
+                            <!-- اخبار -->
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'app_news:news_home' %}">
-                                    اخبار شرکت
+                                    اخبار
                                 </a>
                             </li>
+
+                            <!-- رزومه -->
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'app_resume:resume' %}">
                                     رزومه
                                 </a>
                             </li>
 
+                            <!-- ✅ مناقصات و مزایدات (فعال شد) -->
                             <li class="nav-item dropdown">
-                                {#                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">#}
-                                {#                                    مناقصات و مزایدات#}
-                                {#                                </a>#}
-                                {#                                <ul class="dropdown-menu fade-down">#}
-                                {#                                    <li>#}
-                                {#                                        <a class="dropdown-item"#}
-                                {#                                           href="{% url 'app_tender:tender_home' %}">#}
-                                {#                                            مناقصات#}
-                                {#                                        </a>#}
-                                {#                                    </li>#}
-                                {#                                    <li>#}
-                                {#                                        <a class="dropdown-item"#}
-                                {#                                           href="{% url 'app_auction:auction_home' %}">#}
-                                {#                                            مزایدات#}
-                                {#                                        </a>#}
-                                {#                                    </li>#}
-                                {#                                    <li>#}
-                                {#                                        <a class="dropdown-item"#}
-                                {#                                           href="{% url 'app_inquiry:home' %}">#}
-                                {#                                            استعلام خرید#}
-                                {#                                        </a>#}
-                                {#                                    </li>#}
-                                {#                                    <li>#}
-                                {#                                        <a class="dropdown-item"#}
-                                {#                                           href="{% url 'app_tender_holding:tender_holding_home' %}">#}
-                                {#                                            مناقصه های هلدینگ#}
-                                {#                                        </a>#}
-                                {#                                    </li>#}
-                                {#                                </ul>#}
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
+                                    مناقصات و مزایدات
+                                </a>
+                                <ul class="dropdown-menu fade-down">
+                                    <li>
+                                        <a class="dropdown-item"
+                                           href="{% url 'app_tender:tender_home' %}">
+                                            مناقصات
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                           href="{% url 'app_auction:auction_home' %}">
+                                            مزایدات
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                           href="{% url 'app_inquiry:inquiry_home' %}">
+                                            استعلام خرید
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item"
+                                           href="{% url 'app_tender_holding:tender_holding_home' %}">
+                                            مناقصه های هلدینگ
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <!-- ویدیوها -->
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'app_media:home' %}">
-                                    رسانه
+                                    ویدیوها
                                 </a>
                             </li>
+
+                            <!-- کاتالوگ -->
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'app_catalog:catalog' %}">
                                     کاتالوگ
                                 </a>
                             </li>
+
+                            <!-- مقالات -->
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'app_blog:blog_home' %}">
                                     مقالات
                                 </a>
                             </li>
 
+                            <!-- ارتباط با ما -->
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
                                     ارتباط با ما
@@ -323,11 +356,6 @@
                                             </a>
                                         </li>
                                     {% endif %}
-                                    {#                                    <li>#}
-                                    {#                                        <a class="dropdown-item" href="{% url 'app_reports:department_contact_list' %}">#}
-                                    {#                                            دپارتمان ها#}
-                                    {#                                        </a>#}
-                                    {#                                    </li>#}
                                     <li>
                                         <a class="dropdown-item" href="{% url 'app_core:contact' %}">
                                             تماس با ما
@@ -335,37 +363,23 @@
                                     </li>
                                 </ul>
                             </li>
+
                         </ul>
+
                         <!-- nav-right -->
                         <div class="nav-right icon">
-
                             <form action="{% url 'app_core:search' %}" method="get"
                                   style="display:flex;align-items:center;gap:8px;">
-
                                 <input
                                         type="text"
                                         name="q"
                                         placeholder="جستجو..."
-                                        style="
-                width:180px;
-                height:38px;
-                border:1px solid #ddd;
-                border-radius:25px;
-                padding:0 15px;
-                outline:none;
-            ">
-
-                                <button
-                                        type="submit"
-                                        class="nav-right-link"
+                                        style="width:180px;height:38px;border:1px solid #ddd;border-radius:25px;padding:0 15px;outline:none;">
+                                <button type="submit" class="nav-right-link"
                                         style="border:none;background:none;padding:0;cursor:pointer;">
-
                                     <i class="far fa-search"></i>
-
                                 </button>
-
                             </form>
-
                         </div>
 
                     </div>
@@ -376,48 +390,36 @@
     <!-- navbar end -->
 </header>
 <!-- header area end -->
+
 <!-- popup search -->
 <div class="search-popup">
     <button class="close-search">
-	<span class="far fa-times">
-	</span>
+        <span class="far fa-times"></span>
     </button>
     <form action="{% url 'app_core:search' %}" method="get">
         <div class="form-group">
-
-            <input
-                    class="form-control"
-                    type="search"
-                    name="q"
-                    placeholder="اینجا جستجو کنید ..."
-                    required>
-
+            <input class="form-control" type="search" name="q" placeholder="اینجا جستجو کنید ..." required>
             <button type="submit">
                 <i class="far fa-search"></i>
             </button>
-
         </div>
     </form>
 </div>
 <!-- popup search end -->
 
 
-
 {% block content %}
-
-
-
-
-
 {% endblock %}
+
 <!-- footer area -->
 <footer class="footer-area light">
     <div class="footer-widget">
         <div class="container">
             <div class="row footer-widget-wrapper pt-100 pb-40">
+
+                <!-- درباره شرکت -->
                 <div class="col-md-6 col-lg-4">
                     <div class="footer-widget-box about-us">
-
                         <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'app_core:home' %}">
                             {% if site_info.footer_logo %}
                                 <img alt="logo" src="{{ site_info.footer_logo.url }}" class="brand-logo">
@@ -433,18 +435,15 @@
                         </div>
                         <p></p>
                         <ul class="footer-contact">
-                            {# ---------- ADDRESS ---------- #}
                             {% if site_info.address_fa %}
                                 <li>
                                     <i class="far fa-map-marker-alt"></i>
                                     {{ site_info.address_fa }}
                                 </li>
                             {% endif %}
-                            {# ---------- PHONE ---------- #}
                             {% if site_info.phone_1 or site_info.phone_2 or site_info.phone_3 or site_info.phone_4 or site_info.phone_5 %}
                                 <li class="footer-contact-phone">
                                     <i class="far fa-phone"></i>
-
                                     <div class="phone-wrapper">
                                         <span class="phone-prefix"></span>
                                         <div class="phone-line">
@@ -474,7 +473,6 @@
                                 </li>
                             {% endif %}
 
-                            {# ---------- EMAIL ---------- #}
                             {% if site_info.email %}
                                 <li>
                                     <a href="mailto:{{ site_info.email }}">
@@ -491,19 +489,17 @@
                                 </li>
                             {% endif %}
 
-
-                            {# ---------- WORK DAYS ---------- #}
                             {% if site_info.work_days_fa %}
                                 <li>
                                     <i class="far fa-clock"></i>
                                     {{ site_info.work_days_fa }}
                                 </li>
                             {% endif %}
-
                         </ul>
-
                     </div>
                 </div>
+
+                <!-- لینک‌های سریع -->
                 <div class="col-md-6 col-lg-3">
                     <div class="footer-widget-box list">
                         <h4 class="footer-widget-title">
@@ -515,60 +511,77 @@
                                     درباره ما
                                 </a>
                             </li>
-{#                            <li>#}
-{#                                <a href="{% url 'app_chart:board_home' %}">#}
-{#                                    اعضای هیئت مدیره#}
-{#                                </a>#}
-{#                            </li>#}
+
+                            <!-- ✅ فعال شد -->
+                            <li>
+                                <a href="{% url 'app_chart:board_home' %}">
+                                    اعضای هیئت مدیره
+                                </a>
+                            </li>
+
                             <li>
                                 <a href="{% url 'app_chart:chart' %}">
                                     تیم اجرایی و چارت سازمانی
                                 </a>
                             </li>
-                            {#                            <li>#}
-                            {#                                <a href="{% url 'app_reports:governance' %}">#}
-                            {#                                    اعضاء کمیته#}
-                            {#                                </a>#}
-                            {#                            </li>#}
+
+                            <!-- ✅ فعال شد -->
+                            <li>
+                                <a href="{% url 'app_reports:governance' %}">
+                                    اعضاء کمیته ها
+                                </a>
+                            </li>
+
                             <li>
                                 <a href="{% url 'app_reports:sustainability' %}">
                                     حاکمیت شرکت
                                 </a>
                             </li>
+
                             <li>
                                 <a href="{% url 'app_reports:vision_missions' %}">
                                     چشم انداز و ماموریت ها
                                 </a>
                             </li>
+
                             <li>
                                 <a href="{% url 'app_reports:certificate' %}">
                                     گواهینامه ها و استاندارد ها
                                 </a>
                             </li>
-                            {#                            <li>#}
-                            {#                                <a href="{% url 'app_reports:financial' %}">#}
-                            {#                                    اطلاعیه ها و گزارشات مالی#}
-                            {#                                </a>#}
-                            {#                            </li>#}
-                            {#                            <li>#}
-                            {#                                <a href="{% url 'app_reports:shareholder' %}">#}
-                            {#                                    امور سهام#}
-                            {#                                </a>#}
-                            {#                            </li>#}
-                            {#                            <li>#}
-                            {#                                <a href="{% url 'app_reports:companies' %}">#}
-                            {#                                    شرکت های هم گروه#}
-                            {#                                </a>#}
-                            {#                            </li>#}
-                            {#                            <li>#}
-                            {#                                <a href="{% url 'app_sale:sales_chart' %}">#}
-                            {#                                    نمودار فروش#}
-                            {#                                </a>#}
-                            {#                            </li>#}
 
+                            <!-- ✅ فعال شد -->
+                            <li>
+                                <a href="{% url 'app_reports:financial' %}">
+                                    اطلاعیه ها و گزارشات مالی
+                                </a>
+                            </li>
+
+                            <!-- ✅ فعال شد -->
+                            <li>
+                                <a href="{% url 'app_reports:shareholder' %}">
+                                    امور سهام
+                                </a>
+                            </li>
+
+                            <!-- ✅ فعال شد -->
+                            <li>
+                                <a href="{% url 'app_reports:companies' %}">
+                                    شرکت های هم گروه
+                                </a>
+                            </li>
+
+                            <!-- ✅ فعال شد -->
+                            <li>
+                                <a href="{% url 'app_sale:sales_chart' %}">
+                                    نمودار فروش
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>
+
+                <!-- لینک‌ها -->
                 <div class="col-md-6 col-lg-3">
                     <div class="footer-widget-box list">
                         <h4 class="footer-widget-title">
@@ -582,32 +595,41 @@
                             </li>
                             <li>
                                 <a href="{% url 'app_news:news_home' %}">
-                                    اخبار شرکت
+                                    اخبار
                                 </a>
                             </li>
-                            {#                            <li>#}
-                            {#                                <a href="{% url 'app_tender:tender_home' %}">#}
-                            {#                                    مناقصه#}
-                            {#                                </a>#}
-                            {#                            </li>#}
-                            {#                            <li>#}
-                            {#                                <a href="{% url 'app_auction:auction_home' %}">#}
-                            {#                                    مزایده#}
-                            {#                                </a>#}
-                            {#                            </li>#}
-                            {#                            <li>#}
-                            {#                                <a href="{% url 'app_inquiry:home' %}">#}
-                            {#                                    استعلام خرید#}
-                            {#                                </a>#}
-                            {#                            </li>#}
-                            {#                            <li>#}
-                            {#                                <a href="{% url 'app_tender_holding:tender_holding_home' %}">#}
-                            {#                                    مناقصه های هلدینگ#}
-                            {#                                </a>#}
-                            {#                            </li>#}
+
+                            <!-- ✅ فعال شد -->
+                            <li>
+                                <a href="{% url 'app_tender:tender_home' %}">
+                                    مناقصه
+                                </a>
+                            </li>
+
+                            <!-- ✅ فعال شد -->
+                            <li>
+                                <a href="{% url 'app_auction:auction_home' %}">
+                                    مزایده
+                                </a>
+                            </li>
+
+                            <!-- ✅ فعال شد -->
+                            <li>
+                                <a href="{% url 'app_inquiry:inquiry_home' %}">
+                                    استعلام خرید
+                                </a>
+                            </li>
+
+                            <!-- ✅ فعال شد -->
+                            <li>
+                                <a href="{% url 'app_tender_holding:tender_holding_home' %}">
+                                    مناقصه های هلدینگ
+                                </a>
+                            </li>
+
                             <li>
                                 <a href="{% url 'app_media:home' %}">
-                                    رسانه
+                                    ویدیوها
                                 </a>
                             </li>
                             <li>
@@ -615,7 +637,6 @@
                                     کاتالوگ
                                 </a>
                             </li>
-
                             <li>
                                 <a href="{% url 'app_blog:blog_home' %}">
                                     مقالات
@@ -626,11 +647,11 @@
                                     رزومه
                                 </a>
                             </li>
-                                                        <li>
-                                                            <a class="dropdown-item" href="{% url 'app_hr:hr_home' %}">
-                                                                فرصت های شغلی
-                                                            </a>
-                                                        </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'app_hr:hr_home' %}">
+                                    فرصت های شغلی
+                                </a>
+                            </li>
 
                             {% if site_info.phone_security_1 or site_info.phone_security_2 or site_info.phone_security_3 or site_info.email_security or site_info.fax_security %}
                                 <li>
@@ -648,6 +669,8 @@
                         </ul>
                     </div>
                 </div>
+
+                <!-- دسته‌بندی محصولات -->
                 <div class="col-md-6 col-lg-2">
                     <div class="footer-widget-box list">
                         <h4 class="footer-widget-title">
@@ -668,6 +691,8 @@
             </div>
         </div>
     </div>
+
+    <!-- copyright -->
     <div class="copyright">
         <div class="container">
             <div class="copyright-wrap">
@@ -684,70 +709,46 @@
                         <div class="col-12 col-lg-6 align-self-center">
                             <div class="header-top-social">
                                 <span>ما را دنبال کنید:</span>
-
                                 {% for link in follow_links %}
                                     {% if link.svg_icon and link.url %}
                                         <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer">
-                                            <img
-                                                    src="{{ link.svg_icon.url }}"
-                                                    width="30"
-                                                    height="30"
-                                            />
+                                            <img src="{{ link.svg_icon.url }}" width="30" height="30"/>
                                         </a>
                                     {% endif %}
                                 {% endfor %}
                             </div>
                         </div>
                     {% endif %}
-
                 </div>
             </div>
         </div>
     </div>
 </footer>
 <!-- footer area end -->
+
 <!-- scroll-top -->
 <a href="#" id="scroll-top">
-    <i class="far fa-arrow-up-from-arc">
-    </i>
+    <i class="far fa-arrow-up-from-arc"></i>
 </a>
 <!-- scroll-top end -->
 
 <!-- js -->
-{#<script data-cfasync="false"#}
-{#        src="https://live.themewild.com/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js' %}">#}
-{#</script>#}
-<script src="{% static 'RTl/assets/js/jquery-3.7.1.min.js' %}">
-</script>
-<script src="{% static 'RTl/assets/js/modernizr.min.js' %}">
-</script>
-<script src="{% static 'RTl/assets/js/bootstrap.bundle.min.js' %}">
-</script>
-<script src="{% static 'RTl/assets/js/imagesloaded.pkgd.min.js' %}">
-</script>
-<script src="{% static 'RTl/assets/js/jquery.magnific-popup.min.js' %}">
-</script>
-<script src="{% static 'RTl/assets/js/isotope.pkgd.min.js' %}">
-</script>
-<script src="{% static 'RTl/assets/js/jquery.appear.min.js' %}">
-</script>
-<script src="{% static 'RTl/assets/js/jquery.easing.min.js' %}">
-</script>
-<script src="{% static 'RTl/assets/js/owl.carousel.min.js' %}">
-</script>
-<script src="{% static 'RTl/assets/js/counter-up.js' %}">
-</script>
-<script src="{% static 'RTl/assets/js/jquery-ui.min.js' %}">
-</script>
-<script src="{% static 'RTl/assets/js/jquery.nice-select.min.js' %}">
-</script>
-<script src="{% static 'RTl/assets/js/countdown.min.js' %}">
-</script>
-<script src="{% static 'RTl/assets/js/wow.min.js' %}">
-</script>
-<script src="{% static 'RTl/assets/js/flex-slider.js' %}">
-</script>
-<script src="{% static 'RTl/assets/js/main.js' %}">
-</script>
+<script src="{% static 'RTL/assets/js/jquery-3.7.1.min.js' %}"></script>
+<script src="{% static 'RTL/assets/js/modernizr.min.js' %}"></script>
+<script src="{% static 'RTL/assets/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'RTL/assets/js/imagesloaded.pkgd.min.js' %}"></script>
+<script src="{% static 'RTL/assets/js/jquery.magnific-popup.min.js' %}"></script>
+<script src="{% static 'RTL/assets/js/isotope.pkgd.min.js' %}"></script>
+<script src="{% static 'RTL/assets/js/jquery.appear.min.js' %}"></script>
+<script src="{% static 'RTL/assets/js/jquery.easing.min.js' %}"></script>
+<script src="{% static 'RTL/assets/js/owl.carousel.min.js' %}"></script>
+<script src="{% static 'RTL/assets/js/counter-up.js' %}"></script>
+<script src="{% static 'RTL/assets/js/jquery-ui.min.js' %}"></script>
+<script src="{% static 'RTL/assets/js/jquery.nice-select.min.js' %}"></script>
+<script src="{% static 'RTL/assets/js/countdown.min.js' %}"></script>
+<script src="{% static 'RTL/assets/js/wow.min.js' %}"></script>
+<script src="{% static 'RTL/assets/js/flex-slider.js' %}"></script>
+<script src="{% static 'RTL/assets/js/main.js' %}"></script>
+
 </body>
 </html>

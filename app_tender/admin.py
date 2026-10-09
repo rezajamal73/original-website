@@ -64,9 +64,14 @@ class TenderImageInline(admin.TabularInline):
 # -------------------------------------------------------
 @admin.register(TenderCategory)
 class TenderCategoryAdmin(SortableAdminMixin, admin.ModelAdmin):
-    list_display = ("order", "title_icon", "slug", "created_at_fa", "delete_button")
-    search_fields = ("title_fa", "title_en")
-    readonly_fields = ("slug",)
+    # ✅ slug_en اضافه شد
+    list_display = ("order", "title_icon", "slug", "slug_en", "created_at_fa", "delete_button")
+    search_fields = ("title_fa", "title_en", "slug", "slug_en")
+    readonly_fields = ("slug", "slug_en")
+
+    fieldsets = (
+        (None, {"fields": ("title_fa", "title_en", "slug", "slug_en", "order")}),
+    )
 
     def title_icon(self, obj):
         return format_html("📁 <b>{}</b>", obj.title_fa)
@@ -82,9 +87,14 @@ class TenderCategoryAdmin(SortableAdminMixin, admin.ModelAdmin):
 # -------------------------------------------------------
 @admin.register(TenderTag)
 class TenderTagAdmin(SortableAdminMixin, admin.ModelAdmin):
-    list_display = ("order", "title_icon", "slug", "created_at_fa", "delete_button")
-    search_fields = ("title_fa", "title_en")
-    readonly_fields = ("slug",)
+    # ✅ slug_en اضافه شد
+    list_display = ("order", "title_icon", "slug", "slug_en", "created_at_fa", "delete_button")
+    search_fields = ("title_fa", "title_en", "slug", "slug_en")
+    readonly_fields = ("slug", "slug_en")
+
+    fieldsets = (
+        (None, {"fields": ("title_fa", "title_en", "slug", "slug_en", "order")}),
+    )
 
     def title_icon(self, obj):
         return format_html("🏷️ <b>{}</b>", obj.title_fa)
@@ -108,14 +118,15 @@ class TenderAdmin(admin.ModelAdmin):
         "title_icon",
         "status_icon",
         "category_icon",
-        "tag_icon",     # ← اینجا کاما اضافه شد ✔️
+        "tag_icon",
         "start_date_fa",
         "delete_button",
     )
 
-    search_fields = ("title_fa", "title_en", "tender_number", "slug")
+    # ✅ slug_en اضافه شد
+    search_fields = ("title_fa", "title_en", "tender_number", "slug", "slug_en")
     list_filter = ("status", "category")
-    readonly_fields = ("poster_preview", "slug")
+    readonly_fields = ("poster_preview", "slug", "slug_en")
     ordering = ("order",)
 
     fieldsets = (
@@ -127,10 +138,11 @@ class TenderAdmin(admin.ModelAdmin):
             "fields": ("poster", "poster_preview"),
         }),
         ("📄 فارسی", {
-            "fields": ("title_fa", "description_fa"),
+            "fields": ("title_fa", "description_fa", "slug"),
         }),
+        # ✅ slug_en به انگلیسی اضافه شد
         ("📄 انگلیسی", {
-            "fields": ("title_en", "description_en", "slug"),
+            "fields": ("title_en", "description_en", "slug_en"),
         }),
         ("📣 فراخوان", {
             "fields": ("tender_number", "estimated_amount"),

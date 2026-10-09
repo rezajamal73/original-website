@@ -1,4 +1,3 @@
-
 {% extends 'LTR/core/base-en.html' %}
 {% load static %}
 
@@ -9,9 +8,13 @@
     <!-- breadcrumb -->
     <div class="site-breadcrumb">
 
-        <div class="site-breadcrumb-bg"
-             style="background: url('{{ banner.image.url }}')">
-        </div>
+        {% if banner and banner.image %}
+            <div class="site-breadcrumb-bg"
+                 style="background: url('{{ banner.image.url }}')">
+            </div>
+        {% else %}
+            <div class="site-breadcrumb-bg"></div>
+        {% endif %}
 
         <div class="container">
 
@@ -24,7 +27,8 @@
                 <ul class="breadcrumb-menu">
 
                     <li>
-                        <a href="{% url 'app_core:home_en' %}">
+                        {# ✅ اصلاح شد: app_core: → app_core_en: #}
+                        <a href="{% url 'app_core_en:home_en' %}">
                             <i class="far fa-home"></i>
                             Home
                         </a>
@@ -361,4 +365,3 @@
 </main>
 
 {% endblock %}
-

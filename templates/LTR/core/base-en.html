@@ -13,68 +13,22 @@
 
     <!-- SEO META -->
     <title>{% seo_title %}</title>
-
-    <meta
-        name="description"
-        content="{% seo_description %}"
-    />
-
-    <meta
-        name="keywords"
-        content="{% seo_keywords %}"
-    />
-
-    <meta
-        name="robots"
-        content="{% seo_robots %}"
-    />
-
-    <link
-        rel="canonical"
-        href="{% seo_canonical %}"
-    />
+    <meta name="description" content="{% seo_description %}"/>
+    <meta name="keywords" content="{% seo_keywords %}"/>
+    <meta name="robots" content="{% seo_robots %}"/>
+    <link rel="canonical" href="{% seo_canonical %}"/>
 
     <!-- Open Graph -->
-    <meta
-        property="og:title"
-        content="{% seo_title %}"
-    />
-
-    <meta
-        property="og:description"
-        content="{% seo_description %}"
-    />
-
-    <meta
-        property="og:image"
-        content="{% seo_og_image %}"
-    />
-
-    <meta
-        property="og:type"
-        content="website"
-    />
+    <meta property="og:title" content="{% seo_title %}"/>
+    <meta property="og:description" content="{% seo_description %}"/>
+    <meta property="og:image" content="{% seo_og_image %}"/>
+    <meta property="og:type" content="website"/>
 
     <!-- Twitter -->
-    <meta
-        name="twitter:card"
-        content="summary_large_image"
-    />
-
-    <meta
-        name="twitter:title"
-        content="{% seo_title %}"
-    />
-
-    <meta
-        name="twitter:description"
-        content="{% seo_description %}"
-    />
-
-    <meta
-        name="twitter:image"
-        content="{% seo_og_image %}"
-    />
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta name="twitter:title" content="{% seo_title %}"/>
+    <meta name="twitter:description" content="{% seo_description %}"/>
+    <meta name="twitter:image" content="{% seo_og_image %}"/>
 
     <!-- Schema.org -->
     <script type="application/ld+json">
@@ -83,11 +37,7 @@
 
     <!-- Favicon -->
     {% if site_info and site_info.header_logo %}
-        <link
-            rel="icon"
-            type="image/x-icon"
-            href="{{ site_info.header_logo.url }}"
-        >
+        <link rel="icon" type="image/x-icon" href="{{ site_info.header_logo.url }}">
     {% endif %}
 
     <!-- CSS -->
@@ -184,7 +134,7 @@
                                             aria-expanded="false"
                                             class="dropdown-toggle"
                                             data-bs-toggle="dropdown"
-                                            href="{% url 'app_core:home_en' %}"
+                                            href="/en/"
                                         >
                                             <i class="far fa-globe-americas"></i>
                                             English
@@ -192,10 +142,11 @@
 
                                         <div class="dropdown-menu">
 
-                                            <a
-                                                class="dropdown-item"
-                                                href="{% url 'app_core:home' %}"
-                                            >
+                                            <a class="dropdown-item" href="/en/">
+                                                English
+                                            </a>
+
+                                            <a class="dropdown-item" href="/">
                                                 فارسی
                                             </a>
 
@@ -270,7 +221,7 @@
                 <!-- Logo -->
                 <a
                     class="navbar-brand d-flex align-items-center"
-                    href="{% url 'app_core:home_en' %}"
+                    href="{% url 'app_core_en:home_en' %}"
                 >
 
                     {% if site_info.header_logo %}
@@ -349,7 +300,7 @@
 
                         <a
                             class="offcanvas-brand"
-                            href="{% url 'app_core:home_en' %}"
+                            href="{% url 'app_core_en:home_en' %}"
                             id="offcanvasNavbarLabel"
                         >
 
@@ -384,7 +335,7 @@
 
                                 <a
                                     class="nav-link"
-                                    href="{% url 'app_core:home_en' %}"
+                                    href="{% url 'app_core_en:home_en' %}"
                                 >
                                     Home
                                 </a>
@@ -408,7 +359,7 @@
                                     <li>
                                         <a
                                             class="dropdown-item"
-                                            href="{% url 'app_core:about_en' %}"
+                                            href="{% url 'app_core_en:about_en' %}"
                                         >
                                             Company History
                                         </a>
@@ -418,7 +369,7 @@
                                     <li>
                                         <a
                                             class="dropdown-item"
-                                            href="{% url 'app_chart:chart_en' %}"
+                                            href="{% url 'app_chart_en:chart_en' %}"
                                         >
                                             Executive Team & Organizational Chart
                                         </a>
@@ -429,7 +380,7 @@
                                     <li>
                                         <a
                                             class="dropdown-item"
-                                            href="{% url 'app_reports:sustainability_en' %}"
+                                            href="{% url 'app_reports_en:sustainability_en' %}"
                                         >
                                             Corporate Governance
                                         </a>
@@ -440,7 +391,7 @@
                                     <li>
                                         <a
                                             class="dropdown-item"
-                                            href="{% url 'app_reports:vision_missions_en' %}"
+                                            href="{% url 'app_reports_en:vision_missions_en' %}"
                                         >
                                             Vision & Missions
                                         </a>
@@ -451,7 +402,7 @@
                                     <li>
                                         <a
                                             class="dropdown-item"
-                                            href="{% url 'app_reports:certificate_en' %}"
+                                            href="{% url 'app_reports_en:certificate_en' %}"
                                         >
                                             Certificates & Standards
                                         </a>
@@ -467,7 +418,7 @@
 
                                 <a
                                     class="nav-link"
-                                    href="{% url 'app_product:product_list_en' %}"
+                                    href="{% url 'app_product_en:product_list_en' %}"
                                 >
                                     Products
                                 </a>
@@ -480,7 +431,7 @@
 
                                 <a
                                     class="nav-link"
-                                    href="{% url 'app_resume:resume_en' %}"
+                                    href="{% url 'app_resume_en:resume_en' %}"
                                 >
                                     Resume
                                 </a>
@@ -493,7 +444,7 @@
 
                                 <a
                                     class="nav-link"
-                                    href="{% url 'app_media:home_en' %}"
+                                    href="{% url 'app_media_en:home_en' %}"
                                 >
                                     Media
                                 </a>
@@ -506,7 +457,7 @@
 
                                 <a
                                     class="nav-link"
-                                    href="{% url 'app_catalog:catalog_en' %}"
+                                    href="{% url 'app_catalog_en:catalog_en' %}"
                                 >
                                     Catalog
                                 </a>
@@ -519,7 +470,7 @@
 
                                 <a
                                     class="nav-link"
-                                    href="{% url 'app_blog:blog_home_en' %}"
+                                    href="{% url 'app_blog_en:blog_home_en' %}"
                                 >
                                     Articles
                                 </a>
@@ -545,7 +496,7 @@
                                         <li>
                                             <a
                                                 class="dropdown-item"
-                                                href="{% url 'app_core:contact_security_en' %}"
+                                                href="{% url 'app_core_en:contact_security_en' %}"
                                             >
                                                 Contact Security Department
                                             </a>
@@ -557,7 +508,7 @@
                                     <li>
                                         <a
                                             class="dropdown-item"
-                                            href="{% url 'app_core:contact_en' %}"
+                                            href="{% url 'app_core_en:contact_en' %}"
                                         >
                                             Contact Us
                                         </a>
@@ -574,7 +525,7 @@
                         <div class="nav-right icon">
 
                             <form
-                                action="{% url 'app_core:search_en' %}"
+                                action="{% url 'app_core_en:search_en' %}"
                                 method="get"
                                 style="display:flex;align-items:center;gap:8px;"
                             >
@@ -633,7 +584,7 @@
     </button>
 
     <form
-        action="{% url 'app_core:search_en' %}"
+        action="{% url 'app_core_en:search_en' %}"
         method="get"
     >
 
@@ -684,7 +635,7 @@
 
                         <a
                             class="navbar-brand d-flex align-items-center gap-2"
-                            href="{% url 'app_core:home_en' %}"
+                            href="{% url 'app_core_en:home_en' %}"
                         >
 
                             {% if site_info.footer_logo %}
@@ -857,35 +808,35 @@
                         <ul class="footer-list">
 
                             <li>
-                                <a href="{% url 'app_core:about_en' %}">
+                                <a href="{% url 'app_core_en:about_en' %}">
                                     About Us
                                 </a>
                             </li>
 
 
                             <li>
-                                <a href="{% url 'app_chart:chart_en' %}">
+                                <a href="{% url 'app_chart_en:chart_en' %}">
                                     Executive Team & Organizational Chart
                                 </a>
                             </li>
 
 
                             <li>
-                                <a href="{% url 'app_reports:sustainability_en' %}">
+                                <a href="{% url 'app_reports_en:sustainability_en' %}">
                                     Corporate Governance
                                 </a>
                             </li>
 
 
                             <li>
-                                <a href="{% url 'app_reports:vision_missions_en' %}">
+                                <a href="{% url 'app_reports_en:vision_missions_en' %}">
                                     Vision & Missions
                                 </a>
                             </li>
 
 
                             <li>
-                                <a href="{% url 'app_reports:certificate_en' %}">
+                                <a href="{% url 'app_reports_en:certificate_en' %}">
                                     Certificates & Standards
                                 </a>
                             </li>
@@ -909,35 +860,35 @@
                         <ul class="footer-list">
 
                             <li>
-                                <a href="{% url 'app_product:product_list_en' %}">
+                                <a href="{% url 'app_product_en:product_list_en' %}">
                                     Products
                                 </a>
                             </li>
 
 
                             <li>
-                                <a href="{% url 'app_media:home_en' %}">
+                                <a href="{% url 'app_media_en:home_en' %}">
                                     Media
                                 </a>
                             </li>
 
 
                             <li>
-                                <a href="{% url 'app_catalog:catalog_en' %}">
+                                <a href="{% url 'app_catalog_en:catalog_en' %}">
                                     Catalog
                                 </a>
                             </li>
 
 
                             <li>
-                                <a href="{% url 'app_blog:blog_home_en' %}">
+                                <a href="{% url 'app_blog_en:blog_home_en' %}">
                                     Articles
                                 </a>
                             </li>
 
 
                             <li>
-                                <a href="{% url 'app_resume:resume_en' %}">
+                                <a href="{% url 'app_resume_en:resume_en' %}">
                                     Resume
                                 </a>
                             </li>
@@ -946,7 +897,7 @@
                             {% if site_info.phone_security_1 or site_info.phone_security_2 or site_info.phone_security_3 or site_info.email_security or site_info.fax_security %}
 
                                 <li>
-                                    <a href="{% url 'app_core:contact_security_en' %}">
+                                    <a href="{% url 'app_core_en:contact_security_en' %}">
                                         Contact Security Department
                                     </a>
                                 </li>
@@ -955,7 +906,7 @@
 
 
                             <li>
-                                <a href="{% url 'app_core:contact_en' %}">
+                                <a href="{% url 'app_core_en:contact_en' %}">
                                     Contact Us
                                 </a>
                             </li>
@@ -984,7 +935,7 @@
                                 <li>
 
                                     <a
-                                        href="{% url 'app_product:category_en' slug=category.slug %}"
+                                        href="{% url 'app_product_en:category_en' slug=category.slug_en %}"
                                     >
                                         {{ category.title_en }}
                                     </a>

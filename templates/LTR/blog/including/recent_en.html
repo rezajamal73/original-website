@@ -9,40 +9,25 @@
         <div class="recent-post-item">
 
             <div class="recent-post-img">
-
-                <a href="{% url 'app_blog:blog_single_en' post.id %}">
-
-                    <img
-                        src="{{ post.image.url }}"
-                        alt="{{ post.title_en }}"
-                    >
-
+                {# ✅ اصلاح شد: get_absolute_url_en #}
+                <a href="{{ post.get_absolute_url_en }}">
+                    <img src="{{ post.image.url }}"
+                         alt="{{ post.title_en|default:post.title_fa }}">
                 </a>
-
             </div>
 
-
             <div class="recent-post-bio">
-
                 <h6>
-
-                    <a href="{% url 'app_blog:blog_single_en' post.id %}">
-
-                        {{ post.title_en|truncatechars:25 }}
-
+                    {# ✅ اصلاح شد #}
+                    <a href="{{ post.get_absolute_url_en }}">
+                        {{ post.title_en|default:post.title_fa|truncatechars:25 }}
                     </a>
-
                 </h6>
 
-
                 <span>
-
                     <i class="far fa-clock"></i>
-
                     {{ post.publish_date_en }}
-
                 </span>
-
             </div>
 
         </div>

@@ -26,21 +26,21 @@
                     <ul class="breadcrumb-menu">
 
                         <li>
-                            <a href="{% url 'app_core:home_en' %}">
+                            <a href="{% url 'app_core_en:home_en' %}">
                                 <i class="far fa-home"></i>
                                 Home
                             </a>
                         </li>
 
                         <li>
-                            <a href="{% url 'app_product:product_list_en' %}">
+                            <a href="{% url 'app_product_en:product_list_en' %}">
                                 <i class="far"></i>
                                 All Products
                             </a>
                         </li>
 
                         <li class="active">
-                            {{ product.title_en }}
+                            {{ product.title_en|default:product.title_fa }}
                         </li>
 
                     </ul>
@@ -76,7 +76,7 @@
                                             <li data-thumb="{{ product.main_image.url }}">
 
                                                 <img src="{{ product.main_image.url }}"
-                                                     alt="{{ product.title_en }}">
+                                                     alt="{{ product.title_en|default:product.title_fa }}">
 
                                             </li>
 
@@ -88,7 +88,7 @@
                                             <li data-thumb="{{ img.image.url }}">
 
                                                 <img src="{{ img.image.url }}"
-                                                     alt="{{ product.title_en }}">
+                                                     alt="{{ product.title_en|default:product.title_fa }}">
 
                                             </li>
 
@@ -111,7 +111,7 @@
                         <div class="shop-single-info">
 
                             <h3 class="shop-single-title mb-3">
-                                {{ product.title_en }}
+                                {{ product.title_en|default:product.title_fa }}
                             </h3>
 
 
@@ -170,7 +170,7 @@
 
                                                 <strong>Product Category:</strong>
 
-                                                {{ product.category.title_en }}
+                                                {{ product.category.title_en|default:product.category.title_fa }}
 
                                             </td>
 
@@ -195,7 +195,7 @@
 
                                                 <strong>Dosage Form:</strong>
 
-                                                {{ product.category2.title_en }}
+                                                {{ product.category2.title_en|default:product.category2.title_fa }}
 
                                             </td>
 
@@ -216,7 +216,7 @@
 
                                                     <span class="badge bg-secondary me-1">
 
-                                                        {{ tag.title_en }}
+                                                        {{ tag.title_en|default:tag.title_fa }}
 
                                                     </span>
 
@@ -599,7 +599,7 @@
                                     <img src="{{ product.qr_code.url }}"
                                          class="img-fluid"
                                          style="max-width:150px"
-                                         alt="{{ product.title_en }}">
+                                         alt="{{ product.title_en|default:product.title_fa }}">
 
                                 </div>
 

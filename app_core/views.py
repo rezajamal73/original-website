@@ -25,6 +25,8 @@ from app_media.models import Media
 from app_news.models import News
 from app_seo.utils import SEOManager
 
+from app_core.url_helpers import is_english_request
+
 
 # =====================================================
 # CAPTCHA
@@ -47,7 +49,7 @@ def home(request, slug=None):
     # Detect language
     # -------------------------------------------------
 
-    is_english = request.path.startswith("/en/")
+    is_english = is_english_request(request)
 
     # -------------------------------------------------
     # Template
@@ -105,11 +107,17 @@ def home(request, slug=None):
     )
 
     if slug:
-
-        active_category = get_object_or_404(
-            ProductCategory,
-            slug=slug
-        )
+        # ✅ انتخاب slug درست بر اساس زبان
+        if is_english:
+            active_category = get_object_or_404(
+                ProductCategory,
+                slug_en=slug
+            )
+        else:
+            active_category = get_object_or_404(
+                ProductCategory,
+                slug=slug
+            )
 
         product_filter &= Q(
             category=active_category
@@ -271,7 +279,7 @@ def home(request, slug=None):
 
 def about(request):
 
-    is_english = request.path.startswith("/en/")
+    is_english = is_english_request(request)
 
     template = (
         "LTR/core/history.html"
@@ -319,7 +327,7 @@ def about(request):
 
 def contact(request):
 
-    is_english = request.path.startswith("/en/")
+    is_english = is_english_request(request)
 
     template = (
         "LTR/core/contact.html"
@@ -357,7 +365,7 @@ def contact(request):
 
 def contact_security(request):
 
-    is_english = request.path.startswith("/en/")
+    is_english = is_english_request(request)
 
     template = (
         "LTR/core/contact_security.html"
@@ -397,7 +405,7 @@ def contact_security(request):
 
 def error(request):
 
-    is_english = request.path.startswith("/en/")
+    is_english = is_english_request(request)
 
     template = (
         "LTR/core/404.html"
@@ -421,7 +429,7 @@ def error(request):
 
 def search(request):
 
-    is_english = request.path.startswith("/en/")
+    is_english = is_english_request(request)
 
     template = (
         "LTR/core/search.html"

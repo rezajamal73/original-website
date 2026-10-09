@@ -1,4 +1,4 @@
-# app/admin.py
+# app_inquiry/admin.py
 from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
@@ -10,6 +10,7 @@ from .models import (
     PurchaseInquiry,
     PurchaseInquiryImage,
 )
+
 
 # ------------------------------------------------
 #   GLOBAL DELETE BUTTON
@@ -46,7 +47,8 @@ class PurchaseInquiryImageInline(admin.TabularInline):
         if obj and getattr(obj, "image", None):
             return format_html(
                 "<img src='{}' width='70' "
-                "style='border-radius:6px; object-fit:cover; box-shadow:0 0 5px #bbb;'>",
+                "style='border-radius:6px; object-fit:cover; "
+                "box-shadow:0 0 5px #bbb;'>",
                 obj.image.url,
             )
         return "—"
@@ -61,16 +63,27 @@ class PurchaseInquiryImageInline(admin.TabularInline):
 class InquiryCategoryAdmin(SortableAdminMixin, admin.ModelAdmin):
     actions = None
 
+    # ✅ slug_en اضافه شد
     list_display = (
         "order",
         "title_icon",
         "slug",
+        "slug_en",
         "created_at_fa",
         "delete_button",
     )
     ordering = ("order",)
-    search_fields = ("title_fa", "title_en", "slug")
-    readonly_fields = ("slug",)
+
+    # ✅ slug_en اضافه شد
+    search_fields = ("title_fa", "title_en", "slug", "slug_en")
+
+    # ✅ slug_en اضافه شد
+    readonly_fields = ("slug", "slug_en")
+
+    # ✅ fieldsets اضافه شد (order + slug_en)
+    fieldsets = (
+        (None, {"fields": ("title_fa", "title_en", "slug", "slug_en", "order")}),
+    )
 
     def title_icon(self, obj):
         return format_html("📁 <b>{}</b>", obj.title_fa)
@@ -90,16 +103,27 @@ class InquiryCategoryAdmin(SortableAdminMixin, admin.ModelAdmin):
 class InquiryTagAdmin(SortableAdminMixin, admin.ModelAdmin):
     actions = None
 
+    # ✅ slug_en اضافه شد
     list_display = (
         "order",
         "title_icon",
         "slug",
+        "slug_en",
         "created_at_fa",
         "delete_button",
     )
     ordering = ("order",)
-    search_fields = ("title_fa", "title_en", "slug")
-    readonly_fields = ("slug",)
+
+    # ✅ slug_en اضافه شد
+    search_fields = ("title_fa", "title_en", "slug", "slug_en")
+
+    # ✅ slug_en اضافه شد
+    readonly_fields = ("slug", "slug_en")
+
+    # ✅ fieldsets اضافه شد
+    fieldsets = (
+        (None, {"fields": ("title_fa", "title_en", "slug", "slug_en", "order")}),
+    )
 
     def title_icon(self, obj):
         return format_html("🏷️ <b>{}</b>", obj.title_fa)
@@ -120,7 +144,8 @@ class PurchaseInquiryAdmin(SortableAdminMixin, admin.ModelAdmin):
     actions = None
     inlines = [PurchaseInquiryImageInline]
 
-    readonly_fields = ("slug", "cover_preview")
+    # ✅ slug_en اضافه شد
+    readonly_fields = ("slug", "slug_en", "cover_preview")
 
     list_display = (
         "order",
@@ -133,6 +158,8 @@ class PurchaseInquiryAdmin(SortableAdminMixin, admin.ModelAdmin):
     )
 
     ordering = ("order",)
+
+    # ✅ slug_en اضافه شد
     search_fields = (
         "title_fa",
         "title_en",
@@ -140,14 +167,18 @@ class PurchaseInquiryAdmin(SortableAdminMixin, admin.ModelAdmin):
         "description_en",
         "inquiry_number",
         "slug",
+        "slug_en",
     )
+
     list_filter = ("status", "category", "start_date_fa")
 
     fieldsets = (
         ("📌 وضعیت", {"fields": ("status",)}),
         ("🖼️ تصویر", {"fields": ("cover_image", "cover_preview")}),
-        ("📝 فارسی", {"fields": ("title_fa", "description_fa")}),
-        ("📝 انگلیسی", {"fields": ("title_en", "description_en", "slug")}),
+        # ✅ slug توی فارسی (نه انگلیسی!)
+        ("📝 فارسی", {"fields": ("title_fa", "description_fa", "slug")}),
+        # ✅ slug_en توی انگلیسی
+        ("📝 انگلیسی", {"fields": ("title_en", "description_en", "slug_en")}),
         ("📣 استعلام", {"fields": ("inquiry_number", "estimated_amount")}),
         ("📎 پیوست", {"fields": ("attachment",)}),
         ("📂 دسته‌بندی", {"fields": ("category", "tags")}),
@@ -169,7 +200,8 @@ class PurchaseInquiryAdmin(SortableAdminMixin, admin.ModelAdmin):
         if obj and getattr(obj, "cover_image", None):
             return format_html(
                 "<img src='{}' width='45' height='45' "
-                "style='border-radius:6px; object-fit:cover; box-shadow:0 0 4px #aaa;'>",
+                "style='border-radius:6px; object-fit:cover; "
+                "box-shadow:0 0 4px #aaa;'>",
                 obj.cover_image.url,
             )
         return "🖼️"
@@ -201,9 +233,9 @@ class PurchaseInquiryAdmin(SortableAdminMixin, admin.ModelAdmin):
             "closed": "#dc3545",
         }
         labels = {
-            "open": "باز",
+            "open": "در حال برگزاری",
             "extended": "تمدید شده",
-            "closed": "بسته شده",
+            "closed": "پایان یافته",
         }
         return format_html(
             "<b style='color:{}'>{}</b>",

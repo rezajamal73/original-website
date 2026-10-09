@@ -8,43 +8,8 @@ from app_reports.models import (
 
 from app_seo.utils import SEOManager
 
-
-# =====================================================
-# LANGUAGE DETECTION
-# =====================================================
-
-def is_english_request(request):
-    """
-    Detect English pages based on URL name.
-
-    Persian:
-        vision_missions
-        financial
-        shareholder
-        governance
-        sustainability
-        certificate
-        department_contact_list
-        companies
-
-    English:
-        vision_missions_en
-        financial_en
-        shareholder_en
-        governance_en
-        sustainability_en
-        certificate_en
-        department_contact_list_en
-        companies_en
-    """
-
-    url_name = getattr(
-        request.resolver_match,
-        "url_name",
-        ""
-    )
-
-    return url_name.endswith("_en")
+# ✅ is_english_request از app_core
+from app_core.url_helpers import is_english_request
 
 
 # =====================================================

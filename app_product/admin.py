@@ -52,9 +52,9 @@ class ProductCategoryAdmin(SortableAdminMixin, admin.ModelAdmin):
     ordering = ("priority",)
     actions = None
 
-    list_display = ("priority", "title_display", "slug", "delete_col")
+    list_display = ("priority", "title_display", "slug", "slug_en", "delete_col")
     search_fields = ("title_fa", "title_en")
-    readonly_fields = ("slug",)
+    readonly_fields = ("slug", "slug_en")
 
     def title_display(self, obj):
         return format_html("📁 <b>{}</b>", obj.title_fa)
@@ -76,9 +76,9 @@ class ProductCategory2Admin(SortableAdminMixin, admin.ModelAdmin):
     ordering = ("priority",)
     actions = None
 
-    list_display = ("priority", "title_display", "slug", "delete_col")
+    list_display = ("priority", "title_display", "slug", "slug_en", "delete_col")
     search_fields = ("title_fa", "title_en")
-    readonly_fields = ("slug",)
+    readonly_fields = ("slug", "slug_en")
 
     def title_display(self, obj):
         return format_html("📂 <b>{}</b>", obj.title_fa)
@@ -100,9 +100,9 @@ class ProductTagAdmin(SortableAdminMixin, admin.ModelAdmin):
     ordering = ("priority",)
     actions = None
 
-    list_display = ("priority", "title_display", "slug", "delete_col")
+    list_display = ("priority", "title_display", "slug", "slug_en", "delete_col")
     search_fields = ("title_fa", "title_en")
-    readonly_fields = ("slug",)
+    readonly_fields = ("slug", "slug_en")
 
     def title_display(self, obj):
         return format_html("🏷️ <b>{}</b>", obj.title_fa)
@@ -151,6 +151,9 @@ class ProductScanInline(admin.TabularInline):
         return False
 
 
+# ============================================================
+# PRODUCT COLOR INLINE
+# ============================================================
 class ProductColorInline(admin.TabularInline):
     model = ProductColor
     extra = 1
@@ -172,6 +175,7 @@ class ProductColorInline(admin.TabularInline):
         return "—"
 
     color_preview.short_description = "نمونه"
+
 
 # ============================================================
 # PRODUCT ADMIN
@@ -195,7 +199,6 @@ class ProductAdmin(SortableAdminMixin, admin.ModelAdmin):
         "generic_name_en",
         "sku",
         "meta_title",
-
     )
 
     list_filter = (
@@ -218,6 +221,7 @@ class ProductAdmin(SortableAdminMixin, admin.ModelAdmin):
 
     readonly_fields = (
         "slug",
+        "slug_en",
         "created_col",
         "updated_col",
         "main_image_preview",
@@ -243,6 +247,7 @@ class ProductAdmin(SortableAdminMixin, admin.ModelAdmin):
                 "summary_fa",
                 "summary_en",
                 "slug",
+                "slug_en",
             ),
         }),
 
@@ -270,7 +275,6 @@ class ProductAdmin(SortableAdminMixin, admin.ModelAdmin):
             "fields": (
                 "meta_title",
                 "meta_description",
-
                 "robots",
             ),
         }),
@@ -381,5 +385,3 @@ class ProductAdmin(SortableAdminMixin, admin.ModelAdmin):
         return delete_button(obj)
 
     delete_col.short_description = ""
-
-

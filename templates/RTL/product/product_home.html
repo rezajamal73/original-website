@@ -5,8 +5,11 @@
     <main class="main">
         <!-- breadcrumb -->
         <div class="site-breadcrumb">
-            <div class="site-breadcrumb-bg" style="background: url('{{ banner.image.url }}')">
-            </div>
+            {% if banner and banner.image %}
+                <div class="site-breadcrumb-bg" style="background: url('{{ banner.image.url }}')"></div>
+            {% else %}
+                <div class="site-breadcrumb-bg"></div>
+            {% endif %}
             <div class="container">
                 <div class="site-breadcrumb-wrap">
                     <h4 class="breadcrumb-title">
@@ -15,8 +18,7 @@
                     <ul class="breadcrumb-menu">
                         <li>
                             <a href="{% url 'app_core:home' %}">
-                                <i class="far fa-home">
-                                </i>
+                                <i class="far fa-home"></i>
                                 خانه
                             </a>
                         </li>
@@ -75,9 +77,12 @@
                                                         <span class="type">محصول ویژه</span>
                                                     {% endif %}
 
-                                                    <a href="{% url 'app_product:product_single' product.id %}">
-                                                        <img src="{{ product.main_image.url }}"
-                                                             alt="{{ product.title_fa }}">
+                                                    {# ✅ اصلاح شد: get_absolute_url جای url #}
+                                                    <a href="{{ product.get_absolute_url }}">
+                                                        {% if product.main_image %}
+                                                            <img src="{{ product.main_image.url }}"
+                                                                 alt="{{ product.title_fa }}">
+                                                        {% endif %}
                                                     </a>
 
                                                     <div class="product-action-wrap">
@@ -93,7 +98,8 @@
 
                                                 <div class="product-content">
                                                     <h3 class="product-title">
-                                                        <a href="{% url 'app_product:product_single' product.id %}">
+                                                        {# ✅ اصلاح شد #}
+                                                        <a href="{{ product.get_absolute_url }}">
                                                             {{ product.title_fa }}
                                                         </a>
                                                     </h3>
@@ -189,9 +195,11 @@
                                 <!-- تصویر -->
                                 <div class="col-lg-6">
                                     <div class="quickview-img">
-                                        <img src="{{ product.main_image.url }}"
-                                             alt="{{ product.title_fa }}"
-                                             class="img-fluid rounded-3">
+                                        {% if product.main_image %}
+                                            <img src="{{ product.main_image.url }}"
+                                                 alt="{{ product.title_fa }}"
+                                                 class="img-fluid rounded-3">
+                                        {% endif %}
                                     </div>
                                 </div>
 
@@ -237,10 +245,10 @@
                                                 <li>
                                                     برچسب :
                                                     <span>
-                                            {% for tag in product.tags.all %}
-                                                {{ tag.title_fa }}{% if not forloop.last %}، {% endif %}
-                                            {% endfor %}
-                                        </span>
+                                                        {% for tag in product.tags.all %}
+                                                            {{ tag.title_fa }}{% if not forloop.last %}، {% endif %}
+                                                        {% endfor %}
+                                                    </span>
                                                 </li>
                                             {% endif %}
 

@@ -1,11 +1,22 @@
-from django.shortcuts import render, get_object_or_404
+# app_tender_holding/views.py
+from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Q
+
 from .models import Holding, HoldingCategory, HoldingTag
 from app_seo.utils import SEOManager
 
+# ✅ is_english_request از app_core
+from app_core.url_helpers import is_english_request
 
-def get_holding_context():
+
+# =====================================================
+# CONTEXT HELPER
+# =====================================================
+def get_holding_context(is_english=False):
+    """
+    دسته‌بندی‌های هلدینگ برای سایدبار.
+    """
     return {
         "holding_categories": (
             HoldingCategory.objects
@@ -14,6 +25,10 @@ def get_holding_context():
         )
     }
 
+
+# =====================================================
+# PAGINATION HELPER
+# =====================================================
 def paginate_queryset(request, queryset, per_page=8):
     paginator = Paginator(queryset, per_page)
     page_number = request.GET.get("page")
@@ -25,6 +40,20 @@ def paginate_queryset(request, queryset, per_page=8):
     except EmptyPage:
         return paginator.get_page(paginator.num_pages)
 
+
+# =====================================================
+# TEMPLATE HELPER
+# =====================================================
+def _get_template(name, is_english):
+    """
+    انتخاب قالب بر اساس زبان.
+    مثال: _get_template("tender-holding-home.html", True)
+          → "LTR/tender_holding/tender-holding-home.html"
+    """
+    prefix = "LTR" if is_english else "RTL"
+    return f"{prefix}/tender_holding/{name}"
+
+
 # =====================================================
 # HOLDING HOME (ALL / CATEGORY)
 # =====================================================
@@ -34,6 +63,8 @@ def tender_holding_home(request, cat_name=None):
     - همه
     - یا فیلتر بر اساس دسته‌بندی
     """
+    is_english = is_english_request(request)
+
     holdings_qs = (
         Holding.objects
         .select_related("category")
@@ -42,38 +73,89 @@ def tender_holding_home(request, cat_name=None):
     )
 
     if cat_name:
-        holdings_qs = holdings_qs.filter(category__title_fa=cat_name)
+        # ✅ فیلتر بر اساس زبان
+        if is_english:
+            holdings_qs = holdings_qs.filter(category__title_en=cat_name)
+        else:
+            holdings_qs = holdings_qs.filter(category__title_fa=cat_name)
 
     holdings = paginate_queryset(request, holdings_qs)
 
     context = {
-    "holdings": holdings,
-    "active_category": cat_name,
-    "seo": SEOManager.get_page("tender_holding"),
-    **get_holding_context(),
+        "holdings": holdings,
+        "active_category": cat_name,
+        "seo": SEOManager.get_page("tender_holding"),
+        "is_english": is_english,
+        **get_holding_context(is_english),
     }
-    return render(request, "RTL/tender_holding/tender-holding-home.html", context)
+    return render(
+        request,
+        _get_template("tender-holding-home.html", is_english),
+        context,
+    )
+
 
 # =====================================================
-# HOLDING SINGLE
+# HOLDING SINGLE — با pid + slug
 # =====================================================
-def tender_holding_single(request, pid):
+def tender_holding_single(request, pid, slug=None):
     """
     صفحه جزئیات یک هلدینگ
     """
+    is_english = is_english_request(request)
+
     holding = get_object_or_404(
         Holding.objects
         .select_related("category")
         .prefetch_related("tags", "gallery_images"),
-        pk=pid
+        pk=pid,
     )
 
+    # ✅ اگه slug داده شده، بررسی کن
+    if slug:
+        correct_slug = holding.slug_en if is_english else holding.slug
+
+        if correct_slug != slug:
+            target = (
+                "app_tender_holding_en:tender_holding_single_en"
+                if is_english
+                else "app_tender_holding:tender_holding_single"
+            )
+            return redirect(target, pid=pid, slug=correct_slug, permanent=True)
+
     context = {
-    "holding": holding,
-    "seo": SEOManager.get_object(holding),
-    **get_holding_context(),
+        "holding": holding,
+        "seo": SEOManager.get_object(holding),
+        "is_english": is_english,
+        **get_holding_context(is_english),
     }
-    return render(request, "RTL/tender_holding/tender-holding-single.html", context)
+    return render(
+        request,
+        _get_template("tender-holding-single.html", is_english),
+        context,
+    )
+
+
+# =====================================================
+# HOLDING SINGLE REDIRECT — از URL قدیمی /tender_holding/5/
+# =====================================================
+def tender_holding_single_redirect(request, pid):
+    """
+    ریدایرکت از URL قدیمی (فقط pid) به URL جدید (pid + slug).
+    """
+    is_english = is_english_request(request)
+
+    holding = get_object_or_404(Holding, pk=pid)
+
+    if is_english:
+        target = "app_tender_holding_en:tender_holding_single_en"
+        redirect_slug = holding.slug_en or holding.slug
+    else:
+        target = "app_tender_holding:tender_holding_single"
+        redirect_slug = holding.slug
+
+    return redirect(target, pid=pid, slug=redirect_slug, permanent=True)
+
 
 # =====================================================
 # HOLDING SEARCH
@@ -82,6 +164,8 @@ def tender_holding_search(request):
     """
     جستجو در هلدینگ‌ها
     """
+    is_english = is_english_request(request)
+
     query = request.GET.get("s", "").strip()
 
     holdings_qs = Holding.objects.all()
@@ -98,12 +182,18 @@ def tender_holding_search(request):
     holdings = paginate_queryset(request, holdings_qs)
 
     context = {
-    "holdings": holdings,
-    "search_query": query,
-    "seo": SEOManager.get_page("tender_holding"),
-    **get_holding_context(),
+        "holdings": holdings,
+        "search_query": query,
+        "seo": SEOManager.get_page("tender_holding"),
+        "is_english": is_english,
+        **get_holding_context(is_english),
     }
-    return render(request, "RTL/tender_holding/tender-holding-home.html", context)
+    return render(
+        request,
+        _get_template("tender-holding-home.html", is_english),
+        context,
+    )
+
 
 # =====================================================
 # HOLDING TAG
@@ -112,7 +202,13 @@ def tender_holding_tag(request, slug):
     """
     نمایش هلدینگ‌ها بر اساس تگ
     """
-    tag = get_object_or_404(HoldingTag, slug=slug)
+    is_english = is_english_request(request)
+
+    # ✅ انتخاب اسلاگ درست بر اساس زبان
+    if is_english:
+        tag = get_object_or_404(HoldingTag, slug_en=slug)
+    else:
+        tag = get_object_or_404(HoldingTag, slug=slug)
 
     holdings_qs = (
         Holding.objects
@@ -125,9 +221,14 @@ def tender_holding_tag(request, slug):
     holdings = paginate_queryset(request, holdings_qs)
 
     context = {
-    "tag": tag,
-    "holdings": holdings,
-    "seo": SEOManager.get_page("tender_holding"),
-    **get_holding_context(),
+        "tag": tag,
+        "holdings": holdings,
+        "seo": SEOManager.get_page("tender_holding"),
+        "is_english": is_english,
+        **get_holding_context(is_english),
     }
-    return render(request, "RTL/tender_holding/tender-holding-home.html", context)
+    return render(
+        request,
+        _get_template("tender-holding-home.html", is_english),
+        context,
+    )

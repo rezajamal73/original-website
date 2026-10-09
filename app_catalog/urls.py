@@ -1,4 +1,3 @@
-
 from django.urls import path
 
 from .views import company_catalog_view
@@ -17,16 +16,4 @@ urlpatterns = [
         company_catalog_view,
         name="catalog",
     ),
-
-
-    # =====================================================
-    # ENGLISH
-    # =====================================================
-
-    path(
-        "en/",
-        company_catalog_view,
-        name="catalog_en",
-    ),
 ]
-

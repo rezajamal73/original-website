@@ -1,4 +1,3 @@
-
 from django.shortcuts import render
 from django.db.models import Count, Q
 
@@ -8,39 +7,37 @@ from app_banner.models import OtherBanner
 from app_reports.models import FollowUsLink, SiteMainInfo
 from app_seo.utils import SEOManager
 
-
-# =====================================================
-# LANGUAGE DETECTION
-# =====================================================
-
-def is_english_request(request):
-    """
-    Detect English pages based on URL name.
-
-    Persian:
-        resume
-
-    English:
-        resume_en
-    """
-
-    url_name = getattr(
-        request.resolver_match,
-        "url_name",
-        ""
-    )
-
-    return url_name.endswith("_en")
+# ✅ is_english_request از app_core
+from app_core.url_helpers import is_english_request
 
 
 # =====================================================
 # COMMON CONTEXT
 # =====================================================
 
-def get_common_context():
+def get_common_context(is_english=False):
 
-    return {
-        "categories": (
+    if is_english:
+        categories = (
+            ProductCategory.objects
+            .annotate(
+                product_count=Count(
+                    "products",
+                    filter=Q(
+                        products__status="published"
+                    )
+                )
+            )
+            .filter(
+                product_count__gt=0
+            )
+            .order_by(
+                "priority",
+                "title_en"
+            )
+        )
+    else:
+        categories = (
             ProductCategory.objects
             .annotate(
                 product_count=Count(
@@ -57,7 +54,10 @@ def get_common_context():
                 "priority",
                 "title_fa"
             )
-        ),
+        )
+
+    return {
+        "categories": categories,
 
         "site_info": (
             SiteMainInfo.objects.first()
@@ -110,7 +110,7 @@ def resume_home(request):
     )
 
     context = {
-        **get_common_context(),
+        **get_common_context(is_english=is_english),
 
         "resumes": resumes,
 
@@ -124,4 +124,3 @@ def resume_home(request):
         template_name,
         context,
     )
-

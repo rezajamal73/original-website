@@ -25,14 +25,14 @@
                     <ul class="breadcrumb-menu">
 
                         <li>
-                            <a href="{% url 'app_core:home_en' %}">
+                            <a href="{% url 'app_core_en:home_en' %}">
                                 <i class="far fa-home"></i>
                                 Home
                             </a>
                         </li>
 
                         <li class="active">
-                            <a href="{% url 'app_product:product_list_en' %}">
+                            <a href="{% url 'app_product_en:product_list_en' %}">
                                 Company Products
                             </a>
                         </li>
@@ -102,10 +102,13 @@
                                                     {% endif %}
 
 
-                                                    <a href="{% url 'app_product:product_single_en' product.id %}">
+                                                    {# ✅ اصلاح شد #}
+                                                    <a href="{{ product.get_absolute_url_en }}">
 
-                                                        <img src="{{ product.main_image.url }}"
-                                                             alt="{{ product.title_en }}">
+                                                        {% if product.main_image %}
+                                                            <img src="{{ product.main_image.url }}"
+                                                                 alt="{{ product.title_en }}">
+                                                        {% endif %}
 
                                                     </a>
 
@@ -135,7 +138,8 @@
 
                                                     <h3 class="product-title">
 
-                                                        <a href="{% url 'app_product:product_single_en' product.id %}">
+                                                        {# ✅ اصلاح شد #}
+                                                        <a href="{{ product.get_absolute_url_en }}">
                                                             {{ product.title_en }}
                                                         </a>
 
@@ -294,9 +298,11 @@
 
                                     <div class="quickview-img">
 
-                                        <img src="{{ product.main_image.url }}"
-                                             alt="{{ product.title_en }}"
-                                             class="img-fluid rounded-3">
+                                        {% if product.main_image %}
+                                            <img src="{{ product.main_image.url }}"
+                                                 alt="{{ product.title_en }}"
+                                                 class="img-fluid rounded-3">
+                                        {% endif %}
 
                                     </div>
 
@@ -346,7 +352,7 @@
 
                                                     Product:
                                                     <span>
-                                                        {{ product.category.title_en }}
+                                                        {{ product.category.title_en|default:product.category.title_fa }}
                                                     </span>
 
                                                 </li>
@@ -360,7 +366,7 @@
 
                                                     Category:
                                                     <span>
-                                                        {{ product.category2.title_en }}
+                                                        {{ product.category2.title_en|default:product.category2.title_fa }}
                                                     </span>
 
                                                 </li>
@@ -378,7 +384,7 @@
 
                                                         {% for tag in product.tags.all %}
 
-                                                            {{ tag.title_en }}{% if not forloop.last %}, {% endif %}
+                                                            {{ tag.title_en|default:tag.title_fa }}{% if not forloop.last %}, {% endif %}
 
                                                         {% endfor %}
 
@@ -395,7 +401,8 @@
                                         <!-- CTA button -->
                                         <div class="quickview-actions mt-4">
 
-                                            <a href="{% url 'app_product:product_single_en' product.id %}"
+                                            {# ✅ اصلاح شد #}
+                                            <a href="{{ product.get_absolute_url_en }}"
                                                class="btn btn-theme w-100">
 
                                                 View Product Details

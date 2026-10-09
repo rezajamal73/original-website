@@ -1,58 +1,32 @@
 {% load static %}
 
 <div class="widget recent-post">
-    <h5 class="widget-title">
-        پست اخیر
-    </h5>
-    <div class="recent-post-item">
-        <div class="recent-post-img">
-            <img alt="thumb" src="{% static 'RTL/assets/img/blog/bs-1.jpg' %}"/>
-        </div>
-        <div class="recent-post-bio">
-            <h6>
-                <a href="#">
-                    چگونه هر روز از چیزهای مورد علاقه خود لذت ببرید
+    <h5 class="widget-title">Active Auctions</h5>
+
+    {% for auction in auctions %}
+        <div class="recent-post-item">
+
+            <div class="recent-post-img">
+                <a href="{{ auction.get_absolute_url_en }}">
+                    <img src="{{ auction.poster.url }}" alt="{{ auction.title_en|default:auction.title_fa }}">
                 </a>
-            </h6>
-            <span>
-			<i class="far fa-clock">
-			</i>
-			۲۰ شهریور ۱۴۰۴
-		   </span>
+            </div>
+
+            <div class="recent-post-bio">
+                <h6>
+                    <a href="{{ auction.get_absolute_url_en }}">
+                        {{ auction.title_en|default:auction.title_fa|truncatechars:25 }}
+                    </a>
+                </h6>
+
+                <span>
+                    <i class="far fa-clock"></i>
+                    {{ auction.start_date_en|date:"Y/m/d" }}
+                </span>
+            </div>
+
         </div>
-    </div>
-    <div class="recent-post-item">
-        <div class="recent-post-img">
-            <img alt="thumb" src="{% static 'RTL/assets/img/blog/bs-2.jpg' %}"/>
-        </div>
-        <div class="recent-post-bio">
-            <h6>
-                <a href="#">
-                    چگونه هر روز از چیزهای مورد علاقه خود لذت ببرید
-                </a>
-            </h6>
-            <span>
-			<i class="far fa-clock">
-			</i>
-			۲۰ شهریور ۱۴۰۴
-		   </span>
-        </div>
-    </div>
-    <div class="recent-post-item">
-        <div class="recent-post-img">
-            <img alt="thumb" src="{% static 'RTL/assets/img/blog/bs-3.jpg' %}"/>
-        </div>
-        <div class="recent-post-bio">
-            <h6>
-                <a href="#">
-                    چگونه هر روز از چیزهای مورد علاقه خود لذت ببرید
-                </a>
-            </h6>
-            <span>
-			<i class="far fa-clock">
-			</i>
-			۲۰ شهریور ۱۴۰۴
-		   </span>
-        </div>
-    </div>
+    {% empty %}
+        <p>No active auctions.</p>
+    {% endfor %}
 </div>

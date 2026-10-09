@@ -32,6 +32,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_jalali',
     'django.contrib.humanize',
+
+    # ============ اپ‌های پروژه ============
     'app_core.apps.AppBaseConfig',
     'app_banner.apps.AppBannerConfig',
     'app_blog.apps.AppBlogConfig',
@@ -41,7 +43,6 @@ INSTALLED_APPS = [
     'app_tender.apps.AppTenderConfig',
     'app_tender_holding.apps.AppTenderHoldingConfig',
     'app_inquiry.apps.AppInquiryConfig',
-
     'app_admin',
     'app_auction.apps.AppAuctionConfig',
     'app_security.apps.AppSecurityConfig',
@@ -57,6 +58,7 @@ INSTALLED_APPS = [
     'app_seo.apps.AppSeoConfig',
     'app_backup.apps.AppBackupConfig',
 
+    # ============ اپ‌های Django ============
     'django.contrib.sites',
     'django.contrib.sitemaps',
 ]
@@ -187,7 +189,7 @@ JAZZMIN_SETTINGS = {
     # ═══ برندینگ ═══
     "site_title": "پنل مدیریت پیشرفته",
     "site_header": "پنل مدیریت",
-    "site_brand": " داشبورد مدیریت",
+    "site_brand": "داشبورد مدیریت",              # ✅ فاصله اضافه حذف شد
     "welcome_sign": "👋",
     "copyright": "RJ ۱۴۰۵ - تمامی حقوق محفوظ است",
 
@@ -243,28 +245,23 @@ JAZZMIN_SETTINGS = {
 
     ],
 
-    # ═══ منوی کاربری (گوشه بالا) ═══
-
     # ═══ سایدبار ═══
     "show_sidebar": True,
-    "navigation_expanded": False,  # برای باز بودن همه منوها True کنید
-    "hide_apps": [
-        "app_tender",
-        "app_auction",
-        "app_inquiry",
-        "app_security",
-        "app_tender_holding",
+    "navigation_expanded": False,
 
-        "app_sale",
+    # ✅ اپ‌هایی که توی سایدبار نمایش داده نمی‌شن
+    # ولی هنوز از طریق URL و topmenu_links قابل دسترسن
+    "hide_apps": [
     ],
 
+    # ✅ مدل‌هایی که توی سایدبار نمایش داده نمی‌شن
     "hide_models": [
         "app_reports.GroupCompany",
         "app_reports.DepartmentContact",
         "app_chart.BoardMember",
     ],
 
-    # ═══ ترتیب نمایش (ساختار گروه‌بندی شده) ═══
+    # ═══ ترتیب نمایش ═══
     "order_with_respect_to": [
 
         # ─── ۱. فروش و محصولات ───
@@ -345,14 +342,12 @@ JAZZMIN_SETTINGS = {
         "app_reports.Project",
         "app_reports.CorporateText",
 
-
-
-        # ─── ۱۱. رزومه ───
+        # ─── ۱۰. رزومه ───
         "app_resume",
         "app_resume.Resume",
         "app_resume.ResumeProvince",
 
-        # ─── ۱۰. بازدید ───
+        # ─── ۱۱. بازدید ───
         "app_visit",
         "app_visit.Visit",
 
@@ -368,7 +363,7 @@ JAZZMIN_SETTINGS = {
         "app_backup",
         "app_backup.Backup",
 
-        # ─── ۱۵. وب‌گاه‌ها (پایین) ───
+        # ─── ۱۵. وب‌گاه‌ها ───
         "django.contrib.sites",
         "sites",
         "sites.Site",
@@ -385,7 +380,6 @@ JAZZMIN_SETTINGS = {
     ],
 
     # ═══ آیکون‌های Font Awesome ═══
-
     "icons": {
 
         "app_product": "",
@@ -493,14 +487,14 @@ JAZZMIN_SETTINGS = {
     "default_icon_children": "fas fa-circle",
 
     # ═══ تنظیمات UI ═══
-    "related_modal_active": False,  # نمایش مدال برای روابط
+    "related_modal_active": False,
     "custom_css": "admin-custom/css/admin-custom.css",
-    "custom_js": "admin-custom/js/admin-custom.js",  # اضافه کنید
+    "custom_js": "admin-custom/js/admin-custom.js",
     "use_google_fonts_cdn": False,
     "show_ui_builder": False,
 
     # فرم تغییر
-    "changeform_format": "horizontal_tabs",  # یا "vertical_tabs" یا "collapsible"
+    "changeform_format": "horizontal_tabs",
     "changeform_format_overrides": {
         "auth.user": "collapsible",
         "auth.group": "collapsible",

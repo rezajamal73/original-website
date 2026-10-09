@@ -7,14 +7,16 @@
         <div class="recent-post-item">
 
             <div class="recent-post-img">
-                <a href="{% url 'app_blog:blog_single' post.id %}">
-                    <img src="{{ post.image.url }}">
+                {# ✅ اصلاح شد #}
+                <a href="{{ post.get_absolute_url }}">
+                    <img src="{{ post.image.url }}" alt="{{ post.title_fa }}">
                 </a>
             </div>
 
             <div class="recent-post-bio">
                 <h6>
-                    <a href="{% url 'app_blog:blog_single' post.id %}">
+                    {# ✅ اصلاح شد #}
+                    <a href="{{ post.get_absolute_url }}">
                         {{ post.title_fa|truncatechars:25 }}
                     </a>
                 </h6>

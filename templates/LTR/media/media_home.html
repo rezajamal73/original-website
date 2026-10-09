@@ -24,14 +24,15 @@
                     <ul class="breadcrumb-menu">
 
                         <li>
-                            <a href="{% url 'app_core:home_en' %}">
+                            <a href="{% url 'app_core_en:home_en' %}">
                                 <i class="far fa-home"></i>
                                 Home
                             </a>
                         </li>
 
                         <li class="active">
-                            <a href="{% url 'app_media:home_en' %}">
+                            {# ✅ اصلاح شد #}
+                            <a href="{% url 'app_media_en:home_en' %}">
                                 All Media
                             </a>
                         </li>
@@ -60,7 +61,8 @@
                                 <!-- poster -->
                                 <div class="blog-item-img">
 
-                                    <a href="{% url 'app_media:single_en' media.id %}">
+                                    {# ✅ اصلاح شد #}
+                                    <a href="{% url 'app_media_en:single_en' media.id %}">
 
                                         {% if media.image %}
                                             <img src="{{ media.image.url }}"
@@ -86,7 +88,8 @@
 
                                     <h4 class="blog-title">
 
-                                        <a href="{% url 'app_media:single_en' media.id %}">
+                                        {# ✅ اصلاح شد #}
+                                        <a href="{% url 'app_media_en:single_en' media.id %}">
                                             {{ media.title_en }}
                                         </a>
 
@@ -100,8 +103,9 @@
                                     {% endif %}
 
 
+                                    {# ✅ اصلاح شد #}
                                     <a class="theme-btn"
-                                       href="{% url 'app_media:single_en' media.id %}">
+                                       href="{% url 'app_media_en:single_en' media.id %}">
 
                                         View
 

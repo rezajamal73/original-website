@@ -453,7 +453,7 @@
 
                                     <a
                                             class="theme-btn mt-4"
-                                            href="{% url 'app_core:about_en' %}"
+                                            href="{% url 'app_core_en:about_en' %}"
                                     >
 
                                         Company History
@@ -507,8 +507,9 @@
 
                                 <div class="text-center mt-2 all-products-wrapper">
 
+                                    {# ✅ اصلاح شد #}
                                     <a
-                                            href="{% url 'app_product:product_list' %}"
+                                            href="{% url 'app_product_en:product_list_en' %}"
                                             class="all-products-link"
                                     >
 
@@ -533,8 +534,9 @@
 
                                 <div class="category-item">
 
+                                    {# ✅ اصلاح شد #}
                                     <a
-                                            href="{% url 'app_product:category' slug=category.slug %}"
+                                            href="{% url 'app_product_en:category_en' slug=category.slug_en %}"
                                     >
 
                                         <div class="category-info">
@@ -545,7 +547,7 @@
 
                                                     <img
                                                             src="{{ category.cat_icon.url }}"
-                                                            alt="{{ category.title_en }}"
+                                                            alt="{{ category.title_en|default:category.title_fa }}"
                                                             loading="lazy"
                                                     >
 
@@ -553,7 +555,7 @@
 
                                                     <img
                                                             src="{% static 'LTR/assets/img/default/new.svg' %}"
-                                                            alt="{{ category.title_en }}"
+                                                            alt="{{ category.title_en|default:category.title_fa }}"
                                                             loading="lazy"
                                                     >
 
@@ -565,7 +567,7 @@
                                             <div class="content">
 
                                                 <h4>
-                                                    {{ category.title_en }}
+                                                    {{ category.title_en|default:category.title_fa }}
                                                 </h4>
 
                                                 <p class="text-center">
@@ -664,8 +666,9 @@
                                             </h2>
 
 
+                                            {# ✅ اصلاح شد #}
                                             <a
-                                                    href="{% url 'app_product:product_list' %}"
+                                                    href="{% url 'app_product_en:product_list_en' %}"
                                             >
 
                                                 View More
@@ -707,13 +710,14 @@
                                                     </span>
 
 
-                                                    <a href="{{ p.get_absolute_url }}">
+                                                    {# ✅ اصلاح شد #}
+                                                    <a href="{{ p.get_absolute_url_en }}">
 
                                                         {% if p.main_image %}
 
                                                             <img
                                                                     src="{{ p.main_image.url }}"
-                                                                    alt="{{ p.title_en }}"
+                                                                    alt="{{ p.title_en|default:p.title_fa }}"
                                                             >
 
                                                         {% endif %}
@@ -725,8 +729,9 @@
 
                                                         <div class="product-action">
 
+                                                            {# ✅ اصلاح شد #}
                                                             <a
-                                                                    href="{{ p.get_absolute_url }}"
+                                                                    href="{{ p.get_absolute_url_en }}"
                                                                     data-tooltip="tooltip"
                                                                     title="View Product"
                                                             >
@@ -748,9 +753,10 @@
 
                                                     <h3 class="product-title text-truncate">
 
-                                                        <a href="{{ p.get_absolute_url }}">
+                                                        {# ✅ اصلاح شد #}
+                                                        <a href="{{ p.get_absolute_url_en }}">
 
-                                                            {{ p.title_en }}
+                                                            {{ p.title_en|default:p.title_fa }}
 
                                                         </a>
 
@@ -1145,4 +1151,3 @@
     </main>
 
 {% endblock %}
-

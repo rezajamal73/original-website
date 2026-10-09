@@ -1,4 +1,3 @@
-
 # app_media/views.py
 
 from django.shortcuts import render, get_object_or_404
@@ -7,31 +6,8 @@ from django.core.paginator import Paginator
 from .models import Media
 from app_seo.utils import SEOManager
 
-
-# =====================================================
-# LANGUAGE DETECTION
-# =====================================================
-
-def is_english_request(request):
-    """
-    Detect English pages based on URL name.
-
-    Persian:
-        home
-        single
-
-    English:
-        home_en
-        single_en
-    """
-
-    url_name = getattr(
-        request.resolver_match,
-        "url_name",
-        ""
-    )
-
-    return url_name.endswith("_en")
+# ✅ is_english_request از app_core میاد
+from app_core.url_helpers import is_english_request
 
 
 # =====================================================
@@ -52,10 +28,7 @@ def media_home(request):
         .order_by("order")
     )
 
-    paginator = Paginator(
-        media_queryset,
-        6
-    )
+    paginator = Paginator(media_queryset, 6)
 
     media_sections = paginator.get_page(
         request.GET.get("page")
@@ -90,9 +63,7 @@ def media_single(request, pk):
 
     media = get_object_or_404(
         Media.objects
-        .filter(
-            status="published"
-        )
+        .filter(status="published")
         .prefetch_related(
             "images",
             "videos"
@@ -119,4 +90,3 @@ def media_single(request, pk):
         template_name,
         context,
     )
-

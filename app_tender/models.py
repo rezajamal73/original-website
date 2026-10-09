@@ -2,17 +2,18 @@
 from django.db import models
 from django.utils.text import slugify
 from django.contrib.auth.models import User
+from django.urls import reverse                          # ✅ اضافه شد
 from django_jalali.db import models as jmodels
 
-"""
-app_tender.models
-"""
 
 # ---------------------------------------
 #   GLOBAL UNIQUE SLUG GENERATOR
 # ---------------------------------------
 def generate_unique_slug(instance, value, slug_field_name="slug"):
-    base_slug = slugify(value) or "item"
+    """
+    ایجاد اسلاگ یکتا با پشتیبانی از فارسی.
+    """
+    base_slug = slugify(value, allow_unicode=True) or "item"   # ✅ allow_unicode
     slug = base_slug
     ModelClass = instance.__class__
     counter = 1
@@ -44,7 +45,25 @@ class TimeStampedModel(models.Model):
 class TenderCategory(TimeStampedModel):
     title_fa = models.CharField(max_length=255, verbose_name="عنوان فارسی")
     title_en = models.CharField(max_length=255, verbose_name="عنوان انگلیسی")
-    slug = models.SlugField(unique=True, blank=True, editable=False)
+
+    # ✅ اسلاگ فارسی
+    slug = models.SlugField(
+        "اسلاگ (فارسی)",
+        unique=True,
+        blank=True,
+        editable=False,
+        allow_unicode=True,
+    )
+
+    # ✅ اسلاگ انگلیسی
+    slug_en = models.SlugField(
+        "اسلاگ (انگلیسی)",
+        unique=True,
+        blank=True,
+        editable=False,
+        allow_unicode=False,
+    )
+
     order = models.PositiveIntegerField(default=0, verbose_name="ترتیب نمایش")
 
     class Meta:
@@ -52,19 +71,12 @@ class TenderCategory(TimeStampedModel):
         verbose_name_plural = "دسته‌بندی‌های مناقصه"
         ordering = ("-id",)
 
-    def _get_slug_source(self):
-        return self.title_en or self.title_fa or ""
-
     def save(self, *args, **kwargs):
-        source = self._get_slug_source()
-        base = slugify(source) or "item"
+        if not self.slug and self.title_fa:
+            self.slug = generate_unique_slug(self, self.title_fa, "slug")
 
-        if not self.slug:
-            self.slug = generate_unique_slug(self, source)
-        else:
-            current_base = self.slug.split("-")[0]
-            if current_base != base:
-                self.slug = generate_unique_slug(self, source)
+        if not self.slug_en and self.title_en:
+            self.slug_en = generate_unique_slug(self, self.title_en, "slug_en")
 
         super().save(*args, **kwargs)
 
@@ -78,7 +90,25 @@ class TenderCategory(TimeStampedModel):
 class TenderTag(TimeStampedModel):
     title_fa = models.CharField(max_length=255, verbose_name="عنوان فارسی")
     title_en = models.CharField(max_length=255, verbose_name="عنوان انگلیسی")
-    slug = models.SlugField(unique=True, blank=True, editable=False)
+
+    # ✅ اسلاگ فارسی
+    slug = models.SlugField(
+        "اسلاگ (فارسی)",
+        unique=True,
+        blank=True,
+        editable=False,
+        allow_unicode=True,
+    )
+
+    # ✅ اسلاگ انگلیسی
+    slug_en = models.SlugField(
+        "اسلاگ (انگلیسی)",
+        unique=True,
+        blank=True,
+        editable=False,
+        allow_unicode=False,
+    )
+
     order = models.PositiveIntegerField(default=0, verbose_name="ترتیب نمایش")
 
     class Meta:
@@ -86,20 +116,11 @@ class TenderTag(TimeStampedModel):
         verbose_name_plural = "برچسب‌های مناقصه"
         ordering = ("-id",)
 
-    def _get_slug_source(self):
-        return self.title_en or self.title_fa or ""
-
     def save(self, *args, **kwargs):
-        source = self._get_slug_source()
-        base = slugify(source) or "item"
-
-        if not self.slug:
-            self.slug = generate_unique_slug(self, source)
-        else:
-            current_base = self.slug.split("-")[0]
-            if current_base != base:
-                self.slug = generate_unique_slug(self, source)
-
+        if not self.slug and self.title_fa:
+            self.slug = generate_unique_slug(self, self.title_fa, "slug")
+        if not self.slug_en and self.title_en:
+            self.slug_en = generate_unique_slug(self, self.title_en, "slug_en")
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -121,7 +142,24 @@ class Tender(TimeStampedModel):
     title_fa = models.CharField(max_length=255, verbose_name="عنوان فارسی")
     title_en = models.CharField(max_length=255, verbose_name="عنوان انگلیسی")
 
-    slug = models.SlugField(unique=True, blank=True, editable=False)
+    # ✅ اسلاگ فارسی
+    slug = models.SlugField(
+        "اسلاگ (فارسی)",
+        unique=True,
+        blank=True,
+        editable=False,
+        allow_unicode=True,
+    )
+
+    # ✅ اسلاگ انگلیسی
+    slug_en = models.SlugField(
+        "اسلاگ (انگلیسی)",
+        unique=True,
+        blank=True,
+        editable=False,
+        allow_unicode=False,
+    )
+
     tender_number = models.CharField(max_length=100, unique=True, verbose_name="شماره مناقصه")
 
     start_date_fa = jmodels.jDateField(verbose_name="تاریخ شروع (شمسی)", help_text="1373-08-10")
@@ -157,28 +195,36 @@ class Tender(TimeStampedModel):
     )
 
     class Meta:
-        ordering = ["-created_at_fa"]  # ✔ جدیدترین رکوردها بالاتر
+        ordering = ["-created_at_fa"]
         verbose_name = "مناقصه"
         verbose_name_plural = "مناقصه‌ها"
 
-    def _get_slug_source(self):
-        return self.title_en or self.title_fa or ""
-
     def save(self, *args, **kwargs):
-        source = self._get_slug_source()
-        base = slugify(source) or "item"
-
-        if not self.slug:
-            self.slug = generate_unique_slug(self, source)
-        else:
-            current_base = self.slug.split("-")[0]
-            if current_base != base:
-                self.slug = generate_unique_slug(self, source)
-
+        if not self.slug and self.title_fa:
+            self.slug = generate_unique_slug(self, self.title_fa, "slug")
+        if not self.slug_en and self.title_en:
+            self.slug_en = generate_unique_slug(self, self.title_en, "slug_en")
         super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.title_fa} - {self.tender_number}"
+
+    # =====================================================
+    # URL ها
+    # =====================================================
+    def get_absolute_url(self):
+        """URL فارسی: /tender/5/نام-مناقصه/"""
+        return reverse("app_tender:tender_single", kwargs={
+            "pid": self.pk,
+            "slug": self.slug,
+        })
+
+    def get_absolute_url_en(self):
+        """URL انگلیسی: /en/tender/5/tender-name/"""
+        return reverse("app_tender_en:tender_single_en", kwargs={
+            "pid": self.pk,
+            "slug": self.slug_en,
+        })
 
 
 # ---------------------------

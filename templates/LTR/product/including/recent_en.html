@@ -7,14 +7,14 @@
         <div class="recent-post-item">
 
             <div class="recent-post-img">
-                <a href="{% url 'app_blog:blog_single_en' blog.id %}">
+                <a href="{% url 'app_blog:blog_single' blog.id %}">
                     <img src="{{ blog.image.url }}">
                 </a>
             </div>
 
             <div class="recent-post-bio">
                 <h6>
-                    <a href="{% url 'app_blog:blog_single_en' blog.id %}">
+                    <a href="{% url 'app_blog:blog_single' blog.id %}">
                         {{ blog.title_en|truncatechars:25 }}
                     </a>
                 </h6>

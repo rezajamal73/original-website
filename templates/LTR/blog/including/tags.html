@@ -1,23 +1,16 @@
 {% load static %}
 
 <div class="widget sidebar-tag">
-
     <h5 class="widget-title">Tags</h5>
 
     <div class="tag-list">
-
         {% for tag in tags %}
-
-            <a href="{% url 'app_blog:blog_tag_en' tag.slug %}">
-                {{ tag.title_en }}
+            {# ✅ اصلاح شد #}
+            <a href="{% url 'app_blog_en:blog_tag_en' tag.slug_en %}">
+                {{ tag.title_en|default:tag.title_fa }}
             </a>
-
         {% empty %}
-
             <p>No tags available.</p>
-
         {% endfor %}
-
     </div>
-
 </div>

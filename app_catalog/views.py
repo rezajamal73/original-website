@@ -1,4 +1,3 @@
-
 # app_catalog/views.py
 
 from django.shortcuts import render
@@ -6,29 +5,8 @@ from django.shortcuts import render
 from .models import CompanyCatalog
 from app_seo.utils import SEOManager
 
-
-# =====================================================
-# LANGUAGE DETECTION
-# =====================================================
-
-def is_english_request(request):
-    """
-    Detect English pages based on URL name.
-
-    Persian:
-        catalog
-
-    English:
-        catalog_en
-    """
-
-    url_name = getattr(
-        request.resolver_match,
-        "url_name",
-        ""
-    )
-
-    return url_name.endswith("_en")
+# ✅ is_english_request از app_core میاد
+from app_core.url_helpers import is_english_request
 
 
 # =====================================================
@@ -58,4 +36,3 @@ def company_catalog_view(request):
         template_name,
         context
     )
-

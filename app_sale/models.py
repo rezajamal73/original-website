@@ -1,3 +1,4 @@
+# app_sale/models.py
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db.models import Sum
@@ -97,24 +98,26 @@ class SalesReport(models.Model):
         )
 
     # =================================================
-    # Helpers (Display)
+    # Helpers (Display) — ✅ با fallback
     # =================================================
     @property
     def jalali_month_name(self) -> str:
-        return self.get_jalali_month_display()
+        if self.jalali_month:
+            return self.get_jalali_month_display()
+        return "—"
 
     @property
     def gregorian_month_name(self) -> str:
-        return self.get_gregorian_month_display()
+        if self.gregorian_month:
+            return self.get_gregorian_month_display()
+        return "—"
 
     # =================================================
-    # Business Logic – دسته‌بندی حرفه‌ای
+    # Business Logic
     # =================================================
     @classmethod
     def yearly_total(cls, jalali_year: int):
-        """
-        مجموع فروش یک سال شمسی
-        """
+        """مجموع فروش یک سال شمسی"""
         return (
             cls.objects
             .filter(jalali_year=jalali_year)
@@ -124,10 +127,7 @@ class SalesReport(models.Model):
 
     @classmethod
     def monthly_totals(cls, jalali_year: int):
-        """
-        فروش ماه‌به‌ماه یک سال شمسی (مرتب‌شده)
-        خروجی مناسب نمودار
-        """
+        """فروش ماه‌به‌ماه یک سال شمسی (مرتب‌شده)"""
         return (
             cls.objects
             .filter(jalali_year=jalali_year)
@@ -138,9 +138,7 @@ class SalesReport(models.Model):
 
     @classmethod
     def yearly_summary(cls):
-        """
-        خلاصه فروش سالانه (همه سال‌ها)
-        """
+        """خلاصه فروش سالانه (همه سال‌ها)"""
         return (
             cls.objects
             .values("jalali_year")

@@ -1,57 +1,15 @@
 {% load static %}
 
 <div class="widget category">
-    <h5 class="widget-title">
-        دسته بندی ها
-    </h5>
+    <h5 class="widget-title">Auction Categories</h5>
+
     <div class="category-list">
-        <a href="#">
-            <i class="far fa-arrow-left">
-            </i>
-            الکترونیک
-            <span>
-			(10)
-		   </span>
-        </a>
-        <a href="#">
-            <i class="far fa-arrow-left">
-            </i>
-            خرید آنلاین
-            <span>
-			(15)
-		   </span>
-        </a>
-        <a href="#">
-            <i class="far fa-arrow-left">
-            </i>
-            مجموعه لوازم جانبی
-            <span>
-			(20)
-		   </span>
-        </a>
-        <a href="#">
-            <i class="far fa-arrow-left">
-            </i>
-            مجموعه دوچرخه
-            <span>
-			(30)
-		   </span>
-        </a>
-        <a href="#">
-            <i class="far fa-arrow-left">
-            </i>
-            لباس مردانه
-            <span>
-			(25)
-		   </span>
-        </a>
-        <a href="#">
-            <i class="far fa-arrow-left">
-            </i>
-            مواد غذایی
-            <span>
-			(25)
-		   </span>
-        </a>
+        {% for title, info in categories.items %}
+            <a href="{% url 'app_auction_en:auction_category_en' info.slug_en|default:info.slug %}">
+                <i class="far fa-arrow-right"></i>
+                {{ title }}
+                <span>({{ info.count }})</span>
+            </a>
+        {% endfor %}
     </div>
 </div>

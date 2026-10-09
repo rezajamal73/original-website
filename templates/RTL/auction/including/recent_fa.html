@@ -7,14 +7,14 @@
         <div class="recent-post-item">
 
             <div class="recent-post-img">
-                <a href="{% url 'app_auction:auction_single' auction.id %}">
-                    <img src="{{ auction.poster.url }}">
+                <a href="{{ auction.get_absolute_url }}">
+                    <img src="{{ auction.poster.url }}" alt="{{ auction.title_fa }}">
                 </a>
             </div>
 
             <div class="recent-post-bio">
                 <h6>
-                    <a href="{% url 'app_auction:auction_single' auction.id %}">
+                    <a href="{{ auction.get_absolute_url }}">
                         {{ auction.title_fa|truncatechars:25 }}
                     </a>
                 </h6>

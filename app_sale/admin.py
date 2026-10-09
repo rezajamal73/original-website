@@ -1,7 +1,7 @@
+# app_sale/admin.py
 from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html
-from django.db.models import Sum
 
 from .models import SalesReport
 
@@ -10,6 +10,9 @@ from .models import SalesReport
 # Delete Button
 # =================================================
 def admin_delete_button(obj):
+    """
+    دکمه حذف HTML که به صفحه حذف ادمین مدل هدایت می‌شود.
+    """
     url = reverse(
         f"admin:{obj._meta.app_label}_{obj._meta.model_name}_delete",
         args=[obj.pk],
@@ -22,12 +25,11 @@ def admin_delete_button(obj):
         'border-radius:8px;'
         'text-decoration:none;'
         'font-weight:bold;'
+        'display:inline-block;'
         '">🗑 حذف</a>',
         url,
     )
-
-
-admin_delete_button.short_description = "حذف"
+# ⚠️ توجه: short_description فقط روی متد داخل کلاس کار می‌کند، نه تابع ماژول‌سطح.
 
 
 # =================================================
@@ -44,7 +46,8 @@ class JalaliYearFilter(admin.SimpleListFilter):
             .distinct()
             .order_by("-jalali_year")
         )
-        return [(y, y) for y in years]
+        # ✅ str(y) — Django انتظار str داره
+        return [(str(y), str(y)) for y in years]
 
     def queryset(self, request, queryset):
         if self.value():
@@ -69,10 +72,16 @@ class JalaliMonthFilter(admin.SimpleListFilter):
             .order_by("jalali_month")
         )
 
-        return [
-            (m, dict(SalesReport.JalaliMonth.choices).get(m))
-            for m in months
-        ]
+        # ✅ استفاده از SalesReport.JalaliMonth(m).label به‌جای dict
+        result = []
+        for m in months:
+            try:
+                label = SalesReport.JalaliMonth(m).label
+            except ValueError:
+                label = str(m)
+            result.append((str(m), label))
+
+        return result
 
     def queryset(self, request, queryset):
         if self.value():
@@ -127,6 +136,7 @@ class SalesReportAdmin(admin.ModelAdmin):
         }),
         ("🕒 سیستم", {
             "fields": ("created_at",),
+            "classes": ("collapse",),
         }),
     )
 
@@ -134,27 +144,48 @@ class SalesReportAdmin(admin.ModelAdmin):
     # Custom Columns
     # ================================
     def jalali_date_display(self, obj):
-        return f"{obj.jalali_month_name} {obj.jalali_year}"
+        """نمایش تاریخ شمسی (ماه + سال)"""
+        if not obj.jalali_year or not obj.jalali_month:
+            return "—"
+        return format_html(
+            "<b style='color:#1A73E8'>{}</b> <span style='color:#888'>{}</span>",
+            obj.jalali_month_name,
+            obj.jalali_year,
+        )
 
     jalali_date_display.short_description = "تاریخ شمسی"
     jalali_date_display.admin_order_field = "jalali_year"
 
     def formatted_total_sales(self, obj):
+        """نمایش مبلغ فروش ماه با کاما"""
+        if obj.total_sales is None:
+            return "—"
         return format_html(
-            "<strong>{}</strong> تومان",
-            f"{obj.total_sales:,}"
+            "<strong style='color:#198754'>{:,}</strong> تومان",
+            int(obj.total_sales),
         )
 
     formatted_total_sales.short_description = "فروش ماه"
+    formatted_total_sales.admin_order_field = "total_sales"
 
     def jalali_year_total_display(self, obj):
-        total = SalesReport.yearly_total(obj.jalali_year)
+        """نمایش جمع فروش سال شمسی"""
+        try:
+            total = SalesReport.yearly_total(obj.jalali_year)
+        except Exception:
+            total = 0
+
+        if not total:
+            total = 0
+
         return format_html(
-            "<span style='color:#0a7c2f;font-weight:bold'>{}</span> تومان",
-            f"{total:,}"
+            "<span style='color:#0a7c2f;font-weight:bold'>{:,}</span> تومان",
+            int(total),
         )
 
     jalali_year_total_display.short_description = "جمع سال (شمسی)"
 
     def delete_button(self, obj):
         return admin_delete_button(obj)
+
+    delete_button.short_description = "عملیات"

@@ -61,10 +61,17 @@ class BlogImageInline(admin.TabularInline):
 # ---------------------------------------
 @admin.register(blog_Category)
 class CategoryAdmin(SortableAdminMixin, admin.ModelAdmin):
-    list_display = ("order", "title_icon", "slug", "created_at_fa", "delete_button")
-    search_fields = ("title_fa", "title_en")
-    readonly_fields = ("created_at_fa", "slug")
+    # ✅ slug_en اضافه شد
+    list_display = ("order", "title_icon", "slug", "slug_en", "created_at_fa", "delete_button")
+    search_fields = ("title_fa", "title_en", "slug", "slug_en")
+    readonly_fields = ("created_at_fa", "slug", "slug_en")
     ordering = ("order",)
+
+    fieldsets = (
+        (None, {
+            "fields": ("title_fa", "title_en", "slug", "slug_en", "order"),
+        }),
+    )
 
     def title_icon(self, obj):
         return format_html("📁 <b>{}</b>", obj.title_fa)
@@ -80,10 +87,17 @@ class CategoryAdmin(SortableAdminMixin, admin.ModelAdmin):
 # ---------------------------------------
 @admin.register(blog_Tag)
 class TagAdmin(SortableAdminMixin, admin.ModelAdmin):
-    list_display = ("order", "title_icon", "slug", "created_at_fa", "delete_button")
-    search_fields = ("title_fa", "title_en")
-    readonly_fields = ("created_at_fa", "slug")
+    # ✅ slug_en اضافه شد
+    list_display = ("order", "title_icon", "slug", "slug_en", "created_at_fa", "delete_button")
+    search_fields = ("title_fa", "title_en", "slug", "slug_en")
+    readonly_fields = ("created_at_fa", "slug", "slug_en")
     ordering = ("order",)
+
+    fieldsets = (
+        (None, {
+            "fields": ("title_fa", "title_en", "slug", "slug_en", "order"),
+        }),
+    )
 
     def title_icon(self, obj):
         return format_html("🏷️ <b>{}</b>", obj.title_fa)
@@ -98,7 +112,7 @@ class TagAdmin(SortableAdminMixin, admin.ModelAdmin):
 #   BLOG ADMIN
 # ---------------------------------------
 @admin.register(blog)
-class BlogAdmin( admin.ModelAdmin):
+class BlogAdmin(admin.ModelAdmin):
     # SortableAdminMixin,
     list_display = (
         # "order",
@@ -112,9 +126,10 @@ class BlogAdmin( admin.ModelAdmin):
     )
 
     list_filter = ("status", "category")
-    search_fields = ("title_fa", "title_en")
+    search_fields = ("title_fa", "title_en", "slug", "slug_en")
 
-    readonly_fields = ("show_image_in_field", "slug")
+    # ✅ slug_en اضافه شد
+    readonly_fields = ("show_image_in_field", "slug", "slug_en")
 
     inlines = [BlogImageInline]
 
@@ -127,10 +142,11 @@ class BlogAdmin( admin.ModelAdmin):
             "fields": ("image", "show_image_in_field",),
         }),
         ("📄 فارسی", {
-            "fields": ("title_fa", "content_1_fa", "content_2_fa"),
+            "fields": ("title_fa", "content_1_fa", "content_2_fa", "slug"),
         }),
+        # ✅ slug_en به انگلیسی اضافه شد
         ("📄 انگلیسی", {
-            "fields": ("title_en", "content_1_en", "content_2_en", "slug",),
+            "fields": ("title_en", "content_1_en", "content_2_en", "slug_en"),
         }),
         ("📂️ دسته بندی", {
             "fields": ("category", "tags"),
@@ -142,8 +158,6 @@ class BlogAdmin( admin.ModelAdmin):
             "fields": ("publish_date_fa", "publish_date_en"),
         }),
     )
-
-
 
     # IMAGE ICON – list view
     def image_icon(self, obj):
@@ -158,7 +172,6 @@ class BlogAdmin( admin.ModelAdmin):
     image_icon.short_description = "پوستر"
 
     # IMAGE PREVIEW – form view
-
     def show_image_in_field(self, obj):
         if obj.image:
             return format_html(
