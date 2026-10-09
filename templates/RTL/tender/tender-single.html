@@ -3,13 +3,20 @@
 {% load tender_tags %}
 {% load humanize %}
 {% load jformat %}
-{% block content %}
 
+{% block content %}
     <main class="main">
+
         <!-- breadcrumb -->
         <div class="site-breadcrumb">
-            <div class="site-breadcrumb-bg" style="background: url('{{ banner.image.url }}')">
-            </div>
+            {% if banner and banner.image %}
+                <div class="site-breadcrumb-bg"
+                     style="background: url('{{ banner.image.url }}')">
+                </div>
+            {% else %}
+                <div class="site-breadcrumb-bg"></div>
+            {% endif %}
+
             <div class="container">
                 <div class="site-breadcrumb-wrap">
                     <h4 class="breadcrumb-title">
@@ -18,36 +25,46 @@
                     <ul class="breadcrumb-menu">
                         <li>
                             <a href="{% url 'app_core:home' %}">
-                                <i class="far fa-home">
-                                </i>
+                                <i class="far fa-home"></i>
                                 خانه
                             </a>
                         </li>
                         <li>
                             <a href="{% url 'app_tender:tender_home' %}">
-                                <i class="far">
-                                </i>
+                                <i class="far"></i>
                                 کلیه مناقصات
                             </a>
                         </li>
-                        <li class="active">{{ tender.title_fa }}
+                        <li class="active">
+                            {{ tender.title_fa }}
                         </li>
                     </ul>
                 </div>
             </div>
         </div>
         <!-- breadcrumb end -->
+
         <!-- blog area -->
         <div class="blog-area py-100">
             <div class="container">
                 <div class="row">
+
+                    <!-- MAIN CONTENT -->
                     <div class="col-lg-8">
                         <div class="blog-single-wrap">
                             <div class="blog-single-content">
-                                <div class="blog-thumb-img">
-                                    <img alt="thumb" src="{{ tender.poster.url }}">
-                                </div>
+
+                                <!-- POSTER -->
+                                {% if tender.poster %}
+                                    <div class="blog-thumb-img">
+                                        <img alt="{{ tender.title_fa }}"
+                                             src="{{ tender.poster.url }}">
+                                    </div>
+                                {% endif %}
+
                                 <div class="blog-info">
+
+                                    <!-- META -->
                                     <div class="blog-meta">
                                         <div class="blog-meta-left">
                                             <ul>
@@ -60,13 +77,13 @@
                                                         </a>
                                                     {% endif %}
                                                 </li>
+
                                                 <li>
                                                     <i class="far fa-timer"></i>
                                                     وضعیت:
-
                                                     {{ tender.get_status_display }}
-
                                                 </li>
+
                                                 {% if tender.estimated_amount %}
                                                     <li>
                                                         <i class="far fa-money-bill"></i>
@@ -76,35 +93,33 @@
                                                         </a>
                                                     </li>
                                                 {% endif %}
-                                                <i class="far fa-calendar-alt"></i>
-                                                شروع: {{ tender.start_date_fa|jformat:"%Y/%m/%d" }}
-                                                —
-                                                پایان: {{ tender.end_date_fa|jformat:"%Y/%m/%d" }}
-                                                </span>
 
+                                                {# ✅ این خط توی <li> مناسب قرار گرفت #}
+                                                <li>
+                                                    <i class="far fa-calendar-alt"></i>
+                                                    شروع: {{ tender.start_date_fa|jformat:"%Y/%m/%d" }}
+                                                    —
+                                                    پایان: {{ tender.end_date_fa|jformat:"%Y/%m/%d" }}
+                                                </li>
                                             </ul>
                                         </div>
                                     </div>
-                                    {#                                    <div class="blog-meta-right">#}
-                                    {#                                        <a class="share-link" href="#">#}
-                                    {#                                            <i class="far fa-share-alt">#}
-                                    {#                                            </i>#}
-                                    {#                                            به اشتراک بگذارید#}
-                                    {#                                        </a>#}
-                                    {#                                    </div>#}
-                                    {#                                </div>#}
 
                                     <div class="blog-details">
 
                                         <!-- عنوان -->
-                                        <h3 class="blog-details-title mb-20">{{ tender.title_fa }}</h3>
+                                        <h3 class="blog-details-title mb-20">
+                                            {{ tender.title_fa }}
+                                        </h3>
 
                                         <!-- توضیحات 1 -->
-                                        <p class="mb-10">{{ tender.description_fa }}</p>
+                                        {% if tender.description_fa %}
+                                            <p class="mb-10">{{ tender.description_fa|linebreaks }}</p>
+                                        {% endif %}
 
                                         <!-- توضیحات 2 -->
                                         {% if tender.description_2_fa %}
-                                            <p class="mb-10">{{ tender.description_2_fa }}</p>
+                                            <p class="mb-10">{{ tender.description_2_fa|linebreaks }}</p>
                                         {% endif %}
 
                                         <!-- گالری تصاویر -->
@@ -112,7 +127,8 @@
                                             <div class="blog-author">
 
                                                 <h5 class="mb-3" style="display:block; width:100%; clear:both;">
-                                                    عکس‌ها:</h5>
+                                                    عکس‌ها:
+                                                </h5>
 
                                                 <div class="row g-4 popup-gallery">
                                                     {% for img in tender.gallery_images.all %}
@@ -120,8 +136,10 @@
                                                             <div class="gallery-item wow fadeInUp"
                                                                  data-wow-delay=".25s">
                                                                 <div class="gallery-img">
-                                                                    <img alt="{{ img.caption }}"
-                                                                         src="{{ img.image.url }}"/>
+                                                                    {% if img.image %}
+                                                                        <img alt="{{ img.caption|default:tender.title_fa }}"
+                                                                             src="{{ img.image.url }}">
+                                                                    {% endif %}
                                                                     <a class="popup-img gallery-link"
                                                                        href="{{ img.image.url }}">
                                                                         <i class="fal fa-plus"></i>
@@ -139,7 +157,8 @@
                                         {% if tender.upload_file %}
                                             <blockquote class="blockqoute">
                                                 <h6 class="blockqoute-author">
-                                                    <a href="{{ tender.upload_file.url }}" download
+                                                    <a href="{{ tender.upload_file.url }}"
+                                                       download
                                                        class="btn btn-primary">
                                                         📥 دانلود فایل
                                                     </a>
@@ -157,15 +176,23 @@
                                             <!-- دسته‌بندی -->
                                             <div style="display: flex; align-items: center; gap: 8px;">
                                                 <h5 style="margin: 0;">دسته‌بندی:</h5>
-                                                <span>{{ tender.category.title_fa }}</span>
+                                                <span>
+                                                    {% if tender.category %}
+                                                        {{ tender.category.title_fa }}
+                                                    {% else %}
+                                                        —
+                                                    {% endif %}
+                                                </span>
                                             </div>
 
                                             <!-- برچسب‌ها -->
                                             <div style="display: flex; align-items: center; gap: 8px;">
                                                 <h5 style="margin: 0;">برچسب‌ها:</h5>
-                                                <ul style="margin: 0; padding: 0; list-style: none; display: flex; gap: 10px;">
+                                                <ul style="margin: 0; padding: 0; list-style: none; display: flex; gap: 10px; flex-wrap: wrap;">
                                                     {% for tag in tender.tags.all %}
                                                         <li><p>{{ tag.title_fa }}</p></li>
+                                                    {% empty %}
+                                                        <li><p>بدون برچسب</p></li>
                                                     {% endfor %}
                                                 </ul>
                                             </div>
@@ -178,22 +205,21 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- SIDEBAR -->
                     <div class="col-lg-4">
                         <aside class="sidebar">
-                            <!-- search-->
                             {% include 'RTL/tender/including/serach.html' %}
-                            <!-- category -->
                             {% tender_categories %}
-                            <!-- recent post -->
                             {% tender_recent %}
-                            <!-- social share -->
-                            <!-- Recent Post -->
                             {% tender_tags %}
                         </aside>
                     </div>
+
                 </div>
             </div>
         </div>
         <!-- blog area end -->
+
     </main>
 {% endblock %}

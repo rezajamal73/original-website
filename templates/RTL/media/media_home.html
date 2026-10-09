@@ -1,11 +1,19 @@
 {% extends 'RTL/core/base.html' %}
 {% load static %}
+
 {% block content %}
     <main class="main">
+
         <!-- breadcrumb -->
         <div class="site-breadcrumb">
-            <div class="site-breadcrumb-bg" style="background: url('{{ banner.image.url }}')">
-            </div>
+            {% if banner and banner.image %}
+                <div class="site-breadcrumb-bg"
+                     style="background: url('{{ banner.image.url }}')">
+                </div>
+            {% else %}
+                <div class="site-breadcrumb-bg"></div>
+            {% endif %}
+
             <div class="container">
                 <div class="site-breadcrumb-wrap">
                     <h4 class="breadcrumb-title">
@@ -14,23 +22,22 @@
                     <ul class="breadcrumb-menu">
                         <li>
                             <a href="{% url 'app_core:home' %}">
-                                <i class="far fa-home">
-                                </i>
+                                <i class="far fa-home"></i>
                                 خانه
                             </a>
                         </li>
-
                         <li class="active">
-                            <a href="{% url 'app_media:home' %}">
-                                کلیه رسانه ها
+                            {# ✅ home → media_home #}
+                            <a href="{% url 'app_media:media_home' %}">
+                                کلیه رسانه‌ها
                             </a>
                         </li>
-
                     </ul>
                 </div>
             </div>
         </div>
         <!-- breadcrumb end -->
+
         <!-- blog area -->
         <div class="blog-area py-100">
             <div class="container">
@@ -42,9 +49,11 @@
 
                                 <!-- poster -->
                                 <div class="blog-item-img">
-                                    <a href="{% url 'app_media:single' media.id %}">
+                                    {# ✅ single → media_single با pid + slug #}
+                                    <a href="{% url 'app_media:media_single' media.id media.slug %}">
                                         {% if media.image %}
-                                            <img src="{{ media.image.url }}" alt="{{ media.title_fa }}">
+                                            <img src="{{ media.image.url }}"
+                                                 alt="{{ media.title_fa }}">
                                         {% endif %}
                                     </a>
                                 </div>
@@ -52,16 +61,17 @@
                                 <div class="blog-item-info">
 
                                     <div style="
-                                width: 60px;
-                                height: 3px;
-                                background: linear-gradient(to right, #ccc, #999);
-                                margin-top: 10px;
-                                margin-bottom: 10px;
-                                border-radius: 2px;
-                            "></div>
+                                        width: 60px;
+                                        height: 3px;
+                                        background: linear-gradient(to right, #ccc, #999);
+                                        margin-top: 10px;
+                                        margin-bottom: 10px;
+                                        border-radius: 2px;
+                                    "></div>
 
                                     <h4 class="blog-title">
-                                        <a href="{% url 'app_media:single' media.id %}">
+                                        {# ✅ single → media_single با pid + slug #}
+                                        <a href="{% url 'app_media:media_single' media.id media.slug %}">
                                             {{ media.title_fa }}
                                         </a>
                                     </h4>
@@ -70,7 +80,9 @@
                                         <p>{{ media.summary_fa|truncatechars:120 }}</p>
                                     {% endif %}
 
-                                    <a class="theme-btn" href="{% url 'app_media:single' media.id %}">
+                                    {# ✅ single → media_single با pid + slug #}
+                                    <a class="theme-btn"
+                                       href="{% url 'app_media:media_single' media.id media.slug %}">
                                         مشاهده
                                         <i class="fas fa-arrow-left"></i>
                                     </a>
@@ -92,7 +104,8 @@
 
                             {% if media_sections.has_previous %}
                                 <li class="page-item">
-                                    <a class="page-link" href="?page={{ media_sections.previous_page_number }}">
+                                    <a class="page-link"
+                                       href="?page={{ media_sections.previous_page_number }}">
                                         <i class="far fa-arrow-right"></i>
                                     </a>
                                 </li>
@@ -106,7 +119,8 @@
 
                             {% if media_sections.has_next %}
                                 <li class="page-item">
-                                    <a class="page-link" href="?page={{ media_sections.next_page_number }}">
+                                    <a class="page-link"
+                                       href="?page={{ media_sections.next_page_number }}">
                                         <i class="far fa-arrow-left"></i>
                                     </a>
                                 </li>
@@ -118,7 +132,7 @@
 
             </div>
         </div>
-
+        <!-- blog area end -->
 
     </main>
 {% endblock %}

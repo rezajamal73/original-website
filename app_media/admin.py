@@ -1,5 +1,4 @@
 # app_media/admin.py
-
 from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
@@ -60,9 +59,7 @@ def admin_action_buttons(obj):
         edit_url,
         delete_url,
     )
-
-
-admin_action_buttons.short_description = "عملیات"
+# ⚠️ short_description روی تابع ماژول‌سطح کار نمی‌کنه — فقط روی متد کلاس
 
 
 class ActionButtonsMixin:
@@ -91,6 +88,7 @@ class MediaImageInline(admin.TabularInline):
                 obj.image.url,
             )
         return "—"
+
     show_image.short_description = "پیش‌نمایش"
 
 
@@ -112,6 +110,7 @@ class MediaVideoInline(admin.TabularInline):
                 obj.video.url,
             )
         return "—"
+
     show_video.short_description = "پیش‌نمایش"
 
 
@@ -132,20 +131,39 @@ class MediaAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
     ordering = ("order",)
     actions = None
 
-    search_fields = ("title_fa", "title_en", "summary_fa", "summary_en")
+    # ✅ slug + slug_en اضافه شد
+    search_fields = (
+        "title_fa",
+        "title_en",
+        "summary_fa",
+        "summary_en",
+        "slug",
+        "slug_en",
+    )
+
     list_filter = ("status", "is_special")
 
-    readonly_fields = ("slug", "show_image_in_field")
+    # ✅ slug_en اضافه شد
+    readonly_fields = ("slug", "slug_en", "show_image_in_field")
 
     inlines = [MediaImageInline, MediaVideoInline]
 
+    # ✅ slug توی فارسی + slug_en توی انگلیسی + order
     fieldsets = (
         ("📌 وضعیت", {"fields": ("status", "is_special")}),
         ("🖼️ تصویر", {"fields": ("image", "show_image_in_field")}),
-        ("📝 فارسی", {"fields": ("title_fa", "summary_fa")}),
-        ("📝 انگلیسی", {"fields": ("title_en", "summary_en", "slug")}),
+        ("📝 فارسی", {
+            "fields": ("title_fa", "summary_fa", "slug"),
+        }),
+        ("📝 انگلیسی", {
+            "fields": ("title_en", "summary_en", "slug_en"),
+        }),
+        ("🔢 ترتیب", {
+            "fields": ("order",),
+        }),
     )
 
+    # ---------- ICONS ----------
     def image_icon(self, obj):
         if obj.image:
             return format_html(
@@ -155,6 +173,7 @@ class MediaAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
                 obj.image.url,
             )
         return "🖼️"
+
     image_icon.short_description = "عکس"
 
     def show_image_in_field(self, obj):
@@ -165,6 +184,7 @@ class MediaAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
                 obj.image.url,
             )
         return "تصویری آپلود نشده است"
+
     show_image_in_field.short_description = "پیش‌نمایش"
 
     def title_icon(self, obj):
@@ -172,6 +192,7 @@ class MediaAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
             "<b style='color:#1A73E8'>{}</b>",
             obj.title_fa,
         )
+
     title_icon.short_description = "عنوان"
 
     def status_icon(self, obj):
@@ -184,8 +205,10 @@ class MediaAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
             "<b style='color:red;'>{}</b>",
             "پیش‌نویس",
         )
+
     status_icon.short_description = "وضعیت"
 
     def special_icon(self, obj):
         return "⭐" if obj.is_special else "—"
+
     special_icon.short_description = "نمایش در صفحه اصلی"

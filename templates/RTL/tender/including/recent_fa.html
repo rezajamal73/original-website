@@ -7,14 +7,19 @@
         <div class="recent-post-item">
 
             <div class="recent-post-img">
-                <a href="{% url 'app_tender:tender_single' tender.id %}">
-                    <img src="{{ tender.poster.url }}">
+                {# ✅ tender_single با tender.id + tender.slug #}
+                <a href="{% url 'app_tender:tender_single' tender.id tender.slug %}">
+                    {% if tender.poster %}
+                        <img src="{{ tender.poster.url }}"
+                             alt="{{ tender.title_fa }}">
+                    {% endif %}
                 </a>
             </div>
 
             <div class="recent-post-bio">
                 <h6>
-                    <a href="{% url 'app_tender:tender_single' tender.id %}">
+                    {# ✅ tender_single با tender.id + tender.slug #}
+                    <a href="{% url 'app_tender:tender_single' tender.id tender.slug %}">
                         {{ tender.title_fa|truncatechars:25 }}
                     </a>
                 </h6>
@@ -26,5 +31,7 @@
             </div>
 
         </div>
+    {% empty %}
+        <p>مناقصه‌ای وجود ندارد.</p>
     {% endfor %}
 </div>

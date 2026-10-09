@@ -3,12 +3,20 @@
 {% load tender_tags %}
 {% load jformat %}
 {% load humanize %}
+
 {% block content %}
     <main class="main">
+
         <!-- breadcrumb -->
         <div class="site-breadcrumb">
-            <div class="site-breadcrumb-bg" style="background: url('{{ banner.image.url }}')">
-            </div>
+            {% if banner and banner.image %}
+                <div class="site-breadcrumb-bg"
+                     style="background: url('{{ banner.image.url }}')">
+                </div>
+            {% else %}
+                <div class="site-breadcrumb-bg"></div>
+            {% endif %}
+
             <div class="container">
                 <div class="site-breadcrumb-wrap">
                     <h4 class="breadcrumb-title">
@@ -17,22 +25,21 @@
                     <ul class="breadcrumb-menu">
                         <li>
                             <a href="{% url 'app_core:home' %}">
-                                <i class="far fa-home">
-                                </i>
+                                <i class="far fa-home"></i>
                                 خانه
                             </a>
                         </li>
-
                         <li class="active">
                             <a href="{% url 'app_tender:tender_home' %}">
-                                کلیه مناقصات </a>
+                                کلیه مناقصات
+                            </a>
                         </li>
-
                     </ul>
                 </div>
             </div>
         </div>
         <!-- breadcrumb end -->
+
         <!-- blog area -->
         <div class="blog-area2 py-100">
             <div class="container">
@@ -46,25 +53,31 @@
                                 {% for item in tenders %}
                                     <div class="col-md-6">
                                         <div class="blog-item wow fadeInUp" data-wow-delay=".25s">
-<span class="blog-date">
-    <i class="far fa-calendar-alt"></i>
-    شروع: {{ item.start_date_fa|jformat:"%Y/%m/%d" }}
-    <span class="date-separator">&nbsp; — &nbsp;</span>
-    <span class="end-date">
-        پایان: {{ item.end_date_fa|jformat:"%Y/%m/%d" }}
-    </span>
-</span>
+
+                                            <span class="blog-date">
+                                                <i class="far fa-calendar-alt"></i>
+                                                شروع: {{ item.start_date_fa|jformat:"%Y/%m/%d" }}
+                                                <span class="date-separator">&nbsp; — &nbsp;</span>
+                                                <span class="end-date">
+                                                    پایان: {{ item.end_date_fa|jformat:"%Y/%m/%d" }}
+                                                </span>
+                                            </span>
 
                                             <div class="blog-item-img">
-                                                <a href="{% url 'app_tender:tender_single' item.id %}">
-                                                    <img src="{{ item.poster.url }}" alt="{{ item.title_fa }}">
+                                                {# ✅ tender_single با item.id + item.slug #}
+                                                <a href="{% url 'app_tender:tender_single' item.id item.slug %}">
+                                                    {% if item.poster %}
+                                                        <img src="{{ item.poster.url }}"
+                                                             alt="{{ item.title_fa }}">
+                                                    {% endif %}
                                                 </a>
                                             </div>
 
                                             <div class="blog-item-info">
 
                                                 <h4 class="blog-title">
-                                                    <a href="{% url 'app_tender:tender_single' item.id %}">
+                                                    {# ✅ tender_single با item.id + item.slug #}
+                                                    <a href="{% url 'app_tender:tender_single' item.id item.slug %}">
                                                         {{ item.title_fa }}
                                                     </a>
                                                 </h4>
@@ -73,16 +86,16 @@
 
                                                 <div class="blog-item-meta">
                                                     <ul>
-                                                    <li class="d-flex align-items-center mb-2">
-    <span class="status-indicator
-        {% if item.status == 'ongoing' %}status-ongoing
-        {% elif item.status == 'extended' %}status-extended
-        {% else %}status-finished
-        {% endif %}">
-        <i class="far fa-timer me-2"></i>
-        {{ item.get_status_display }}
-    </span>
-</li>
+                                                        <li class="d-flex align-items-center mb-2">
+                                                            <span class="status-indicator
+                                                                {% if item.status == 'ongoing' %}status-ongoing
+                                                                {% elif item.status == 'extended' %}status-extended
+                                                                {% else %}status-finished
+                                                                {% endif %}">
+                                                                <i class="far fa-timer me-2"></i>
+                                                                {{ item.get_status_display }}
+                                                            </span>
+                                                        </li>
 
                                                         <li>
                                                             <i class="far fa-folder-open"></i>
@@ -115,7 +128,7 @@
 
                         </div>
 
-                        <!-- pagination فقط زمانی که دیتا وجود دارد -->
+                        <!-- pagination -->
                         {% if tenders and tenders.has_other_pages %}
                             <div class="pagination-area mt-60">
                                 <div aria-label="Page navigation example">
@@ -123,15 +136,16 @@
 
                                         {% if tenders.has_previous %}
                                             <li class="page-item">
-                                                <a class="page-link" href="?page={{ tenders.previous_page_number }}">
+                                                <a class="page-link"
+                                                   href="?page={{ tenders.previous_page_number }}">
                                                     <i class="far fa-arrow-right"></i>
                                                 </a>
                                             </li>
                                         {% else %}
                                             <li class="page-item disabled">
-                                        <span class="page-link">
-                                            <i class="far fa-arrow-right"></i>
-                                        </span>
+                                                <span class="page-link">
+                                                    <i class="far fa-arrow-right"></i>
+                                                </span>
                                             </li>
                                         {% endif %}
 
@@ -143,15 +157,16 @@
 
                                         {% if tenders.has_next %}
                                             <li class="page-item">
-                                                <a class="page-link" href="?page={{ tenders.next_page_number }}">
+                                                <a class="page-link"
+                                                   href="?page={{ tenders.next_page_number }}">
                                                     <i class="far fa-arrow-left"></i>
                                                 </a>
                                             </li>
                                         {% else %}
                                             <li class="page-item disabled">
-                                        <span class="page-link">
-                                            <i class="far fa-arrow-left"></i>
-                                        </span>
+                                                <span class="page-link">
+                                                    <i class="far fa-arrow-left"></i>
+                                                </span>
                                             </li>
                                         {% endif %}
 
@@ -163,7 +178,7 @@
 
                     </div>
 
-                    <!-- سایدبار (همیشه نمایش داده شود) -->
+                    <!-- سایدبار -->
                     <div class="col-lg-4 col-12">
                         <aside class="sidebar">
                             {% include 'RTL/tender/including/serach.html' %}
@@ -176,7 +191,7 @@
                 </div>
             </div>
         </div>
-
         <!-- blog area end -->
+
     </main>
 {% endblock %}

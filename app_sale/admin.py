@@ -63,9 +63,6 @@ def admin_action_buttons(obj):
     )
 
 
-admin_action_buttons.short_description = "عملیات"
-
-
 class ActionButtonsMixin:
     """Mixin برای اضافه کردن ستون عملیات (ویرایش + حذف) به ادمین"""
 
@@ -201,9 +198,13 @@ class SalesReportAdmin(ActionButtonsMixin, admin.ModelAdmin):
         """نمایش مبلغ فروش ماه با کاما"""
         if obj.total_sales is None:
             return "—"
+
+        # ✅ اول فرمت کن، بعد پاس بده
+        formatted = f"{int(obj.total_sales):,}"
+
         return format_html(
-            "<strong style='color:#198754'>{:,}</strong> تومان",
-            int(obj.total_sales),
+            "<strong style='color:#198754'>{}</strong> تومان",
+            formatted,
         )
 
     formatted_total_sales.short_description = "فروش ماه"
@@ -219,9 +220,12 @@ class SalesReportAdmin(ActionButtonsMixin, admin.ModelAdmin):
         if not total:
             total = 0
 
+        # ✅ اول فرمت کن، بعد پاس بده
+        formatted = f"{int(total):,}"
+
         return format_html(
-            "<span style='color:#0a7c2f;font-weight:bold'>{:,}</span> تومان",
-            int(total),
+            "<span style='color:#0a7c2f;font-weight:bold'>{}</span> تومان",
+            formatted,
         )
 
     jalali_year_total_display.short_description = "جمع سال (شمسی)"

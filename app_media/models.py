@@ -1,7 +1,7 @@
-# app/models.py
-
+# app_media/models.py
 from django.db import models
 from django.utils.text import slugify
+from django.urls import reverse                          # ✅ اضافه شد
 from django.contrib.auth.models import User
 
 
@@ -9,7 +9,10 @@ from django.contrib.auth.models import User
 #   GENERIC UNIQUE SLUG MAKER (Reusable for all models)
 # ------------------------------------------------------
 def generate_unique_slug(instance, slug_field: str, text_value: str):
-    base_slug = slugify(text_value) or "item"
+    """
+    تولید اسلاگ یکتا با پشتیبانی از فارسی.
+    """
+    base_slug = slugify(text_value, allow_unicode=True) or "item"   # ✅ allow_unicode
     slug = base_slug
     Model = instance.__class__
     counter = 1
@@ -29,23 +32,44 @@ class Media(models.Model):
         ("draft", "پیش‌نویس"),
         ("published", "منتشر شده"),
     )
+
     title_fa = models.CharField(max_length=255, verbose_name="عنوان فارسی")
     title_en = models.CharField(max_length=255, verbose_name="عنوان انگلیسی")
-    slug = models.SlugField(unique=True, blank=True, editable=False)
+
+    # ✅ اسلاگ فارسی
+    slug = models.SlugField(
+        "اسلاگ (فارسی)",
+        unique=True,
+        blank=True,
+        editable=False,
+        allow_unicode=True,
+    )
+
+    # ✅ اسلاگ انگلیسی
+    slug_en = models.SlugField(
+        "اسلاگ (انگلیسی)",
+        unique=True,
+        blank=True,
+        editable=False,
+        allow_unicode=False,
+    )
+
     summary_fa = models.TextField(verbose_name="متن قسمت اول فارسی")
     summary_en = models.TextField(verbose_name="متن قسمت اول انگلیسی")
 
     image = models.ImageField(
-        upload_to="news/cover/",
-        default="news/default.jpg",
-        verbose_name="کاور خبر"
+        upload_to="media/cover/",                      # ✅ media جای news
+        default="media/default.jpg",
+        verbose_name="کاور رسانه",
+        blank=True,
+        null=True,
     )
 
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
         default="draft",
-        verbose_name="وضعیت"
+        verbose_name="وضعیت",
     )
 
     is_special = models.BooleanField(default=False, verbose_name="نمایش در صفحه اصلی")
@@ -53,16 +77,39 @@ class Media(models.Model):
 
     class Meta:
         verbose_name = "رسانه"
-        verbose_name_plural = "رسانه ها"
+        verbose_name_plural = "رسانه‌ها"
         ordering = ["order"]
 
     def save(self, *args, **kwargs):
-        if not self.slug or slugify(self.slug) != slugify(self.title_en):
-            self.slug = generate_unique_slug(self, "slug", self.title_en)
+        # ✅ اسلاگ فارسی از title_fa
+        if not self.slug and self.title_fa:
+            self.slug = generate_unique_slug(self, "slug", self.title_fa)
+
+        # ✅ اسلاگ انگلیسی از title_en
+        if not self.slug_en and self.title_en:
+            self.slug_en = generate_unique_slug(self, "slug_en", self.title_en)
+
         super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title_fa
+
+    # =====================================================
+    # URL ها
+    # =====================================================
+    def get_absolute_url(self):
+        """URL فارسی: /media/5/عنوان/"""
+        return reverse("app_media:media_single", kwargs={
+            "pid": self.pk,
+            "slug": self.slug,
+        })
+
+    def get_absolute_url_en(self):
+        """URL انگلیسی: /en/media/5/media-title/"""
+        return reverse("app_media_en:media_single_en", kwargs={
+            "pid": self.pk,
+            "slug": self.slug_en,
+        })
 
 
 # ------------------------------------------------------
@@ -72,9 +119,11 @@ class MediaImage(models.Model):
     media = models.ForeignKey(
         Media,
         on_delete=models.CASCADE,
-        related_name="images"
+        related_name="images",
+        verbose_name="رسانه",
     )
-    image = models.ImageField(upload_to="news/gallery/")
+    image = models.ImageField(upload_to="media/gallery/", verbose_name="تصویر")   # ✅ media جای news
+    caption = models.CharField(max_length=255, blank=True, null=True, verbose_name="توضیح تصویر")
     order = models.PositiveIntegerField(default=0, verbose_name="ترتیب نمایش")
 
     class Meta:
@@ -93,15 +142,12 @@ class MediaVideo(models.Model):
     media = models.ForeignKey(
         Media,
         on_delete=models.CASCADE,
-        related_name="videos"
+        related_name="videos",
+        verbose_name="رسانه",
     )
-    video = models.FileField(upload_to="news/videos/")
-    duration = models.CharField(
-        max_length=10,
-        blank=True,
-        null=True,
-        verbose_name="مدت زمان ویدیو"
-    )
+    video = models.FileField(upload_to="media/videos/", verbose_name="ویدیو")   # ✅ media جای news
+    caption = models.CharField(max_length=255, blank=True, null=True, verbose_name="توضیح ویدیو")
+    duration = models.CharField(max_length=10, blank=True, null=True, verbose_name="مدت زمان ویدیو")
     order = models.PositiveIntegerField(default=0, verbose_name="ترتیب نمایش")
 
     class Meta:
