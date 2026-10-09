@@ -8,8 +8,74 @@ from django.utils.safestring import mark_safe
 from .models import ContactMessage
 
 
+# ---------------------------------------
+#   GLOBAL ACTION BUTTONS (EDIT + DELETE)
+# ---------------------------------------
+def admin_action_buttons(obj):
+    edit_url = reverse(
+        f"admin:{obj._meta.app_label}_{obj._meta.model_name}_change",
+        args=[obj.pk],
+    )
+    delete_url = reverse(
+        f"admin:{obj._meta.app_label}_{obj._meta.model_name}_delete",
+        args=[obj.pk],
+    )
+    return format_html(
+        """
+        <div style="display:inline-flex; gap:6px; align-items:center;">
+            <a href="{}"
+               style="
+                    background:#1e88e5;
+                    color:white;
+                    padding:6px 10px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:bold;
+                    white-space:nowrap;
+                    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+                    display:inline-flex;
+                    align-items:center;
+                    gap:5px;
+               ">
+                ✏️
+            </a>
+            <a href="{}"
+               style="
+                    background:#d7263d;
+                    color:white;
+                    padding:6px 10px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:bold;
+                    white-space:nowrap;
+                    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+                    display:inline-flex;
+                    align-items:center;
+                    gap:5px;
+               ">
+                🗑
+            </a>
+        </div>
+        """,
+        edit_url,
+        delete_url,
+    )
+
+
+admin_action_buttons.short_description = "عملیات"
+
+
+class ActionButtonsMixin:
+    """Mixin برای اضافه کردن ستون عملیات (ویرایش + حذف) به ادمین"""
+
+    def admin_actions(self, obj):
+        return admin_action_buttons(obj)
+
+    admin_actions.short_description = "عملیات"
+
+
 @admin.register(ContactMessage)
-class ContactMessageAdmin(admin.ModelAdmin):
+class ContactMessageAdmin(ActionButtonsMixin, admin.ModelAdmin):
 
     # ---------- READ ONLY ----------
     def has_add_permission(self, request):
@@ -27,6 +93,7 @@ class ContactMessageAdmin(admin.ModelAdmin):
         "subject",
         "status_badge",
         "print_button",
+        "admin_actions",
         "created_at_fa",
     )
 

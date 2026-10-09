@@ -7,29 +7,72 @@ from .models import SalesReport
 
 
 # =================================================
-# Delete Button
+# GLOBAL ACTION BUTTONS (EDIT + DELETE)
 # =================================================
-def admin_delete_button(obj):
+def admin_action_buttons(obj):
     """
-    دکمه حذف HTML که به صفحه حذف ادمین مدل هدایت می‌شود.
+    دکمه‌های ویرایش و حذف کنار هم که به صفحات مربوطه هدایت می‌شن.
     """
-    url = reverse(
+    edit_url = reverse(
+        f"admin:{obj._meta.app_label}_{obj._meta.model_name}_change",
+        args=[obj.pk],
+    )
+    delete_url = reverse(
         f"admin:{obj._meta.app_label}_{obj._meta.model_name}_delete",
         args=[obj.pk],
     )
     return format_html(
-        '<a href="{}" style="'
-        'background:#d7263d;'
-        'color:white;'
-        'padding:6px 10px;'
-        'border-radius:8px;'
-        'text-decoration:none;'
-        'font-weight:bold;'
-        'display:inline-block;'
-        '">🗑 حذف</a>',
-        url,
+        """
+        <div style="display:inline-flex; gap:6px; align-items:center;">
+            <a href="{}"
+               style="
+                    background:#1e88e5;
+                    color:white;
+                    padding:6px 10px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:bold;
+                    white-space:nowrap;
+                    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+                    display:inline-flex;
+                    align-items:center;
+                    gap:5px;
+               ">
+                ✏️
+            </a>
+            <a href="{}"
+               style="
+                    background:#d7263d;
+                    color:white;
+                    padding:6px 10px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:bold;
+                    white-space:nowrap;
+                    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+                    display:inline-flex;
+                    align-items:center;
+                    gap:5px;
+               ">
+                🗑
+            </a>
+        </div>
+        """,
+        edit_url,
+        delete_url,
     )
-# ⚠️ توجه: short_description فقط روی متد داخل کلاس کار می‌کند، نه تابع ماژول‌سطح.
+
+
+admin_action_buttons.short_description = "عملیات"
+
+
+class ActionButtonsMixin:
+    """Mixin برای اضافه کردن ستون عملیات (ویرایش + حذف) به ادمین"""
+
+    def admin_actions(self, obj):
+        return admin_action_buttons(obj)
+
+    admin_actions.short_description = "عملیات"
 
 
 # =================================================
@@ -46,7 +89,6 @@ class JalaliYearFilter(admin.SimpleListFilter):
             .distinct()
             .order_by("-jalali_year")
         )
-        # ✅ str(y) — Django انتظار str داره
         return [(str(y), str(y)) for y in years]
 
     def queryset(self, request, queryset):
@@ -72,7 +114,6 @@ class JalaliMonthFilter(admin.SimpleListFilter):
             .order_by("jalali_month")
         )
 
-        # ✅ استفاده از SalesReport.JalaliMonth(m).label به‌جای dict
         result = []
         for m in months:
             try:
@@ -93,7 +134,7 @@ class JalaliMonthFilter(admin.SimpleListFilter):
 # SalesReport Admin
 # =================================================
 @admin.register(SalesReport)
-class SalesReportAdmin(admin.ModelAdmin):
+class SalesReportAdmin(ActionButtonsMixin, admin.ModelAdmin):
     actions = None
 
     # ================================
@@ -104,7 +145,7 @@ class SalesReportAdmin(admin.ModelAdmin):
         "formatted_total_sales",
         "jalali_year_total_display",
         "created_at",
-        "delete_button",
+        "admin_actions",
     )
 
     list_filter = (
@@ -184,8 +225,3 @@ class SalesReportAdmin(admin.ModelAdmin):
         )
 
     jalali_year_total_display.short_description = "جمع سال (شمسی)"
-
-    def delete_button(self, obj):
-        return admin_delete_button(obj)
-
-    delete_button.short_description = "عملیات"

@@ -8,34 +8,75 @@ from adminsortable2.admin import SortableAdminMixin
 from .models import Media, MediaImage, MediaVideo
 
 
-def admin_delete_button(obj):
-    url = reverse(
+# ------------------------------------------------
+#   GLOBAL ACTION BUTTONS (EDIT + DELETE)
+# ------------------------------------------------
+def admin_action_buttons(obj):
+    edit_url = reverse(
+        f"admin:{obj._meta.app_label}_{obj._meta.model_name}_change",
+        args=[obj.pk],
+    )
+    delete_url = reverse(
         f"admin:{obj._meta.app_label}_{obj._meta.model_name}_delete",
         args=[obj.pk],
     )
     return format_html(
         """
-        <a href="{}"
-            style="
-                background:#d7263d;
-                color:white;
-                padding:6px 10px;
-                border-radius:8px;
-                font-weight:bold;
-                text-decoration:none;
-                display:inline-flex;
-                align-items:center;
-                gap:5px;
-                box-shadow:0 2px 5px rgba(0,0,0,0.2);
-            ">
-            🗑
-        </a>
+        <div style="display:inline-flex; gap:6px; align-items:center;">
+            <a href="{}"
+               style="
+                    background:#1e88e5;
+                    color:white;
+                    padding:6px 10px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:bold;
+                    white-space:nowrap;
+                    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+                    display:inline-flex;
+                    align-items:center;
+                    gap:5px;
+               ">
+                ✏️
+            </a>
+            <a href="{}"
+               style="
+                    background:#d7263d;
+                    color:white;
+                    padding:6px 10px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:bold;
+                    white-space:nowrap;
+                    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+                    display:inline-flex;
+                    align-items:center;
+                    gap:5px;
+               ">
+                🗑
+            </a>
+        </div>
         """,
-        url,
+        edit_url,
+        delete_url,
     )
-admin_delete_button.short_description = "حذف"
 
 
+admin_action_buttons.short_description = "عملیات"
+
+
+class ActionButtonsMixin:
+    """Mixin برای اضافه کردن ستون عملیات (ویرایش + حذف) به ادمین"""
+
+    def admin_actions(self, obj):
+        return admin_action_buttons(obj)
+
+    admin_actions.short_description = "عملیات"
+
+
+# ------------------------------------------------
+#   INLINE: MEDIA IMAGE
+# ------------------------------------------------
 class MediaImageInline(admin.TabularInline):
     model = MediaImage
     extra = 1
@@ -53,6 +94,9 @@ class MediaImageInline(admin.TabularInline):
     show_image.short_description = "پیش‌نمایش"
 
 
+# ------------------------------------------------
+#   INLINE: MEDIA VIDEO
+# ------------------------------------------------
 class MediaVideoInline(admin.TabularInline):
     model = MediaVideo
     extra = 1
@@ -71,15 +115,18 @@ class MediaVideoInline(admin.TabularInline):
     show_video.short_description = "پیش‌نمایش"
 
 
+# ------------------------------------------------
+#   MEDIA ADMIN
+# ------------------------------------------------
 @admin.register(Media)
-class MediaAdmin(SortableAdminMixin, admin.ModelAdmin):
+class MediaAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
     list_display = (
         "order",
         "image_icon",
         "title_icon",
         "status_icon",
         "special_icon",
-        admin_delete_button,
+        "admin_actions",
     )
 
     ordering = ("order",)

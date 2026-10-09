@@ -14,31 +14,69 @@ from app_news.models import (
 
 
 # -------------------------------------------------------
-#   GLOBAL DELETE BUTTON
+#   GLOBAL ACTION BUTTONS (EDIT + DELETE)
 # -------------------------------------------------------
-def admin_delete_button(obj):
-    url = reverse(f"admin:{obj._meta.app_label}_{obj._meta.model_name}_delete", args=[obj.pk])
+def admin_action_buttons(obj):
+    edit_url = reverse(
+        f"admin:{obj._meta.app_label}_{obj._meta.model_name}_change",
+        args=[obj.pk],
+    )
+    delete_url = reverse(
+        f"admin:{obj._meta.app_label}_{obj._meta.model_name}_delete",
+        args=[obj.pk],
+    )
     return format_html(
         """
-        <a href="{}"
-            style="
-                background:#d7263d;
-                color:white;
-                padding:6px 10px;
-                border-radius:8px;
-                font-weight:bold;
-                text-decoration:none;
-                display:inline-flex;
-                align-items:center;
-                gap:5px;
-                box-shadow:0 2px 5px rgba(0,0,0,0.2);
-            ">
-            🗑
-        </a>
+        <div style="display:inline-flex; gap:6px; align-items:center;">
+            <a href="{}"
+               style="
+                    background:#1e88e5;
+                    color:white;
+                    padding:6px 10px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:bold;
+                    white-space:nowrap;
+                    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+                    display:inline-flex;
+                    align-items:center;
+                    gap:5px;
+               ">
+                ✏️
+            </a>
+            <a href="{}"
+               style="
+                    background:#d7263d;
+                    color:white;
+                    padding:6px 10px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:bold;
+                    white-space:nowrap;
+                    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+                    display:inline-flex;
+                    align-items:center;
+                    gap:5px;
+               ">
+                🗑
+            </a>
+        </div>
         """,
-        url
+        edit_url,
+        delete_url,
     )
-admin_delete_button.short_description = "حذف"
+
+
+admin_action_buttons.short_description = "عملیات"
+
+
+class ActionButtonsMixin:
+    """Mixin برای اضافه کردن ستون عملیات (ویرایش + حذف) به ادمین"""
+
+    def admin_actions(self, obj):
+        return admin_action_buttons(obj)
+
+    admin_actions.short_description = "عملیات"
 
 
 # -------------------------------------------------------
@@ -57,6 +95,7 @@ class NewsImageInline(admin.TabularInline):
                 obj.image.url,
             )
         return "—"
+
     show_image.short_description = "پیش‌نمایش"
 
 
@@ -81,6 +120,7 @@ class NewsVideoInline(admin.TabularInline):
                 obj.video.url,
             )
         return "—"
+
     show_video.short_description = "پیش‌نمایش"
 
 
@@ -88,25 +128,40 @@ class NewsVideoInline(admin.TabularInline):
 #   CATEGORY ADMIN
 # =======================================================
 @admin.register(NewsCategory)
-class NewsCategoryAdmin(admin.ModelAdmin):
-    list_display = ("title_icon", "created_icon", admin_delete_button)
-    search_fields = ("title_fa", "title_en")
-    ordering = ("-id",)
+class NewsCategoryAdmin(ActionButtonsMixin, admin.ModelAdmin):
     actions = None
 
-    readonly_fields = ("slug", "created_at_fa", "created_at_en")
+    list_display = (
+        "title_icon",
+        "slug",
+        "slug_en",
+        "created_icon",
+        "admin_actions",
+    )
+
+    search_fields = ("title_fa", "title_en", "slug", "slug_en")
+    ordering = ("-id",)
+
+    readonly_fields = ("slug", "slug_en", "created_at_fa", "created_at_en")
 
     fieldsets = (
-        ("📁 دسته‌بندی", {"fields": ("title_fa", "title_en", "slug")}),
-        ("⏱️ زمان ایجاد", {"fields": ("created_at_fa", "created_at_en")}),
+        ("📁 دسته‌بندی", {
+            "fields": ("title_fa", "title_en", "slug", "slug_en", "order"),
+        }),
+        ("⏱️ زمان ایجاد", {
+            "fields": ("created_at_fa", "created_at_en"),
+            "classes": ("collapse",),
+        }),
     )
 
     def title_icon(self, obj):
         return format_html("📁 <b>{}</b>", obj.title_fa)
+
     title_icon.short_description = "عنوان"
 
     def created_icon(self, obj):
         return format_html("⏱️ {}", obj.created_at_fa.strftime("%Y-%m-%d %H:%M:%S"))
+
     created_icon.short_description = "ایجاد"
 
 
@@ -114,25 +169,40 @@ class NewsCategoryAdmin(admin.ModelAdmin):
 #   TAG ADMIN
 # =======================================================
 @admin.register(NewsTag)
-class NewsTagAdmin(admin.ModelAdmin):
-    list_display = ("title_icon", "created_icon", admin_delete_button)
-    ordering = ("-created_at_fa",)
-    search_fields = ("title_fa", "title_en")
+class NewsTagAdmin(ActionButtonsMixin, admin.ModelAdmin):
     actions = None
 
-    readonly_fields = ("slug", "created_at_fa", "created_at_en")
+    list_display = (
+        "title_icon",
+        "slug",
+        "slug_en",
+        "created_icon",
+        "admin_actions",
+    )
+
+    search_fields = ("title_fa", "title_en", "slug", "slug_en")
+    ordering = ("-created_at_fa",)
+
+    readonly_fields = ("slug", "slug_en", "created_at_fa", "created_at_en")
 
     fieldsets = (
-        ("🏷️ برچسب", {"fields": ("title_fa", "title_en", "slug")}),
-        ("⏱️ زمان ایجاد", {"fields": ("created_at_fa", "created_at_en")}),
+        ("🏷️ برچسب", {
+            "fields": ("title_fa", "title_en", "slug", "slug_en"),
+        }),
+        ("⏱️ زمان ایجاد", {
+            "fields": ("created_at_fa", "created_at_en"),
+            "classes": ("collapse",),
+        }),
     )
 
     def title_icon(self, obj):
         return format_html("🏷️ <b>{}</b>", obj.title_fa)
+
     title_icon.short_description = "عنوان"
 
     def created_icon(self, obj):
         return format_html("⏱️ {}", obj.created_at_fa.strftime("%Y-%m-%d %H:%M:%S"))
+
     created_icon.short_description = "ایجاد"
 
 
@@ -140,7 +210,10 @@ class NewsTagAdmin(admin.ModelAdmin):
 #   NEWS ADMIN
 # =======================================================
 @admin.register(News)
-class NewsAdmin(admin.ModelAdmin):
+class NewsAdmin(ActionButtonsMixin, admin.ModelAdmin):
+    actions = None
+    inlines = [NewsImageInline, NewsVideoInline]
+
     list_display = (
         "image_icon",
         "title_icon",
@@ -148,25 +221,40 @@ class NewsAdmin(admin.ModelAdmin):
         "category_icon",
         "tag_icon",
         "date_icon",
-        admin_delete_button,
+        "admin_actions",
     )
 
     ordering = ("-publish_date_fa", "-id")
-    actions = None
     list_filter = ("status", "category")
-    search_fields = ("title_fa", "title_en", "summary_fa", "summary_en")
 
-    readonly_fields = ("slug", "show_image_in_field")
+    search_fields = (
+        "title_fa",
+        "title_en",
+        "summary_fa",
+        "summary_en",
+        "slug",
+        "slug_en",
+    )
 
-    inlines = [NewsImageInline, NewsVideoInline]
+    readonly_fields = ("slug", "slug_en", "show_image_in_field")
 
     fieldsets = (
-        ("📌 وضعیت", {"fields": ("status",)}),
+        ("📌 وضعیت", {"fields": ("status", "is_special")}),
         ("🖼️ تصویر", {"fields": ("image", "show_image_in_field")}),
-        ("📝 فارسی", {"fields": ("title_fa", "summary_fa", "content_fa")}),
-        ("📝 انگلیسی", {"fields": ("title_en", "summary_en", "content_en", "slug")}),
-        ("📂️ دسته‌بندی", {"fields": ("category", "tags")}),
-        ("🗓️ تاریخ ها", {"fields": ("publish_date_fa", "publish_date_en")}),
+        ("📝 فارسی", {
+            "fields": ("title_fa", "summary_fa", "content_fa", "slug"),
+        }),
+        ("📝 انگلیسی", {
+            "fields": ("title_en", "summary_en", "content_en", "slug_en"),
+        }),
+        ("📂 دسته‌بندی", {"fields": ("category", "tags")}),
+        ("📰 اطلاعات اضافی", {
+            "fields": ("source", "location", "views", "order"),
+            "classes": ("collapse",),
+        }),
+        ("🗓️ تاریخ‌ها", {
+            "fields": ("publish_date_fa", "publish_date_en"),
+        }),
     )
 
     # ------------------ ICONS ------------------
@@ -178,6 +266,7 @@ class NewsAdmin(admin.ModelAdmin):
                 obj.image.url,
             )
         return "🖼️"
+
     image_icon.short_description = "عکس"
 
     def show_image_in_field(self, obj):
@@ -192,23 +281,21 @@ class NewsAdmin(admin.ModelAdmin):
 
     def title_icon(self, obj):
         return format_html("<b style='color:#1A73E8'>{}</b>", obj.title_fa)
+
     title_icon.short_description = "عنوان"
 
     def status_icon(self, obj):
         if obj.status == "published":
             return mark_safe("<b style='color:green'>منتشر شده</b>")
-
         return mark_safe("<b style='color:red'>پیش‌نویس</b>")
 
     status_icon.short_description = "وضعیت"
 
     def category_icon(self, obj):
         return obj.category.title_fa if obj.category else "—"
+
     category_icon.short_description = "دسته‌بندی"
 
-    # ---------------------------------------------------
-    #           TAG ICON (NEW + PROFESSIONAL)
-    # ---------------------------------------------------
     def tag_icon(self, obj):
         tags = obj.tags.all()
 
@@ -226,12 +313,11 @@ class NewsAdmin(admin.ModelAdmin):
 
     tag_icon.short_description = "برچسب‌ها"
 
-
-    # ---------------------------------------------------
     def date_icon(self, obj):
         try:
             dt = obj.publish_date_fa.strftime("%Y-%m-%d")
         except Exception:
             dt = obj.publish_date_fa
         return format_html("{}", dt)
+
     date_icon.short_description = "تاریخ"

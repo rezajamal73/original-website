@@ -8,33 +8,69 @@ from .models import TenderCategory, TenderTag, Tender, TenderImage
 
 
 # -------------------------------------------------------
-#   GLOBAL DELETE BUTTON
+#   GLOBAL ACTION BUTTONS (EDIT + DELETE)
 # -------------------------------------------------------
-def admin_delete_button(obj):
-    url = reverse(
+def admin_action_buttons(obj):
+    edit_url = reverse(
+        f"admin:{obj._meta.app_label}_{obj._meta.model_name}_change",
+        args=[obj.pk],
+    )
+    delete_url = reverse(
         f"admin:{obj._meta.app_label}_{obj._meta.model_name}_delete",
-        args=[obj.pk]
+        args=[obj.pk],
     )
     return format_html(
         """
-        <a href="{}"
-           style="
-               background:#d7263d;
-               color:white;
-               padding:6px 10px;
-               border-radius:8px;
-               text-decoration:none;
-               font-weight:bold;
-               display:inline-flex;
-               align-items:center;
-               gap:5px;
-               box-shadow:0 2px 5px rgba(0,0,0,0.2);
-           ">
-            🗑
-        </a>
+        <div style="display:inline-flex; gap:6px; align-items:center;">
+            <a href="{}"
+               style="
+                    background:#1e88e5;
+                    color:white;
+                    padding:6px 10px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:bold;
+                    white-space:nowrap;
+                    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+                    display:inline-flex;
+                    align-items:center;
+                    gap:5px;
+               ">
+                ✏️
+            </a>
+            <a href="{}"
+               style="
+                    background:#d7263d;
+                    color:white;
+                    padding:6px 10px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:bold;
+                    white-space:nowrap;
+                    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+                    display:inline-flex;
+                    align-items:center;
+                    gap:5px;
+               ">
+                🗑
+            </a>
+        </div>
         """,
-        url
+        edit_url,
+        delete_url,
     )
+
+
+admin_action_buttons.short_description = "عملیات"
+
+
+class ActionButtonsMixin:
+    """Mixin برای اضافه کردن ستون عملیات (ویرایش + حذف) به ادمین"""
+
+    def admin_actions(self, obj):
+        return admin_action_buttons(obj)
+
+    admin_actions.short_description = "عملیات"
 
 
 # -------------------------------------------------------
@@ -63,9 +99,8 @@ class TenderImageInline(admin.TabularInline):
 #   CATEGORY ADMIN
 # -------------------------------------------------------
 @admin.register(TenderCategory)
-class TenderCategoryAdmin(SortableAdminMixin, admin.ModelAdmin):
-    # ✅ slug_en اضافه شد
-    list_display = ("order", "title_icon", "slug", "slug_en", "created_at_fa", "delete_button")
+class TenderCategoryAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
+    list_display = ("order", "title_icon", "slug", "slug_en", "created_at_fa", "admin_actions")
     search_fields = ("title_fa", "title_en", "slug", "slug_en")
     readonly_fields = ("slug", "slug_en")
 
@@ -78,17 +113,13 @@ class TenderCategoryAdmin(SortableAdminMixin, admin.ModelAdmin):
 
     title_icon.short_description = "عنوان"
 
-    def delete_button(self, obj):
-        return admin_delete_button(obj)
-
 
 # -------------------------------------------------------
 #   TAG ADMIN
 # -------------------------------------------------------
 @admin.register(TenderTag)
-class TenderTagAdmin(SortableAdminMixin, admin.ModelAdmin):
-    # ✅ slug_en اضافه شد
-    list_display = ("order", "title_icon", "slug", "slug_en", "created_at_fa", "delete_button")
+class TenderTagAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
+    list_display = ("order", "title_icon", "slug", "slug_en", "created_at_fa", "admin_actions")
     search_fields = ("title_fa", "title_en", "slug", "slug_en")
     readonly_fields = ("slug", "slug_en")
 
@@ -101,15 +132,12 @@ class TenderTagAdmin(SortableAdminMixin, admin.ModelAdmin):
 
     title_icon.short_description = "عنوان"
 
-    def delete_button(self, obj):
-        return admin_delete_button(obj)
-
 
 # -------------------------------------------------------
 #   TENDER ADMIN (Main)
 # -------------------------------------------------------
 @admin.register(Tender)
-class TenderAdmin(admin.ModelAdmin):
+class TenderAdmin(ActionButtonsMixin, admin.ModelAdmin):
 
     inlines = [TenderImageInline]
 
@@ -120,10 +148,9 @@ class TenderAdmin(admin.ModelAdmin):
         "category_icon",
         "tag_icon",
         "start_date_fa",
-        "delete_button",
+        "admin_actions",
     )
 
-    # ✅ slug_en اضافه شد
     search_fields = ("title_fa", "title_en", "tender_number", "slug", "slug_en")
     list_filter = ("status", "category")
     readonly_fields = ("poster_preview", "slug", "slug_en")
@@ -140,7 +167,6 @@ class TenderAdmin(admin.ModelAdmin):
         ("📄 فارسی", {
             "fields": ("title_fa", "description_fa", "slug"),
         }),
-        # ✅ slug_en به انگلیسی اضافه شد
         ("📄 انگلیسی", {
             "fields": ("title_en", "description_en", "slug_en"),
         }),
@@ -178,6 +204,8 @@ class TenderAdmin(admin.ModelAdmin):
                 obj.poster.url
             )
         return "—"
+
+    poster_preview.short_description = "پیش‌نمایش پوستر"
 
     def title_icon(self, obj):
         return format_html("<b style='color:#1A73E8'>{}</b>", obj.title_fa)
@@ -217,8 +245,3 @@ class TenderAdmin(admin.ModelAdmin):
         return " ، ".join([t.title_fa for t in tags])
 
     tag_icon.short_description = "برچسب‌ها"
-
-    def delete_button(self, obj):
-        return admin_delete_button(obj)
-
-    delete_button.short_description = "عملیات"

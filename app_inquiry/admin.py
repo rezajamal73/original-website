@@ -13,24 +13,69 @@ from .models import (
 
 
 # ------------------------------------------------
-#   GLOBAL DELETE BUTTON
+#   GLOBAL ACTION BUTTONS (EDIT + DELETE)
 # ------------------------------------------------
-def admin_delete_button(obj):
-    url = reverse(
+def admin_action_buttons(obj):
+    edit_url = reverse(
+        f"admin:{obj._meta.app_label}_{obj._meta.model_name}_change",
+        args=[obj.pk],
+    )
+    delete_url = reverse(
         f"admin:{obj._meta.app_label}_{obj._meta.model_name}_delete",
         args=[obj.pk],
     )
     return format_html(
-        (
-            '<a href="{}" '
-            'style="background:#d7263d; color:white; padding:6px 10px; '
-            'border-radius:8px; font-weight:bold; text-decoration:none; '
-            'box-shadow:0 2px 5px rgba(0,0,0,0.2); display:inline-block;">'
-            '🗑 حذف'
-            '</a>'
-        ),
-        url,
+        """
+        <div style="display:inline-flex; gap:6px; align-items:center;">
+            <a href="{}"
+               style="
+                    background:#1e88e5;
+                    color:white;
+                    padding:6px 10px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:bold;
+                    white-space:nowrap;
+                    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+                    display:inline-flex;
+                    align-items:center;
+                    gap:5px;
+               ">
+                ✏️
+            </a>
+            <a href="{}"
+               style="
+                    background:#d7263d;
+                    color:white;
+                    padding:6px 10px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:bold;
+                    white-space:nowrap;
+                    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+                    display:inline-flex;
+                    align-items:center;
+                    gap:5px;
+               ">
+                🗑
+            </a>
+        </div>
+        """,
+        edit_url,
+        delete_url,
     )
+
+
+admin_action_buttons.short_description = "عملیات"
+
+
+class ActionButtonsMixin:
+    """Mixin برای اضافه کردن ستون عملیات (ویرایش + حذف) به ادمین"""
+
+    def admin_actions(self, obj):
+        return admin_action_buttons(obj)
+
+    admin_actions.short_description = "عملیات"
 
 
 # ---------------------------------------------------
@@ -60,27 +105,23 @@ class PurchaseInquiryImageInline(admin.TabularInline):
 #   CATEGORY ADMIN
 # ---------------------------------------------------
 @admin.register(InquiryCategory)
-class InquiryCategoryAdmin(SortableAdminMixin, admin.ModelAdmin):
+class InquiryCategoryAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
     actions = None
 
-    # ✅ slug_en اضافه شد
     list_display = (
         "order",
         "title_icon",
         "slug",
         "slug_en",
         "created_at_fa",
-        "delete_button",
+        "admin_actions",
     )
     ordering = ("order",)
 
-    # ✅ slug_en اضافه شد
     search_fields = ("title_fa", "title_en", "slug", "slug_en")
 
-    # ✅ slug_en اضافه شد
     readonly_fields = ("slug", "slug_en")
 
-    # ✅ fieldsets اضافه شد (order + slug_en)
     fieldsets = (
         (None, {"fields": ("title_fa", "title_en", "slug", "slug_en", "order")}),
     )
@@ -90,37 +131,28 @@ class InquiryCategoryAdmin(SortableAdminMixin, admin.ModelAdmin):
 
     title_icon.short_description = "عنوان"
 
-    def delete_button(self, obj):
-        return admin_delete_button(obj)
-
-    delete_button.short_description = "عملیات"
-
 
 # ---------------------------------------------------
 #   TAG ADMIN
 # ---------------------------------------------------
 @admin.register(InquiryTag)
-class InquiryTagAdmin(SortableAdminMixin, admin.ModelAdmin):
+class InquiryTagAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
     actions = None
 
-    # ✅ slug_en اضافه شد
     list_display = (
         "order",
         "title_icon",
         "slug",
         "slug_en",
         "created_at_fa",
-        "delete_button",
+        "admin_actions",
     )
     ordering = ("order",)
 
-    # ✅ slug_en اضافه شد
     search_fields = ("title_fa", "title_en", "slug", "slug_en")
 
-    # ✅ slug_en اضافه شد
     readonly_fields = ("slug", "slug_en")
 
-    # ✅ fieldsets اضافه شد
     fieldsets = (
         (None, {"fields": ("title_fa", "title_en", "slug", "slug_en", "order")}),
     )
@@ -130,21 +162,15 @@ class InquiryTagAdmin(SortableAdminMixin, admin.ModelAdmin):
 
     title_icon.short_description = "عنوان"
 
-    def delete_button(self, obj):
-        return admin_delete_button(obj)
-
-    delete_button.short_description = "عملیات"
-
 
 # ---------------------------------------------------
 #   PURCHASE INQUIRY ADMIN (FULL)
 # ---------------------------------------------------
 @admin.register(PurchaseInquiry)
-class PurchaseInquiryAdmin(SortableAdminMixin, admin.ModelAdmin):
+class PurchaseInquiryAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
     actions = None
     inlines = [PurchaseInquiryImageInline]
 
-    # ✅ slug_en اضافه شد
     readonly_fields = ("slug", "slug_en", "cover_preview")
 
     list_display = (
@@ -154,12 +180,11 @@ class PurchaseInquiryAdmin(SortableAdminMixin, admin.ModelAdmin):
         "status_display",
         "category_display",
         "start_date_fa",
-        "delete_button",
+        "admin_actions",
     )
 
     ordering = ("order",)
 
-    # ✅ slug_en اضافه شد
     search_fields = (
         "title_fa",
         "title_en",
@@ -175,9 +200,7 @@ class PurchaseInquiryAdmin(SortableAdminMixin, admin.ModelAdmin):
     fieldsets = (
         ("📌 وضعیت", {"fields": ("status",)}),
         ("🖼️ تصویر", {"fields": ("cover_image", "cover_preview")}),
-        # ✅ slug توی فارسی (نه انگلیسی!)
         ("📝 فارسی", {"fields": ("title_fa", "description_fa", "slug")}),
-        # ✅ slug_en توی انگلیسی
         ("📝 انگلیسی", {"fields": ("title_en", "description_en", "slug_en")}),
         ("📣 استعلام", {"fields": ("inquiry_number", "estimated_amount")}),
         ("📎 پیوست", {"fields": ("attachment",)}),
@@ -249,8 +272,3 @@ class PurchaseInquiryAdmin(SortableAdminMixin, admin.ModelAdmin):
         return obj.category.title_fa if obj.category else "—"
 
     category_display.short_description = "دسته‌بندی"
-
-    def delete_button(self, obj):
-        return admin_delete_button(obj)
-
-    delete_button.short_description = "عملیات"

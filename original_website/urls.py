@@ -1,3 +1,4 @@
+# original_website/urls.py
 from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
@@ -25,11 +26,10 @@ english_urls = [
     path("media/", include("app_media.urls_en")),
 
     # ============ Company ============
-    path("chart/", include("app_chart.urls_en")),
+    path("chart/", include("app_chart.urls_en")),      # ✅ فقط یک‌بار
     path("reports/", include("app_reports.urls_en")),
     path("catalog/", include("app_catalog.urls_en")),
     path("resume/", include("app_resume.urls_en")),
-
 
     # ============ Contact ============
     path("contact/", include("app_contact.urls_en")),
@@ -37,7 +37,6 @@ english_urls = [
 
     # ============ Auction ============
     path("auction/", include("app_auction.urls_en")),
-
 
     # ============ Tender ============
     path("tender/", include("app_tender.urls_en")),
@@ -50,7 +49,7 @@ english_urls = [
     path("sale/", include("app_sale.urls_en")),
 
     # ============ SEO ============
-
+    # path("", include("app_seo.urls_en")),   # ← اگه urls_en داره، فعال کن
 ]
 
 
@@ -70,7 +69,7 @@ persian_urls = [
     path("media/", include("app_media.urls")),
 
     # ============ Company ============
-    path("chart/", include("app_chart.urls")),
+    path("chart/", include("app_chart.urls")),          # ✅ فقط یک‌بار
     path("reports/", include("app_reports.urls")),
     path("catalog/", include("app_catalog.urls")),
     path("resume/", include("app_resume.urls")),
@@ -85,9 +84,6 @@ persian_urls = [
 
     # ============ Auction ============
     path("auction/", include("app_auction.urls")),
-
-
-
 
     # ============ Tender ============
     path("tender/", include("app_tender.urls")),

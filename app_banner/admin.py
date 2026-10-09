@@ -13,30 +13,50 @@ from app_banner.models import (
 )
 
 
-def admin_delete_button(obj):
-    url = reverse(
+def admin_action_buttons(obj):
+    edit_url = reverse(
+        f"admin:{obj._meta.app_label}_{obj._meta.model_name}_change",
+        args=[obj.pk],
+    )
+    delete_url = reverse(
         f"admin:{obj._meta.app_label}_{obj._meta.model_name}_delete",
         args=[obj.pk],
     )
     return format_html(
         """
-        <a href="{}"
-           style="
-                background:#d7263d;
-                color:white;
-                padding:6px 10px;
-                border-radius:8px;
-                text-decoration:none;
-                font-weight:bold;
-           ">
-           🗑 حذف
-        </a>
+        <div style="display:inline-flex; gap:6px; align-items:center;">
+            <a href="{}"
+               style="
+                    background:#1e88e5;
+                    color:white;
+                    padding:6px 10px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:bold;
+                    white-space:nowrap;
+               ">
+               ✏️ ویرایش
+            </a>
+            <a href="{}"
+               style="
+                    background:#d7263d;
+                    color:white;
+                    padding:6px 10px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:bold;
+                    white-space:nowrap;
+               ">
+               🗑 حذف
+            </a>
+        </div>
         """,
-        url,
+        edit_url,
+        delete_url,
     )
 
 
-admin_delete_button.short_description = "حذف"
+admin_action_buttons.short_description = "عملیات"
 
 
 def make_status_icon(published_label: str, draft_label: str):
@@ -51,6 +71,15 @@ def make_status_icon(published_label: str, draft_label: str):
     return status_icon
 
 
+class ActionButtonsMixin:
+    """Mixin برای اضافه کردن ستون عملیات (ویرایش + حذف) به ادمین"""
+
+    def admin_actions(self, obj):
+        return admin_action_buttons(obj)
+
+    admin_actions.short_description = "عملیات"
+
+
 @admin.register(HeroSliderSetting)
 class HeroSliderSettingAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
@@ -58,7 +87,7 @@ class HeroSliderSettingAdmin(admin.ModelAdmin):
 
 
 @admin.register(HeroBanner)
-class HeroBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
+class HeroBannerAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
     ordering = ("order",)
     actions = None
 
@@ -67,7 +96,7 @@ class HeroBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
         "image_icon",
         "display_title",
         "status_icon",
-        "admin_delete",
+        "admin_actions",
     )
 
     search_fields = (
@@ -130,14 +159,9 @@ class HeroBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
 
     status_icon = make_status_icon("✅ منتشر شده", "⛔ پیش‌نویس")
 
-    def admin_delete(self, obj):
-        return admin_delete_button(obj)
-
-    admin_delete.short_description = "حذف"
-
 
 @admin.register(OtherBanner)
-class OtherBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
+class OtherBannerAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
     ordering = ("order",)
     actions = None
 
@@ -146,7 +170,7 @@ class OtherBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
         "image_icon",
         "display_title",
         "status_icon",
-        "admin_delete",
+        "admin_actions",
     )
 
     search_fields = ("label_fa",)
@@ -188,14 +212,9 @@ class OtherBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
 
     status_icon = make_status_icon("✅ منتشر شده", "⛔ پیش‌نویس")
 
-    def admin_delete(self, obj):
-        return admin_delete_button(obj)
-
-    admin_delete.short_description = "حذف"
-
 
 @admin.register(SpecialProductBanner)
-class SpecialProductBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
+class SpecialProductBannerAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
     ordering = ("order",)
     actions = None
 
@@ -204,7 +223,7 @@ class SpecialProductBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
         "image_icon",
         "display_title",
         "status_icon",
-        "admin_delete",
+        "admin_actions",
     )
 
     readonly_fields = ("image_preview",)
@@ -244,14 +263,9 @@ class SpecialProductBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
 
     status_icon = make_status_icon("✅ فعال", "⛔ غیرفعال")
 
-    def admin_delete(self, obj):
-        return admin_delete_button(obj)
-
-    admin_delete.short_description = "حذف"
-
 
 @admin.register(MainBanner)
-class MainBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
+class MainBannerAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
     ordering = ("order",)
     actions = None
 
@@ -260,7 +274,7 @@ class MainBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
         "image_icon",
         "title_fa",
         "status_icon",
-        "admin_delete",
+        "admin_actions",
     )
 
     readonly_fields = ("image_preview",)
@@ -315,21 +329,16 @@ class MainBannerAdmin(SortableAdminMixin, admin.ModelAdmin):
 
     status_icon = make_status_icon("✅ منتشر شده", "⛔ پیش‌نویس")
 
-    def admin_delete(self, obj):
-        return admin_delete_button(obj)
-
-    admin_delete.short_description = "حذف"
-
 
 @admin.register(AboutBanner)
-class AboutBannerAdmin(admin.ModelAdmin):
+class AboutBannerAdmin(ActionButtonsMixin, admin.ModelAdmin):
     actions = None
 
     list_display = (
         "image1_icon",
         "image2_icon",
         "status",
-        "admin_delete",
+        "admin_actions",
     )
 
     readonly_fields = (
@@ -391,8 +400,3 @@ class AboutBannerAdmin(admin.ModelAdmin):
         return "تصویری وجود ندارد"
 
     image2_preview.short_description = "پیش‌نمایش تصویر دوم"
-
-    def admin_delete(self, obj):
-        return admin_delete_button(obj)
-
-    admin_delete.short_description = "حذف"

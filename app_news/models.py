@@ -1,5 +1,7 @@
+# app_news/models.py
 from django.db import models
 from django.utils.text import slugify
+from django.urls import reverse                          # ✅ اضافه شد
 from django_jalali.db import models as jmodels
 from django.contrib.auth.models import User
 
@@ -8,7 +10,10 @@ from django.contrib.auth.models import User
 #   GENERIC UNIQUE SLUG MAKER (Reusable for all models)
 # ------------------------------------------------------
 def generate_unique_slug(instance, slug_field: str, text_value: str):
-    base_slug = slugify(text_value) or "item"
+    """
+    تولید اسلاگ یکتا با پشتیبانی از فارسی.
+    """
+    base_slug = slugify(text_value, allow_unicode=True) or "item"   # ✅ allow_unicode
     slug = base_slug
     Model = instance.__class__
     counter = 1
@@ -41,7 +46,23 @@ class NewsCategory(TimeStampedModel):
     title_fa = models.CharField(max_length=255, verbose_name="عنوان فارسی")
     title_en = models.CharField(max_length=255, verbose_name="عنوان انگلیسی")
 
-    slug = models.SlugField(unique=True, blank=True, editable=False)   # 🔒 کاربر نمی‌تواند تغییر دهد
+    # ✅ اسلاگ فارسی
+    slug = models.SlugField(
+        "اسلاگ (فارسی)",
+        unique=True,
+        blank=True,
+        editable=False,
+        allow_unicode=True,
+    )
+
+    # ✅ اسلاگ انگلیسی
+    slug_en = models.SlugField(
+        "اسلاگ (انگلیسی)",
+        unique=True,
+        blank=True,
+        editable=False,
+        allow_unicode=False,
+    )
 
     order = models.PositiveIntegerField(default=0, verbose_name="ترتیب نمایش")
 
@@ -51,8 +72,13 @@ class NewsCategory(TimeStampedModel):
         ordering = ["-id"]
 
     def save(self, *args, **kwargs):
-        if not self.slug or slugify(self.slug) != slugify(self.title_en):
-            self.slug = generate_unique_slug(self, "slug", self.title_en)
+        # ✅ اسلاگ فارسی از title_fa
+        if not self.slug and self.title_fa:
+            self.slug = generate_unique_slug(self, "slug", self.title_fa)
+
+        # ✅ اسلاگ انگلیسی از title_en
+        if not self.slug_en and self.title_en:
+            self.slug_en = generate_unique_slug(self, "slug_en", self.title_en)
 
         super().save(*args, **kwargs)
 
@@ -67,15 +93,34 @@ class NewsTag(TimeStampedModel):
     title_fa = models.CharField(max_length=255, verbose_name="عنوان فارسی")
     title_en = models.CharField(max_length=255, verbose_name="عنوان انگلیسی")
 
-    slug = models.SlugField(unique=True, blank=True, editable=False)
+    # ✅ اسلاگ فارسی
+    slug = models.SlugField(
+        "اسلاگ (فارسی)",
+        unique=True,
+        blank=True,
+        editable=False,
+        allow_unicode=True,
+    )
+
+    # ✅ اسلاگ انگلیسی
+    slug_en = models.SlugField(
+        "اسلاگ (انگلیسی)",
+        unique=True,
+        blank=True,
+        editable=False,
+        allow_unicode=False,
+    )
 
     class Meta:
         verbose_name = "برچسب"
         verbose_name_plural = "برچسب‌ها"
 
     def save(self, *args, **kwargs):
-        if not self.slug or slugify(self.slug) != slugify(self.title_en):
-            self.slug = generate_unique_slug(self, "slug", self.title_en)
+        if not self.slug and self.title_fa:
+            self.slug = generate_unique_slug(self, "slug", self.title_fa)
+
+        if not self.slug_en and self.title_en:
+            self.slug_en = generate_unique_slug(self, "slug_en", self.title_en)
 
         super().save(*args, **kwargs)
 
@@ -92,31 +137,64 @@ class News(TimeStampedModel):
         ("published", "منتشر شده"),
     )
 
-
     title_fa = models.CharField(max_length=255, verbose_name="عنوان فارسی")
     title_en = models.CharField(max_length=255, verbose_name="عنوان انگلیسی")
 
-    slug = models.SlugField(unique=True, blank=True, editable=False)   # 🔒 کاربر نمی‌تواند تغییر دهد
+    # ✅ اسلاگ فارسی
+    slug = models.SlugField(
+        "اسلاگ (فارسی)",
+        unique=True,
+        blank=True,
+        editable=False,
+        allow_unicode=True,
+    )
+
+    # ✅ اسلاگ انگلیسی
+    slug_en = models.SlugField(
+        "اسلاگ (انگلیسی)",
+        unique=True,
+        blank=True,
+        editable=False,
+        allow_unicode=False,
+    )
 
     summary_fa = models.TextField(verbose_name="متن قسمت اول فارسی")
-    summary_en = models.TextField(verbose_name="متن  قسمت اول انگلیسی")
+    summary_en = models.TextField(verbose_name="متن قسمت اول انگلیسی")
 
-    content_fa = models.TextField(blank=True,verbose_name="متن قسمت دوم فارسی")
-    content_en = models.TextField(blank=True,verbose_name="متن قسمت دوم انگلیسی")
+    content_fa = models.TextField(blank=True, verbose_name="متن قسمت دوم فارسی")
+    content_en = models.TextField(blank=True, verbose_name="متن قسمت دوم انگلیسی")
 
     image = models.ImageField(upload_to="news/cover/", verbose_name="کاور خبر")
 
     category = models.ForeignKey(
-        NewsCategory, on_delete=models.CASCADE, related_name="news", verbose_name="دسته‌بندی"
+        NewsCategory,
+        on_delete=models.CASCADE,
+        related_name="news",
+        verbose_name="دسته‌بندی",
     )
-    tags = models.ManyToManyField(NewsTag,related_name="news_tags", verbose_name="برچسب‌ها")
+    tags = models.ManyToManyField(
+        NewsTag,
+        related_name="news_tags",
+        verbose_name="برچسب‌ها",
+    )
 
-    publish_date_fa = jmodels.jDateField(verbose_name="تاریخ انتشار (شمسی)", help_text="1373-08-10")
+    publish_date_fa = jmodels.jDateField(
+        verbose_name="تاریخ انتشار (شمسی)",
+        help_text="1373-08-10",
+    )
     publish_date_en = models.DateField(verbose_name="تاریخ انتشار (میلادی)")
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="draft", verbose_name="وضعیت")
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="draft",
+        verbose_name="وضعیت",
+    )
     is_special = models.BooleanField(default=False, verbose_name="خبر ویژه")
+
     source = models.CharField(max_length=255, null=True, blank=True, verbose_name="منبع خبر")
     location = models.CharField(max_length=255, null=True, blank=True, verbose_name="محل وقوع خبر")
+
     views = models.PositiveIntegerField(default=0, verbose_name="بازدید")
     order = models.PositiveIntegerField(default=0, verbose_name="ترتیب نمایش")
 
@@ -126,13 +204,33 @@ class News(TimeStampedModel):
         ordering = ["-publish_date_fa", "-id"]
 
     def save(self, *args, **kwargs):
-        if not self.slug or slugify(self.slug) != slugify(self.title_en):
-            self.slug = generate_unique_slug(self, "slug", self.title_en)
+        if not self.slug and self.title_fa:
+            self.slug = generate_unique_slug(self, "slug", self.title_fa)
+
+        if not self.slug_en and self.title_en:
+            self.slug_en = generate_unique_slug(self, "slug_en", self.title_en)
 
         super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title_fa
+
+    # =====================================================
+    # URL ها
+    # =====================================================
+    def get_absolute_url(self):
+        """URL فارسی: /news/5/عنوان-خبر/"""
+        return reverse("app_news:news_single", kwargs={
+            "pid": self.pk,
+            "slug": self.slug,
+        })
+
+    def get_absolute_url_en(self):
+        """URL انگلیسی: /en/news/5/news-title/"""
+        return reverse("app_news_en:news_single_en", kwargs={
+            "pid": self.pk,
+            "slug": self.slug_en,
+        })
 
 
 # ------------------------------------------------------

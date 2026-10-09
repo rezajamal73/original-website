@@ -5,30 +5,76 @@ from django.utils.html import format_html
 from adminsortable2.admin import SortableAdminMixin
 
 from .models import Person, BoardMember
-def admin_delete_button(obj):
-    url = reverse(
+
+
+# ---------------------------------------
+#   GLOBAL ACTION BUTTONS (EDIT + DELETE)
+# ---------------------------------------
+def admin_action_buttons(obj):
+    edit_url = reverse(
+        f"admin:{obj._meta.app_label}_{obj._meta.model_name}_change",
+        args=[obj.pk],
+    )
+    delete_url = reverse(
         f"admin:{obj._meta.app_label}_{obj._meta.model_name}_delete",
         args=[obj.pk],
     )
     return format_html(
         """
-        <a href="{}"
-           style="
-                background:#d7263d;
-                color:white;
-                padding:6px 10px;
-                border-radius:8px;
-                text-decoration:none;
-                font-weight:bold;
-           ">
-            🗑 حذف
-        </a>
+        <div style="display:inline-flex; gap:6px; align-items:center;">
+            <a href="{}"
+               style="
+                    background:#1e88e5;
+                    color:white;
+                    padding:6px 10px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:bold;
+                    white-space:nowrap;
+                    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+                    display:inline-flex;
+                    align-items:center;
+                    gap:5px;
+               ">
+                ✏️
+            </a>
+            <a href="{}"
+               style="
+                    background:#d7263d;
+                    color:white;
+                    padding:6px 10px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:bold;
+                    white-space:nowrap;
+                    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+                    display:inline-flex;
+                    align-items:center;
+                    gap:5px;
+               ">
+                🗑
+            </a>
+        </div>
         """,
-        url,
+        edit_url,
+        delete_url,
     )
-admin_delete_button.short_description = "حذف"
+
+
+admin_action_buttons.short_description = "عملیات"
+
+
+class ActionButtonsMixin:
+    """Mixin برای اضافه کردن ستون عملیات (ویرایش + حذف) به ادمین"""
+
+    def admin_actions(self, obj):
+        return admin_action_buttons(obj)
+
+    admin_actions.short_description = "عملیات"
+
+
 @admin.register(Person)
-class PersonAdmin(SortableAdminMixin, admin.ModelAdmin):
+class PersonAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
 
     actions = None
 
@@ -39,7 +85,7 @@ class PersonAdmin(SortableAdminMixin, admin.ModelAdmin):
         "position_icon",
         "parent",
         "ceo_icon",
-        "delete_button",
+        "admin_actions",
     )
 
     list_filter = ("parent", "is_ceo")
@@ -122,10 +168,9 @@ class PersonAdmin(SortableAdminMixin, admin.ModelAdmin):
         return "🟢 مدیرعامل" if obj.is_ceo else "—"
     ceo_icon.short_description = "مدیرعامل"
 
-    def delete_button(self, obj):
-        return admin_delete_button(obj)
+
 @admin.register(BoardMember)
-class BoardMemberAdmin(SortableAdminMixin, admin.ModelAdmin):
+class BoardMemberAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
 
     actions = None
 
@@ -136,7 +181,7 @@ class BoardMemberAdmin(SortableAdminMixin, admin.ModelAdmin):
         "position_icon",
         "parent",
         "chairman_icon",
-        "delete_button",
+        "admin_actions",
     )
 
     list_filter = ("parent", "is_ceo")
@@ -218,6 +263,3 @@ class BoardMemberAdmin(SortableAdminMixin, admin.ModelAdmin):
     def chairman_icon(self, obj):
         return "🟢 رئیس هیأت‌مدیره" if obj.is_ceo else "—"
     chairman_icon.short_description = "رئیس"
-
-    def delete_button(self, obj):
-        return admin_delete_button(obj)

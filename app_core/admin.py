@@ -7,8 +7,6 @@ from django.contrib.auth.models import User, Group
 from app_core.models import UserProxy, GroupProxy
 
 
-
-
 # ================================
 #   حذف مدل‌های اصلی
 # ================================
@@ -17,31 +15,69 @@ admin.site.unregister(Group)
 
 
 # ================================
-#   GLOBAL DELETE BUTTON
+#   GLOBAL ACTION BUTTONS (EDIT + DELETE)
 # ================================
-def admin_delete_button(obj):
-    url = reverse(f"admin:{obj._meta.app_label}_{obj._meta.model_name}_delete", args=[obj.pk])
-    return format_html(
-        '''
-        <a href="{}"
-           style="
-                background:#d7263d;
-                color:white;
-                padding:6px 10px;
-                border-radius:8px;
-                text-decoration:none;
-                font-weight:bold;
-                display:inline-flex;
-                align-items:center;
-                gap:5px;
-                box-shadow:0 2px 5px rgba(0,0,0,0.2);
-           ">
-            🗑
-        </a>
-        ''',
-        url
+def admin_action_buttons(obj):
+    edit_url = reverse(
+        f"admin:{obj._meta.app_label}_{obj._meta.model_name}_change",
+        args=[obj.pk],
     )
-admin_delete_button.short_description = ""
+    delete_url = reverse(
+        f"admin:{obj._meta.app_label}_{obj._meta.model_name}_delete",
+        args=[obj.pk],
+    )
+    return format_html(
+        """
+        <div style="display:inline-flex; gap:6px; align-items:center;">
+            <a href="{}"
+               style="
+                    background:#1e88e5;
+                    color:white;
+                    padding:6px 10px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:bold;
+                    white-space:nowrap;
+                    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+                    display:inline-flex;
+                    align-items:center;
+                    gap:5px;
+               ">
+                ✏️
+            </a>
+            <a href="{}"
+               style="
+                    background:#d7263d;
+                    color:white;
+                    padding:6px 10px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:bold;
+                    white-space:nowrap;
+                    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+                    display:inline-flex;
+                    align-items:center;
+                    gap:5px;
+               ">
+                🗑
+            </a>
+        </div>
+        """,
+        edit_url,
+        delete_url,
+    )
+
+
+admin_action_buttons.short_description = "عملیات"
+
+
+class ActionButtonsMixin:
+    """Mixin برای اضافه کردن ستون عملیات (ویرایش + حذف) به ادمین"""
+
+    def admin_actions(self, obj):
+        return admin_action_buttons(obj)
+
+    admin_actions.short_description = "عملیات"
 
 
 # ================================
@@ -83,7 +119,7 @@ class CustomUserChangeForm(UserChangeForm):
 #   USERPROXY ADMIN (Pro UI — blog style)
 # ================================
 @admin.register(UserProxy)
-class UserProxyAdmin(BaseUserAdmin):
+class UserProxyAdmin(ActionButtonsMixin, BaseUserAdmin):
     add_form = CustomUserCreationForm
     form = CustomUserChangeForm
     model = UserProxy
@@ -95,7 +131,7 @@ class UserProxyAdmin(BaseUserAdmin):
         "colored_name",
         "is_active_icon",
         "date_joined_icon",
-        "delete_button",
+        "admin_actions",
     )
 
     list_filter = ("is_active", "is_staff", "is_superuser", "groups")
@@ -157,18 +193,15 @@ class UserProxyAdmin(BaseUserAdmin):
         return format_html("📅 {}", obj.date_joined.strftime("%Y-%m-%d"))
     date_joined_icon.short_description = "تاریخ عضویت"
 
-    def delete_button(self, obj):
-        return admin_delete_button(obj)
-
 
 # ================================
 #   GROUPPROXY ADMIN (Pro UI — blog style)
 # ================================
 @admin.register(GroupProxy)
-class GroupProxyAdmin(admin.ModelAdmin):
+class GroupProxyAdmin(ActionButtonsMixin, admin.ModelAdmin):
     actions = None
 
-    list_display = ("name_icon", "delete_button")
+    list_display = ("name_icon", "admin_actions")
     search_fields = ("name",)
     ordering = ("name",)
     filter_horizontal = ("permissions",)
@@ -185,6 +218,3 @@ class GroupProxyAdmin(admin.ModelAdmin):
     def name_icon(self, obj):
         return format_html("👥 <b>{}</b>", obj.name)
     name_icon.short_description = "نام گروه"
-
-    def delete_button(self, obj):
-        return admin_delete_button(obj)

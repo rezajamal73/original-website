@@ -12,28 +12,76 @@ from .models import JobOpportunity, JobApplication
 
 
 # ---------------------------------------
-#   GLOBAL DELETE BUTTON
+#   GLOBAL ACTION BUTTONS (EDIT + DELETE)
 # ---------------------------------------
-def admin_delete_button(obj):
-    url = reverse(
+def admin_action_buttons(obj):
+    edit_url = reverse(
+        f"admin:{obj._meta.app_label}_{obj._meta.model_name}_change",
+        args=[obj.pk],
+    )
+    delete_url = reverse(
         f"admin:{obj._meta.app_label}_{obj._meta.model_name}_delete",
-        args=[obj.pk]
+        args=[obj.pk],
     )
     return format_html(
-        "<a href='{}' style='background:#d7263d;color:white;"
-        "padding:6px 10px;border-radius:8px;text-decoration:none;"
-        "font-weight:bold;'>🗑</a>",
-        url
+        """
+        <div style="display:inline-flex; gap:6px; align-items:center;">
+            <a href="{}"
+               style="
+                    background:#1e88e5;
+                    color:white;
+                    padding:6px 10px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:bold;
+                    white-space:nowrap;
+                    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+                    display:inline-flex;
+                    align-items:center;
+                    gap:5px;
+               ">
+                ✏️
+            </a>
+            <a href="{}"
+               style="
+                    background:#d7263d;
+                    color:white;
+                    padding:6px 10px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:bold;
+                    white-space:nowrap;
+                    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+                    display:inline-flex;
+                    align-items:center;
+                    gap:5px;
+               ">
+                🗑
+            </a>
+        </div>
+        """,
+        edit_url,
+        delete_url,
     )
 
-admin_delete_button.short_description = "حذف"
+
+admin_action_buttons.short_description = "عملیات"
+
+
+class ActionButtonsMixin:
+    """Mixin برای اضافه کردن ستون عملیات (ویرایش + حذف) به ادمین"""
+
+    def admin_actions(self, obj):
+        return admin_action_buttons(obj)
+
+    admin_actions.short_description = "عملیات"
 
 
 # ===========================================================
 #   JOB OPPORTUNITY ADMIN
 # ===========================================================
 @admin.register(JobOpportunity)
-class JobOpportunityAdmin(admin.ModelAdmin):
+class JobOpportunityAdmin(ActionButtonsMixin, admin.ModelAdmin):
 
     list_display = (
         "poster_icon",
@@ -43,7 +91,7 @@ class JobOpportunityAdmin(admin.ModelAdmin):
         "recruitment_status_badge",
         "is_active",
         "start_date_fa",
-        "delete_button",
+        "admin_actions",
     )
 
     list_filter = (
@@ -129,15 +177,12 @@ class JobOpportunityAdmin(admin.ModelAdmin):
 
     recruitment_status_badge.short_description = "وضعیت جذب"
 
-    def delete_button(self, obj):
-        return admin_delete_button(obj)
-
 
 # ===========================================================
 #   JOB APPLICATION ADMIN (READ ONLY + EXCEL EXPORT)
 # ===========================================================
 @admin.register(JobApplication)
-class JobApplicationAdmin(admin.ModelAdmin):
+class JobApplicationAdmin(ActionButtonsMixin, admin.ModelAdmin):
 
     actions = ["export_selected_to_excel"]
 
@@ -154,6 +199,7 @@ class JobApplicationAdmin(admin.ModelAdmin):
         "opportunity",
         "print_application",
         "print_resume",
+        "admin_actions",
         "created_at_fa_display",
     )
 

@@ -5,20 +5,71 @@ from adminsortable2.admin import SortableAdminMixin
 
 from .models import *
 
+
 # =====================================================
-# دکمه حذف عمومی
+# دکمه‌های عملیات (ویرایش + حذف)
 # =====================================================
-def admin_delete_button(obj):
-    url = reverse(
+def admin_action_buttons(obj):
+    edit_url = reverse(
+        f"admin:{obj._meta.app_label}_{obj._meta.model_name}_change",
+        args=[obj.pk],
+    )
+    delete_url = reverse(
         f"admin:{obj._meta.app_label}_{obj._meta.model_name}_delete",
-        args=[obj.pk]
+        args=[obj.pk],
     )
     return format_html(
-        "<a href='{}' style='background:#d7263d;color:#fff;"
-        "padding:6px 10px;border-radius:8px;text-decoration:none;"
-        "font-weight:bold'>🗑 حذف</a>",
-        url
+        """
+        <div style="display:inline-flex; gap:6px; align-items:center;">
+            <a href="{}"
+               style="
+                    background:#1e88e5;
+                    color:white;
+                    padding:6px 10px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:bold;
+                    white-space:nowrap;
+                    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+                    display:inline-flex;
+                    align-items:center;
+                    gap:5px;
+               ">
+                ✏️
+            </a>
+            <a href="{}"
+               style="
+                    background:#d7263d;
+                    color:white;
+                    padding:6px 10px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:bold;
+                    white-space:nowrap;
+                    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+                    display:inline-flex;
+                    align-items:center;
+                    gap:5px;
+               ">
+                🗑
+            </a>
+        </div>
+        """,
+        edit_url,
+        delete_url,
     )
+
+
+admin_action_buttons.short_description = "عملیات"
+
+
+class ActionButtonsMixin:
+    """Mixin برای اضافه کردن ستون عملیات (ویرایش + حذف) به ادمین"""
+
+    def admin_actions(self, obj):
+        return admin_action_buttons(obj)
+
+    admin_actions.short_description = "عملیات"
 
 
 # =====================================================
@@ -100,12 +151,12 @@ class CorporateAttachmentInline(SortableAdminMixin, admin.TabularInline):
 # CORPORATE SECTION ADMIN
 # =====================================================
 @admin.register(CorporateSection)
-class CorporateSectionAdmin(admin.ModelAdmin):
+class CorporateSectionAdmin(ActionButtonsMixin, admin.ModelAdmin):
     list_display = (
         "section_title",
         "publish_status",
         "created_at",
-        "delete_action",
+        "admin_actions",
     )
 
     list_filter = ("section_type", "is_published")
@@ -137,22 +188,17 @@ class CorporateSectionAdmin(admin.ModelAdmin):
 
     publish_status.short_description = "وضعیت انتشار"
 
-    def delete_action(self, obj):
-        return admin_delete_button(obj)
-
-    delete_action.short_description = "حذف"
-
 
 # =====================================================
 # CORPORATE TEXT ADMIN
 # =====================================================
 @admin.register(CorporateText)
-class CorporateTextAdmin(admin.ModelAdmin):
+class CorporateTextAdmin(ActionButtonsMixin, admin.ModelAdmin):
     list_display = (
         "text_title",
         "section",
         "display_order",
-        "delete_action",
+        "admin_actions",
     )
 
     list_filter = ("section",)
@@ -171,7 +217,6 @@ class CorporateTextAdmin(admin.ModelAdmin):
     )
 
     def get_inlines(self, request, obj=None):
-        # برای بخش "درباره ما" هیچ تصویر و پیوستی نمایش نده
         if obj and obj.section.section_type == "about":
             return ()
 
@@ -185,17 +230,12 @@ class CorporateTextAdmin(admin.ModelAdmin):
 
     text_title.short_description = "عنوان بلاک"
 
-    def delete_action(self, obj):
-        return admin_delete_button(obj)
-
-    delete_action.short_description = "حذف"
-
 
 # =====================================================
 # CORPORATE STATISTIC ADMIN
 # =====================================================
 @admin.register(CorporateStatistic)
-class CorporateStatisticAdmin(SortableAdminMixin, admin.ModelAdmin):
+class CorporateStatisticAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
     list_display = (
         "display_order",
         "icon_preview",
@@ -203,7 +243,7 @@ class CorporateStatisticAdmin(SortableAdminMixin, admin.ModelAdmin):
         "title_en",
         "value_preview",
         "is_active",
-        "delete_action",
+        "admin_actions",
     )
 
     list_editable = ("is_active",)
@@ -242,24 +282,19 @@ class CorporateStatisticAdmin(SortableAdminMixin, admin.ModelAdmin):
 
     value_preview.short_description = "مقدار"
 
-    def delete_action(self, obj):
-        return admin_delete_button(obj)
-
-    delete_action.short_description = "حذف"
-
 
 # =====================================================
 # GROUP COMPANY ADMIN
 # =====================================================
 @admin.register(GroupCompany)
-class GroupCompanyAdmin(SortableAdminMixin, admin.ModelAdmin):
+class GroupCompanyAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
     list_display = (
         "display_order",
         "logo_preview",
         "name",
         "website_link",
         "is_active",
-        "delete_action",
+        "admin_actions",
     )
 
     list_editable = ("is_active",)
@@ -298,11 +333,6 @@ class GroupCompanyAdmin(SortableAdminMixin, admin.ModelAdmin):
         return "—"
 
     website_link.short_description = "وب‌سایت"
-
-    def delete_action(self, obj):
-        return admin_delete_button(obj)
-
-    delete_action.short_description = "حذف"
 
 
 # =====================================================
@@ -442,7 +472,7 @@ class SiteMainInfoAdmin(admin.ModelAdmin):
 # FOLLOW US LINK ADMIN (مستقل)
 # =====================================================
 @admin.register(FollowUsLink)
-class FollowUsLinkAdmin(SortableAdminMixin, admin.ModelAdmin):
+class FollowUsLinkAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
     """
     مدیریت لینک‌های «ما را دنبال کنید»
     """
@@ -452,7 +482,7 @@ class FollowUsLinkAdmin(SortableAdminMixin, admin.ModelAdmin):
         "icon_preview",
         "title",
         "is_active",
-        "delete_action",
+        "admin_actions",
     )
 
     list_editable = ("is_active",)
@@ -491,29 +521,25 @@ class FollowUsLinkAdmin(SortableAdminMixin, admin.ModelAdmin):
 
     icon_preview.short_description = "پیش‌نمایش آیکن"
 
-    def delete_action(self, obj):
-        return admin_delete_button(obj)
 
-    delete_action.short_description = "حذف"
-
-
+# =====================================================
+# DEPARTMENT CONTACT ADMIN
+# =====================================================
 @admin.register(DepartmentContact)
-class DepartmentContactAdmin(SortableAdminMixin, admin.ModelAdmin):
+class DepartmentContactAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
     list_display = (
         "display_order",
         "department_fa",
         "department_en",
         "phone_main",
         "phone_alt",
-        "delete_action",
+        "admin_actions",
     )
 
-    # ✅ لینک ویرایش (حل خطای E124)
     list_display_links = (
         "department_fa",
     )
 
-    # ✅ قابل ویرایش در لیست
     list_editable = (
         "display_order",
     )
@@ -578,17 +604,3 @@ class DepartmentContactAdmin(SortableAdminMixin, admin.ModelAdmin):
         return "—"
 
     phone_alt.short_description = "تماس جایگزین"
-
-    def delete_action(self, obj):
-        url = reverse(
-            f"admin:{obj._meta.app_label}_{obj._meta.model_name}_delete",
-            args=[obj.pk]
-        )
-        return format_html(
-            "<a href='{}' style='background:#d7263d;color:#fff;"
-            "padding:6px 10px;border-radius:8px;text-decoration:none;"
-            "font-weight:bold'>🗑 حذف</a>",
-            url
-        )
-
-    delete_action.short_description = "حذف"

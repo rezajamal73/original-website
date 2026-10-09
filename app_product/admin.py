@@ -20,39 +20,81 @@ from .models import (
 
 
 # ============================================================
-# GENERIC UTILITIES
+# GENERIC ACTION BUTTONS (EDIT + DELETE)
 # ============================================================
-def delete_button(obj):
-    url = reverse(
+def admin_action_buttons(obj):
+    edit_url = reverse(
+        f"admin:{obj._meta.app_label}_{obj._meta.model_name}_change",
+        args=[obj.pk],
+    )
+    delete_url = reverse(
         f"admin:{obj._meta.app_label}_{obj._meta.model_name}_delete",
         args=[obj.pk],
     )
     return format_html(
         """
-        <a href="{}" style="
-            background:#dc3545;
-            color:#fff;
-            padding:6px 10px;
-            border-radius:8px;
-            text-decoration:none;
-            font-weight:600;
-            box-shadow:0 2px 6px rgba(0,0,0,.2);
-        ">🗑</a>
+        <div style="display:inline-flex; gap:6px; align-items:center;">
+            <a href="{}"
+               style="
+                    background:#1e88e5;
+                    color:white;
+                    padding:6px 10px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:bold;
+                    white-space:nowrap;
+                    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+                    display:inline-flex;
+                    align-items:center;
+                    gap:5px;
+               ">
+                ✏️
+            </a>
+            <a href="{}"
+               style="
+                    background:#d7263d;
+                    color:white;
+                    padding:6px 10px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:bold;
+                    white-space:nowrap;
+                    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+                    display:inline-flex;
+                    align-items:center;
+                    gap:5px;
+               ">
+                🗑
+            </a>
+        </div>
         """,
-        url,
+        edit_url,
+        delete_url,
     )
+
+
+admin_action_buttons.short_description = "عملیات"
+
+
+class ActionButtonsMixin:
+    """Mixin برای اضافه کردن ستون عملیات (ویرایش + حذف) به ادمین"""
+
+    def admin_actions(self, obj):
+        return admin_action_buttons(obj)
+
+    admin_actions.short_description = "عملیات"
 
 
 # ============================================================
 # CATEGORY ADMIN
 # ============================================================
 @admin.register(ProductCategory)
-class ProductCategoryAdmin(SortableAdminMixin, admin.ModelAdmin):
+class ProductCategoryAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
     sortable = "priority"
     ordering = ("priority",)
     actions = None
 
-    list_display = ("priority", "title_display", "slug", "slug_en", "delete_col")
+    list_display = ("priority", "title_display", "slug", "slug_en", "admin_actions")
     search_fields = ("title_fa", "title_en")
     readonly_fields = ("slug", "slug_en")
 
@@ -61,22 +103,17 @@ class ProductCategoryAdmin(SortableAdminMixin, admin.ModelAdmin):
 
     title_display.short_description = "عنوان"
 
-    def delete_col(self, obj):
-        return delete_button(obj)
-
-    delete_col.short_description = ""
-
 
 # ============================================================
 # CATEGORY 2 ADMIN
 # ============================================================
 @admin.register(ProductCategory2)
-class ProductCategory2Admin(SortableAdminMixin, admin.ModelAdmin):
+class ProductCategory2Admin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
     sortable = "priority"
     ordering = ("priority",)
     actions = None
 
-    list_display = ("priority", "title_display", "slug", "slug_en", "delete_col")
+    list_display = ("priority", "title_display", "slug", "slug_en", "admin_actions")
     search_fields = ("title_fa", "title_en")
     readonly_fields = ("slug", "slug_en")
 
@@ -85,22 +122,17 @@ class ProductCategory2Admin(SortableAdminMixin, admin.ModelAdmin):
 
     title_display.short_description = "عنوان"
 
-    def delete_col(self, obj):
-        return delete_button(obj)
-
-    delete_col.short_description = ""
-
 
 # ============================================================
 # TAG ADMIN
 # ============================================================
 @admin.register(ProductTag)
-class ProductTagAdmin(SortableAdminMixin, admin.ModelAdmin):
+class ProductTagAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
     sortable = "priority"
     ordering = ("priority",)
     actions = None
 
-    list_display = ("priority", "title_display", "slug", "slug_en", "delete_col")
+    list_display = ("priority", "title_display", "slug", "slug_en", "admin_actions")
     search_fields = ("title_fa", "title_en")
     readonly_fields = ("slug", "slug_en")
 
@@ -108,11 +140,6 @@ class ProductTagAdmin(SortableAdminMixin, admin.ModelAdmin):
         return format_html("🏷️ <b>{}</b>", obj.title_fa)
 
     title_display.short_description = "عنوان"
-
-    def delete_col(self, obj):
-        return delete_button(obj)
-
-    delete_col.short_description = ""
 
 
 # ============================================================
@@ -181,7 +208,7 @@ class ProductColorInline(admin.TabularInline):
 # PRODUCT ADMIN
 # ============================================================
 @admin.register(Product)
-class ProductAdmin(SortableAdminMixin, admin.ModelAdmin):
+class ProductAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
     sortable = "priority"
     ordering = ("priority",)
     actions = None
@@ -216,7 +243,7 @@ class ProductAdmin(SortableAdminMixin, admin.ModelAdmin):
         "status_col",
         "sku",
         "created_col",
-        "delete_col",
+        "admin_actions",
     )
 
     readonly_fields = (
@@ -380,8 +407,3 @@ class ProductAdmin(SortableAdminMixin, admin.ModelAdmin):
         return "QR ساخته نشده"
 
     qr_preview.short_description = "QR Code"
-
-    def delete_col(self, obj):
-        return delete_button(obj)
-
-    delete_col.short_description = ""

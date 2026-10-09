@@ -7,24 +7,65 @@ from .models import AuctionCategory, AuctionTag, Auction, AuctionImage
 
 
 # ------------------------------------------------
-#   GLOBAL DELETE BUTTON
+#   GLOBAL ACTION BUTTONS (EDIT + DELETE)
 # ------------------------------------------------
-def admin_delete_button(obj):
-    url = reverse(
+def admin_action_buttons(obj):
+    edit_url = reverse(
+        f"admin:{obj._meta.app_label}_{obj._meta.model_name}_change",
+        args=[obj.pk],
+    )
+    delete_url = reverse(
         f"admin:{obj._meta.app_label}_{obj._meta.model_name}_delete",
         args=[obj.pk],
     )
     return format_html(
-        (
-            '<a href="{}" '
-            'style="background:#d7263d; color:white; padding:6px 10px; '
-            'border-radius:8px; font-weight:bold; text-decoration:none; '
-            'box-shadow:0 2px 5px rgba(0,0,0,0.2); display:inline-block;">'
-            '🗑 حذف'
-            '</a>'
-        ),
-        url,
+        """
+        <div style="display:inline-flex; gap:6px; align-items:center;">
+            <a href="{}"
+               style="
+                    background:#1e88e5;
+                    color:white;
+                    padding:6px 10px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:bold;
+                    white-space:nowrap;
+                    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+                    display:inline-block;
+               ">
+               ✏️ ویرایش
+            </a>
+            <a href="{}"
+               style="
+                    background:#d7263d;
+                    color:white;
+                    padding:6px 10px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:bold;
+                    white-space:nowrap;
+                    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+                    display:inline-block;
+               ">
+               🗑 حذف
+            </a>
+        </div>
+        """,
+        edit_url,
+        delete_url,
     )
+
+
+admin_action_buttons.short_description = "عملیات"
+
+
+class ActionButtonsMixin:
+    """Mixin برای اضافه کردن ستون عملیات (ویرایش + حذف) به ادمین"""
+
+    def admin_actions(self, obj):
+        return admin_action_buttons(obj)
+
+    admin_actions.short_description = "عملیات"
 
 
 # ---------------------------------------------------
@@ -53,7 +94,7 @@ class AuctionImageInline(admin.TabularInline):
 #   AUCTION CATEGORY ADMIN
 # ---------------------------------------------------
 @admin.register(AuctionCategory)
-class AuctionCategoryAdmin(SortableAdminMixin, admin.ModelAdmin):
+class AuctionCategoryAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
     actions = None
 
     list_display = (
@@ -62,7 +103,7 @@ class AuctionCategoryAdmin(SortableAdminMixin, admin.ModelAdmin):
         "slug",
         "slug_en",
         "created_at_fa",
-        "delete_button",
+        "admin_actions",
     )
 
     search_fields = ("title_fa", "title_en", "slug", "slug_en")
@@ -79,17 +120,12 @@ class AuctionCategoryAdmin(SortableAdminMixin, admin.ModelAdmin):
 
     title_icon.short_description = "عنوان"
 
-    def delete_button(self, obj):
-        return admin_delete_button(obj)
-
-    delete_button.short_description = "عملیات"
-
 
 # ---------------------------------------------------
 #   AUCTION TAG ADMIN
 # ---------------------------------------------------
 @admin.register(AuctionTag)
-class AuctionTagAdmin(SortableAdminMixin, admin.ModelAdmin):
+class AuctionTagAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
     actions = None
 
     list_display = (
@@ -98,7 +134,7 @@ class AuctionTagAdmin(SortableAdminMixin, admin.ModelAdmin):
         "slug",
         "slug_en",
         "created_at_fa",
-        "delete_button",
+        "admin_actions",
     )
 
     search_fields = ("title_fa", "title_en", "slug", "slug_en")
@@ -115,17 +151,12 @@ class AuctionTagAdmin(SortableAdminMixin, admin.ModelAdmin):
 
     title_icon.short_description = "عنوان"
 
-    def delete_button(self, obj):
-        return admin_delete_button(obj)
-
-    delete_button.short_description = "عملیات"
-
 
 # ---------------------------------------------------
 #   AUCTION ADMIN
 # ---------------------------------------------------
 @admin.register(Auction)
-class AuctionAdmin(SortableAdminMixin, admin.ModelAdmin):
+class AuctionAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
     actions = None
     inlines = [AuctionImageInline]
     readonly_fields = ("poster_preview", "slug", "slug_en")
@@ -137,7 +168,7 @@ class AuctionAdmin(SortableAdminMixin, admin.ModelAdmin):
         "status_display",
         "category_display",
         "start_date_fa",
-        "delete_button",
+        "admin_actions",
     )
 
     search_fields = ("title_fa", "title_en", "call_number", "slug", "slug_en")
@@ -204,8 +235,3 @@ class AuctionAdmin(SortableAdminMixin, admin.ModelAdmin):
         return obj.category.title_fa if getattr(obj, "category", None) else "—"
 
     category_display.short_description = "دسته‌بندی"
-
-    def delete_button(self, obj):
-        return admin_delete_button(obj)
-
-    delete_button.short_description = "عملیات"

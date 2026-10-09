@@ -7,33 +7,69 @@ from django.utils.safestring import mark_safe
 
 
 # ---------------------------------------
-#   GLOBAL DELETE BUTTON
+#   GLOBAL ACTION BUTTONS (EDIT + DELETE)
 # ---------------------------------------
-def admin_delete_button(obj):
-    url = reverse(f"admin:{obj._meta.app_label}_{obj._meta.model_name}_delete", args=[obj.pk])
+def admin_action_buttons(obj):
+    edit_url = reverse(
+        f"admin:{obj._meta.app_label}_{obj._meta.model_name}_change",
+        args=[obj.pk],
+    )
+    delete_url = reverse(
+        f"admin:{obj._meta.app_label}_{obj._meta.model_name}_delete",
+        args=[obj.pk],
+    )
     return format_html(
-        '''
-        <a href="{}"
-           style="
-                background:#d7263d;
-                color:white;
-                padding:6px 10px;
-                border-radius:8px;
-                text-decoration:none;
-                font-weight:bold;
-                display:inline-flex;
-                align-items:center;
-                gap:5px;
-                box-shadow:0 2px 5px rgba(0,0,0,0.2);
-           ">
-            🗑
-        </a>
-        ''',
-        url
+        """
+        <div style="display:inline-flex; gap:6px; align-items:center;">
+            <a href="{}"
+               style="
+                    background:#1e88e5;
+                    color:white;
+                    padding:6px 10px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:bold;
+                    white-space:nowrap;
+                    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+                    display:inline-flex;
+                    align-items:center;
+                    gap:5px;
+               ">
+                ✏️
+            </a>
+            <a href="{}"
+               style="
+                    background:#d7263d;
+                    color:white;
+                    padding:6px 10px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:bold;
+                    white-space:nowrap;
+                    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+                    display:inline-flex;
+                    align-items:center;
+                    gap:5px;
+               ">
+                🗑
+            </a>
+        </div>
+        """,
+        edit_url,
+        delete_url,
     )
 
 
-admin_delete_button.short_description = ""
+admin_action_buttons.short_description = "عملیات"
+
+
+class ActionButtonsMixin:
+    """Mixin برای اضافه کردن ستون عملیات (ویرایش + حذف) به ادمین"""
+
+    def admin_actions(self, obj):
+        return admin_action_buttons(obj)
+
+    admin_actions.short_description = "عملیات"
 
 
 # ---------------------------------------
@@ -60,9 +96,8 @@ class BlogImageInline(admin.TabularInline):
 #   CATEGORY ADMIN (Sortable)
 # ---------------------------------------
 @admin.register(blog_Category)
-class CategoryAdmin(SortableAdminMixin, admin.ModelAdmin):
-    # ✅ slug_en اضافه شد
-    list_display = ("order", "title_icon", "slug", "slug_en", "created_at_fa", "delete_button")
+class CategoryAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
+    list_display = ("order", "title_icon", "slug", "slug_en", "created_at_fa", "admin_actions")
     search_fields = ("title_fa", "title_en", "slug", "slug_en")
     readonly_fields = ("created_at_fa", "slug", "slug_en")
     ordering = ("order",)
@@ -78,17 +113,13 @@ class CategoryAdmin(SortableAdminMixin, admin.ModelAdmin):
 
     title_icon.short_description = "عنوان"
 
-    def delete_button(self, obj):
-        return admin_delete_button(obj)
-
 
 # ---------------------------------------
 #   TAG ADMIN (Sortable)
 # ---------------------------------------
 @admin.register(blog_Tag)
-class TagAdmin(SortableAdminMixin, admin.ModelAdmin):
-    # ✅ slug_en اضافه شد
-    list_display = ("order", "title_icon", "slug", "slug_en", "created_at_fa", "delete_button")
+class TagAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
+    list_display = ("order", "title_icon", "slug", "slug_en", "created_at_fa", "admin_actions")
     search_fields = ("title_fa", "title_en", "slug", "slug_en")
     readonly_fields = ("created_at_fa", "slug", "slug_en")
     ordering = ("order",)
@@ -104,31 +135,25 @@ class TagAdmin(SortableAdminMixin, admin.ModelAdmin):
 
     title_icon.short_description = "عنوان"
 
-    def delete_button(self, obj):
-        return admin_delete_button(obj)
-
 
 # ---------------------------------------
 #   BLOG ADMIN
 # ---------------------------------------
 @admin.register(blog)
-class BlogAdmin(admin.ModelAdmin):
-    # SortableAdminMixin,
+class BlogAdmin(ActionButtonsMixin, admin.ModelAdmin):
     list_display = (
-        # "order",
         "image_icon",
         "title_icon",
         "status_icon",
         "category_icon",
         "tag_icon",
         "date_icon",
-        "delete_button",
+        "admin_actions",
     )
 
     list_filter = ("status", "category")
     search_fields = ("title_fa", "title_en", "slug", "slug_en")
 
-    # ✅ slug_en اضافه شد
     readonly_fields = ("show_image_in_field", "slug", "slug_en")
 
     inlines = [BlogImageInline]
@@ -144,7 +169,6 @@ class BlogAdmin(admin.ModelAdmin):
         ("📄 فارسی", {
             "fields": ("title_fa", "content_1_fa", "content_2_fa", "slug"),
         }),
-        # ✅ slug_en به انگلیسی اضافه شد
         ("📄 انگلیسی", {
             "fields": ("title_en", "content_1_en", "content_2_en", "slug_en"),
         }),
@@ -229,9 +253,3 @@ class BlogAdmin(admin.ModelAdmin):
         return obj.publish_date_fa
 
     date_icon.short_description = "تاریخ انتشار(شمسی)"
-
-    # DELETE BUTTON
-    def delete_button(self, obj):
-        return admin_delete_button(obj)
-
-    delete_button.short_description = "عملیات"

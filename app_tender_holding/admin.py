@@ -8,27 +8,72 @@ from .models import HoldingCategory, HoldingTag, Holding, HoldingImage
 
 
 # ------------------------------------------------
-#   GLOBAL DELETE BUTTON
+#   GLOBAL ACTION BUTTONS (EDIT + DELETE)
 # ------------------------------------------------
-def admin_delete_button(obj):
+def admin_action_buttons(obj):
     """
-    یک دکمهٔ حذف HTML تولید می‌کند که به صفحهٔ حذف ادمین مدل هدایت می‌شود.
+    دکمه‌های ویرایش و حذف کنار هم که به صفحات مربوطه هدایت می‌شن.
     """
-    url = reverse(
+    edit_url = reverse(
+        f"admin:{obj._meta.app_label}_{obj._meta.model_name}_change",
+        args=[obj.pk],
+    )
+    delete_url = reverse(
         f"admin:{obj._meta.app_label}_{obj._meta.model_name}_delete",
         args=[obj.pk],
     )
     return format_html(
-        (
-            '<a href="{}" '
-            'style="background:#d7263d; color:white; padding:6px 10px; '
-            'border-radius:8px; font-weight:bold; text-decoration:none; '
-            'box-shadow:0 2px 5px rgba(0,0,0,0.2); display:inline-block;">'
-            '🗑 حذف'
-            '</a>'
-        ),
-        url,
+        """
+        <div style="display:inline-flex; gap:6px; align-items:center;">
+            <a href="{}"
+               style="
+                    background:#1e88e5;
+                    color:white;
+                    padding:6px 10px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:bold;
+                    white-space:nowrap;
+                    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+                    display:inline-flex;
+                    align-items:center;
+                    gap:5px;
+               ">
+                ✏️
+            </a>
+            <a href="{}"
+               style="
+                    background:#d7263d;
+                    color:white;
+                    padding:6px 10px;
+                    border-radius:8px;
+                    text-decoration:none;
+                    font-weight:bold;
+                    white-space:nowrap;
+                    box-shadow:0 2px 5px rgba(0,0,0,0.2);
+                    display:inline-flex;
+                    align-items:center;
+                    gap:5px;
+               ">
+                🗑
+            </a>
+        </div>
+        """,
+        edit_url,
+        delete_url,
     )
+
+
+admin_action_buttons.short_description = "عملیات"
+
+
+class ActionButtonsMixin:
+    """Mixin برای اضافه کردن ستون عملیات (ویرایش + حذف) به ادمین"""
+
+    def admin_actions(self, obj):
+        return admin_action_buttons(obj)
+
+    admin_actions.short_description = "عملیات"
 
 
 # ---------------------------------------------------
@@ -61,30 +106,26 @@ class HoldingImageInline(admin.TabularInline):
 #   HOLDING CATEGORY ADMIN
 # ---------------------------------------------------
 @admin.register(HoldingCategory)
-class HoldingCategoryAdmin(SortableAdminMixin, admin.ModelAdmin):
+class HoldingCategoryAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
     """
     مدیریت دسته‌بندی‌های هلدینگ (HoldingCategory).
     """
     actions = None
 
-    # ✅ slug_en اضافه شد
     list_display = (
         "order",
         "title_icon",
         "slug",
         "slug_en",
         "created_at_fa",
-        "delete_button",
+        "admin_actions",
     )
 
-    # ✅ slug_en اضافه شد
     search_fields = ("title_fa", "title_en", "slug", "slug_en")
     ordering = ("order",)
 
-    # ✅ slug_en اضافه شد
     readonly_fields = ("slug", "slug_en")
 
-    # ✅ slug_en + order اضافه شد
     fieldsets = (
         (None, {"fields": ("title_fa", "title_en", "slug", "slug_en", "order")}),
     )
@@ -95,40 +136,31 @@ class HoldingCategoryAdmin(SortableAdminMixin, admin.ModelAdmin):
 
     title_icon.short_description = "عنوان"
 
-    def delete_button(self, obj):
-        return admin_delete_button(obj)
-
-    delete_button.short_description = "عملیات"
-
 
 # ---------------------------------------------------
 #   HOLDING TAG ADMIN
 # ---------------------------------------------------
 @admin.register(HoldingTag)
-class HoldingTagAdmin(SortableAdminMixin, admin.ModelAdmin):
+class HoldingTagAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
     """
     مدیریت تگ‌های هلدینگ (HoldingTag).
     """
     actions = None
 
-    # ✅ slug_en اضافه شد
     list_display = (
         "order",
         "title_icon",
         "slug",
         "slug_en",
         "created_at_fa",
-        "delete_button",
+        "admin_actions",
     )
 
-    # ✅ slug_en اضافه شد
     search_fields = ("title_fa", "title_en", "slug", "slug_en")
     ordering = ("order",)
 
-    # ✅ slug_en اضافه شد
     readonly_fields = ("slug", "slug_en")
 
-    # ✅ slug_en + order اضافه شد
     fieldsets = (
         (None, {"fields": ("title_fa", "title_en", "slug", "slug_en", "order")}),
     )
@@ -139,24 +171,18 @@ class HoldingTagAdmin(SortableAdminMixin, admin.ModelAdmin):
 
     title_icon.short_description = "عنوان"
 
-    def delete_button(self, obj):
-        return admin_delete_button(obj)
-
-    delete_button.short_description = "عملیات"
-
 
 # ---------------------------------------------------
 #   HOLDING ADMIN
 # ---------------------------------------------------
 @admin.register(Holding)
-class HoldingAdmin(SortableAdminMixin, admin.ModelAdmin):
+class HoldingAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
     """
     مدیریت هلدینگ‌ها.
     """
     actions = None
     inlines = [HoldingImageInline]
 
-    # ✅ slug_en اضافه شد
     readonly_fields = ("slug", "slug_en", "poster_preview")
 
     list_display = (
@@ -166,21 +192,18 @@ class HoldingAdmin(SortableAdminMixin, admin.ModelAdmin):
         "status_display",
         "category_display",
         "start_date_fa",
-        "delete_button",
+        "admin_actions",
     )
 
     list_filter = ("status", "category")
 
-    # ✅ slug_en اضافه شد
     search_fields = ("title_fa", "title_en", "call_number", "slug", "slug_en")
     ordering = ("order",)
 
     fieldsets = (
         ("📌 وضعیت", {"fields": ("status",)}),
         ("🖼️ تصویر", {"fields": ("poster", "poster_preview",)}),
-        # ✅ slug توی فارسی
         ("📝 فارسی", {"fields": ("title_fa", "description_fa", "slug")}),
-        # ✅ slug_en توی انگلیسی
         ("📝 انگلیسی", {"fields": ("title_en", "description_en", "slug_en")}),
         ("📣 فراخوان", {"fields": ("call_number", "estimated_amount")}),
         ("📎 پیوست", {"fields": ("upload_file",)}),
@@ -247,9 +270,3 @@ class HoldingAdmin(SortableAdminMixin, admin.ModelAdmin):
         return obj.category.title_fa if getattr(obj, "category", None) else "—"
 
     category_display.short_description = "دسته‌بندی"
-
-    def delete_button(self, obj):
-        """دکمهٔ حذف در انتهای سطر لیست."""
-        return admin_delete_button(obj)
-
-    delete_button.short_description = "عملیات"
