@@ -199,7 +199,7 @@
                                             تیم اجرایی و چارت سازمانی
                                         </a>
                                     </li>
-<!--
+                                    <!--
                                     <li>
                                         <a class="dropdown-item" href="{% url 'app_chart:board_home' %}">
                                             اعضای هیئت مدیره
@@ -513,7 +513,7 @@
                                 </a>
                             </li>
 
-                            <!-- ✅ فعال شد -->
+                            <!--
                             <li>
                                 <a href="{% url 'app_chart:board_home' %}">
                                     اعضای هیئت مدیره
@@ -521,17 +521,17 @@
                             </li>
 
                             <li>
+                                <a href="{% url 'app_reports:governance' %}">
+                                    اعضاء کمیته ها
+                                </a>
+                            </li>
+                            -->
+                            <li>
                                 <a href="{% url 'app_chart:chart' %}">
                                     تیم اجرایی و چارت سازمانی
                                 </a>
                             </li>
 
-                            <!-- ✅ فعال شد -->
-                            <li>
-                                <a href="{% url 'app_reports:governance' %}">
-                                    اعضاء کمیته ها
-                                </a>
-                            </li>
 
                             <li>
                                 <a href="{% url 'app_reports:sustainability' %}">
@@ -550,34 +550,45 @@
                                     گواهینامه ها و استاندارد ها
                                 </a>
                             </li>
+                            <li>
+                                <a href="{% url 'app_resume:resume' %}">
+                                    رزومه
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'app_hr:hr_home' %}">
+                                    فرصت های شغلی
+                                </a>
+                            </li>
 
-                            <!-- ✅ فعال شد -->
+                            <!--
                             <li>
                                 <a href="{% url 'app_reports:financial' %}">
                                     اطلاعیه ها و گزارشات مالی
                                 </a>
                             </li>
 
-                            <!-- ✅ فعال شد -->
+
                             <li>
                                 <a href="{% url 'app_reports:shareholder' %}">
                                     امور سهام
                                 </a>
                             </li>
 
-                            <!-- ✅ فعال شد -->
+
                             <li>
                                 <a href="{% url 'app_reports:companies' %}">
                                     شرکت های هم گروه
                                 </a>
                             </li>
 
-                            <!-- ✅ فعال شد -->
+
                             <li>
                                 <a href="{% url 'app_sale:sales_chart' %}">
                                     نمودار فروش
                                 </a>
                             </li>
+                            -->
                         </ul>
                     </div>
                 </div>
@@ -600,34 +611,33 @@
                                 </a>
                             </li>
 
-                            <!-- ✅ فعال شد -->
+                            <!--
                             <li>
                                 <a href="{% url 'app_tender:tender_home' %}">
                                     مناقصه
                                 </a>
                             </li>
 
-                            <!-- ✅ فعال شد -->
+
                             <li>
                                 <a href="{% url 'app_auction:auction_home' %}">
                                     مزایده
                                 </a>
                             </li>
 
-                            <!-- ✅ فعال شد -->
                             <li>
                                 <a href="{% url 'app_inquiry:inquiry_home' %}">
                                     استعلام خرید
                                 </a>
                             </li>
 
-                            <!-- ✅ فعال شد -->
+
                             <li>
                                 <a href="{% url 'app_tender_holding:tender_holding_home' %}">
                                     مناقصه های هلدینگ
                                 </a>
                             </li>
-
+-->
                             <li>
                                 <a href="{% url 'app_media:media_home' %}">
 
@@ -644,16 +654,7 @@
                                     مقالات
                                 </a>
                             </li>
-                            <li>
-                                <a href="{% url 'app_resume:resume' %}">
-                                    رزومه
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="{% url 'app_hr:hr_home' %}">
-                                    فرصت های شغلی
-                                </a>
-                            </li>
+
 
                             {% if site_info.phone_security_1 or site_info.phone_security_2 or site_info.phone_security_3 or site_info.email_security or site_info.fax_security %}
                                 <li>
