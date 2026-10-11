@@ -1,7 +1,19 @@
+from functools import partial
+
 from django.db import models
 from django.core.validators import FileExtensionValidator
 
 
+# ---------------------------------------
+#   DYNAMIC APP-BASED UPLOAD PATH
+# ---------------------------------------
+def app_upload_to(instance, filename, subfolder=""):
+    """
+    ساخت مسیر آپلود به صورت داینامیک بر اساس نام اپ مدل.
+    نتیجه: <app_label>/<subfolder>/<filename>
+    """
+    app_label = instance._meta.app_label
+    return f"{app_label}/{subfolder}/{filename}".replace("//", "/")
 
 
 class ResumeProvince(models.Model):
@@ -49,9 +61,11 @@ class Resume(models.Model):
         verbose_name="استان / شهر",
     )
 
+    # ✅ media/<app_label>/svg/...
     svg_file = models.FileField(
-        upload_to="resume/svg/",
+        upload_to=partial(app_upload_to, subfolder="svg"),
         validators=[FileExtensionValidator(["svg"])],
+        default="app_resume/svg/default.svg",  # ✅ مسیر نسبی داخل MEDIA_ROOT
         verbose_name="فایل SVG",
     )
 

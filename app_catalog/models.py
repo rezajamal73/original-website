@@ -1,6 +1,20 @@
+from functools import partial
+
 from django.db import models
 from django.core.validators import FileExtensionValidator
 import jdatetime
+
+
+# ---------------------------------------
+#   DYNAMIC APP-BASED UPLOAD PATH
+# ---------------------------------------
+def app_upload_to(instance, filename, subfolder=""):
+    """
+    ساخت مسیر آپلود به صورت داینامیک بر اساس نام اپ مدل.
+    نتیجه: <app_label>/<subfolder>/<filename>
+    """
+    app_label = instance._meta.app_label
+    return f"{app_label}/{subfolder}/{filename}".replace("//", "/")
 
 
 class CompanyCatalog(models.Model):
@@ -26,8 +40,9 @@ class CompanyCatalog(models.Model):
         verbose_name="توضیحات انگلیسی"
     )
 
+    # ✅ media/<app_label>/catalog/...
     pdf_file = models.FileField(
-        upload_to="catalog/",
+        upload_to=partial(app_upload_to, subfolder="catalog"),
         validators=[FileExtensionValidator(["pdf"])],
         verbose_name="فایل PDF"
     )

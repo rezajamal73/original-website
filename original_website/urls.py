@@ -26,7 +26,7 @@ english_urls = [
     path("media/", include("app_media.urls_en")),
 
     # ============ Company ============
-    path("chart/", include("app_chart.urls_en")),      # ✅ فقط یک‌بار
+    path("chart/", include("app_chart.urls_en")),
     path("reports/", include("app_reports.urls_en")),
     path("catalog/", include("app_catalog.urls_en")),
     path("resume/", include("app_resume.urls_en")),
@@ -69,7 +69,7 @@ persian_urls = [
     path("media/", include("app_media.urls")),
 
     # ============ Company ============
-    path("chart/", include("app_chart.urls")),          # ✅ فقط یک‌بار
+    path("chart/", include("app_chart.urls")),
     path("reports/", include("app_reports.urls")),
     path("catalog/", include("app_catalog.urls")),
     path("resume/", include("app_resume.urls")),

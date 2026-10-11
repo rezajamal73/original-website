@@ -1,11 +1,17 @@
+# app_tender_holding/urls.py
 from django.urls import path
-from app_tender_holding.views import *
+from app_tender_holding.views import (
+    tender_holding_home,
+    tender_holding_search,
+    tender_holding_tag,
+    tender_holding_single,
+)
 
 app_name = "app_tender_holding"
 
 urlpatterns = [
     # =====================================================
-    # PERSIAN
+    # PERSIAN  (prefix: /tender_holding/ از urls.py اصلی میاد)
     # =====================================================
 
     path("", tender_holding_home, name="tender_holding_home"),
@@ -15,9 +21,6 @@ urlpatterns = [
     # ✅ slug → str (پشتیبانی از فارسی)
     path("tag/<str:slug>/", tender_holding_tag, name="tender_holding_tag"),
 
-    # ✅ Redirect از URL قدیمی
-    path("<int:pid>/", tender_holding_single_redirect, name="tender_holding_single_old"),
-
-    # ✅ URL جدید با pid + slug
-    path("<int:pid>/<str:slug>/", tender_holding_single, name="tender_holding_single"),
+    # ✅ URL جدید: /tender_holding/نام-هلدینگ/  (بدون pid)
+    path("<str:slug>/", tender_holding_single, name="tender_holding_single"),
 ]

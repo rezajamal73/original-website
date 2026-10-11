@@ -1,35 +1,23 @@
 # app_chart/views.py
-
 from django.shortcuts import render, get_object_or_404
 
 from app_chart.models import Person, BoardMember
 from app_seo.utils import SEOManager
 
-# ✅ is_english_request از app_core میاد
+# ✅ is_english_request از app_core
 from app_core.url_helpers import is_english_request
 
 
 # =====================================================
 # ORGANIZATION CHART
 # =====================================================
-
 def orgchart_tree(request):
-
     is_english = is_english_request(request)
 
-    ceo_list = (
-        Person.objects
-        .filter(is_ceo=True)
-        .order_by("order")
-    )
+    ceo_list = Person.objects.filter(is_ceo=True).order_by("order")
 
     if not ceo_list.exists():
-
-        ceo_list = (
-            Person.objects
-            .filter(parent__isnull=True)
-            .order_by("order")
-        )
+        ceo_list = Person.objects.filter(parent__isnull=True).order_by("order")
 
     template_name = (
         "LTR/chart/chart_home.html"
@@ -43,25 +31,23 @@ def orgchart_tree(request):
         "is_english": is_english,
     }
 
-    return render(
-        request,
-        template_name,
-        context
-    )
+    return render(request, template_name, context)
 
 
 # =====================================================
-# PERSON DETAIL
+# PERSON DETAIL — ✅ بدون pid
 # =====================================================
-
-def person_detail(request, pid):
-
+def person_detail(request, slug: str):
+    """
+    فارسی:    /chart/person/نام-فرد/
+    انگلیسی:  /en/chart/person/person-name/
+    """
     is_english = is_english_request(request)
 
-    person = get_object_or_404(
-        Person,
-        pk=pid
-    )
+    if is_english:
+        person = get_object_or_404(Person, slug_en=slug)
+    else:
+        person = get_object_or_404(Person, slug=slug)
 
     template_name = (
         "LTR/chart/person_detail.html"
@@ -75,19 +61,13 @@ def person_detail(request, pid):
         "is_english": is_english,
     }
 
-    return render(
-        request,
-        template_name,
-        context
-    )
+    return render(request, template_name, context)
 
 
 # =====================================================
 # BOARD MEMBER LIST
 # =====================================================
-
 def board_home(request):
-
     is_english = is_english_request(request)
 
     board_list = (
@@ -108,25 +88,23 @@ def board_home(request):
         "is_english": is_english,
     }
 
-    return render(
-        request,
-        template_name,
-        context
-    )
+    return render(request, template_name, context)
 
 
 # =====================================================
-# BOARD MEMBER DETAIL
+# BOARD MEMBER DETAIL — ✅ بدون pid
 # =====================================================
-
-def board_single(request, pid):
-
+def board_single(request, slug: str):
+    """
+    فارسی:    /chart/board/نام-عضو/
+    انگلیسی:  /en/chart/board/member-name/
+    """
     is_english = is_english_request(request)
 
-    member = get_object_or_404(
-        BoardMember,
-        pk=pid
-    )
+    if is_english:
+        member = get_object_or_404(BoardMember, slug_en=slug)
+    else:
+        member = get_object_or_404(BoardMember, slug=slug)
 
     template_name = (
         "LTR/chart/board_single.html"
@@ -140,8 +118,4 @@ def board_single(request, pid):
         "is_english": is_english,
     }
 
-    return render(
-        request,
-        template_name,
-        context
-    )
+    return render(request, template_name, context)

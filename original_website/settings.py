@@ -64,6 +64,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+
+    'app_core.middleware.DecodePathInfoMiddleware',   # ← اول از همه
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -142,7 +144,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
 
@@ -252,12 +254,15 @@ JAZZMIN_SETTINGS = {
     # ✅ اپ‌هایی که توی سایدبار نمایش داده نمی‌شن
     # ولی هنوز از طریق URL و topmenu_links قابل دسترسن
     "hide_apps": [
+        "app_tender",
+        "app_tender_holding",
+        "app_auction",
+        "app_inquiry",
+        "app_sale",
     ],
 
     # ✅ مدل‌هایی که توی سایدبار نمایش داده نمی‌شن
     "hide_models": [
-        "app_reports.GroupCompany",
-        "app_reports.DepartmentContact",
         "app_chart.BoardMember",
     ],
 

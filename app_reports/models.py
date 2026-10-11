@@ -1,8 +1,22 @@
+from functools import partial
+
 from django.db import models
 from urllib.parse import urlparse
 from django.utils.safestring import mark_safe
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
+
+
+# =====================================================
+# DYNAMIC APP-BASED UPLOAD PATH
+# =====================================================
+def app_upload_to(instance, filename, subfolder=""):
+    """
+    ساخت مسیر آپلود به صورت داینامیک بر اساس نام اپ مدل.
+    نتیجه: <app_label>/<subfolder>/<filename>
+    """
+    app_label = instance._meta.app_label
+    return f"{app_label}/{subfolder}/{filename}".replace("//", "/")
 
 
 # =====================================================
@@ -123,8 +137,9 @@ class CorporateImage(models.Model):
         verbose_name="بلاک متنی مربوطه"
     )
 
+    # ✅ media/<app_label>/images/...
     image = models.ImageField(
-        upload_to="corporate/images/",
+        upload_to=partial(app_upload_to, subfolder="images"),
         verbose_name="تصویر",
         help_text="تصویر مرتبط با این بلاک متنی"
     )
@@ -164,8 +179,9 @@ class CorporateAttachment(models.Model):
         help_text="عنوانی که کاربر در سایت مشاهده می‌کند"
     )
 
+    # ✅ media/<app_label>/attachments/...
     file = models.FileField(
-        upload_to="corporate/attachments/",
+        upload_to=partial(app_upload_to, subfolder="attachments"),
         verbose_name="فایل پیوست"
     )
 
@@ -213,8 +229,9 @@ class CorporateStatistic(models.Model):
         help_text="مانند: K ، + ، % (اختیاری)"
     )
 
+    # ✅ media/<app_label>/icons/...
     icon_svg = models.FileField(
-        upload_to="corporate/icons/",
+        upload_to=partial(app_upload_to, subfolder="icons"),
         blank=True,
         null=True,
         verbose_name="آیکن SVG",
@@ -330,8 +347,9 @@ class GroupCompany(models.Model):
         verbose_name="نام شرکت"
     )
 
+    # ✅ media/<app_label>/logos/...
     logo = models.ImageField(
-        upload_to="group_companies/logos/",
+        upload_to=partial(app_upload_to, subfolder="logos"),
         verbose_name="لوگوی شرکت",
         help_text="ترجیحاً با پس‌زمینه شفاف"
     )
@@ -382,7 +400,6 @@ class SiteMainInfo(models.Model):
     """
     اطلاعات اصلی و عمومی سایت
     فقط یک رکورد مجاز است
-
     """
     designer_name_ena = models.CharField(max_length=255, blank=True, null=True, verbose_name="طراحی شده توسط (انگلیسی)")
 
@@ -395,9 +412,22 @@ class SiteMainInfo(models.Model):
     slogan_fa = models.CharField(max_length=255, blank=True, null=True, verbose_name="شعار شرکت (فارسی)")
     slogan_en = models.CharField(max_length=255, blank=True, null=True, verbose_name="شعار شرکت (انگلیسی)")
 
-    header_logo = models.ImageField(blank=True, null=True, upload_to="site/logos/", verbose_name="لوگوی هدر")
-    footer_logo = models.ImageField(blank=True, null=True, upload_to="site/logos/", verbose_name="لوگوی فوتر")
-    sidebar_logo = models.ImageField(blank=True, null=True, upload_to="site/logos/", verbose_name="لوگوی سایدبار")
+    # ✅ media/<app_label>/logos/...
+    header_logo = models.ImageField(
+        blank=True, null=True,
+        upload_to=partial(app_upload_to, subfolder="logos"),
+        verbose_name="لوگوی هدر",
+    )
+    footer_logo = models.ImageField(
+        blank=True, null=True,
+        upload_to=partial(app_upload_to, subfolder="logos"),
+        verbose_name="لوگوی فوتر",
+    )
+    sidebar_logo = models.ImageField(
+        blank=True, null=True,
+        upload_to=partial(app_upload_to, subfolder="logos"),
+        verbose_name="لوگوی سایدبار",
+    )
 
     phone_1 = models.CharField(blank=True, null=True, max_length=20, verbose_name="شماره تماس 1")
     phone_2 = models.CharField(blank=True, null=True, max_length=20, verbose_name="شماره تماس 2")
@@ -443,8 +473,6 @@ class SiteMainInfo(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-
-
     class Meta:
         verbose_name = "ساختار سایت"
         verbose_name_plural = "اطلاعات اصلی سایت"
@@ -455,10 +483,6 @@ class SiteMainInfo(models.Model):
 
     def __str__(self):
         return "اطلاعات اصلی سایت"
-
-
-from django.db import models
-from django.core.validators import URLValidator
 
 
 # =====================================================
@@ -481,8 +505,9 @@ class FollowUsLink(models.Model):
         help_text="آدرس کامل صفحه شبکه اجتماعی"
     )
 
+    # ✅ media/<app_label>/social/...
     svg_icon = models.FileField(
-        upload_to="icons/social/",
+        upload_to=partial(app_upload_to, subfolder="social"),
         verbose_name="آیکن شبکه اجتماعی (SVG)",
         help_text="فقط فایل SVG آپلود شود"
     )
@@ -553,4 +578,3 @@ class DepartmentContact(models.Model):
 # =====================================================
 # PROJECTS SECTION (پروژه‌های انجام شده)
 # =====================================================
-

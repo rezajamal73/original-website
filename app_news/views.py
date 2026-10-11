@@ -84,31 +84,37 @@ def news_home(request, slug=None):
 # =====================================================
 # NEWS SINGLE — با pid + slug
 # =====================================================
-def news_single(request, pid, slug=None):
+# app_news/views.py — فقط news_single
+
+def news_single(request, slug: str):
     """
-    صفحه جزئیات یک خبر
+    فارسی:    /news/عنوان-خبر/
+    انگلیسی:  /en/news/news-title/
     """
     is_english = is_english_request(request)
 
-    news = get_object_or_404(
-        News.objects
-        .filter(status="published")
-        .select_related("category")
-        .prefetch_related("tags", "videos"),
-        pk=pid,
+    if is_english:
+        news = get_object_or_404(
+            News.objects
+            .filter(status="published")
+            .select_related("category")
+            .prefetch_related("tags", "videos"),
+            slug_en=slug,
+        )
+    else:
+        news = get_object_or_404(
+            News.objects
+            .filter(status="published")
+            .select_related("category")
+            .prefetch_related("tags", "videos"),
+            slug=slug,
+        )
+
+    template_name = (
+        "LTR/news/news_single.html"
+        if is_english
+        else "RTL/news/news_single.html"
     )
-
-    # ✅ اگه slug داده شده، بررسی کن
-    if slug:
-        correct_slug = news.slug_en if is_english else news.slug
-
-        if correct_slug != slug:
-            target = (
-                "app_news_en:news_single_en"
-                if is_english
-                else "app_news:news_single"
-            )
-            return redirect(target, pid=pid, slug=correct_slug, permanent=True)
 
     context = {
         "news": news,
@@ -117,11 +123,7 @@ def news_single(request, pid, slug=None):
         "is_english": is_english,
     }
 
-    return render(
-        request,
-        _get_template("news_single.html", is_english),
-        context,
-    )
+    return render(request, template_name, context)
 
 
 # =====================================================

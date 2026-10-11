@@ -1,4 +1,5 @@
 from original_website.settings import *
+from pathlib import Path
 
 # Quick-start development setting - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
@@ -13,6 +14,9 @@ ALLOWED_HOSTS = ["*"]
 
 SITE_ID = 2
 
+# مسیر public_html روی هاست
+PUBLIC_HTML = Path('/home/nkavoshc/public_html')
+
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
@@ -23,9 +27,13 @@ DATABASES = {
     }
 }
 
-STATIC_ROOT = BASE_DIR / 'static'
-MEDIA_ROOT = BASE_DIR / 'media'
+STATIC_URL  = '/static/'
+STATIC_ROOT = PUBLIC_HTML / 'static'
 STATICFILES_DIRS = [
     BASE_DIR / 'statics',
 ]
+
+MEDIA_URL  = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 X_FRAME_OPTIONS = 'SAMEORIGIN'

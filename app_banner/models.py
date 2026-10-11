@@ -1,6 +1,20 @@
+from functools import partial
+
 from django.db import models
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
+
+
+# ---------------------------------------
+#   DYNAMIC APP-BASED UPLOAD PATH
+# ---------------------------------------
+def app_upload_to(instance, filename, subfolder=""):
+    """
+    ساخت مسیر آپلود به صورت داینامیک بر اساس نام اپ مدل.
+    نتیجه: <app_label>/<subfolder>/<filename>
+    """
+    app_label = instance._meta.app_label
+    return f"{app_label}/{subfolder}/{filename}".replace("//", "/")
 
 
 class HeroSliderSetting(models.Model):
@@ -85,8 +99,9 @@ class HeroBanner(models.Model):
         unique=True, blank=True, verbose_name="اسلاگ"
     )
 
+    # ✅ media/<app_label>/hero/...
     image = models.ImageField(
-        upload_to="banners/hero/",
+        upload_to=partial(app_upload_to, subfolder="hero"),
         verbose_name="تصویر بنر"
     )
 
@@ -138,8 +153,9 @@ class OtherBanner(models.Model):
 
     slug = models.SlugField(unique=True, blank=True, verbose_name="اسلاگ")
 
+    # ✅ media/<app_label>/other/...
     image = models.ImageField(
-        upload_to="banners/other/",
+        upload_to=partial(app_upload_to, subfolder="other"),
         verbose_name="تصویر بنر"
     )
 
@@ -181,8 +197,9 @@ class SpecialProductBanner(models.Model):
 
     slug = models.SlugField(unique=True, blank=True, verbose_name="اسلاگ")
 
+    # ✅ media/<app_label>/special-products/...
     image = models.ImageField(
-        upload_to="banners/special-products/",
+        upload_to=partial(app_upload_to, subfolder="special-products"),
         verbose_name="تصویر بنر"
     )
 
@@ -232,8 +249,9 @@ class MainBanner(models.Model):
 
     slug = models.SlugField(unique=True, blank=True, verbose_name="اسلاگ")
 
+    # ✅ media/<app_label>/main/...
     image = models.ImageField(
-        upload_to="banners/main/",
+        upload_to=partial(app_upload_to, subfolder="main"),
         verbose_name="تصویر بنر"
     )
 
@@ -290,19 +308,21 @@ class MainBanner(models.Model):
     def __str__(self):
         return self.title_p1_fa or f"بنر داخلی اصلی #{self.pk}"
 
+
 class AboutBanner(models.Model):
     STATUS_CHOICES = (
         ("draft", "پیش‌نویس"),
         ("published", "منتشر شده"),
     )
 
+    # ✅ media/<app_label>/about/...
     image_1 = models.ImageField(
-        upload_to="banners/about/",
+        upload_to=partial(app_upload_to, subfolder="about"),
         verbose_name="تصویر اول"
     )
 
     image_2 = models.ImageField(
-        upload_to="banners/about/",
+        upload_to=partial(app_upload_to, subfolder="about"),
         verbose_name="تصویر دوم"
     )
 

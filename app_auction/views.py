@@ -1,8 +1,7 @@
 # app_auction/views.py
-
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
-from django.db import models
+from django.db.models import Q
 
 from app_auction.models import Auction, AuctionTag
 from app_seo.utils import SEOManager
@@ -27,7 +26,6 @@ def auction_home(request, cat_name=None):
     )
 
     if cat_name:
-        # ✅ فیلتر بر اساس زبان (title_en یا title_fa)
         if is_english:
             auctions_queryset = auctions_queryset.filter(
                 category__title_en=cat_name
@@ -59,30 +57,34 @@ def auction_home(request, cat_name=None):
         "is_english": is_english,
     }
 
-    return render(
-        request,
-        template_name,
-        context
-    )
+    return render(request, template_name, context)
 
 
 # =====================================================
-# AUCTION SINGLE
+# AUCTION SINGLE — ✅ بدون pid
 # =====================================================
 
-def auction_single(request, pid):
-
+def auction_single(request, slug: str):
+    """
+    فارسی:    /auction/نام-مزایده/
+    انگلیسی:  /en/auction/auction-name/
+    """
     is_english = is_english_request(request)
 
-    auction = get_object_or_404(
-        Auction.objects
-        .select_related("category")
-        .prefetch_related(
-            "tags",
-            "gallery_images"
-        ),
-        pk=pid
-    )
+    if is_english:
+        auction = get_object_or_404(
+            Auction.objects
+            .select_related("category")
+            .prefetch_related("tags", "gallery_images"),
+            slug_en=slug,
+        )
+    else:
+        auction = get_object_or_404(
+            Auction.objects
+            .select_related("category")
+            .prefetch_related("tags", "gallery_images"),
+            slug=slug,
+        )
 
     template_name = (
         "LTR/auction/auction-single.html"
@@ -96,11 +98,7 @@ def auction_single(request, pid):
         "is_english": is_english,
     }
 
-    return render(
-        request,
-        template_name,
-        context
-    )
+    return render(request, template_name, context)
 
 
 # =====================================================
@@ -122,11 +120,11 @@ def auction_search(request):
 
     if s:
         auctions_queryset = auctions_queryset.filter(
-            models.Q(description_fa__icontains=s)
-            | models.Q(description_en__icontains=s)
-            | models.Q(title_fa__icontains=s)
-            | models.Q(title_en__icontains=s)
-            | models.Q(call_number__icontains=s)
+            Q(description_fa__icontains=s)
+            | Q(description_en__icontains=s)
+            | Q(title_fa__icontains=s)
+            | Q(title_en__icontains=s)
+            | Q(call_number__icontains=s)
         )
 
     paginator = Paginator(auctions_queryset, 8)
@@ -152,11 +150,7 @@ def auction_search(request):
         "is_english": is_english,
     }
 
-    return render(
-        request,
-        template_name,
-        context
-    )
+    return render(request, template_name, context)
 
 
 # =====================================================
@@ -167,7 +161,6 @@ def auction_tag(request, slug):
 
     is_english = is_english_request(request)
 
-    # ✅ انتخاب اسلاگ درست بر اساس زبان
     if is_english:
         tag = get_object_or_404(AuctionTag, slug_en=slug)
     else:
@@ -204,8 +197,4 @@ def auction_tag(request, slug):
         "is_english": is_english,
     }
 
-    return render(
-        request,
-        template_name,
-        context
-    )
+    return render(request, template_name, context)

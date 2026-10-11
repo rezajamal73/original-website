@@ -78,7 +78,10 @@ class MediaImageInline(admin.TabularInline):
     model = MediaImage
     extra = 1
     readonly_fields = ("show_image",)
-    fields = ("show_image", "image", "order")
+    # ✅ caption اضافه شد
+    fields = ("show_image", "image", "caption", "order")
+    # ✅ ordering اضافه شد
+    ordering = ("order",)
 
     def show_image(self, obj):
         if obj.image:
@@ -99,7 +102,10 @@ class MediaVideoInline(admin.TabularInline):
     model = MediaVideo
     extra = 1
     readonly_fields = ("show_video",)
-    fields = ("show_video", "video", "order")
+    # ✅ caption اضافه شد
+    fields = ("show_video", "video", "caption", "order")
+    # ✅ ordering اضافه شد
+    ordering = ("order",)
 
     def show_video(self, obj):
         if obj.video:
@@ -131,7 +137,6 @@ class MediaAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
     ordering = ("order",)
     actions = None
 
-    # ✅ slug + slug_en اضافه شد
     search_fields = (
         "title_fa",
         "title_en",
@@ -143,12 +148,10 @@ class MediaAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
 
     list_filter = ("status", "is_special")
 
-    # ✅ slug_en اضافه شد
     readonly_fields = ("slug", "slug_en", "show_image_in_field")
 
     inlines = [MediaImageInline, MediaVideoInline]
 
-    # ✅ slug توی فارسی + slug_en توی انگلیسی + order
     fieldsets = (
         ("📌 وضعیت", {"fields": ("status", "is_special")}),
         ("🖼️ تصویر", {"fields": ("image", "show_image_in_field")}),

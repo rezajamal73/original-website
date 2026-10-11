@@ -65,9 +65,7 @@ def admin_action_buttons(obj):
         edit_url,
         delete_url,
     )
-
-
-admin_action_buttons.short_description = "عملیات"
+# ⚠️ short_description روی تابع ماژول‌سطح کار نمی‌کنه — فقط روی متد کلاس
 
 
 class ActionButtonsMixin:
@@ -86,7 +84,8 @@ class NewsImageInline(admin.TabularInline):
     model = NewsImage
     extra = 1
     readonly_fields = ("show_image",)
-    fields = ("show_image", "image", "order")
+    fields = ("show_image", "image", "caption", "order")
+    ordering = ("order",)
 
     def show_image(self, obj):
         if obj.image:
@@ -106,7 +105,8 @@ class NewsVideoInline(admin.TabularInline):
     model = NewsVideo
     extra = 1
     readonly_fields = ("show_video",)
-    fields = ("show_video", "video", "order")
+    fields = ("show_video", "video", "caption", "order")
+    ordering = ("order",)
 
     def show_video(self, obj):
         if obj.video:
@@ -132,6 +132,7 @@ class NewsCategoryAdmin(ActionButtonsMixin, admin.ModelAdmin):
     actions = None
 
     list_display = (
+        "order",
         "title_icon",
         "slug",
         "slug_en",
@@ -140,7 +141,8 @@ class NewsCategoryAdmin(ActionButtonsMixin, admin.ModelAdmin):
     )
 
     search_fields = ("title_fa", "title_en", "slug", "slug_en")
-    ordering = ("-id",)
+
+    ordering = ("order", "-id")
 
     readonly_fields = ("slug", "slug_en", "created_at_fa", "created_at_en")
 
@@ -225,7 +227,7 @@ class NewsAdmin(ActionButtonsMixin, admin.ModelAdmin):
     )
 
     ordering = ("-publish_date_fa", "-id")
-    list_filter = ("status", "category")
+    list_filter = ("status", "category", "is_special")
 
     search_fields = (
         "title_fa",
@@ -248,10 +250,7 @@ class NewsAdmin(ActionButtonsMixin, admin.ModelAdmin):
             "fields": ("title_en", "summary_en", "content_en", "slug_en"),
         }),
         ("📂 دسته‌بندی", {"fields": ("category", "tags")}),
-        ("📰 اطلاعات اضافی", {
-            "fields": ("source", "location", "views", "order"),
-            "classes": ("collapse",),
-        }),
+        # ✅ "📰 اطلاعات اضافی" حذف شد
         ("🗓️ تاریخ‌ها", {
             "fields": ("publish_date_fa", "publish_date_en"),
         }),

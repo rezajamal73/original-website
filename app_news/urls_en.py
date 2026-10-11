@@ -3,7 +3,6 @@ from django.urls import path
 from app_news.views import (
     news_home,
     news_single,
-    news_single_redirect,
     news_tag,
     news_category,
     news_search,
@@ -20,6 +19,7 @@ urlpatterns = [
     path("search/", news_search, name="news_search_en"),
     path("category/<str:slug>/", news_category, name="news_category_en"),
     path("tag/<str:slug>/", news_tag, name="news_tag_en"),
-    path("<int:pid>/", news_single_redirect, name="news_single_old_en"),
-    path("<int:pid>/<str:slug>/", news_single, name="news_single_en"),
+
+    # ✅ URL جدید: /en/news/news-title/  (بدون pid)
+    path("<str:slug>/", news_single, name="news_single_en"),
 ]

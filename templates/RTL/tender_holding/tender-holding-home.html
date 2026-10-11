@@ -3,36 +3,43 @@
 {% load tender_holding_tags %}
 {% load jformat %}
 {% load humanize %}
+
 {% block content %}
     <main class="main">
+
         <!-- breadcrumb -->
         <div class="site-breadcrumb">
-            <div class="site-breadcrumb-bg" style="background: url('{{ banner.image.url }}')">
-            </div>
+            {% if banner and banner.image %}
+                <div class="site-breadcrumb-bg"
+                     style="background: url('{{ banner.image.url }}')">
+                </div>
+            {% else %}
+                <div class="site-breadcrumb-bg"></div>
+            {% endif %}
+
             <div class="container">
                 <div class="site-breadcrumb-wrap">
                     <h4 class="breadcrumb-title">
-                        مناقصات ما
+                        مناقصات هلدینگ
                     </h4>
                     <ul class="breadcrumb-menu">
                         <li>
                             <a href="{% url 'app_core:home' %}">
-                                <i class="far fa-home">
-                                </i>
+                                <i class="far fa-home"></i>
                                 خانه
                             </a>
                         </li>
-
                         <li class="active">
                             <a href="{% url 'app_tender_holding:tender_holding_home' %}">
-                                کلیه مناقصات هلدینگ</a>
+                                کلیه مناقصات هلدینگ
+                            </a>
                         </li>
-
                     </ul>
                 </div>
             </div>
         </div>
         <!-- breadcrumb end -->
+
         <!-- blog area -->
         <div class="blog-area2 py-100">
             <div class="container">
@@ -49,18 +56,22 @@
 
                                             <!-- تاریخ -->
                                             <span class="blog-date">
-                                            <i class="far fa-calendar-alt"></i>
-                                            شروع: {{ holding.start_date_fa|jformat:"%Y/%m/%d" }}
-                                            <span class="date-separator">&nbsp; — &nbsp;</span>
-                                            <span class="end-date">
-                                                پایان: {{ holding.end_date_fa|jformat:"%Y/%m/%d" }}
+                                                <i class="far fa-calendar-alt"></i>
+                                                شروع: {{ holding.start_date_fa|jformat:"%Y/%m/%d" }}
+                                                <span class="date-separator">&nbsp; — &nbsp;</span>
+                                                <span class="end-date">
+                                                    پایان: {{ holding.end_date_fa|jformat:"%Y/%m/%d" }}
+                                                </span>
                                             </span>
-                                        </span>
 
                                             <!-- تصویر -->
                                             <div class="blog-item-img">
-                                                <a href="{% url 'app_tender_holding:tender_holding_single' holding.id %}">
-                                                    <img src="{{ holding.poster.url }}" alt="{{ holding.title_fa }}">
+                                                {# ✅ tender_holding_single فقط با holding.slug #}
+                                                <a href="{% url 'app_tender_holding:tender_holding_single' holding.slug %}">
+                                                    {% if holding.poster %}
+                                                        <img src="{{ holding.poster.url }}"
+                                                             alt="{{ holding.title_fa }}">
+                                                    {% endif %}
                                                 </a>
                                             </div>
 
@@ -68,7 +79,8 @@
                                             <div class="blog-item-info">
 
                                                 <h4 class="blog-title">
-                                                    <a href="{% url 'app_tender_holding:tender_holding_single' holding.id %}">
+                                                    {# ✅ tender_holding_single فقط با holding.slug #}
+                                                    <a href="{% url 'app_tender_holding:tender_holding_single' holding.slug %}">
                                                         {{ holding.title_fa }}
                                                     </a>
                                                 </h4>
@@ -80,14 +92,14 @@
 
                                                         <!-- وضعیت -->
                                                         <li class="d-flex align-items-center mb-2">
-                                                    <span class="status-indicator
-                                                        {% if holding.status == 'ongoing' %}status-ongoing
-                                                        {% elif holding.status == 'extended' %}status-extended
-                                                        {% else %}status-finished
-                                                        {% endif %}">
-                                                        <i class="far fa-timer me-2"></i>
-                                                        {{ holding.get_status_display }}
-                                                    </span>
+                                                            <span class="status-indicator
+                                                                {% if holding.status == 'ongoing' %}status-ongoing
+                                                                {% elif holding.status == 'extended' %}status-extended
+                                                                {% else %}status-finished
+                                                                {% endif %}">
+                                                                <i class="far fa-timer me-2"></i>
+                                                                {{ holding.get_status_display }}
+                                                            </span>
                                                         </li>
 
                                                         <!-- دسته‌بندی -->
@@ -132,15 +144,16 @@
 
                                         {% if holdings.has_previous %}
                                             <li class="page-item">
-                                                <a class="page-link" href="?page={{ holdings.previous_page_number }}">
+                                                <a class="page-link"
+                                                   href="?page={{ holdings.previous_page_number }}">
                                                     <i class="far fa-arrow-right"></i>
                                                 </a>
                                             </li>
                                         {% else %}
                                             <li class="page-item disabled">
-                                        <span class="page-link">
-                                            <i class="far fa-arrow-right"></i>
-                                        </span>
+                                                <span class="page-link">
+                                                    <i class="far fa-arrow-right"></i>
+                                                </span>
                                             </li>
                                         {% endif %}
 
@@ -152,15 +165,16 @@
 
                                         {% if holdings.has_next %}
                                             <li class="page-item">
-                                                <a class="page-link" href="?page={{ holdings.next_page_number }}">
+                                                <a class="page-link"
+                                                   href="?page={{ holdings.next_page_number }}">
                                                     <i class="far fa-arrow-left"></i>
                                                 </a>
                                             </li>
                                         {% else %}
                                             <li class="page-item disabled">
-                                        <span class="page-link">
-                                            <i class="far fa-arrow-left"></i>
-                                        </span>
+                                                <span class="page-link">
+                                                    <i class="far fa-arrow-left"></i>
+                                                </span>
                                             </li>
                                         {% endif %}
 
@@ -185,8 +199,7 @@
                 </div>
             </div>
         </div>
-
-
         <!-- blog area end -->
+
     </main>
 {% endblock %}

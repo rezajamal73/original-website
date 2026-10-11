@@ -1,3 +1,4 @@
+# app_chart/admin.py
 from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.urls import reverse
@@ -59,9 +60,7 @@ def admin_action_buttons(obj):
         edit_url,
         delete_url,
     )
-
-
-admin_action_buttons.short_description = "عملیات"
+# ⚠️ short_description روی تابع ماژول‌سطح کار نمی‌کنه — فقط روی متد کلاس
 
 
 class ActionButtonsMixin:
@@ -73,6 +72,9 @@ class ActionButtonsMixin:
     admin_actions.short_description = "عملیات"
 
 
+# =====================================================
+#   PERSON ADMIN
+# =====================================================
 @admin.register(Person)
 class PersonAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
 
@@ -85,20 +87,30 @@ class PersonAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
         "position_icon",
         "parent",
         "ceo_icon",
+        "slug",
+        "slug_en",
         "admin_actions",
     )
 
     list_filter = ("parent", "is_ceo")
-    search_fields = ("name_fa", "name_en", "position_fa", "position_en")
+    search_fields = (
+        "name_fa",
+        "name_en",
+        "position_fa",
+        "position_en",
+        "slug",
+        "slug_en",
+    )
 
     ordering = ("order",)
     sortable_by = ("order",)
 
-    readonly_fields = ("image_preview",)
+    # ✅ slug + slug_en اضافه شد
+    readonly_fields = ("slug", "slug_en", "image_preview")
 
     fieldsets = (
         ("👤 اطلاعات", {
-            "fields": ("name_fa", "name_en"),
+            "fields": ("name_fa", "name_en", "slug", "slug_en"),
         }),
         ("💼 سمت", {
             "fields": ("position_fa", "position_en"),
@@ -107,7 +119,7 @@ class PersonAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
             "fields": ("photo", "image_preview"),
         }),
         ("🏛️ ساختار سازمانی", {
-            "fields": ("parent", "is_ceo"),
+            "fields": ("parent", "is_ceo", "order"),
         }),
         ("☎️ تماس و توضیحات", {
             "fields": ("content_fa", "content_en", "phone", "email"),
@@ -145,6 +157,7 @@ class PersonAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
                 obj.photo.url
             )
         return "—"
+
     photo_icon.short_description = "عکس"
 
     def image_preview(self, obj):
@@ -154,21 +167,28 @@ class PersonAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
                 obj.photo.url
             )
         return "تصویری ثبت نشده"
+
     image_preview.short_description = "پیش‌نمایش"
 
     def name_icon(self, obj):
         return format_html("<strong>{}</strong>", obj.name_fa)
+
     name_icon.short_description = "نام"
 
     def position_icon(self, obj):
         return obj.position_fa
+
     position_icon.short_description = "سمت"
 
     def ceo_icon(self, obj):
         return "🟢 مدیرعامل" if obj.is_ceo else "—"
+
     ceo_icon.short_description = "مدیرعامل"
 
 
+# =====================================================
+#   BOARD MEMBER ADMIN
+# =====================================================
 @admin.register(BoardMember)
 class BoardMemberAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
 
@@ -181,20 +201,30 @@ class BoardMemberAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin)
         "position_icon",
         "parent",
         "chairman_icon",
+        "slug",
+        "slug_en",
         "admin_actions",
     )
 
     list_filter = ("parent", "is_ceo")
-    search_fields = ("name_fa", "name_en", "position_fa", "position_en")
+    search_fields = (
+        "name_fa",
+        "name_en",
+        "position_fa",
+        "position_en",
+        "slug",
+        "slug_en",
+    )
 
     ordering = ("order",)
     sortable_by = ("order",)
 
-    readonly_fields = ("image_preview",)
+    # ✅ slug + slug_en اضافه شد
+    readonly_fields = ("slug", "slug_en", "image_preview")
 
     fieldsets = (
         ("👤 اطلاعات", {
-            "fields": ("name_fa", "name_en"),
+            "fields": ("name_fa", "name_en", "slug", "slug_en"),
         }),
         ("💼 سمت در هیأت‌مدیره", {
             "fields": ("position_fa", "position_en"),
@@ -203,7 +233,7 @@ class BoardMemberAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin)
             "fields": ("photo", "image_preview"),
         }),
         ("🏛️ ساختار هیأت‌مدیره", {
-            "fields": ("parent", "is_ceo"),
+            "fields": ("parent", "is_ceo", "order"),
         }),
         ("☎️ تماس و توضیحات", {
             "fields": ("content_fa", "content_en", "phone", "email"),
@@ -241,6 +271,7 @@ class BoardMemberAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin)
                 obj.photo.url
             )
         return "—"
+
     photo_icon.short_description = "عکس"
 
     def image_preview(self, obj):
@@ -250,16 +281,20 @@ class BoardMemberAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin)
                 obj.photo.url
             )
         return "تصویری ثبت نشده"
+
     image_preview.short_description = "پیش‌نمایش"
 
     def name_icon(self, obj):
         return format_html("<strong>{}</strong>", obj.name_fa)
+
     name_icon.short_description = "نام"
 
     def position_icon(self, obj):
         return obj.position_fa
+
     position_icon.short_description = "سمت"
 
     def chairman_icon(self, obj):
         return "🟢 رئیس هیأت‌مدیره" if obj.is_ceo else "—"
+
     chairman_icon.short_description = "رئیس"

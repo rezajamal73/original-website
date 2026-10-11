@@ -62,9 +62,7 @@ def admin_action_buttons(obj):
         edit_url,
         delete_url,
     )
-
-
-admin_action_buttons.short_description = "عملیات"
+# ⚠️ short_description روی تابع ماژول‌سطح کار نمی‌کنه — فقط روی متد کلاس
 
 
 class ActionButtonsMixin:
@@ -85,7 +83,7 @@ class HoldingImageInline(admin.TabularInline):
     """
     model = HoldingImage
     extra = 1
-    fields = ("preview", "image", "order")
+    fields = ("preview", "image", "caption", "order")
     readonly_fields = ("preview",)
     ordering = ("order",)
 
@@ -124,10 +122,17 @@ class HoldingCategoryAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAd
     search_fields = ("title_fa", "title_en", "slug", "slug_en")
     ordering = ("order",)
 
-    readonly_fields = ("slug", "slug_en")
+    readonly_fields = ("slug", "slug_en", "created_at_fa", "updated_at_fa")
 
+    # ✅ order اضافه شد
     fieldsets = (
-        (None, {"fields": ("title_fa", "title_en", "slug", "slug_en", "order")}),
+        (None, {
+            "fields": ("title_fa", "title_en", "slug", "slug_en", "order"),
+        }),
+        ("⏱️ زمان", {
+            "fields": ("created_at_fa", "updated_at_fa"),
+            "classes": ("collapse",),
+        }),
     )
 
     def title_icon(self, obj):
@@ -159,10 +164,17 @@ class HoldingTagAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
     search_fields = ("title_fa", "title_en", "slug", "slug_en")
     ordering = ("order",)
 
-    readonly_fields = ("slug", "slug_en")
+    readonly_fields = ("slug", "slug_en", "created_at_fa", "updated_at_fa")
 
+    # ✅ order اضافه شد
     fieldsets = (
-        (None, {"fields": ("title_fa", "title_en", "slug", "slug_en", "order")}),
+        (None, {
+            "fields": ("title_fa", "title_en", "slug", "slug_en", "order"),
+        }),
+        ("⏱️ زمان", {
+            "fields": ("created_at_fa", "updated_at_fa"),
+            "classes": ("collapse",),
+        }),
     )
 
     def title_icon(self, obj):
@@ -200,14 +212,16 @@ class HoldingAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
     search_fields = ("title_fa", "title_en", "call_number", "slug", "slug_en")
     ordering = ("order",)
 
+    # ✅ order اضافه شد
     fieldsets = (
         ("📌 وضعیت", {"fields": ("status",)}),
-        ("🖼️ تصویر", {"fields": ("poster", "poster_preview",)}),
+        ("🖼️ تصویر", {"fields": ("poster", "poster_preview")}),
         ("📝 فارسی", {"fields": ("title_fa", "description_fa", "slug")}),
         ("📝 انگلیسی", {"fields": ("title_en", "description_en", "slug_en")}),
         ("📣 فراخوان", {"fields": ("call_number", "estimated_amount")}),
         ("📎 پیوست", {"fields": ("upload_file",)}),
         ("📂 دسته‌بندی", {"fields": ("category", "tags")}),
+        ("🔢 ترتیب", {"fields": ("order",)}),
         ("🗓️ تاریخ‌ها", {
             "fields": (
                 "start_date_fa", "end_date_fa",

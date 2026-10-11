@@ -64,9 +64,7 @@ def admin_action_buttons(obj):
         edit_url,
         delete_url,
     )
-
-
-admin_action_buttons.short_description = "عملیات"
+# ⚠️ short_description روی تابع ماژول‌سطح کار نمی‌کنه — فقط روی متد کلاس
 
 
 class ActionButtonsMixin:
@@ -120,10 +118,16 @@ class InquiryCategoryAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAd
 
     search_fields = ("title_fa", "title_en", "slug", "slug_en")
 
-    readonly_fields = ("slug", "slug_en")
+    readonly_fields = ("slug", "slug_en", "created_at_fa", "updated_at_fa")
 
     fieldsets = (
-        (None, {"fields": ("title_fa", "title_en", "slug", "slug_en", "order")}),
+        (None, {
+            "fields": ("title_fa", "title_en", "slug", "slug_en", "order"),
+        }),
+        ("⏱️ زمان", {
+            "fields": ("created_at_fa", "updated_at_fa"),
+            "classes": ("collapse",),
+        }),
     )
 
     def title_icon(self, obj):
@@ -151,10 +155,16 @@ class InquiryTagAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
 
     search_fields = ("title_fa", "title_en", "slug", "slug_en")
 
-    readonly_fields = ("slug", "slug_en")
+    readonly_fields = ("slug", "slug_en", "created_at_fa", "updated_at_fa")
 
     fieldsets = (
-        (None, {"fields": ("title_fa", "title_en", "slug", "slug_en", "order")}),
+        (None, {
+            "fields": ("title_fa", "title_en", "slug", "slug_en", "order"),
+        }),
+        ("⏱️ زمان", {
+            "fields": ("created_at_fa", "updated_at_fa"),
+            "classes": ("collapse",),
+        }),
     )
 
     def title_icon(self, obj):
@@ -205,6 +215,7 @@ class PurchaseInquiryAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAd
         ("📣 استعلام", {"fields": ("inquiry_number", "estimated_amount")}),
         ("📎 پیوست", {"fields": ("attachment",)}),
         ("📂 دسته‌بندی", {"fields": ("category", "tags")}),
+        ("🔢 ترتیب", {"fields": ("order",)}),
         (
             "🗓️ تاریخ‌ها",
             {

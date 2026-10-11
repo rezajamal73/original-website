@@ -13,6 +13,8 @@
                 <div class="site-breadcrumb-bg"
                      style="background: url('{{ banner.image.url }}')">
                 </div>
+            {% else %}
+                <div class="site-breadcrumb-bg"></div>
             {% endif %}
 
             <div class="container">
@@ -85,12 +87,16 @@
 
                                         {% for img in product.images.all %}
 
-                                            <li data-thumb="{{ img.image.url }}">
+                                            {% if img.image %}
 
-                                                <img src="{{ img.image.url }}"
-                                                     alt="{{ product.title_en|default:product.title_fa }}">
+                                                <li data-thumb="{{ img.image.url }}">
 
-                                            </li>
+                                                    <img src="{{ img.image.url }}"
+                                                         alt="{{ product.title_en|default:product.title_fa }}">
+
+                                                </li>
+
+                                            {% endif %}
 
                                         {% endfor %}
 
@@ -147,88 +153,48 @@
                                 <hr>
 
 
-                                <table cellpadding="10">
-
-                                    <tr>
-
-                                        <td>
-
+                                <!-- ✅ Bootstrap grid جایگزین table -->
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p>
                                             <strong>Product Code:</strong>
-
                                             {{ product.sku }}
+                                        </p>
+                                    </div>
 
-                                        </td>
-
-
-                                        <!-- Horizontal spacing -->
-                                        <td width="40"></td>
-
-
-                                        {% if product.category %}
-
-                                            <td>
-
+                                    {% if product.category %}
+                                        <div class="col-md-6">
+                                            <p>
                                                 <strong>Product Category:</strong>
-
                                                 {{ product.category.title_en|default:product.category.title_fa }}
+                                            </p>
+                                        </div>
+                                    {% endif %}
+                                </div>
 
-                                            </td>
-
-                                        {% endif %}
-
-                                    </tr>
-
-
-                                    <tr>
-
-                                        <!-- Vertical spacing -->
-                                        <td height="20"></td>
-
-                                    </tr>
-
-
-                                    <tr>
-
-                                        {% if product.category2 %}
-
-                                            <td>
-
+                                <div class="row mt-2">
+                                    {% if product.category2 %}
+                                        <div class="col-md-6">
+                                            <p>
                                                 <strong>Dosage Form:</strong>
-
                                                 {{ product.category2.title_en|default:product.category2.title_fa }}
+                                            </p>
+                                        </div>
+                                    {% endif %}
 
-                                            </td>
-
-                                        {% endif %}
-
-
-                                        <!-- Horizontal spacing -->
-                                        <td width="40"></td>
-
-
-                                        {% if product.tags.exists %}
-
-                                            <td>
-
+                                    {% if product.tags.exists %}
+                                        <div class="col-md-6">
+                                            <p>
                                                 <strong>Tags:</strong>
-
                                                 {% for tag in product.tags.all %}
-
                                                     <span class="badge bg-secondary me-1">
-
                                                         {{ tag.title_en|default:tag.title_fa }}
-
                                                     </span>
-
                                                 {% endfor %}
-
-                                            </td>
-
-                                        {% endif %}
-
-                                    </tr>
-
-                                </table>
+                                            </p>
+                                        </div>
+                                    {% endif %}
+                                </div>
 
                             </ul>
 
@@ -245,67 +211,43 @@
                     <ul class="nav nav-tabs">
 
                         <li class="nav-item">
-
                             <button class="nav-link active"
                                     data-bs-toggle="tab"
                                     data-bs-target="#desc1">
-
                                 Technical Specifications
-
                             </button>
-
                         </li>
 
-
                         <li class="nav-item">
-
                             <button class="nav-link"
                                     data-bs-toggle="tab"
                                     data-bs-target="#desc2">
-
                                 Features
-
                             </button>
-
                         </li>
 
-
                         <li class="nav-item">
-
                             <button class="nav-link"
                                     data-bs-toggle="tab"
                                     data-bs-target="#desc3">
-
                                 Available Colors
-
                             </button>
-
                         </li>
 
-
                         <li class="nav-item">
-
                             <button class="nav-link"
                                     data-bs-toggle="tab"
                                     data-bs-target="#desc4">
-
                                 Custom Colors
-
                             </button>
-
                         </li>
 
-
                         <li class="nav-item">
-
                             <button class="nav-link"
                                     data-bs-toggle="tab"
                                     data-bs-target="#qr-code">
-
                                 Product QR Code
-
                             </button>
-
                         </li>
 
                     </ul>
@@ -346,81 +288,6 @@
                             {% endif %}
 
                         </div>
-
-
-                        <style>
-
-                            .color-list {
-                                display: flex;
-                                flex-wrap: wrap;
-                                gap: 18px;
-                                margin-top: 20px;
-                            }
-
-                            .color-card {
-                                width: 180px;
-                                padding: 14px 18px;
-                                display: flex;
-                                align-items: center;
-                                gap: 15px;
-                                background: #fff;
-                                border: 1px solid #e8e8e8;
-                                border-radius: 14px;
-                                box-shadow: 0 4px 12px rgba(0, 0, 0, .06);
-                                cursor: pointer;
-                                transition: .35s ease;
-                            }
-
-                            .color-card:hover {
-                                transform: translateY(-6px) scale(1.04);
-                                border-color: #0d6efd;
-                                box-shadow: 0 12px 28px rgba(13, 110, 253, .18);
-                            }
-
-                            .color-box {
-                                width: 48px;
-                                height: 48px;
-                                border-radius: 10px;
-                                border: 2px solid #ddd;
-                                flex-shrink: 0;
-                                transition: .35s;
-                            }
-
-                            .color-card:hover .color-box {
-                                transform: rotate(-8deg) scale(1.08);
-                            }
-
-                            .color-title {
-                                font-size: 15px;
-                                font-weight: 600;
-                                color: #333;
-                                transition: .3s;
-                            }
-
-                            .color-card:hover .color-title {
-                                font-size: 18px;
-                                color: #0d6efd;
-                                font-weight: 700;
-                            }
-
-                            .color-description {
-                                margin-bottom: 25px;
-                                padding: 18px;
-                                background: #f8f9fa;
-                                border-left: 5px solid #0d6efd;
-                                border-radius: 12px;
-                                line-height: 2;
-                                color: #555;
-                                font-size: 15px;
-                            }
-
-                            @media (max-width: 768px) {
-                                .color-card {
-                                    width: 100%;
-                                }
-                            }
-
-                        </style>
 
 
                         <div class="tab-pane fade" id="desc3">
@@ -488,108 +355,6 @@
                         </div>
 
 
-                        <div class="tab-pane fade" id="desc5">
-
-                            {% if product.description_5_en %}
-
-                                {{ product.description_5_en|linebreaksbr }}
-
-                            {% else %}
-
-                                <p class="text-muted">
-                                    No information has been provided.
-                                </p>
-
-                            {% endif %}
-
-                        </div>
-
-
-                        <div class="tab-pane fade" id="desc6">
-
-                            {% if product.description_6_en %}
-
-                                {{ product.description_6_en|linebreaksbr }}
-
-                            {% else %}
-
-                                <p class="text-muted">
-                                    No information has been provided.
-                                </p>
-
-                            {% endif %}
-
-                        </div>
-
-
-                        <div class="tab-pane fade" id="desc7">
-
-                            {% if product.description_7_en %}
-
-                                {{ product.description_7_en|linebreaksbr }}
-
-                            {% else %}
-
-                                <p class="text-muted">
-                                    No information has been provided.
-                                </p>
-
-                            {% endif %}
-
-                        </div>
-
-
-                        <div class="tab-pane fade" id="desc8">
-
-                            {% if product.description_8_en %}
-
-                                {{ product.description_8_en|linebreaksbr }}
-
-                            {% else %}
-
-                                <p class="text-muted">
-                                    No information has been provided.
-                                </p>
-
-                            {% endif %}
-
-                        </div>
-
-
-                        <div class="tab-pane fade" id="desc9">
-
-                            {% if product.description_9_en %}
-
-                                {{ product.description_9_en|linebreaksbr }}
-
-                            {% else %}
-
-                                <p class="text-muted">
-                                    No information has been provided.
-                                </p>
-
-                            {% endif %}
-
-                        </div>
-
-
-                        <div class="tab-pane fade" id="desc10">
-
-                            {% if product.description_10_en %}
-
-                                {{ product.description_10_en|linebreaksbr }}
-
-                            {% else %}
-
-                                <p class="text-muted">
-                                    No information has been provided.
-                                </p>
-
-                            {% endif %}
-
-                        </div>
-
-
                         <div class="tab-pane fade" id="qr-code">
 
                             {% if product.qr_code %}
@@ -622,5 +387,78 @@
         </div>
 
     </main>
+
+    {# ✅ استایل‌ها به انتهای body منتقل شد #}
+    <style>
+        .color-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            margin-top: 20px;
+        }
+
+        .color-card {
+            width: 180px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #fff;
+            border: 1px solid #e8e8e8;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, .06);
+            cursor: pointer;
+            transition: .35s ease;
+        }
+
+        .color-card:hover {
+            transform: translateY(-6px) scale(1.04);
+            border-color: #0d6efd;
+            box-shadow: 0 12px 28px rgba(13, 110, 253, .18);
+        }
+
+        .color-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            border: 2px solid #ddd;
+            flex-shrink: 0;
+            transition: .35s;
+        }
+
+        .color-card:hover .color-box {
+            transform: rotate(-8deg) scale(1.08);
+        }
+
+        .color-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            transition: .3s;
+        }
+
+        .color-card:hover .color-title {
+            font-size: 18px;
+            color: #0d6efd;
+            font-weight: 700;
+        }
+
+        .color-description {
+            margin-bottom: 25px;
+            padding: 18px;
+            background: #f8f9fa;
+            border-left: 5px solid #0d6efd;
+            border-radius: 12px;
+            line-height: 2;
+            color: #555;
+            font-size: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .color-card {
+                width: 100%;
+            }
+        }
+    </style>
 
 {% endblock %}

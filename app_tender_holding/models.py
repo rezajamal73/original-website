@@ -1,9 +1,23 @@
 # app_tender_holding/models.py
+from functools import partial
+
 from django.db import models
 from django.utils.text import slugify
 from django.contrib.auth.models import User
-from django.urls import reverse                          # ✅ اضافه شد
+from django.urls import reverse
 from django_jalali.db import models as jmodels
+
+
+# ---------------------------------------
+#   DYNAMIC APP-BASED UPLOAD PATH
+# ---------------------------------------
+def app_upload_to(instance, filename, subfolder=""):
+    """
+    ساخت مسیر آپلود به صورت داینامیک بر اساس نام اپ مدل.
+    نتیجه: <app_label>/<subfolder>/<filename>
+    """
+    app_label = instance._meta.app_label
+    return f"{app_label}/{subfolder}/{filename}".replace("//", "/")
 
 
 # ---------------------------------------
@@ -13,7 +27,7 @@ def generate_unique_slug(instance, value, slug_field_name="slug"):
     """
     ایجاد اسلاگ یکتا با پشتیبانی از فارسی.
     """
-    base_slug = slugify(value, allow_unicode=True) or "item"   # ✅ allow_unicode
+    base_slug = slugify(value, allow_unicode=True) or "item"
     slug = base_slug
     ModelClass = instance.__class__
     counter = 1
@@ -164,8 +178,20 @@ class Holding(TimeStampedModel):
     end_date_fa = jmodels.jDateField(verbose_name="تاریخ پایان (شمسی)", help_text="1373-08-10")
     start_date_en = models.DateField(verbose_name="تاریخ شروع (میلادی)")
     end_date_en = models.DateField(verbose_name="تاریخ پایان (میلادی)")
-    poster = models.ImageField(upload_to='holding/posters', verbose_name="تصویر")
-    upload_file = models.FileField(upload_to='holding/upload_file', null=True, blank=True, verbose_name="آپلود فایل")
+
+    # ✅ media/<app_label>/posters/...
+    poster = models.ImageField(
+        upload_to=partial(app_upload_to, subfolder="posters"),
+        verbose_name="تصویر",
+    )
+
+    # ✅ media/<app_label>/upload_file/...
+    upload_file = models.FileField(
+        upload_to=partial(app_upload_to, subfolder="upload_file"),
+        null=True,
+        blank=True,
+        verbose_name="آپلود فایل",
+    )
     estimated_amount = models.BigIntegerField(null=True, blank=True, verbose_name="مبلغ ضمانت هلدینگ")
 
     category = models.ForeignKey(
@@ -208,16 +234,14 @@ class Holding(TimeStampedModel):
     # URL ها
     # =====================================================
     def get_absolute_url(self):
-        """URL فارسی: /tender_holding/5/نام/"""
+        """URL فارسی: /tender_holding/نام-هلدینگ/"""
         return reverse("app_tender_holding:tender_holding_single", kwargs={
-            "pid": self.pk,
             "slug": self.slug,
         })
 
     def get_absolute_url_en(self):
-        """URL انگلیسی: /en/tender_holding/5/name/"""
+        """URL انگلیسی: /en/tender_holding/holding-name/"""
         return reverse("app_tender_holding_en:tender_holding_single_en", kwargs={
-            "pid": self.pk,
             "slug": self.slug_en,
         })
 
@@ -233,7 +257,11 @@ class HoldingImage(TimeStampedModel):
         verbose_name="هلدینگ"
     )
 
-    image = models.ImageField(upload_to="holding/gallery", verbose_name="تصویر")
+    # ✅ media/<app_label>/gallery/...
+    image = models.ImageField(
+        upload_to=partial(app_upload_to, subfolder="gallery"),
+        verbose_name="تصویر",
+    )
     caption = models.CharField(max_length=255, blank=True, null=True, verbose_name="توضیح عکس")
 
     order = models.PositiveIntegerField(default=0, verbose_name="ترتیب نمایش")

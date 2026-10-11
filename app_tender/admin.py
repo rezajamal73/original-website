@@ -59,9 +59,7 @@ def admin_action_buttons(obj):
         edit_url,
         delete_url,
     )
-
-
-admin_action_buttons.short_description = "عملیات"
+# ⚠️ short_description روی تابع ماژول‌سطح کار نمی‌کنه — فقط روی متد کلاس
 
 
 class ActionButtonsMixin:
@@ -79,7 +77,7 @@ class ActionButtonsMixin:
 class TenderImageInline(admin.TabularInline):
     model = TenderImage
     extra = 1
-    fields = ("show_image", "image", "order")
+    fields = ("show_image", "image", "caption", "order")
     ordering = ("order",)
     readonly_fields = ("show_image",)
 
@@ -100,12 +98,29 @@ class TenderImageInline(admin.TabularInline):
 # -------------------------------------------------------
 @admin.register(TenderCategory)
 class TenderCategoryAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
-    list_display = ("order", "title_icon", "slug", "slug_en", "created_at_fa", "admin_actions")
-    search_fields = ("title_fa", "title_en", "slug", "slug_en")
-    readonly_fields = ("slug", "slug_en")
+    actions = None
 
+    list_display = (
+        "order",
+        "title_icon",
+        "slug",
+        "slug_en",
+        "created_at_fa",
+        "admin_actions",
+    )
+
+    search_fields = ("title_fa", "title_en", "slug", "slug_en")
+    readonly_fields = ("slug", "slug_en", "created_at_fa", "updated_at_fa")
+
+    # ✅ order + زمان ایجاد
     fieldsets = (
-        (None, {"fields": ("title_fa", "title_en", "slug", "slug_en", "order")}),
+        (None, {
+            "fields": ("title_fa", "title_en", "slug", "slug_en", "order"),
+        }),
+        ("⏱️ زمان", {
+            "fields": ("created_at_fa", "updated_at_fa"),
+            "classes": ("collapse",),
+        }),
     )
 
     def title_icon(self, obj):
@@ -119,12 +134,29 @@ class TenderCategoryAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdm
 # -------------------------------------------------------
 @admin.register(TenderTag)
 class TenderTagAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
-    list_display = ("order", "title_icon", "slug", "slug_en", "created_at_fa", "admin_actions")
-    search_fields = ("title_fa", "title_en", "slug", "slug_en")
-    readonly_fields = ("slug", "slug_en")
+    actions = None
 
+    list_display = (
+        "order",
+        "title_icon",
+        "slug",
+        "slug_en",
+        "created_at_fa",
+        "admin_actions",
+    )
+
+    search_fields = ("title_fa", "title_en", "slug", "slug_en")
+    readonly_fields = ("slug", "slug_en", "created_at_fa", "updated_at_fa")
+
+    # ✅ order + زمان ایجاد
     fieldsets = (
-        (None, {"fields": ("title_fa", "title_en", "slug", "slug_en", "order")}),
+        (None, {
+            "fields": ("title_fa", "title_en", "slug", "slug_en", "order"),
+        }),
+        ("⏱️ زمان", {
+            "fields": ("created_at_fa", "updated_at_fa"),
+            "classes": ("collapse",),
+        }),
     )
 
     def title_icon(self, obj):
@@ -137,11 +169,15 @@ class TenderTagAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
 #   TENDER ADMIN (Main)
 # -------------------------------------------------------
 @admin.register(Tender)
-class TenderAdmin(ActionButtonsMixin, admin.ModelAdmin):
-
+class TenderAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
+    """
+    ✅ SortableAdminMixin اضافه شد تا order قابل drag & drop باشه
+    """
+    actions = None
     inlines = [TenderImageInline]
 
     list_display = (
+        "order",
         "poster_icon",
         "title_icon",
         "status_icon",
@@ -159,7 +195,6 @@ class TenderAdmin(ActionButtonsMixin, admin.ModelAdmin):
     fieldsets = (
         ("📌 وضعیت", {
             "fields": ("status",),
-            "classes": ("collapse",),
         }),
         ("🖼️ تصویر", {
             "fields": ("poster", "poster_preview"),
@@ -179,8 +214,14 @@ class TenderAdmin(ActionButtonsMixin, admin.ModelAdmin):
         ("📂 دسته‌بندی", {
             "fields": ("category", "tags"),
         }),
+        ("🔢 ترتیب", {
+            "fields": ("order",),
+        }),
         ("🗓️ تاریخ‌ها", {
-            "fields": ("start_date_fa", "end_date_fa", "start_date_en", "end_date_en"),
+            "fields": (
+                "start_date_fa", "end_date_fa",
+                "start_date_en", "end_date_en",
+            ),
         }),
     )
 
@@ -189,7 +230,8 @@ class TenderAdmin(ActionButtonsMixin, admin.ModelAdmin):
         if obj.poster:
             return format_html(
                 "<img src='{}' width='45' height='45' "
-                "style='border-radius:6px; object-fit:cover; box-shadow:0 0 4px #aaa;'>",
+                "style='border-radius:6px; object-fit:cover; "
+                "box-shadow:0 0 4px #aaa;'>",
                 obj.poster.url
             )
         return "🖼️"
@@ -214,9 +256,9 @@ class TenderAdmin(ActionButtonsMixin, admin.ModelAdmin):
 
     def status_icon(self, obj):
         colors = {
-            "ongoing": "green",
-            "extended": "orange",
-            "finished": "red",
+            "ongoing": "#198754",
+            "extended": "#fd7e14",
+            "finished": "#dc3545",
         }
         labels = {
             "ongoing": "در حال برگزاری",
@@ -240,7 +282,8 @@ class TenderAdmin(ActionButtonsMixin, admin.ModelAdmin):
     # ---------- TAG ICON ----------
     def tag_icon(self, obj):
         tags = obj.tags.all()
-        if not tags:
+        # ✅ tags.exists() جای if not tags
+        if not tags.exists():
             return "—"
         return " ، ".join([t.title_fa for t in tags])
 

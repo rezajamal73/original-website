@@ -1,9 +1,11 @@
+# app_blog/admin.py
 from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
 from adminsortable2.admin import SortableAdminMixin
-from app_blog.models import blog, blog_Category, blog_Tag, BlogImage
 from django.utils.safestring import mark_safe
+
+from app_blog.models import blog, blog_Category, blog_Tag, BlogImage
 
 
 # ---------------------------------------
@@ -58,9 +60,7 @@ def admin_action_buttons(obj):
         edit_url,
         delete_url,
     )
-
-
-admin_action_buttons.short_description = "عملیات"
+# ⚠️ short_description روی تابع ماژول‌سطح کار نمی‌کنه — فقط روی متد کلاس
 
 
 class ActionButtonsMixin:
@@ -80,6 +80,7 @@ class BlogImageInline(admin.TabularInline):
     extra = 1
     fields = ("show_image", "image", "order")
     readonly_fields = ("show_image",)
+    ordering = ("order",)
 
     def show_image(self, obj):
         if obj.image:
@@ -97,14 +98,30 @@ class BlogImageInline(admin.TabularInline):
 # ---------------------------------------
 @admin.register(blog_Category)
 class CategoryAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
-    list_display = ("order", "title_icon", "slug", "slug_en", "created_at_fa", "admin_actions")
+    actions = None
+
+    list_display = (
+        "order",
+        "title_icon",
+        "slug",
+        "slug_en",
+        "created_at_fa",
+        "admin_actions",
+    )
+
     search_fields = ("title_fa", "title_en", "slug", "slug_en")
-    readonly_fields = ("created_at_fa", "slug", "slug_en")
+
+    readonly_fields = ("slug", "slug_en", "created_at_fa", "updated_at_fa")
+
     ordering = ("order",)
 
     fieldsets = (
         (None, {
             "fields": ("title_fa", "title_en", "slug", "slug_en", "order"),
+        }),
+        ("⏱️ زمان", {
+            "fields": ("created_at_fa", "updated_at_fa"),
+            "classes": ("collapse",),
         }),
     )
 
@@ -119,14 +136,30 @@ class CategoryAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
 # ---------------------------------------
 @admin.register(blog_Tag)
 class TagAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
-    list_display = ("order", "title_icon", "slug", "slug_en", "created_at_fa", "admin_actions")
+    actions = None
+
+    list_display = (
+        "order",
+        "title_icon",
+        "slug",
+        "slug_en",
+        "created_at_fa",
+        "admin_actions",
+    )
+
     search_fields = ("title_fa", "title_en", "slug", "slug_en")
-    readonly_fields = ("created_at_fa", "slug", "slug_en")
+
+    readonly_fields = ("slug", "slug_en", "created_at_fa", "updated_at_fa")
+
     ordering = ("order",)
 
     fieldsets = (
         (None, {
             "fields": ("title_fa", "title_en", "slug", "slug_en", "order"),
+        }),
+        ("⏱️ زمان", {
+            "fields": ("created_at_fa", "updated_at_fa"),
+            "classes": ("collapse",),
         }),
     )
 
@@ -141,6 +174,8 @@ class TagAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
 # ---------------------------------------
 @admin.register(blog)
 class BlogAdmin(ActionButtonsMixin, admin.ModelAdmin):
+    actions = None
+
     list_display = (
         "image_icon",
         "title_icon",
@@ -152,7 +187,14 @@ class BlogAdmin(ActionButtonsMixin, admin.ModelAdmin):
     )
 
     list_filter = ("status", "category")
-    search_fields = ("title_fa", "title_en", "slug", "slug_en")
+    search_fields = (
+        "title_fa",
+        "title_en",
+        "slug",
+        "slug_en",
+        "content_1_fa",
+        "content_1_en",
+    )
 
     readonly_fields = ("show_image_in_field", "slug", "slug_en")
 
@@ -161,10 +203,9 @@ class BlogAdmin(ActionButtonsMixin, admin.ModelAdmin):
     fieldsets = (
         ("📌 وضعیت", {
             "fields": ("status", "author"),
-            "classes": ("collapse",),
         }),
         ("🖼️ تصویر", {
-            "fields": ("image", "show_image_in_field",),
+            "fields": ("image", "show_image_in_field"),
         }),
         ("📄 فارسی", {
             "fields": ("title_fa", "content_1_fa", "content_2_fa", "slug"),
@@ -172,13 +213,13 @@ class BlogAdmin(ActionButtonsMixin, admin.ModelAdmin):
         ("📄 انگلیسی", {
             "fields": ("title_en", "content_1_en", "content_2_en", "slug_en"),
         }),
-        ("📂️ دسته بندی", {
+        ("📂 دسته بندی", {
             "fields": ("category", "tags"),
         }),
         ("📎 پیوست", {
             "fields": ("upload_file",),
         }),
-        ("🗓️ تاریخ‌ ها", {
+        ("🗓️ تاریخ‌ها", {
             "fields": ("publish_date_fa", "publish_date_en"),
         }),
     )
@@ -204,7 +245,7 @@ class BlogAdmin(ActionButtonsMixin, admin.ModelAdmin):
             )
         return "تصویری آپلود نشده است"
 
-    show_image_in_field.short_description = "پیش نمایش"
+    show_image_in_field.short_description = "پیش‌نمایش"
 
     # TITLE
     def title_icon(self, obj):
@@ -226,7 +267,7 @@ class BlogAdmin(ActionButtonsMixin, admin.ModelAdmin):
 
     category_icon.short_description = "دسته بندی"
 
-    # TAGS (NEW) – ICON
+    # TAGS
     def tag_icon(self, obj):
         tags = obj.tags.all()
 
@@ -252,4 +293,4 @@ class BlogAdmin(ActionButtonsMixin, admin.ModelAdmin):
     def date_icon(self, obj):
         return obj.publish_date_fa
 
-    date_icon.short_description = "تاریخ انتشار(شمسی)"
+    date_icon.short_description = "تاریخ انتشار (شمسی)"

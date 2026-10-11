@@ -78,35 +78,35 @@ def inquiry_home(request, slug=None):
 # =====================================================
 # INQUIRY SINGLE — با pid + slug
 # =====================================================
-def inquiry_single(request, pid, slug=None):
+# app_inquiry/views.py — فقط inquiry_single
+
+def inquiry_single(request, slug: str):
     """
-    صفحه جزئیات یک استعلام
+    فارسی:    /inquiry/نام-استعلام/
+    انگلیسی:  /en/inquiry/inquiry-name/
     """
     is_english = is_english_request(request)
 
-    inquiry = get_object_or_404(
-        PurchaseInquiry.objects
-        .select_related("category")
-        .prefetch_related("tags", "gallery_images"),
-        pk=pid,
+    if is_english:
+        inquiry = get_object_or_404(
+            PurchaseInquiry.objects
+            .select_related("category")
+            .prefetch_related("tags", "gallery_images"),
+            slug_en=slug,
+        )
+    else:
+        inquiry = get_object_or_404(
+            PurchaseInquiry.objects
+            .select_related("category")
+            .prefetch_related("tags", "gallery_images"),
+            slug=slug,
+        )
+
+    template_name = (
+        "LTR/inquiry/inquiry-single.html"
+        if is_english
+        else "RTL/inquiry/inquiry-single.html"
     )
-
-    # ✅ اگه slug داده شده، بررسی کن
-    if slug:
-        correct_slug = inquiry.slug_en if is_english else inquiry.slug
-
-        if correct_slug != slug:
-            target = (
-                "app_inquiry_en:inquiry_single_en"
-                if is_english
-                else "app_inquiry:inquiry_single"
-            )
-            return redirect(
-                target,
-                pid=pid,
-                slug=correct_slug,
-                permanent=True,
-            )
 
     context = {
         "inquiry": inquiry,
@@ -114,11 +114,7 @@ def inquiry_single(request, pid, slug=None):
         "is_english": is_english,
     }
 
-    return render(
-        request,
-        _get_template("inquiry-single.html", is_english),
-        context,
-    )
+    return render(request, template_name, context)
 
 
 # =====================================================

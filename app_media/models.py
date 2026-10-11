@@ -1,8 +1,22 @@
 # app_media/models.py
+from functools import partial
+
 from django.db import models
 from django.utils.text import slugify
-from django.urls import reverse                          # ✅ اضافه شد
+from django.urls import reverse
 from django.contrib.auth.models import User
+
+
+# ------------------------------------------------------
+#   DYNAMIC APP-BASED UPLOAD PATH
+# ------------------------------------------------------
+def app_upload_to(instance, filename, subfolder=""):
+    """
+    ساخت مسیر آپلود به صورت داینامیک بر اساس نام اپ مدل.
+    نتیجه: <app_label>/<subfolder>/<filename>
+    """
+    app_label = instance._meta.app_label
+    return f"{app_label}/{subfolder}/{filename}".replace("//", "/")
 
 
 # ------------------------------------------------------
@@ -12,7 +26,7 @@ def generate_unique_slug(instance, slug_field: str, text_value: str):
     """
     تولید اسلاگ یکتا با پشتیبانی از فارسی.
     """
-    base_slug = slugify(text_value, allow_unicode=True) or "item"   # ✅ allow_unicode
+    base_slug = slugify(text_value, allow_unicode=True) or "item"
     slug = base_slug
     Model = instance.__class__
     counter = 1
@@ -57,8 +71,9 @@ class Media(models.Model):
     summary_fa = models.TextField(verbose_name="متن قسمت اول فارسی")
     summary_en = models.TextField(verbose_name="متن قسمت اول انگلیسی")
 
+    # ✅ media/<app_label>/cover/...
     image = models.ImageField(
-        upload_to="media/cover/",                      # ✅ media جای news
+        upload_to=partial(app_upload_to, subfolder="cover"),
         default="media/default.jpg",
         verbose_name="کاور رسانه",
         blank=True,
@@ -98,16 +113,14 @@ class Media(models.Model):
     # URL ها
     # =====================================================
     def get_absolute_url(self):
-        """URL فارسی: /media/5/عنوان/"""
+        """URL فارسی: /media/عنوان/"""
         return reverse("app_media:media_single", kwargs={
-            "pid": self.pk,
             "slug": self.slug,
         })
 
     def get_absolute_url_en(self):
-        """URL انگلیسی: /en/media/5/media-title/"""
+        """URL انگلیسی: /en/media/media-title/"""
         return reverse("app_media_en:media_single_en", kwargs={
-            "pid": self.pk,
             "slug": self.slug_en,
         })
 
@@ -122,7 +135,11 @@ class MediaImage(models.Model):
         related_name="images",
         verbose_name="رسانه",
     )
-    image = models.ImageField(upload_to="media/gallery/", verbose_name="تصویر")   # ✅ media جای news
+    # ✅ media/<app_label>/gallery/...
+    image = models.ImageField(
+        upload_to=partial(app_upload_to, subfolder="gallery"),
+        verbose_name="تصویر",
+    )
     caption = models.CharField(max_length=255, blank=True, null=True, verbose_name="توضیح تصویر")
     order = models.PositiveIntegerField(default=0, verbose_name="ترتیب نمایش")
 
@@ -145,7 +162,11 @@ class MediaVideo(models.Model):
         related_name="videos",
         verbose_name="رسانه",
     )
-    video = models.FileField(upload_to="media/videos/", verbose_name="ویدیو")   # ✅ media جای news
+    # ✅ media/<app_label>/videos/...
+    video = models.FileField(
+        upload_to=partial(app_upload_to, subfolder="videos"),
+        verbose_name="ویدیو",
+    )
     caption = models.CharField(max_length=255, blank=True, null=True, verbose_name="توضیح ویدیو")
     duration = models.CharField(max_length=10, blank=True, null=True, verbose_name="مدت زمان ویدیو")
     order = models.PositiveIntegerField(default=0, verbose_name="ترتیب نمایش")

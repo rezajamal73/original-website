@@ -62,21 +62,25 @@ def tender_home(request, cat_name=None, author_username=None):
 # =====================================================
 # TENDER SINGLE — با pid + slug
 # =====================================================
-def tender_single(request, pid, slug=None):
+# app_tender/views.py — فقط tender_single
+
+def tender_single(request, slug: str):
+    """
+    فارسی:    /tender/نام-مناقصه/
+    انگلیسی:  /en/tender/tender-name/
+    """
     is_english = is_english_request(request)
 
-    tender = get_object_or_404(Tender, pk=pid)
-
-    if slug:
-        correct_slug = tender.slug_en if is_english else tender.slug
-
-        if correct_slug != slug:
-            target = (
-                "app_tender_en:tender_single_en"
-                if is_english
-                else "app_tender:tender_single"
-            )
-            return redirect(target, pid=pid, slug=correct_slug, permanent=True)
+    if is_english:
+        tender = get_object_or_404(
+            Tender.objects.select_related("category"),
+            slug_en=slug,
+        )
+    else:
+        tender = get_object_or_404(
+            Tender.objects.select_related("category"),
+            slug=slug,
+        )
 
     template_name = (
         "LTR/tender/tender-single.html"

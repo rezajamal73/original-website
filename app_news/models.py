@@ -1,9 +1,23 @@
 # app_news/models.py
+from functools import partial
+
 from django.db import models
 from django.utils.text import slugify
-from django.urls import reverse                          # ✅ اضافه شد
+from django.urls import reverse
 from django_jalali.db import models as jmodels
 from django.contrib.auth.models import User
+
+
+# ------------------------------------------------------
+#   DYNAMIC APP-BASED UPLOAD PATH
+# ------------------------------------------------------
+def app_upload_to(instance, filename, subfolder=""):
+    """
+    ساخت مسیر آپلود به صورت داینامیک بر اساس نام اپ مدل.
+    نتیجه: <app_label>/<subfolder>/<filename>
+    """
+    app_label = instance._meta.app_label
+    return f"{app_label}/{subfolder}/{filename}".replace("//", "/")
 
 
 # ------------------------------------------------------
@@ -13,7 +27,7 @@ def generate_unique_slug(instance, slug_field: str, text_value: str):
     """
     تولید اسلاگ یکتا با پشتیبانی از فارسی.
     """
-    base_slug = slugify(text_value, allow_unicode=True) or "item"   # ✅ allow_unicode
+    base_slug = slugify(text_value, allow_unicode=True) or "item"
     slug = base_slug
     Model = instance.__class__
     counter = 1
@@ -164,7 +178,11 @@ class News(TimeStampedModel):
     content_fa = models.TextField(blank=True, verbose_name="متن قسمت دوم فارسی")
     content_en = models.TextField(blank=True, verbose_name="متن قسمت دوم انگلیسی")
 
-    image = models.ImageField(upload_to="news/cover/", verbose_name="کاور خبر")
+    # ✅ media/<app_label>/cover/...
+    image = models.ImageField(
+        upload_to=partial(app_upload_to, subfolder="cover"),
+        verbose_name="کاور خبر",
+    )
 
     category = models.ForeignKey(
         NewsCategory,
@@ -219,16 +237,14 @@ class News(TimeStampedModel):
     # URL ها
     # =====================================================
     def get_absolute_url(self):
-        """URL فارسی: /news/5/عنوان-خبر/"""
+        """URL فارسی: /news/عنوان-خبر/"""
         return reverse("app_news:news_single", kwargs={
-            "pid": self.pk,
             "slug": self.slug,
         })
 
     def get_absolute_url_en(self):
-        """URL انگلیسی: /en/news/5/news-title/"""
+        """URL انگلیسی: /en/news/news-title/"""
         return reverse("app_news_en:news_single_en", kwargs={
-            "pid": self.pk,
             "slug": self.slug_en,
         })
 
@@ -238,7 +254,10 @@ class News(TimeStampedModel):
 # ------------------------------------------------------
 class NewsImage(models.Model):
     news = models.ForeignKey(News, on_delete=models.CASCADE, related_name="images")
-    image = models.ImageField(upload_to="news/gallery/")
+    # ✅ media/<app_label>/gallery/...
+    image = models.ImageField(
+        upload_to=partial(app_upload_to, subfolder="gallery"),
+    )
     caption = models.CharField(max_length=255, blank=True, null=True, verbose_name="توضیح تصویر")
     order = models.PositiveIntegerField(default=0, verbose_name="ترتیب نمایش")
 
@@ -256,7 +275,10 @@ class NewsImage(models.Model):
 # ------------------------------------------------------
 class NewsVideo(models.Model):
     news = models.ForeignKey(News, on_delete=models.CASCADE, related_name="videos")
-    video = models.FileField(upload_to="news/videos/")
+    # ✅ media/<app_label>/videos/...
+    video = models.FileField(
+        upload_to=partial(app_upload_to, subfolder="videos"),
+    )
     caption = models.CharField(max_length=255, blank=True, null=True, verbose_name="توضیح ویدیو")
     duration = models.CharField(max_length=10, blank=True, null=True, verbose_name="مدت زمان ویدیو")
     order = models.PositiveIntegerField(default=0, verbose_name="ترتیب نمایش")

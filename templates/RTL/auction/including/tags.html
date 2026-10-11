@@ -1,15 +1,16 @@
 {% load static %}
 
 <div class="widget sidebar-tag">
-    <h5 class="widget-title">Auction Tags</h5>
+    <h5 class="widget-title">برچسب‌های مزایده</h5>
 
     <div class="tag-list">
         {% for tag in tags %}
-            <a href="{% url 'app_auction_en:auction_tag_en' tag.slug_en|default:tag.slug %}">
-                {{ tag.title_en|default:tag.title_fa }}
+            {# ✅ auction_tag با tag.slug #}
+            <a href="{% url 'app_auction:auction_tag' tag.slug %}">
+                {{ tag.title_fa }}
             </a>
         {% empty %}
-            <p>No tags available.</p>
+            <p>برچسبی موجود نیست.</p>
         {% endfor %}
     </div>
 </div>

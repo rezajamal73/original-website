@@ -66,30 +66,29 @@ def media_home(request, slug=None):
 # =====================================================
 # MEDIA SINGLE — با pid + slug
 # =====================================================
-def media_single(request, pid, slug=None):
+# app_media/views.py — فقط media_single
+
+def media_single(request, slug: str):
     """
-    صفحه جزئیات یک رسانه
+    فارسی:    /media/عنوان/
+    انگلیسی:  /en/media/media-title/
     """
     is_english = is_english_request(request)
 
-    media = get_object_or_404(
-        Media.objects
-        .filter(status="published")
-        .prefetch_related("images", "videos"),
-        pk=pid,
-    )
-
-    # ✅ اگه slug داده شده، بررسی کن
-    if slug:
-        correct_slug = media.slug_en if is_english else media.slug
-
-        if correct_slug != slug:
-            target = (
-                "app_media_en:media_single_en"
-                if is_english
-                else "app_media:media_single"
-            )
-            return redirect(target, pid=pid, slug=correct_slug, permanent=True)
+    if is_english:
+        media = get_object_or_404(
+            Media.objects
+            .filter(status="published")
+            .prefetch_related("images", "videos"),
+            slug_en=slug,
+        )
+    else:
+        media = get_object_or_404(
+            Media.objects
+            .filter(status="published")
+            .prefetch_related("images", "videos"),
+            slug=slug,
+        )
 
     template_name = (
         "LTR/media/media_single.html"

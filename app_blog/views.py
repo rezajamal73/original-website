@@ -73,32 +73,33 @@ def blog_home(request, slug=None, author_username=None):
 # BLOG SINGLE — با pid + slug
 # =====================================================
 
-def blog_single(request, pid, slug):
+# app_blog/views.py — فقط blog_single
 
+def blog_single(request, slug: str):
+    """
+    فارسی:    /blog/نام-مقاله/
+    انگلیسی:  /en/blog/post-name/
+    """
     is_english = is_english_request(request)
 
-    template = (
+    if is_english:
+        blog_obj = get_object_or_404(
+            blog.objects.select_related("category"),
+            slug_en=slug,
+            status="published",
+        )
+    else:
+        blog_obj = get_object_or_404(
+            blog.objects.select_related("category"),
+            slug=slug,
+            status="published",
+        )
+
+    template_name = (
         "LTR/blog/blog-single.html"
         if is_english
         else "RTL/blog/blog-single.html"
     )
-
-    blog_obj = get_object_or_404(
-        blog.objects.filter(status="published"),
-        pk=pid
-    )
-
-    # ✅ انتخاب اسلاگ درست بر اساس زبان
-    correct_slug = blog_obj.slug_en if is_english else blog_obj.slug
-
-    # اگه slug اشتباه بود → redirect دائمی
-    if correct_slug != slug:
-        target = (
-            "app_blog_en:blog_single_en"
-            if is_english
-            else "app_blog:blog_single"
-        )
-        return redirect(target, pid=pid, slug=correct_slug, permanent=True)
 
     context = {
         "blog": blog_obj,
@@ -106,7 +107,7 @@ def blog_single(request, pid, slug):
         "is_english": is_english,
     }
 
-    return render(request, template, context)
+    return render(request, template_name, context)
 
 
 # =====================================================

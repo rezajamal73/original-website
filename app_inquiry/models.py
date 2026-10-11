@@ -1,9 +1,23 @@
 # app_inquiry/models.py
+from functools import partial
+
 from django.db import models
 from django.utils.text import slugify
 from django.contrib.auth.models import User
-from django.urls import reverse                          # ✅ اضافه شد
+from django.urls import reverse
 from django_jalali.db import models as jmodels
+
+
+# ---------------------------------------
+#   DYNAMIC APP-BASED UPLOAD PATH
+# ---------------------------------------
+def app_upload_to(instance, filename, subfolder=""):
+    """
+    ساخت مسیر آپلود به صورت داینامیک بر اساس نام اپ مدل.
+    نتیجه: <app_label>/<subfolder>/<filename>
+    """
+    app_label = instance._meta.app_label
+    return f"{app_label}/{subfolder}/{filename}".replace("//", "/")
 
 
 # ---------------------------------------
@@ -13,7 +27,7 @@ def generate_unique_slug(instance, value, slug_field_name="slug"):
     """
     ایجاد اسلاگ یکتا با پشتیبانی از فارسی.
     """
-    base_slug = slugify(value, allow_unicode=True) or "item"   # ✅ allow_unicode
+    base_slug = slugify(value, allow_unicode=True) or "item"
     slug = base_slug
     ModelClass = instance.__class__
     counter = 1
@@ -179,12 +193,14 @@ class PurchaseInquiry(TimeStampedModel):
     start_date_en = models.DateField(verbose_name="تاریخ شروع (میلادی)")
     end_date_en = models.DateField(verbose_name="تاریخ پایان (میلادی)")
 
+    # ✅ media/<app_label>/cover/...
     cover_image = models.ImageField(
-        upload_to="purchase/cover",
+        upload_to=partial(app_upload_to, subfolder="cover"),
         verbose_name="تصویر",
     )
+    # ✅ media/<app_label>/files/...
     attachment = models.FileField(
-        upload_to="purchase/files",
+        upload_to=partial(app_upload_to, subfolder="files"),
         null=True,
         blank=True,
         verbose_name="فایل پیوست",
@@ -239,16 +255,14 @@ class PurchaseInquiry(TimeStampedModel):
     # URL ها
     # =====================================================
     def get_absolute_url(self):
-        """URL فارسی: /inquiry/5/نام/"""
+        """URL فارسی: /inquiry/نام-استعلام/"""
         return reverse("app_inquiry:inquiry_single", kwargs={
-            "pid": self.pk,
             "slug": self.slug,
         })
 
     def get_absolute_url_en(self):
-        """URL انگلیسی: /en/inquiry/5/name/"""
+        """URL انگلیسی: /en/inquiry/inquiry-name/"""
         return reverse("app_inquiry_en:inquiry_single_en", kwargs={
-            "pid": self.pk,
             "slug": self.slug_en,
         })
 
@@ -264,8 +278,9 @@ class PurchaseInquiryImage(TimeStampedModel):
         verbose_name="استعلام خرید",
     )
 
+    # ✅ media/<app_label>/gallery/...
     image = models.ImageField(
-        upload_to="purchase/gallery",
+        upload_to=partial(app_upload_to, subfolder="gallery"),
         verbose_name="تصویر",
     )
     caption = models.CharField(

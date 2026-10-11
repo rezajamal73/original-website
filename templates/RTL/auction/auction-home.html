@@ -63,15 +63,20 @@
                                             </span>
 
                                             <div class="blog-item-img">
-                                                <a href="{% url 'app_auction:auction_single' item.id %}">
-                                                    <img src="{{ item.poster.url }}" alt="{{ item.title_fa }}">
+                                                {# ✅ auction_single با item.slug (بدون pid) #}
+                                                <a href="{% url 'app_auction:auction_single' item.slug %}">
+                                                    {% if item.poster %}
+                                                        <img src="{{ item.poster.url }}"
+                                                             alt="{{ item.title_fa }}">
+                                                    {% endif %}
                                                 </a>
                                             </div>
 
                                             <div class="blog-item-info">
 
                                                 <h4 class="blog-title">
-                                                    <a href="{% url 'app_auction:auction_single' item.id %}">
+                                                    {# ✅ auction_single با item.slug #}
+                                                    <a href="{% url 'app_auction:auction_single' item.slug %}">
                                                         {{ item.title_fa }}
                                                     </a>
                                                 </h4>

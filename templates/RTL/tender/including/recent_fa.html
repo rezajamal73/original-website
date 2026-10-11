@@ -7,8 +7,8 @@
         <div class="recent-post-item">
 
             <div class="recent-post-img">
-                {# ✅ tender_single با tender.id + tender.slug #}
-                <a href="{% url 'app_tender:tender_single' tender.id tender.slug %}">
+                {# ✅ tender_single فقط با tender.slug #}
+                <a href="{% url 'app_tender:tender_single' tender.slug %}">
                     {% if tender.poster %}
                         <img src="{{ tender.poster.url }}"
                              alt="{{ tender.title_fa }}">
@@ -18,8 +18,8 @@
 
             <div class="recent-post-bio">
                 <h6>
-                    {# ✅ tender_single با tender.id + tender.slug #}
-                    <a href="{% url 'app_tender:tender_single' tender.id tender.slug %}">
+                    {# ✅ tender_single فقط با tender.slug #}
+                    <a href="{% url 'app_tender:tender_single' tender.slug %}">
                         {{ tender.title_fa|truncatechars:25 }}
                     </a>
                 </h6>

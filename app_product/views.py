@@ -1,3 +1,4 @@
+# app_product/views.py
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from django.http import HttpRequest
@@ -179,32 +180,29 @@ def product_tag(request, slug):
 
 
 # =====================================================
-# PRODUCT SINGLE
+# PRODUCT SINGLE — ✅ بدون pid
 # =====================================================
 
-def product_single(request, pid: int, slug: str):
+def product_single(request, slug: str):
     """
-    فارسی:    /product/3/آویز-سرم-بیمارستانی/
-    انگلیسی:  /en/product/3/hospital-iv-pole/
+    فارسی:    /product/آویز-سرم-بیمارستانی/
+    انگلیسی:  /en/product/hospital-iv-pole/
     """
 
     is_english = is_english_request(request)
 
-    product = get_object_or_404(
-        Product.objects.select_related("category", "category2"),
-        pk=pid,
-        status="published"
-    )
-
-    correct_slug = product.slug_en if is_english else product.slug
-
-    if correct_slug != slug:
-        target = (
-            "app_product_en:product_single_en"
-            if is_english
-            else "app_product:product_single"
+    if is_english:
+        product = get_object_or_404(
+            Product.objects.select_related("category", "category2"),
+            slug_en=slug,
+            status="published",
         )
-        return redirect(target, pid=pid, slug=correct_slug, permanent=True)
+    else:
+        product = get_object_or_404(
+            Product.objects.select_related("category", "category2"),
+            slug=slug,
+            status="published",
+        )
 
     template_name = (
         "LTR/product/product_single.html"
@@ -219,33 +217,6 @@ def product_single(request, pid: int, slug: str):
     }
 
     return render(request, template_name, context)
-
-
-# =====================================================
-# PRODUCT SINGLE REDIRECT — از URL قدیمی /product/3/
-# =====================================================
-
-def product_single_redirect(request, pid: int):
-    """
-    Redirect 301 از URL قدیمی (بدون slug) به URL جدید (با slug).
-    """
-
-    is_english = is_english_request(request)
-
-    product = get_object_or_404(
-        Product,
-        pk=pid,
-        status="published"
-    )
-
-    if is_english:
-        target = "app_product_en:product_single_en"
-        redirect_slug = product.slug_en or product.slug
-    else:
-        target = "app_product:product_single"
-        redirect_slug = product.slug
-
-    return redirect(target, pid=pid, slug=redirect_slug, permanent=True)
 
 
 # =====================================================
@@ -267,7 +238,7 @@ def scan_product(request: HttpRequest, sku: str):
     ProductScan.objects.create(
         product=product,
         ip_address=ip,
-        user_agent=user_agent
+        user_agent=user_agent,
     )
 
     return redirect(product.get_absolute_url())

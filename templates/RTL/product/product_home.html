@@ -1,15 +1,19 @@
 {% extends 'RTL/core/base.html' %}
 {% load static %}
 {% load product_tags %}
+
 {% block content %}
     <main class="main">
+
         <!-- breadcrumb -->
         <div class="site-breadcrumb">
             {% if banner and banner.image %}
-                <div class="site-breadcrumb-bg" style="background: url('{{ banner.image.url }}')"></div>
+                <div class="site-breadcrumb-bg"
+                     style="background: url('{{ banner.image.url }}')"></div>
             {% else %}
                 <div class="site-breadcrumb-bg"></div>
             {% endif %}
+
             <div class="container">
                 <div class="site-breadcrumb-wrap">
                     <h4 class="breadcrumb-title">
@@ -22,13 +26,11 @@
                                 خانه
                             </a>
                         </li>
-
                         <li class="active">
                             <a href="{% url 'app_product:product_list' %}">
                                 محصولات شرکت
                             </a>
                         </li>
-
                     </ul>
                 </div>
             </div>
@@ -55,7 +57,6 @@
                             <div class="shop-widget">
                                 {% product_tags %}
                             </div>
-
                         </div>
                     </div>
 
@@ -77,7 +78,7 @@
                                                         <span class="type">محصول ویژه</span>
                                                     {% endif %}
 
-                                                    {# ✅ اصلاح شد: get_absolute_url جای url #}
+                                                    {# ✅ get_absolute_url (بدون pid) #}
                                                     <a href="{{ product.get_absolute_url }}">
                                                         {% if product.main_image %}
                                                             <img src="{{ product.main_image.url }}"
@@ -90,7 +91,8 @@
                                                             <a data-bs-toggle="modal"
                                                                data-bs-target="#quickview-{{ product.id }}"
                                                                title="نگاهی سریع">
-                                                                <i class="fas fa-eye" style="color:white;"></i>
+                                                                <i class="fas fa-eye"
+                                                                   style="color:white;"></i>
                                                             </a>
                                                         </div>
                                                     </div>
@@ -98,12 +100,11 @@
 
                                                 <div class="product-content">
                                                     <h3 class="product-title">
-                                                        {# ✅ اصلاح شد #}
+                                                        {# ✅ get_absolute_url #}
                                                         <a href="{{ product.get_absolute_url }}">
                                                             {{ product.title_fa }}
                                                         </a>
                                                     </h3>
-
                                                 </div>
 
                                             </div>
@@ -128,7 +129,9 @@
                                                 </li>
                                             {% else %}
                                                 <li class="page-item disabled">
-                                                    <span class="page-link"><i class="far fa-arrow-right"></i></span>
+                                                    <span class="page-link">
+                                                        <i class="far fa-arrow-right"></i>
+                                                    </span>
                                                 </li>
                                             {% endif %}
 
@@ -140,13 +143,16 @@
 
                                             {% if products.has_next %}
                                                 <li class="page-item">
-                                                    <a class="page-link" href="?page={{ products.next_page_number }}">
+                                                    <a class="page-link"
+                                                       href="?page={{ products.next_page_number }}">
                                                         <i class="far fa-arrow-left"></i>
                                                     </a>
                                                 </li>
                                             {% else %}
                                                 <li class="page-item disabled">
-                                                    <span class="page-link"><i class="far fa-arrow-left"></i></span>
+                                                    <span class="page-link">
+                                                        <i class="far fa-arrow-left"></i>
+                                                    </span>
                                                 </li>
                                             {% endif %}
 
@@ -168,7 +174,7 @@
             </div>
         </div>
 
-        <!-- modal quick shop-->
+        <!-- modal quick shop -->
         {% for product in products %}
             <div class="modal quickview fade"
                  id="quickview-{{ product.id }}"
@@ -229,21 +235,21 @@
 
                                             {% if product.category %}
                                                 <li class="pt-3 mt-3 border-top">
-                                                    محصول :
+                                                    محصول:
                                                     <span>{{ product.category.title_fa }}</span>
                                                 </li>
                                             {% endif %}
 
                                             {% if product.category2 %}
                                                 <li>
-                                                    دسته بندی :
+                                                    دسته بندی:
                                                     <span>{{ product.category2.title_fa }}</span>
                                                 </li>
                                             {% endif %}
 
                                             {% if product.tags.exists %}
                                                 <li>
-                                                    برچسب :
+                                                    برچسب:
                                                     <span>
                                                         {% for tag in product.tags.all %}
                                                             {{ tag.title_fa }}{% if not forloop.last %}، {% endif %}
@@ -256,6 +262,7 @@
 
                                         <!-- دکمه CTA -->
                                         <div class="quickview-actions mt-4">
+                                            {# ✅ get_absolute_url بدون pid #}
                                             <a href="{{ product.get_absolute_url }}"
                                                class="btn btn-theme w-100">
                                                 مشاهده جزئیات محصول
@@ -272,7 +279,7 @@
                     </div>
                 </div>
             </div>
-
         {% endfor %}
+
     </main>
 {% endblock %}

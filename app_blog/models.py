@@ -1,8 +1,23 @@
+# app_blog/models.py
+from functools import partial
+
 from django.db import models
 from django.utils.text import slugify
 from django_jalali.db import models as jmodels
 from django.contrib.auth.models import User
 from django.urls import reverse
+
+
+# -------------------------------------------------------
+#   DYNAMIC APP-BASED UPLOAD PATH
+# -------------------------------------------------------
+def app_upload_to(instance, filename, subfolder=""):
+    """
+    ساخت مسیر آپلود به صورت داینامیک بر اساس نام اپ مدل.
+    نتیجه: <app_label>/<subfolder>/<filename>
+    """
+    app_label = instance._meta.app_label
+    return f"{app_label}/{subfolder}/{filename}".replace("//", "/")
 
 
 # -------------------------------------------------------
@@ -146,8 +161,19 @@ class blog(TimeStampedModel):
         allow_unicode=False,
     )
 
-    image = models.ImageField(upload_to='blog/image', default='blog/default.jpg', verbose_name="عکس اصلی")
-    upload_file = models.FileField(upload_to='blog/upload_file', null=True, blank=True, verbose_name="آپلود فایل")
+    # ✅ media/<app_label>/image/...
+    image = models.ImageField(
+        upload_to=partial(app_upload_to, subfolder="image"),
+        default='blog/default.jpg',
+        verbose_name="عکس اصلی",
+    )
+    # ✅ media/<app_label>/upload_file/...
+    upload_file = models.FileField(
+        upload_to=partial(app_upload_to, subfolder="upload_file"),
+        null=True,
+        blank=True,
+        verbose_name="آپلود فایل",
+    )
     category = models.ForeignKey(blog_Category, on_delete=models.CASCADE, related_name="blog", verbose_name="دسته‌بندی")
     tags = models.ManyToManyField(blog_Tag, related_name="blog", blank=True, verbose_name="برچسب‌ها")
     content_1_fa = models.TextField(verbose_name="متن فارسی 1")
@@ -177,19 +203,17 @@ class blog(TimeStampedModel):
         return self.title_fa
 
     # =====================================================
-    # URL ها — با pid + slug
+    # URL ها
     # =====================================================
     def get_absolute_url(self):
-        """URL فارسی: /blog/1/نام-مقاله/"""
+        """URL فارسی: /blog/نام-مقاله/"""
         return reverse("app_blog:blog_single", kwargs={
-            "pid": self.pk,
             "slug": self.slug,
         })
 
     def get_absolute_url_en(self):
-        """URL انگلیسی: /en/blog/1/article-name/"""
+        """URL انگلیسی: /en/blog/post-name/"""
         return reverse("app_blog_en:blog_single_en", kwargs={
-            "pid": self.pk,
             "slug": self.slug_en,
         })
 
@@ -199,7 +223,11 @@ class blog(TimeStampedModel):
 # -------------------------------------------------------
 class BlogImage(models.Model):
     blog = models.ForeignKey(blog, on_delete=models.CASCADE, related_name="images", verbose_name="مقاله")
-    image = models.ImageField(upload_to="blog/gallery/", verbose_name="تصویر")
+    # ✅ media/<app_label>/gallery/...
+    image = models.ImageField(
+        upload_to=partial(app_upload_to, subfolder="gallery"),
+        verbose_name="تصویر",
+    )
     caption = models.CharField(max_length=255, blank=True, null=True, verbose_name="توضیح تصویر")
     order = models.PositiveIntegerField(default=0, verbose_name="ترتیب نمایش")
 

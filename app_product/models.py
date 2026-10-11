@@ -1,3 +1,6 @@
+# app_product/models.py
+from functools import partial
+
 from django.db import models
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
@@ -16,15 +19,23 @@ except ImportError:
 
 
 # ============================================================
+# DYNAMIC APP-BASED UPLOAD PATH
+# ============================================================
+def app_upload_to(instance, filename, subfolder=""):
+    """
+    ساخت مسیر آپلود به صورت داینامیک بر اساس نام اپ مدل.
+    نتیجه: <app_label>/<subfolder>/<filename>
+    """
+    app_label = instance._meta.app_label
+    return f"{app_label}/{subfolder}/{filename}".replace("//", "/")
+
+
+# ============================================================
 # UNIQUE SLUG GENERATOR
 # ============================================================
 def generate_unique_slug(instance, slug_field: str, text_value: str):
     """
     تولید اسلاگ یکتا با پشتیبانی از حروف فارسی.
-
-    مثال:
-        "لوله پلیکا" → "لوله-پلیکا"
-        "IV Pole"   → "iv-pole"
     """
     base_slug = slugify(text_value, allow_unicode=True) or "item"
     slug = base_slug
@@ -43,16 +54,16 @@ def generate_unique_slug(instance, slug_field: str, text_value: str):
 # ============================================================
 class ProductCategory(models.Model):
     title_fa = models.CharField(max_length=255, verbose_name="عنوان فارسی")
-    title_en = models.CharField(max_length=255, verbose_name="عنوان انگلیسی", blank=True)
+    title_en = models.CharField(max_length=255, verbose_name="عنوان انگلیسی")
 
+    # ✅ media/<app_label>/category_icons/...
     cat_icon = models.FileField(
         "آیکون (SVG)",
-        upload_to="products/category_icons/",
+        upload_to=partial(app_upload_to, subfolder="category_icons"),
         blank=True,
-        null=True
+        null=True,
     )
 
-    # ✅ اسلاگ فارسی
     slug = models.SlugField(
         "اسلاگ (فارسی)",
         unique=True,
@@ -60,7 +71,6 @@ class ProductCategory(models.Model):
         allow_unicode=True,
     )
 
-    # ✅ اسلاگ انگلیسی
     slug_en = models.SlugField(
         "اسلاگ (انگلیسی)",
         unique=True,
@@ -76,13 +86,11 @@ class ProductCategory(models.Model):
         ordering = ["priority", "title_fa"]
 
     def save(self, *args, **kwargs):
-        # ✅ اگه slug خالیه یا با slugify(title_fa) فرق داره، بازسازی کن
         if self.title_fa:
             expected = slugify(self.title_fa, allow_unicode=True) or "item"
             if not self.slug or not self.slug.startswith(expected):
                 self.slug = generate_unique_slug(self, "slug", self.title_fa)
 
-        # ✅ اگه slug_en خالیه یا با slugify(title_en) فرق داره، بازسازی کن
         if self.title_en:
             expected_en = slugify(self.title_en, allow_unicode=False) or "item"
             if not self.slug_en or not self.slug_en.startswith(expected_en):
@@ -143,7 +151,7 @@ class ProductCategory2(models.Model):
 # ============================================================
 class ProductTag(models.Model):
     title_fa = models.CharField(max_length=255, verbose_name="عنوان فارسی")
-    title_en = models.CharField(max_length=255, verbose_name="عنوان انگلیسی", blank=True)
+    title_en = models.CharField(max_length=255, verbose_name="عنوان انگلیسی")
 
     slug = models.SlugField(
         "اسلاگ (فارسی)",
@@ -161,8 +169,8 @@ class ProductTag(models.Model):
     priority = models.IntegerField("ترتیب نمایش", default=0)
 
     class Meta:
-        verbose_name = "برچسب "
-        verbose_name_plural = "برچسب‌های "
+        verbose_name = "برچسب"
+        verbose_name_plural = "برچسب‌ها"
         ordering = ["priority", "title_fa"]
 
     def save(self, *args, **kwargs):
@@ -197,7 +205,7 @@ class Product(models.Model):
         related_name="products",
         on_delete=models.SET_NULL,
         null=True,
-        blank=True
+        blank=True,
     )
 
     category2 = models.ForeignKey(
@@ -206,17 +214,16 @@ class Product(models.Model):
         related_name="products2",
         on_delete=models.SET_NULL,
         null=True,
-        blank=True
+        blank=True,
     )
 
     tags = models.ManyToManyField(ProductTag, verbose_name="برچسب‌ها", blank=True)
 
     title_fa = models.CharField("نام محصول (فارسی)", max_length=255)
-    title_en = models.CharField("نام محصول-برند (انگلیسی)", max_length=255, blank=True)
+    title_en = models.CharField("نام محصول-برند (انگلیسی)", max_length=255)
     summary_fa = models.TextField("توضیح کوتاه (فارسی)", blank=True)
     summary_en = models.TextField("توضیح کوتاه (انگلیسی)", blank=True)
 
-    # ✅ اسلاگ فارسی
     slug = models.SlugField(
         "اسلاگ (فارسی)",
         max_length=255,
@@ -225,7 +232,6 @@ class Product(models.Model):
         allow_unicode=True,
     )
 
-    # ✅ اسلاگ انگلیسی
     slug_en = models.SlugField(
         "اسلاگ (انگلیسی)",
         max_length=255,
@@ -235,8 +241,21 @@ class Product(models.Model):
     )
 
     special = models.BooleanField("محصول ویژه", default=False)
-    main_image = models.ImageField("تصویر اصلی", upload_to="products/main/", blank=True, null=True)
-    qr_code = models.ImageField("QR code", upload_to="products/qr/", blank=True, null=True)
+
+    # ✅ media/<app_label>/main/...
+    main_image = models.ImageField(
+        "تصویر اصلی",
+        upload_to=partial(app_upload_to, subfolder="main"),
+        blank=True,
+        null=True,
+    )
+    # ✅ media/<app_label>/qr/...
+    qr_code = models.ImageField(
+        "QR code",
+        upload_to=partial(app_upload_to, subfolder="qr"),
+        blank=True,
+        null=True,
+    )
     qr_data = models.CharField("QR data", max_length=255, blank=True)
     generic_name_fa = models.CharField("مدل (فارسی)", max_length=255, blank=True)
     generic_name_en = models.CharField("مدل (انگلیسی)", max_length=255, blank=True)
@@ -268,21 +287,19 @@ class Product(models.Model):
     created_at = models.DateTimeField("ایجاد", auto_now_add=True)
     updated_at = models.DateTimeField("ویرایش", auto_now=True)
 
-    meta_title = models.CharField("Meta Title", max_length=70, blank=True)
-    meta_description = models.CharField("Meta Description", max_length=170, blank=True)
-    robots = models.CharField("Robots", max_length=30, default="index,follow")
+    # ✅ فیلدهای SEO حذف شدن — از app_seo استفاده کن
 
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
         default="draft",
-        verbose_name="وضعیت"
+        verbose_name="وضعیت",
     )
 
     class Meta:
         verbose_name = "محصول"
         verbose_name_plural = "محصولات"
-        ordering = ['priority', 'title_fa']
+        ordering = ["priority", "title_fa"]
 
     def __str__(self):
         return self.title_fa
@@ -304,7 +321,7 @@ class Product(models.Model):
     def _build_qr_data(self):
         return settings.SITE_URL + reverse(
             "app_product:scan",
-            kwargs={"sku": self.sku}
+            kwargs={"sku": self.sku},
         )
 
     def _generate_qr_image(self, data, filename):
@@ -323,29 +340,17 @@ class Product(models.Model):
     def save(self, *args, **kwargs):
         self.full_clean()
 
-        # ✅ اسلاگ فارسی — اگه خالی باشه یا با slugify(title_fa) فرق داره
         if self.title_fa:
             expected_fa = slugify(self.title_fa, allow_unicode=True) or "item"
             if not self.slug or not self.slug.startswith(expected_fa):
                 self.slug = generate_unique_slug(self, "slug", self.title_fa)
 
-        # ✅ اسلاگ انگلیسی — اگه خالی باشه یا با slugify(title_en) فرق داره
         if self.title_en:
             expected_en = slugify(self.title_en, allow_unicode=False) or "item"
             if not self.slug_en or not self.slug_en.startswith(expected_en):
                 self.slug_en = generate_unique_slug(self, "slug_en", self.title_en)
 
-        # SEO
-        if not self.meta_title:
-            self.meta_title = self.title_fa[:70]
-
-        if not self.meta_description:
-            seo_text = (
-                self.summary_fa
-                or self.description_1_fa
-                or self.title_fa
-            ).replace("\n", " ")
-            self.meta_description = seo_text[:160]
+        # ✅ بلاک SEO حذف شد — از app_seo استفاده کن
 
         super().save(*args, **kwargs)
 
@@ -356,23 +361,21 @@ class Product(models.Model):
             content = self._generate_qr_image(desired_qr, filename)
             self.qr_code.save(filename, content, save=False)
             self.qr_data = desired_qr
-            super().save(update_fields=['qr_code', 'qr_data'])
+            super().save(update_fields=["qr_code", "qr_data"])
 
     # ============================================================
-    # URL ها
+    # URL ها — ✅ بدون pid
     # ============================================================
     def get_absolute_url(self):
-        """URL فارسی: /product/3/آویز-سرم-بیمارستانی/"""
-        return reverse('app_product:product_single', kwargs={
-            'pid': self.pk,
-            'slug': self.slug,
+        """URL فارسی: /product/آویز-سرم-بیمارستانی/"""
+        return reverse("app_product:product_single", kwargs={
+            "slug": self.slug,
         })
 
     def get_absolute_url_en(self):
-        """URL انگلیسی: /en/product/3/hospital-iv-pole/"""
-        return reverse('app_product_en:product_single_en', kwargs={
-            'pid': self.pk,
-            'slug': self.slug_en,
+        """URL انگلیسی: /en/product/hospital-iv-pole/"""
+        return reverse("app_product_en:product_single_en", kwargs={
+            "slug": self.slug_en,
         })
 
 
@@ -384,16 +387,20 @@ class ProductImage(models.Model):
         Product,
         verbose_name="محصول",
         related_name="images",
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
-    image = models.ImageField("عکس", upload_to="products/gallery/")
+    # ✅ media/<app_label>/gallery/...
+    image = models.ImageField(
+        "عکس",
+        upload_to=partial(app_upload_to, subfolder="gallery"),
+    )
     order = models.PositiveSmallIntegerField("ترتیب", default=0)
     uploaded_at = models.DateTimeField("آپلود", auto_now_add=True)
 
     class Meta:
         verbose_name = "عکس محصول"
         verbose_name_plural = "گالری محصولات"
-        ordering = ['order', 'uploaded_at']
+        ordering = ["order", "uploaded_at"]
 
     def __str__(self):
         return f"Image for {self.product} ({self.pk})"
@@ -418,7 +425,7 @@ class ProductScan(models.Model):
         Product,
         verbose_name="محصول",
         related_name="scans",
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
     ip_address = models.GenericIPAddressField("IP", null=True, blank=True)
     user_agent = models.CharField("User Agent", max_length=512, blank=True)
@@ -427,7 +434,7 @@ class ProductScan(models.Model):
     class Meta:
         verbose_name = "اسکن محصول"
         verbose_name_plural = "اسکن محصولات"
-        ordering = ['-scanned_at']
+        ordering = ["-scanned_at"]
 
     def __str__(self):
         return f"{self.product.title_fa} — {self.scanned_at}"
@@ -441,7 +448,7 @@ class ProductColor(models.Model):
         Product,
         related_name="colors",
         on_delete=models.CASCADE,
-        verbose_name="محصول"
+        verbose_name="محصول",
     )
 
     title = models.CharField("نام رنگ", max_length=100, blank=True)

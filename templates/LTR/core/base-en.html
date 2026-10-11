@@ -64,24 +64,18 @@
 </div>
 <!-- Preloader End -->
 
-
 <!-- Header Area -->
 <header class="header">
 
     <!-- Header Top -->
     <div class="header-top black-bg">
-
         <div class="container">
-
             <div class="header-top-wrap">
-
                 <div class="row">
 
                     <!-- Header Top Left -->
                     <div class="col-12 col-md-6 col-lg-6 col-xl-5">
-
                         <div class="header-top-left">
-
                             <ul class="header-top-list">
 
                                 {% if site_info.email %}
@@ -112,24 +106,17 @@
                                 {% endif %}
 
                             </ul>
-
                         </div>
-
                     </div>
-
 
                     <!-- Header Top Right -->
                     <div class="col-12 col-md-6 col-lg-6 col-xl-7">
-
                         <div class="header-top-right">
-
                             <ul class="header-top-list">
 
                                 <!-- Language -->
                                 <li>
-
                                     <div class="dropdown">
-
                                         <a
                                             aria-expanded="false"
                                             class="dropdown-toggle"
@@ -141,137 +128,72 @@
                                         </a>
 
                                         <div class="dropdown-menu">
-
                                             <a class="dropdown-item" href="/en/">
                                                 English
                                             </a>
-
                                             <a class="dropdown-item" href="/">
                                                 فارسی
                                             </a>
-
                                         </div>
-
                                     </div>
-
                                 </li>
-
 
                                 <!-- Social Media -->
                                 {% if follow_links %}
-
                                     <li class="social">
-
                                         <div class="header-top-social">
-
                                             <span>Follow Us:</span>
 
                                             {% for link in follow_links %}
-
                                                 {% if link.svg_icon and link.url %}
-
-                                                    <a
-                                                        href="{{ link.url }}"
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                    >
-
-                                                        <img
-                                                            src="{{ link.svg_icon.url }}"
-                                                            width="30"
-                                                            height="30"
-                                                            alt="Social Media"
-                                                        />
-
+                                                    <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer">
+                                                        <img src="{{ link.svg_icon.url }}" width="30" height="30" alt="Social Media"/>
                                                     </a>
-
                                                 {% endif %}
-
                                             {% endfor %}
-
                                         </div>
-
                                     </li>
-
                                 {% endif %}
 
                             </ul>
-
                         </div>
-
                     </div>
 
                 </div>
-
             </div>
-
         </div>
-
     </div>
     <!-- Header Top End -->
 
-
     <!-- Main Navigation -->
     <div class="main-navigation">
-
         <nav class="navbar navbar-expand-lg">
-
             <div class="container position-relative">
 
                 <!-- Logo -->
-                <a
-                    class="navbar-brand d-flex align-items-center"
-                    href="{% url 'app_core_en:home_en' %}"
-                >
-
+                <a class="navbar-brand d-flex align-items-center" href="{% url 'app_core_en:home_en' %}">
                     {% if site_info.header_logo %}
-
-                        <img
-                            alt="logo"
-                            src="{{ site_info.header_logo.url }}"
-                        >
-
+                        <img alt="logo" src="{{ site_info.header_logo.url }}">
                     {% endif %}
-
                 </a>
-
 
                 <!-- Company Name -->
                 <div class="d-flex flex-column company-brand-text">
-
                     {% if site_info.name_company_p1_en %}
-
-                        <span class="line-1">
-                            {{ site_info.name_company_p1_en }}
-                        </span>
-
+                        <span class="line-1">{{ site_info.name_company_p1_en }}</span>
                     {% endif %}
-
                     {% if site_info.name_company_p2_en %}
-
-                        <span class="line-2">
-                            {{ site_info.name_company_p2_en }}
-                        </span>
-
+                        <span class="line-2">{{ site_info.name_company_p2_en }}</span>
                     {% endif %}
-
                 </div>
-
 
                 <!-- Mobile Menu Right -->
                 <div class="mobile-menu-right">
-
                     <div class="mobile-menu-btn">
-
-                        <a
-                            class="nav-right-link search-box-outer"
-                            href="#"
-                        >
+                        <a class="nav-right-link search-box-outer" href="#">
                             <i class="far fa-search"></i>
                         </a>
-
                     </div>
-
                     <button
                         aria-controls="offcanvasNavbar"
                         aria-label="Toggle navigation"
@@ -284,9 +206,7 @@
                         <span></span>
                         <span></span>
                     </button>
-
                 </div>
-
 
                 <!-- Offcanvas Menu -->
                 <div
@@ -295,741 +215,376 @@
                     id="offcanvasNavbar"
                     tabindex="-1"
                 >
-
                     <div class="offcanvas-header">
-
-                        <a
-                            class="offcanvas-brand"
-                            href="{% url 'app_core_en:home_en' %}"
-                            id="offcanvasNavbarLabel"
-                        >
-
+                        <a class="offcanvas-brand" href="{% url 'app_core_en:home_en' %}" id="offcanvasNavbarLabel">
                             {% if site_info.sidebar_logo %}
-
-                                <img
-                                    alt="logo"
-                                    src="{{ site_info.sidebar_logo.url }}"
-                                >
-
+                                <img alt="logo" src="{{ site_info.sidebar_logo.url }}">
                             {% endif %}
-
                         </a>
-
-                        <button
-                            aria-label="Close"
-                            class="btn-close"
-                            data-bs-dismiss="offcanvas"
-                            type="button"
-                        >
-                        </button>
-
+                        <button aria-label="Close" class="btn-close" data-bs-dismiss="offcanvas" type="button"></button>
                     </div>
 
-
                     <div class="offcanvas-body">
-
                         <ul class="navbar-nav justify-content-end flex-grow-1">
 
                             <!-- Home -->
                             <li class="nav-item">
-
-                                <a
-                                    class="nav-link"
-                                    href="{% url 'app_core_en:home_en' %}"
-                                >
+                                <a class="nav-link" href="{% url 'app_core_en:home_en' %}">
                                     Home
                                 </a>
-
                             </li>
-
 
                             <!-- About Company -->
                             <li class="nav-item dropdown">
-
-                                <a
-                                    class="nav-link dropdown-toggle"
-                                    data-bs-toggle="dropdown"
-                                    href="#"
-                                >
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
                                     About Us
                                 </a>
-
                                 <ul class="dropdown-menu fade-down">
-
                                     <li>
-                                        <a
-                                            class="dropdown-item"
-                                            href="{% url 'app_core_en:about_en' %}"
-                                        >
+                                        <a class="dropdown-item" href="{% url 'app_core_en:about_en' %}">
                                             Company History
                                         </a>
                                     </li>
-
-
                                     <li>
-                                        <a
-                                            class="dropdown-item"
-                                            href="{% url 'app_chart_en:chart_en' %}"
-                                        >
+                                        <a class="dropdown-item" href="{% url 'app_chart_en:chart_en' %}">
                                             Executive Team & Organizational Chart
                                         </a>
                                     </li>
-
-
-
                                     <li>
-                                        <a
-                                            class="dropdown-item"
-                                            href="{% url 'app_reports_en:sustainability_en' %}"
-                                        >
+                                        <a class="dropdown-item" href="{% url 'app_reports_en:sustainability_en' %}">
                                             Corporate Governance
                                         </a>
                                     </li>
-
-
-                                    <!-- Vision & Missions -->
                                     <li>
-                                        <a
-                                            class="dropdown-item"
-                                            href="{% url 'app_reports_en:vision_missions_en' %}"
-                                        >
+                                        <a class="dropdown-item" href="{% url 'app_reports_en:vision_missions_en' %}">
                                             Vision & Missions
                                         </a>
                                     </li>
-
-
-                                    <!-- Certificates -->
                                     <li>
-                                        <a
-                                            class="dropdown-item"
-                                            href="{% url 'app_reports_en:certificate_en' %}"
-                                        >
+                                        <a class="dropdown-item" href="{% url 'app_reports_en:certificate_en' %}">
                                             Certificates & Standards
                                         </a>
                                     </li>
-
                                 </ul>
-
                             </li>
-
 
                             <!-- Products -->
                             <li class="nav-item">
-
-                                <a
-                                    class="nav-link"
-                                    href="{% url 'app_product_en:product_list_en' %}"
-                                >
+                                <a class="nav-link" href="{% url 'app_product_en:product_list_en' %}">
                                     Products
                                 </a>
-
                             </li>
-
 
                             <!-- Resume -->
                             <li class="nav-item">
-
-                                <a
-                                    class="nav-link"
-                                    href="{% url 'app_resume_en:resume_en' %}"
-                                >
+                                <a class="nav-link" href="{% url 'app_resume_en:resume_en' %}">
                                     Resume
                                 </a>
-
                             </li>
-
 
                             <!-- Media -->
                             <li class="nav-item">
-
-                                <a
-                                    class="nav-link"
-                                    href="{% url 'app_media_en:home_en' %}"
-                                >
+                                {# ✅ media_home_en جای home_en #}
+                                <a class="nav-link" href="{% url 'app_media_en:media_home_en' %}">
                                     Media
                                 </a>
-
                             </li>
-
 
                             <!-- Catalog -->
                             <li class="nav-item">
-
-                                <a
-                                    class="nav-link"
-                                    href="{% url 'app_catalog_en:catalog_en' %}"
-                                >
+                                <a class="nav-link" href="{% url 'app_catalog_en:catalog_en' %}">
                                     Catalog
                                 </a>
-
                             </li>
-
 
                             <!-- Articles -->
                             <li class="nav-item">
-
-                                <a
-                                    class="nav-link"
-                                    href="{% url 'app_blog_en:blog_home_en' %}"
-                                >
+                                <a class="nav-link" href="{% url 'app_blog_en:blog_home_en' %}">
                                     Articles
                                 </a>
-
                             </li>
-
 
                             <!-- Contact Us -->
                             <li class="nav-item dropdown">
-
-                                <a
-                                    class="nav-link dropdown-toggle"
-                                    data-bs-toggle="dropdown"
-                                    href="#"
-                                >
+                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
                                     Contact Us
                                 </a>
-
                                 <ul class="dropdown-menu fade-down">
-
-                                    {% if site_info and site_info.phone_security_1 or site_info.phone_security_2 or site_info.phone_security_3 or site_info.email_security or site_info.fax_security %}
-
+                                    {% if site_info.phone_security_1 or site_info.phone_security_2 or site_info.phone_security_3 or site_info.email_security or site_info.fax_security %}
                                         <li>
-                                            <a
-                                                class="dropdown-item"
-                                                href="{% url 'app_core_en:contact_security_en' %}"
-                                            >
+                                            {# ✅ contact_security_en (نه contact_security_en) #}
+                                            <a class="dropdown-item" href="{% url 'app_core_en:contact_security_en' %}">
                                                 Contact Security Department
                                             </a>
                                         </li>
-
                                     {% endif %}
-
-
                                     <li>
-                                        <a
-                                            class="dropdown-item"
-                                            href="{% url 'app_core_en:contact_en' %}"
-                                        >
+                                        {# ✅ contact_en #}
+                                        <a class="dropdown-item" href="{% url 'app_core_en:contact_en' %}">
                                             Contact Us
                                         </a>
                                     </li>
-
                                 </ul>
-
                             </li>
 
                         </ul>
 
-
                         <!-- Navigation Search -->
                         <div class="nav-right icon">
-
-                            <form
-                                action="{% url 'app_core_en:search_en' %}"
-                                method="get"
-                                style="display:flex;align-items:center;gap:8px;"
-                            >
-
+                            {# ✅ search_en #}
+                            <form action="{% url 'app_core_en:search_en' %}" method="get"
+                                  style="display:flex;align-items:center;gap:8px;">
                                 <input
                                     type="text"
                                     name="q"
                                     placeholder="Search..."
-                                    style="
-                                    width:180px;
-                                    height:38px;
-                                    border:1px solid #ddd;
-                                    border-radius:25px;
-                                    padding:0 15px;
-                                    outline:none;
-                                "
+                                    style="width:180px;height:38px;border:1px solid #ddd;border-radius:25px;padding:0 15px;outline:none;"
                                 >
-
-                                <button
-                                    type="submit"
-                                    class="nav-right-link"
-                                    style="
-                                    border:none;
-                                    background:none;
-                                    padding:0;
-                                    cursor:pointer;
-                                "
-                                >
+                                <button type="submit" class="nav-right-link"
+                                        style="border:none;background:none;padding:0;cursor:pointer;">
                                     <i class="far fa-search"></i>
                                 </button>
-
                             </form>
-
                         </div>
 
                     </div>
-
                 </div>
-
             </div>
-
         </nav>
-
     </div>
     <!-- Main Navigation End -->
 
 </header>
 <!-- Header Area End -->
 
-
 <!-- Popup Search -->
 <div class="search-popup">
-
     <button class="close-search">
         <span class="far fa-times"></span>
     </button>
-
-    <form
-        action="{% url 'app_core_en:search_en' %}"
-        method="get"
-    >
-
+    {# ✅ search_en #}
+    <form action="{% url 'app_core_en:search_en' %}" method="get">
         <div class="form-group">
-
-            <input
-                class="form-control"
-                type="search"
-                name="q"
-                placeholder="Search here..."
-                required
-            >
-
+            <input class="form-control" type="search" name="q" placeholder="Search here..." required>
             <button type="submit">
                 <i class="far fa-search"></i>
             </button>
-
         </div>
-
     </form>
-
 </div>
 <!-- Popup Search End -->
 
-
 <!-- Main Content -->
-
 {% block content %}
-
 {% endblock %}
-
 <!-- Main Content End -->
-
 
 <!-- Footer Area -->
 <footer class="footer-area light">
-
     <div class="footer-widget">
-
         <div class="container">
-
             <div class="row footer-widget-wrapper pt-100 pb-40">
 
                 <!-- Company Information -->
                 <div class="col-md-6 col-lg-4">
-
                     <div class="footer-widget-box about-us">
-
-                        <a
-                            class="navbar-brand d-flex align-items-center gap-2"
-                            href="{% url 'app_core_en:home_en' %}"
-                        >
-
+                        <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'app_core_en:home_en' %}">
                             {% if site_info.footer_logo %}
-
-                                <img
-                                    alt="logo"
-                                    src="{{ site_info.footer_logo.url }}"
-                                    class="brand-logo"
-                                >
-
+                                <img alt="logo" src="{{ site_info.footer_logo.url }}" class="brand-logo">
                             {% endif %}
-
                             {% if site_info.slogan_en %}
-
-                                <span class="brand-text">
-                                    {{ site_info.slogan_en }}
-                                </span>
-
+                                <span class="brand-text">{{ site_info.slogan_en }}</span>
                             {% endif %}
-
                         </a>
 
-
                         <div class="d-flex flex-column company-brand-text">
-
-                            <span class="line-1">
-                                {{ site_info.name_company_p1_en }}
-                            </span>
-
-                            <span class="line-2">
-                                {{ site_info.name_company_p2_en }}
-                            </span>
-
+                            <span class="line-1">{{ site_info.name_company_p1_en }}</span>
+                            <span class="line-2">{{ site_info.name_company_p2_en }}</span>
                         </div>
-
-
                         <p></p>
 
-
                         <ul class="footer-contact">
-
-                            <!-- Address -->
                             {% if site_info.address_en %}
-
                                 <li>
                                     <i class="far fa-map-marker-alt"></i>
                                     {{ site_info.address_en }}
                                 </li>
-
                             {% endif %}
 
-
-                            <!-- Phone -->
                             {% if site_info.phone_1 or site_info.phone_2 or site_info.phone_3 or site_info.phone_4 or site_info.phone_5 %}
-
                                 <li class="footer-contact-phone">
-
                                     <i class="far fa-phone"></i>
-
                                     <div class="phone-wrapper">
-
                                         <span class="phone-prefix"></span>
-
                                         <div class="phone-line">
-
                                             {% if site_info.phone_1 %}
-                                                <a href="tel:{{ site_info.phone_1 }}">
-                                                    {{ site_info.phone_1 }}
-                                                </a>
+                                                <a href="tel:{{ site_info.phone_1 }}">{{ site_info.phone_1 }}</a>
                                             {% endif %}
-
                                             {% if site_info.phone_2 %}
-                                                ,
-                                                <a href="tel:{{ site_info.phone_2 }}">
-                                                    {{ site_info.phone_2 }}
-                                                </a>
+                                                , <a href="tel:{{ site_info.phone_2 }}">{{ site_info.phone_2 }}</a>
                                             {% endif %}
-
                                             {% if site_info.phone_3 %}
-                                                ,
-                                                <a href="tel:{{ site_info.phone_3 }}">
-                                                    {{ site_info.phone_3 }}
-                                                </a>
+                                                , <a href="tel:{{ site_info.phone_3 }}">{{ site_info.phone_3 }}</a>
                                             {% endif %}
-
                                         </div>
 
-
                                         {% if site_info.phone_4 or site_info.phone_5 %}
-
                                             <div class="phone-line">
-
                                                 {% if site_info.phone_4 %}
-                                                    <a href="tel:{{ site_info.phone_4 }}">
-                                                        {{ site_info.phone_4 }}
-                                                    </a>
+                                                    <a href="tel:{{ site_info.phone_4 }}">{{ site_info.phone_4 }}</a>
                                                 {% endif %}
-
                                                 {% if site_info.phone_5 %}
-
                                                     {% if site_info.phone_4 %}, {% endif %}
-
-                                                    <a href="tel:{{ site_info.phone_5 }}">
-                                                        {{ site_info.phone_5 }}
-                                                    </a>
-
+                                                    <a href="tel:{{ site_info.phone_5 }}">{{ site_info.phone_5 }}</a>
                                                 {% endif %}
-
                                             </div>
-
                                         {% endif %}
-
                                     </div>
-
                                 </li>
-
                             {% endif %}
 
-
-                            <!-- Email -->
                             {% if site_info.email %}
-
                                 <li>
                                     <a href="mailto:{{ site_info.email }}">
                                         <i class="far fa-envelope"></i>
                                         {{ site_info.email }}
                                     </a>
                                 </li>
-
                             {% endif %}
 
-
-                            <!-- Postal Code -->
                             {% if site_info.postal_code %}
-
                                 <li>
                                     <i class="far fa-sign-post"></i>
                                     {{ site_info.postal_code }}
                                 </li>
-
                             {% endif %}
 
-
-                            <!-- Working Days -->
                             {% if site_info.work_days_en %}
-
                                 <li>
                                     <i class="far fa-clock"></i>
                                     {{ site_info.work_days_en }}
                                 </li>
-
                             {% endif %}
-
                         </ul>
-
                     </div>
-
                 </div>
-
 
                 <!-- Quick Links -->
                 <div class="col-md-6 col-lg-3">
-
                     <div class="footer-widget-box list">
-
-                        <h4 class="footer-widget-title">
-                            Quick Links
-                        </h4>
-
+                        <h4 class="footer-widget-title">Quick Links</h4>
                         <ul class="footer-list">
-
                             <li>
-                                <a href="{% url 'app_core_en:about_en' %}">
-                                    About Us
-                                </a>
+                                <a href="{% url 'app_core_en:about_en' %}">About Us</a>
                             </li>
-
-
                             <li>
-                                <a href="{% url 'app_chart_en:chart_en' %}">
-                                    Executive Team & Organizational Chart
-                                </a>
+                                <a href="{% url 'app_chart_en:chart_en' %}">Executive Team & Organizational Chart</a>
                             </li>
-
-
                             <li>
-                                <a href="{% url 'app_reports_en:sustainability_en' %}">
-                                    Corporate Governance
-                                </a>
+                                <a href="{% url 'app_reports_en:sustainability_en' %}">Corporate Governance</a>
                             </li>
-
-
                             <li>
-                                <a href="{% url 'app_reports_en:vision_missions_en' %}">
-                                    Vision & Missions
-                                </a>
+                                <a href="{% url 'app_reports_en:vision_missions_en' %}">Vision & Missions</a>
                             </li>
-
-
                             <li>
-                                <a href="{% url 'app_reports_en:certificate_en' %}">
-                                    Certificates & Standards
-                                </a>
+                                <a href="{% url 'app_reports_en:certificate_en' %}">Certificates & Standards</a>
                             </li>
-
                         </ul>
-
                     </div>
-
                 </div>
-
 
                 <!-- Links -->
                 <div class="col-md-6 col-lg-3">
-
                     <div class="footer-widget-box list">
-
-                        <h4 class="footer-widget-title">
-                            Links
-                        </h4>
-
+                        <h4 class="footer-widget-title">Links</h4>
                         <ul class="footer-list">
-
                             <li>
-                                <a href="{% url 'app_product_en:product_list_en' %}">
-                                    Products
-                                </a>
+                                <a href="{% url 'app_product_en:product_list_en' %}">Products</a>
                             </li>
-
-
                             <li>
-                                <a href="{% url 'app_media_en:home_en' %}">
-                                    Media
-                                </a>
+                                {# ✅ media_home_en #}
+                                <a href="{% url 'app_media_en:media_home_en' %}">Media</a>
                             </li>
-
-
                             <li>
-                                <a href="{% url 'app_catalog_en:catalog_en' %}">
-                                    Catalog
-                                </a>
+                                <a href="{% url 'app_catalog_en:catalog_en' %}">Catalog</a>
                             </li>
-
-
                             <li>
-                                <a href="{% url 'app_blog_en:blog_home_en' %}">
-                                    Articles
-                                </a>
+                                <a href="{% url 'app_blog_en:blog_home_en' %}">Articles</a>
                             </li>
-
-
                             <li>
-                                <a href="{% url 'app_resume_en:resume_en' %}">
-                                    Resume
-                                </a>
+                                <a href="{% url 'app_resume_en:resume_en' %}">Resume</a>
                             </li>
-
 
                             {% if site_info.phone_security_1 or site_info.phone_security_2 or site_info.phone_security_3 or site_info.email_security or site_info.fax_security %}
-
                                 <li>
-                                    <a href="{% url 'app_core_en:contact_security_en' %}">
-                                        Contact Security Department
-                                    </a>
+                                    {# ✅ contact_security_en #}
+                                    <a href="{% url 'app_core_en:contact_security_en' %}">Contact Security Department</a>
                                 </li>
-
                             {% endif %}
 
-
                             <li>
-                                <a href="{% url 'app_core_en:contact_en' %}">
-                                    Contact Us
-                                </a>
+                                {# ✅ contact_en #}
+                                <a href="{% url 'app_core_en:contact_en' %}">Contact Us</a>
                             </li>
-
                         </ul>
-
                     </div>
-
                 </div>
-
 
                 <!-- Product Categories -->
                 <div class="col-md-6 col-lg-2">
-
                     <div class="footer-widget-box list">
-
-                        <h4 class="footer-widget-title">
-                            Product Categories
-                        </h4>
-
+                        <h4 class="footer-widget-title">Product Categories</h4>
 
                         {% for category in categories %}
-
                             <ul class="footer-list">
-
                                 <li>
-
-                                    <a
-                                        href="{% url 'app_product_en:category_en' slug=category.slug_en %}"
-                                    >
+                                    {# ✅ category_en #}
+                                    <a href="{% url 'app_product_en:category_en' slug=category.slug_en %}">
                                         {{ category.title_en }}
                                     </a>
-
                                 </li>
-
                             </ul>
-
                         {% endfor %}
-
                     </div>
-
                 </div>
 
             </div>
-
         </div>
-
     </div>
-
 
     <!-- Copyright -->
     <div class="copyright">
-
         <div class="container">
-
             <div class="copyright-wrap">
-
                 <div class="row">
-
                     {% if site_info and site_info.designer_name_en %}
-
                         <div class="col-12 col-lg-6 align-self-center">
-
                             <p class="copyright-text">
-
-                                Designed by:
-                                {{ site_info.designer_name_en }}
-
+                                Designed by: {{ site_info.designer_name_en }}
                             </p>
-
                         </div>
-
                     {% endif %}
-
 
                     {% if follow_links %}
-
                         <div class="col-12 col-lg-6 align-self-center">
-
                             <div class="header-top-social">
-
                                 <span>Follow Us:</span>
-
                                 {% for link in follow_links %}
-
                                     {% if link.svg_icon and link.url %}
-
-                                        <a
-                                            href="{{ link.url }}"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
-
-                                            <img
-                                                src="{{ link.svg_icon.url }}"
-                                                width="30"
-                                                height="30"
-                                                alt="Social Media"
-                                            />
-
+                                        <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer">
+                                            <img src="{{ link.svg_icon.url }}" width="30" height="30" alt="Social Media"/>
                                         </a>
-
                                     {% endif %}
-
                                 {% endfor %}
-
                             </div>
-
                         </div>
-
                     {% endif %}
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
-
 </footer>
 <!-- Footer Area End -->
-
 
 <!-- Scroll Top -->
 <a href="#" id="scroll-top">
@@ -1037,9 +592,7 @@
 </a>
 <!-- Scroll Top End -->
 
-
 <!-- JS -->
-
 <script src="{% static 'RTL/assets/js/jquery-3.7.1.min.js' %}"></script>
 <script src="{% static 'RTL/assets/js/modernizr.min.js' %}"></script>
 <script src="{% static 'RTL/assets/js/bootstrap.bundle.min.js' %}"></script>

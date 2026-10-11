@@ -71,9 +71,7 @@ def admin_action_buttons(obj):
         edit_url,
         delete_url,
     )
-
-
-admin_action_buttons.short_description = "عملیات"
+# ⚠️ short_description روی تابع ماژول‌سطح کار نمی‌کنه — فقط روی متد کلاس
 
 
 class ActionButtonsMixin:
@@ -95,8 +93,14 @@ class ProductCategoryAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAd
     actions = None
 
     list_display = ("priority", "title_display", "slug", "slug_en", "admin_actions")
-    search_fields = ("title_fa", "title_en")
+    search_fields = ("title_fa", "title_en", "slug", "slug_en")
     readonly_fields = ("slug", "slug_en")
+
+    fieldsets = (
+        (None, {
+            "fields": ("title_fa", "title_en", "cat_icon", "slug", "slug_en", "priority"),
+        }),
+    )
 
     def title_display(self, obj):
         return format_html("📁 <b>{}</b>", obj.title_fa)
@@ -114,8 +118,14 @@ class ProductCategory2Admin(ActionButtonsMixin, SortableAdminMixin, admin.ModelA
     actions = None
 
     list_display = ("priority", "title_display", "slug", "slug_en", "admin_actions")
-    search_fields = ("title_fa", "title_en")
+    search_fields = ("title_fa", "title_en", "slug", "slug_en")
     readonly_fields = ("slug", "slug_en")
+
+    fieldsets = (
+        (None, {
+            "fields": ("title_fa", "title_en", "slug", "slug_en", "priority"),
+        }),
+    )
 
     def title_display(self, obj):
         return format_html("📂 <b>{}</b>", obj.title_fa)
@@ -133,8 +143,14 @@ class ProductTagAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
     actions = None
 
     list_display = ("priority", "title_display", "slug", "slug_en", "admin_actions")
-    search_fields = ("title_fa", "title_en")
+    search_fields = ("title_fa", "title_en", "slug", "slug_en")
     readonly_fields = ("slug", "slug_en")
+
+    fieldsets = (
+        (None, {
+            "fields": ("title_fa", "title_en", "slug", "slug_en", "priority"),
+        }),
+    )
 
     def title_display(self, obj):
         return format_html("🏷️ <b>{}</b>", obj.title_fa)
@@ -219,13 +235,16 @@ class ProductAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
         ProductColorInline,
         ProductScanInline,
     )
+
+    # ✅ meta_title حذف شد
     search_fields = (
         "title_fa",
         "title_en",
         "generic_name_fa",
         "generic_name_en",
         "sku",
-        "meta_title",
+        "slug",
+        "slug_en",
     )
 
     list_filter = (
@@ -293,18 +312,7 @@ class ProductAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
             ),
         }),
 
-        # ==========================
-        # SEO
-        # ==========================
-        ("🌐 سئو (SEO)", {
-            "classes": ("collapse",),
-            "description": "در صورت خالی بودن، این مقادیر به صورت خودکار از نام و خلاصه محصول ساخته می‌شوند.",
-            "fields": (
-                "meta_title",
-                "meta_description",
-                "robots",
-            ),
-        }),
+        # ✅ بخش "🌐 سئو (SEO)" حذف شد
 
         ("📄 توضیحات فارسی", {
             "fields": (
@@ -342,6 +350,14 @@ class ProductAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
             "fields": (
                 "qr_data",
                 "qr_preview",
+            ),
+        }),
+
+        ("🕒 زمان", {
+            "classes": ("collapse",),
+            "fields": (
+                "created_col",
+                "updated_col",
             ),
         }),
     )

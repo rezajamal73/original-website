@@ -1,3 +1,4 @@
+# app_auction/admin.py
 from django.contrib import admin
 from django.utils.html import format_html
 from django.urls import reverse
@@ -31,9 +32,11 @@ def admin_action_buttons(obj):
                     font-weight:bold;
                     white-space:nowrap;
                     box-shadow:0 2px 5px rgba(0,0,0,0.2);
-                    display:inline-block;
+                    display:inline-flex;
+                    align-items:center;
+                    gap:5px;
                ">
-               ✏️ ویرایش
+                ✏️
             </a>
             <a href="{}"
                style="
@@ -45,18 +48,18 @@ def admin_action_buttons(obj):
                     font-weight:bold;
                     white-space:nowrap;
                     box-shadow:0 2px 5px rgba(0,0,0,0.2);
-                    display:inline-block;
+                    display:inline-flex;
+                    align-items:center;
+                    gap:5px;
                ">
-               🗑 حذف
+                🗑
             </a>
         </div>
         """,
         edit_url,
         delete_url,
     )
-
-
-admin_action_buttons.short_description = "عملیات"
+# ⚠️ short_description روی تابع ماژول‌سطح کار نمی‌کنه — فقط روی متد کلاس
 
 
 class ActionButtonsMixin:
@@ -74,7 +77,7 @@ class ActionButtonsMixin:
 class AuctionImageInline(admin.TabularInline):
     model = AuctionImage
     extra = 1
-    fields = ("preview", "image", "order")
+    fields = ("preview", "image", "caption", "order")
     readonly_fields = ("preview",)
     ordering = ("order",)
 
@@ -109,10 +112,17 @@ class AuctionCategoryAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAd
     search_fields = ("title_fa", "title_en", "slug", "slug_en")
     ordering = ("order",)
     list_display_links = ("title_icon",)
-    readonly_fields = ("slug", "slug_en")
+
+    readonly_fields = ("slug", "slug_en", "created_at_fa", "updated_at_fa")
 
     fieldsets = (
-        (None, {"fields": ("title_fa", "title_en", "slug", "slug_en", "order")}),
+        (None, {
+            "fields": ("title_fa", "title_en", "slug", "slug_en", "order"),
+        }),
+        ("⏱️ زمان", {
+            "fields": ("created_at_fa", "updated_at_fa"),
+            "classes": ("collapse",),
+        }),
     )
 
     def title_icon(self, obj):
@@ -140,10 +150,17 @@ class AuctionTagAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
     search_fields = ("title_fa", "title_en", "slug", "slug_en")
     ordering = ("order",)
     list_display_links = ("title_icon",)
-    readonly_fields = ("slug", "slug_en")
+
+    readonly_fields = ("slug", "slug_en", "created_at_fa", "updated_at_fa")
 
     fieldsets = (
-        (None, {"fields": ("title_fa", "title_en", "slug", "slug_en", "order")}),
+        (None, {
+            "fields": ("title_fa", "title_en", "slug", "slug_en", "order"),
+        }),
+        ("⏱️ زمان", {
+            "fields": ("created_at_fa", "updated_at_fa"),
+            "classes": ("collapse",),
+        }),
     )
 
     def title_icon(self, obj):
@@ -159,6 +176,7 @@ class AuctionTagAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
 class AuctionAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
     actions = None
     inlines = [AuctionImageInline]
+
     readonly_fields = ("poster_preview", "slug", "slug_en")
 
     list_display = (
@@ -177,13 +195,19 @@ class AuctionAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
 
     fieldsets = (
         ("📌 وضعیت", {"fields": ("status",)}),
-        ("🖼️ تصویر", {"fields": ("poster", "poster_preview",)}),
+        ("🖼️ تصویر", {"fields": ("poster", "poster_preview")}),
         ("📝 فارسی", {"fields": ("title_fa", "description_fa", "slug")}),
         ("📝 انگلیسی", {"fields": ("title_en", "description_en", "slug_en")}),
         ("📣 فراخوان", {"fields": ("call_number", "estimated_amount")}),
         ("📎 پیوست", {"fields": ("upload_file",)}),
         ("📂 دسته‌بندی", {"fields": ("category", "tags")}),
-        ("🗓️ تاریخ‌ها", {"fields": ("start_date_fa", "end_date_fa", "start_date_en", "end_date_en")}),
+        ("🔢 ترتیب", {"fields": ("order",)}),
+        ("🗓️ تاریخ‌ها", {
+            "fields": (
+                "start_date_fa", "end_date_fa",
+                "start_date_en", "end_date_en",
+            )
+        }),
     )
 
     # ---------- ICONS & PREVIEWS ----------
@@ -191,7 +215,8 @@ class AuctionAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
         if obj and getattr(obj, "poster", None):
             return format_html(
                 "<img src='{}' width='45' height='45' "
-                "style='border-radius:6px; object-fit:cover; box-shadow:0 0 4px #aaa;'>",
+                "style='border-radius:6px; object-fit:cover; "
+                "box-shadow:0 0 4px #aaa;'>",
                 obj.poster.url,
             )
         return "🖼️"
@@ -201,7 +226,8 @@ class AuctionAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
     def poster_preview(self, obj):
         if obj and getattr(obj, "poster", None):
             return format_html(
-                "<img src='{}' width='180' style='border-radius:10px; box-shadow:0 0 10px #aaa;'>",
+                "<img src='{}' width='180' "
+                "style='border-radius:10px; box-shadow:0 0 10px #aaa;'>",
                 obj.poster.url,
             )
         return "—"

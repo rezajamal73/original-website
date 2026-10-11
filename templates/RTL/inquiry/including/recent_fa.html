@@ -7,17 +7,19 @@
         <div class="recent-post-item">
 
             <div class="recent-post-img">
-                <a href="{% url 'app_inquiry:single' inquiry.id %}">
+                {# ✅ inquiry_single فقط با inquiry.slug #}
+                <a href="{% url 'app_inquiry:inquiry_single' inquiry.slug %}">
                     {% if inquiry.cover_image %}
-                        <img src="{{ inquiry.cover_image.url }}" alt="{{ inquiry.title_fa }}">
-
+                        <img src="{{ inquiry.cover_image.url }}"
+                             alt="{{ inquiry.title_fa }}">
                     {% endif %}
                 </a>
             </div>
 
             <div class="recent-post-bio">
                 <h6>
-                    <a href="{% url 'app_inquiry:single' inquiry.id %}">
+                    {# ✅ inquiry_single فقط با inquiry.slug #}
+                    <a href="{% url 'app_inquiry:inquiry_single' inquiry.slug %}">
                         {{ inquiry.title_fa|truncatechars:30 }}
                     </a>
                 </h6>

@@ -1,3 +1,5 @@
+from functools import partial
+
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -5,6 +7,18 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.text import slugify
 import django_jalali.db.models as jmodels
 import jdatetime
+
+
+# ============================================================
+#   DYNAMIC APP-BASED UPLOAD PATH
+# ============================================================
+def app_upload_to(instance, filename, subfolder=""):
+    """
+    ساخت مسیر آپلود به صورت داینامیک بر اساس نام اپ مدل.
+    نتیجه: <app_label>/<subfolder>/<filename>
+    """
+    app_label = instance._meta.app_label
+    return f"{app_label}/{subfolder}/{filename}".replace("//", "/")
 
 
 # ============================================================
@@ -147,8 +161,9 @@ class JobOpportunity(TimeStampedModel):
         verbose_name=_("اسلاگ"),
     )
 
+    # ✅ media/<app_label>/job_posters/...
     poster = models.ImageField(
-        upload_to="job_posters/",
+        upload_to=partial(app_upload_to, subfolder="job_posters"),
         verbose_name=_("پوستر فراخوان"),
     )
 
@@ -174,7 +189,7 @@ class JobOpportunity(TimeStampedModel):
     class Meta:
         verbose_name = _("فراخوان جذب")
         verbose_name_plural = _("فراخوان‌های جذب")
-        ordering = ("-created_at_fa","ordering")
+        ordering = ("-created_at_fa", "ordering")
 
     def clean(self):
         super().clean()
@@ -277,8 +292,9 @@ class JobApplication(TimeStampedModel):
     mobile_support = models.CharField(max_length=20, verbose_name=_("شماره تماس ضروری"))
     email = models.EmailField(verbose_name=_("پست الکترونیک"))
 
+    # ✅ media/<app_label>/resumes/...
     resume_file = models.FileField(
-        upload_to="resumes/",
+        upload_to=partial(app_upload_to, subfolder="resumes"),
         validators=[validate_pdf_file],
         verbose_name=_("رزومه"),
     )

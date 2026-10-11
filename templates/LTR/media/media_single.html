@@ -7,173 +7,132 @@
 
         <!-- breadcrumb -->
         <div class="site-breadcrumb">
-
             {% if banner and banner.image %}
                 <div class="site-breadcrumb-bg"
                      style="background: url('{{ banner.image.url }}')">
                 </div>
+            {% else %}
+                <div class="site-breadcrumb-bg"></div>
             {% endif %}
 
             <div class="container">
                 <div class="site-breadcrumb-wrap">
-
                     <h4 class="breadcrumb-title">
                         Media
                     </h4>
-
                     <ul class="breadcrumb-menu">
-
                         <li>
                             <a href="{% url 'app_core_en:home_en' %}">
                                 <i class="far fa-home"></i>
                                 Home
                             </a>
                         </li>
-
                         <li>
-                            {# ✅ اصلاح شد #}
-                            <a href="{% url 'app_media_en:home_en' %}">
+                            {# ✅ media_home_en #}
+                            <a href="{% url 'app_media_en:media_home_en' %}">
                                 <i class="far"></i>
                                 All Media
                             </a>
                         </li>
-
                         <li class="active">
-                            {{ media.title_en }}
+                            {{ media.title_en|default:media.title_fa }}
                         </li>
-
                     </ul>
-
                 </div>
             </div>
         </div>
         <!-- breadcrumb end -->
 
-
         <!-- blog single area -->
         <div class="blog-single-area py-100">
-
             <div class="container">
-
                 <div class="row">
-
                     <div class="col-lg-10 col-xxl-9 mx-auto">
 
                         <div class="blog-single-wrap">
-
                             <div class="blog-single-content">
 
                                 <!-- Media Poster -->
                                 {% if media.image %}
-
                                     <div class="blog-thumb-img">
-
                                         <img src="{{ media.image.url }}"
-                                             alt="{{ media.title_en }}">
-
+                                             alt="{{ media.title_en|default:media.title_fa }}">
                                     </div>
-
                                 {% endif %}
-
 
                                 <div class="blog-info">
 
                                     <!-- Title -->
                                     <div class="blog-details">
-
                                         <h3 class="blog-details-title mb-20">
-                                            {{ media.title_en }}
+                                            {{ media.title_en|default:media.title_fa }}
                                         </h3>
 
-                                        {% if media.summary_en %}
-
+                                        {% if media.summary_en or media.summary_fa %}
                                             <p class="mb-20">
-                                                {{ media.summary_en|linebreaks }}
+                                                {{ media.summary_en|default:media.summary_fa|linebreaks }}
                                             </p>
-
                                         {% endif %}
-
                                     </div>
 
-
                                     <!-- Image Gallery -->
-                                    {% if images %}
-
+                                    {# ✅ images.exists جای images #}
+                                    {% if images.exists %}
                                         <div class="blog-author">
-
                                             <h5 class="mb-3" style="width:100%;">
                                                 Images:
                                             </h5>
 
                                             <div class="row g-4 popup-gallery">
-
                                                 {% for img in images %}
-
                                                     <div class="col-md-4 col-lg-3">
-
                                                         <div class="gallery-item wow fadeInUp">
-
                                                             <div class="gallery-img">
-
-                                                                <img src="{{ img.image.url }}"
-                                                                     alt="{{ media.title_en }}">
+                                                                {# ✅ چک img.image #}
+                                                                {% if img.image %}
+                                                                    <img src="{{ img.image.url }}"
+                                                                         alt="{{ img.caption|default:media.title_en|default:media.title_fa }}">
+                                                                {% endif %}
 
                                                                 <a class="popup-img gallery-link"
                                                                    href="{{ img.image.url }}">
-
                                                                     <i class="fal fa-plus"></i>
-
                                                                 </a>
-
                                                             </div>
-
                                                         </div>
-
                                                     </div>
-
                                                 {% endfor %}
-
                                             </div>
-
                                         </div>
-
                                     {% endif %}
 
-
                                     <!-- Videos -->
-                                    {% if videos %}
-
+                                    {# ✅ videos.exists جای videos #}
+                                    {% if videos.exists %}
                                         <h5 class="mb-3 mt-40" style="width:100%;">
                                             Videos:
                                         </h5>
 
                                         <div class="row g-4">
-
                                             {% for vid in videos %}
-
                                                 <div class="col-md-6 col-lg-4">
-
                                                     <div style="border-radius:10px; overflow:hidden;">
-
                                                         <video controls style="width:100%;">
-
                                                             <source src="{{ vid.video.url }}"
                                                                     type="video/mp4">
-
                                                             Your browser does not support video playback.
-
                                                         </video>
-
                                                     </div>
 
+                                                    {% if vid.caption %}
+                                                        <p class="mt-2 text-center">
+                                                            {{ vid.caption }}
+                                                        </p>
+                                                    {% endif %}
                                                 </div>
-
                                             {% endfor %}
-
                                         </div>
-
                                     {% endif %}
-
 
                                     <!-- Separator -->
                                     <hr style="margin:40px 0;">
@@ -181,15 +140,11 @@
                                 </div>
 
                             </div>
-
                         </div>
 
                     </div>
-
                 </div>
-
             </div>
-
         </div>
         <!-- blog single area end -->
 

@@ -27,7 +27,6 @@
                             </a>
                         </li>
                         <li class="active">
-                            {# ✅ home → media_home #}
                             <a href="{% url 'app_media:media_home' %}">
                                 کلیه رسانه‌ها
                             </a>
@@ -49,8 +48,8 @@
 
                                 <!-- poster -->
                                 <div class="blog-item-img">
-                                    {# ✅ single → media_single با pid + slug #}
-                                    <a href="{% url 'app_media:media_single' media.id media.slug %}">
+                                    {# ✅ media_single فقط با media.slug #}
+                                    <a href="{% url 'app_media:media_single' media.slug %}">
                                         {% if media.image %}
                                             <img src="{{ media.image.url }}"
                                                  alt="{{ media.title_fa }}">
@@ -70,8 +69,8 @@
                                     "></div>
 
                                     <h4 class="blog-title">
-                                        {# ✅ single → media_single با pid + slug #}
-                                        <a href="{% url 'app_media:media_single' media.id media.slug %}">
+                                        {# ✅ media_single فقط با media.slug #}
+                                        <a href="{% url 'app_media:media_single' media.slug %}">
                                             {{ media.title_fa }}
                                         </a>
                                     </h4>
@@ -80,9 +79,9 @@
                                         <p>{{ media.summary_fa|truncatechars:120 }}</p>
                                     {% endif %}
 
-                                    {# ✅ single → media_single با pid + slug #}
+                                    {# ✅ media_single فقط با media.slug #}
                                     <a class="theme-btn"
-                                       href="{% url 'app_media:media_single' media.id media.slug %}">
+                                       href="{% url 'app_media:media_single' media.slug %}">
                                         مشاهده
                                         <i class="fas fa-arrow-left"></i>
                                     </a>

@@ -45,31 +45,24 @@ def hr_home(request):
 # =====================================================
 # HR SINGLE + CAPTCHA
 # =====================================================
-def hr_single(request, pid):
+def hr_single(request, slug):
     job = get_object_or_404(
         JobOpportunity.objects.filter(is_active=True),
-        pk=pid
+        slug=slug,   # ✅ slug جای pk
     )
 
-    # 🔐 ساخت کپچا برای نمایش
     if "hr_captcha" not in request.session:
         request.session["hr_captcha"] = _generate_captcha()
         request.session.modified = True
 
-
     if request.method == "POST" and job.recruitment_status == "open":
-
         user_captcha = request.POST.get("captcha", "").strip()
         real_captcha = request.session.get("hr_captcha")
 
-
-        # ❌ بررسی کپچا
         if not real_captcha or user_captcha != real_captcha:
             messages.error(request, "کد امنیتی اشتباه است.")
             return redirect(request.path)
 
-
-        # ✅ ذخیره درخواست شغلی
         JobApplication.objects.create(
             opportunity=job,
             first_name=request.POST.get("first_name"),
@@ -80,24 +73,21 @@ def hr_single(request, pid):
             marital_status=request.POST.get("marital_status"),
             military_status=request.POST.get("military_status"),
             mobile=request.POST.get("mobile"),
+            mobile_support=request.POST.get("mobile_support"),
             email=request.POST.get("email"),
             resume_file=request.FILES.get("resume_file"),
             ip_address=request.META.get("REMOTE_ADDR"),
         )
-
 
         messages.success(
             request,
             "✅ درخواست شما با موفقیت ثبت شد و پس از بررسی با شما تماس گرفته خواهد شد."
         )
 
-
-        # 🔄 تولید کپچای جدید بعد از ارسال
         request.session["hr_captcha"] = _generate_captcha()
         request.session.modified = True
 
         return redirect(request.path)
-
 
     context = {
         "job": job,
@@ -105,9 +95,4 @@ def hr_single(request, pid):
         "seo": SEOManager.get_object(job),
     }
 
-
-    return render(
-        request,
-        "RTL/hr/hr_single.html",
-        context
-    )
+    return render(request, "RTL/hr/hr_single.html", context)

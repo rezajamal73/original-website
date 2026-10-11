@@ -1,10 +1,15 @@
+# app_blog/urls_en.py
 from django.urls import path
-from app_blog.views import *
+from app_blog.views import (
+    blog_home,
+    blog_search,
+    blog_tag,
+    blog_single,
+)
 
 app_name = "app_blog_en"
 
 urlpatterns = [
-
     # =====================================================
     # ENGLISH  (prefix: /en/blog/ از urls.py اصلی میاد)
     # =====================================================
@@ -15,7 +20,6 @@ urlpatterns = [
     path("author/<str:author_username>/", blog_home, name="blog_author_en"),
     path("tag/<str:slug>/", blog_tag, name="blog_tag_en"),
 
-    # ✅ URL جدید با pid + slug
-    path("<int:pid>/", blog_single_redirect, name="blog_single_old_en"),
-    path("<int:pid>/<str:slug>/", blog_single, name="blog_single_en"),
+    # ✅ URL جدید: /en/blog/post-name/  (بدون pid)
+    path("<str:slug>/", blog_single, name="blog_single_en"),
 ]

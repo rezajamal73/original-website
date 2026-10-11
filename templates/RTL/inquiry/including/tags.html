@@ -5,7 +5,8 @@
 
     <div class="tag-list">
         {% for tag in tags %}
-            <a href="{% url 'app_inquiry:tag' tag.slug %}">
+            {# ✅ inquiry_tag جای tag #}
+            <a href="{% url 'app_inquiry:inquiry_tag' tag.slug %}">
                 {{ tag.title_fa }}
             </a>
         {% empty %}

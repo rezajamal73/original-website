@@ -9,4 +9,5 @@ class AppSeoConfig(AppConfig):
     verbose_name = "🚀 سئو و بهینه‌سازی"
 
     def ready(self):
-        from . import signals  # noqa
+        from . import signals  # noqa: F401
+        signals.connect_lazy_receivers()

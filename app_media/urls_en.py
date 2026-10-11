@@ -33,14 +33,9 @@ urlpatterns = [
         name="media_tag_en",
     ),
 
+    # ✅ URL جدید: /en/media/media-title/  (بدون pid)
     path(
-        "<int:pid>/",
-        views.media_single_redirect,
-        name="media_single_old_en",
-    ),
-
-    path(
-        "<int:pid>/<str:slug>/",
+        "<str:slug>/",
         views.media_single,
         name="media_single_en",
     ),

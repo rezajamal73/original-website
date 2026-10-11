@@ -64,8 +64,8 @@
                                             </span>
 
                                             <div class="blog-item-img">
-                                                {# ✅ tender_single با item.id + item.slug #}
-                                                <a href="{% url 'app_tender:tender_single' item.id item.slug %}">
+                                                {# ✅ tender_single فقط با item.slug #}
+                                                <a href="{% url 'app_tender:tender_single' item.slug %}">
                                                     {% if item.poster %}
                                                         <img src="{{ item.poster.url }}"
                                                              alt="{{ item.title_fa }}">
@@ -76,8 +76,8 @@
                                             <div class="blog-item-info">
 
                                                 <h4 class="blog-title">
-                                                    {# ✅ tender_single با item.id + item.slug #}
-                                                    <a href="{% url 'app_tender:tender_single' item.id item.slug %}">
+                                                    {# ✅ tender_single فقط با item.slug #}
+                                                    <a href="{% url 'app_tender:tender_single' item.slug %}">
                                                         {{ item.title_fa }}
                                                     </a>
                                                 </h4>

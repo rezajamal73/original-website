@@ -1,15 +1,15 @@
 {% load static %}
 
 <div class="widget search">
-    <h5 class="widget-title">Search Auctions</h5>
+    <h5 class="widget-title">جستجو در مزایده‌ها</h5>
 
-    <form class="search-form" id="auctionSearchForm" method="GET" action="{% url 'app_auction_en:auction_search_en' %}">
+    <form class="search-form" id="auctionSearchForm" method="GET" action="{% url 'app_auction:auction_search' %}">
         <input
             class="form-control"
             type="text"
             name="s"
             id="auctionSearchInput"
-            placeholder="Search here..."
+            placeholder="اینجا جستجو کنید ..."
             value="{{ request.GET.s|default:'' }}"
         >
         <button type="submit">
@@ -19,8 +19,8 @@
 
     {% if request.GET.s and request.GET.s|length > 0 and auctions|length == 0 %}
         <p style="margin-top:10px; padding:10px; background:#ffe3e3; color:#c40000; border-radius:6px; font-size:14px;">
-            <a href="{% url 'app_auction_en:auction_home_en' %}" style="color:#c40000; text-decoration:none;">❌</a>
-            No results found for "<b>{{ request.GET.s }}</b>".
+            <a href="{% url 'app_auction:auction_home' %}" style="color:#c40000; text-decoration:none;">❌</a>
+            نتیجه‌ای برای "<b>{{ request.GET.s }}</b>" یافت نشد.
         </p>
     {% endif %}
 </div>
@@ -31,7 +31,7 @@ document.getElementById("auctionSearchForm").addEventListener("submit", function
 
     if (input === "") {
         e.preventDefault();
-        window.location.href = "{% url 'app_auction_en:auction_home_en' %}";
+        window.location.href = "{% url 'app_auction:auction_home' %}";
     }
 });
 </script>

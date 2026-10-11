@@ -3,16 +3,20 @@
 {% load auction_tags %}
 {% load humanize %}
 {% load jformat %}
+
 {% block content %}
 
     <main class="main">
+
         <!-- breadcrumb -->
         <div class="site-breadcrumb">
             {% if banner and banner.image %}
-                <div class="site-breadcrumb-bg" style="background: url('{{ banner.image.url }}')"></div>
+                <div class="site-breadcrumb-bg"
+                     style="background: url('{{ banner.image.url }}')"></div>
             {% else %}
                 <div class="site-breadcrumb-bg"></div>
             {% endif %}
+
             <div class="container">
                 <div class="site-breadcrumb-wrap">
                     <h4 class="breadcrumb-title">
@@ -30,7 +34,8 @@
                                 All Auctions
                             </a>
                         </li>
-                        <li class="active">{{ auction.title_en|default:auction.title_fa }}
+                        <li class="active">
+                            {{ auction.title_en|default:auction.title_fa }}
                         </li>
                     </ul>
                 </div>
@@ -49,9 +54,12 @@
                             <div class="blog-single-content">
 
                                 <!-- POSTER -->
-                                <div class="blog-thumb-img">
-                                    <img alt="{{ auction.title_en|default:auction.title_fa }}" src="{{ auction.poster.url }}">
-                                </div>
+                                {% if auction.poster %}
+                                    <div class="blog-thumb-img">
+                                        <img alt="{{ auction.title_en|default:auction.title_fa }}"
+                                             src="{{ auction.poster.url }}">
+                                    </div>
+                                {% endif %}
 
                                 <div class="blog-info">
 
@@ -68,6 +76,7 @@
                                                         </a>
                                                     {% endif %}
                                                 </li>
+
                                                 {% if auction.estimated_amount %}
                                                     <li>
                                                         <i class="far fa-money-bill"></i>
@@ -77,6 +86,7 @@
                                                         </a>
                                                     </li>
                                                 {% endif %}
+
                                                 <li>
                                                     <i class="far fa-calendar-alt"></i>
                                                     Start: {{ auction.start_date_en|date:"Y/m/d" }}
@@ -95,13 +105,18 @@
                                         </h3>
 
                                         <!-- DESCRIPTION -->
-                                        <p class="mb-10">{{ auction.description_en|default:auction.description_fa }}</p>
+                                        {% if auction.description_en or auction.description_fa %}
+                                            <p class="mb-10">
+                                                {{ auction.description_en|default:auction.description_fa|linebreaks }}
+                                            </p>
+                                        {% endif %}
 
                                         <!-- GALLERY -->
                                         {% if auction.gallery_images.exists %}
                                             <div class="blog-author">
 
-                                                <h5 class="mb-3" style="display:block; width:100%; clear:both;">
+                                                <h5 class="mb-3"
+                                                    style="display:block; width:100%; clear:both;">
                                                     Images:
                                                 </h5>
 
@@ -113,11 +128,11 @@
                                                                  data-wow-delay=".25s">
 
                                                                 <div class="gallery-img">
-                                                                    <img
-                                                                            src="{{ img.image.url }}"
-                                                                            alt="{{ img.caption|default:'Image' }}"
-                                                                            class="img-fluid"
-                                                                    />
+                                                                    {% if img.image %}
+                                                                        <img src="{{ img.image.url }}"
+                                                                             alt="{{ img.caption|default:'Image' }}"
+                                                                             class="img-fluid"/>
+                                                                    {% endif %}
 
                                                                     <a class="popup-img gallery-link"
                                                                        href="{{ img.image.url }}">
@@ -138,7 +153,8 @@
                                         {% if auction.upload_file %}
                                             <blockquote class="blockqoute">
                                                 <h6 class="blockqoute-author">
-                                                    <a href="{{ auction.upload_file.url }}" download
+                                                    <a href="{{ auction.upload_file.url }}"
+                                                       download
                                                        class="btn btn-primary">
                                                         📥 Download File
                                                     </a>
@@ -156,15 +172,27 @@
                                             <!-- CATEGORY -->
                                             <div style="display: flex; align-items: center; gap: 8px;">
                                                 <h5 style="margin: 0;">Category:</h5>
-                                                <span>{{ auction.category.title_en|default:auction.category.title_fa }}</span>
+                                                <span>
+                                                    {% if auction.category %}
+                                                        {{ auction.category.title_en|default:auction.category.title_fa }}
+                                                    {% else %}
+                                                        —
+                                                    {% endif %}
+                                                </span>
                                             </div>
 
                                             <!-- TAGS -->
                                             <div style="display: flex; align-items: center; gap: 8px;">
                                                 <h5 style="margin: 0;">Tags:</h5>
-                                                <ul style="margin: 0; padding: 0; list-style: none; display: flex; gap: 10px;">
+                                                <ul style="margin: 0; padding: 0; list-style: none; display: flex; gap: 10px; flex-wrap: wrap;">
                                                     {% for tag in auction.tags.all %}
-                                                        <li><p>{{ tag.title_en|default:tag.title_fa }}</p></li>
+                                                        <li>
+                                                            <p>{{ tag.title_en|default:tag.title_fa }}</p>
+                                                        </li>
+                                                    {% empty %}
+                                                        <li>
+                                                            <p>No tags</p>
+                                                        </li>
                                                     {% endfor %}
                                                 </ul>
                                             </div>
@@ -183,10 +211,10 @@
                     <div class="col-lg-4">
                         <aside class="sidebar">
 
-                            {% include 'LTR/auction/including/serach.html' %}
-                            {% auction_categories_en %}
-                            {% auction_recent_en %}
-                            {% auction_tags_en %}
+                            {% include 'RTL/auction/including/serach.html' %}
+                            {% auction_categories %}
+                            {% auction_recent %}
+                            {% auction_tags %}
 
                         </aside>
                     </div>
@@ -194,7 +222,7 @@
                 </div>
             </div>
         </div>
-
         <!-- blog area end -->
+
     </main>
 {% endblock %}

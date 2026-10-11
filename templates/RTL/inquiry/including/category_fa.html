@@ -5,7 +5,8 @@
 
     <div class="category-list">
         {% for title, info in categories.items %}
-            <a href="{% url 'app_inquiry:category' info.slug %}">
+            {# ✅ inquiry_category جای category #}
+            <a href="{% url 'app_inquiry:inquiry_category' info.slug %}">
                 <i class="far fa-arrow-left"></i>
                 {{ title }}
                 <span>({{ info.count }})</span>

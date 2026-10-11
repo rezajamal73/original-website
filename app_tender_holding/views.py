@@ -98,30 +98,29 @@ def tender_holding_home(request, cat_name=None):
 # =====================================================
 # HOLDING SINGLE — با pid + slug
 # =====================================================
-def tender_holding_single(request, pid, slug=None):
+def tender_holding_single(request, slug: str):
     """
     صفحه جزئیات یک هلدینگ
+
+    فارسی:    /tender_holding/نام-هلدینگ/
+    انگلیسی:  /en/tender_holding/holding-name/
     """
     is_english = is_english_request(request)
 
-    holding = get_object_or_404(
-        Holding.objects
-        .select_related("category")
-        .prefetch_related("tags", "gallery_images"),
-        pk=pid,
-    )
-
-    # ✅ اگه slug داده شده، بررسی کن
-    if slug:
-        correct_slug = holding.slug_en if is_english else holding.slug
-
-        if correct_slug != slug:
-            target = (
-                "app_tender_holding_en:tender_holding_single_en"
-                if is_english
-                else "app_tender_holding:tender_holding_single"
-            )
-            return redirect(target, pid=pid, slug=correct_slug, permanent=True)
+    if is_english:
+        holding = get_object_or_404(
+            Holding.objects
+            .select_related("category")
+            .prefetch_related("tags", "gallery_images"),
+            slug_en=slug,
+        )
+    else:
+        holding = get_object_or_404(
+            Holding.objects
+            .select_related("category")
+            .prefetch_related("tags", "gallery_images"),
+            slug=slug,
+        )
 
     context = {
         "holding": holding,
@@ -129,6 +128,7 @@ def tender_holding_single(request, pid, slug=None):
         "is_english": is_english,
         **get_holding_context(is_english),
     }
+
     return render(
         request,
         _get_template("tender-holding-single.html", is_english),

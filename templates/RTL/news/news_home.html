@@ -82,8 +82,8 @@
                                         <div class="blog-item wow fadeInUp">
 
                                             <div class="blog-item-img">
-                                                {# ✅ news.id + news.slug #}
-                                                <a href="{% url 'app_news:news_single' news.id news.slug %}">
+                                                {# ✅ news_single فقط با news.slug #}
+                                                <a href="{% url 'app_news:news_single' news.slug %}">
                                                     {% if news.image %}
                                                         <img src="{{ news.image.url }}"
                                                              alt="{{ news.title_fa }}">
@@ -107,7 +107,7 @@
                                                         </li>
                                                         <li>
                                                             {% for tag in news.tags.all %}
-                                                                {# ✅ tag.slug #}
+                                                                {# ✅ news_tag با tag.slug #}
                                                                 <a href="{% url 'app_news:news_tag' tag.slug %}">
                                                                     <i class="far fa-comments"></i> {{ tag.title_fa }}
                                                                 </a>
@@ -118,17 +118,17 @@
                                                 </div>
 
                                                 <h4 class="blog-title">
-                                                    {# ✅ news.id + news.slug #}
-                                                    <a href="{% url 'app_news:news_single' news.id news.slug %}">
+                                                    {# ✅ news_single فقط با news.slug #}
+                                                    <a href="{% url 'app_news:news_single' news.slug %}">
                                                         {{ news.title_fa }}
                                                     </a>
                                                 </h4>
 
                                                 <p>{{ news.summary_fa|default:news.content_fa|truncatechars:120 }}</p>
 
-                                                {# ✅ news.id + news.slug #}
+                                                {# ✅ news_single فقط با news.slug #}
                                                 <a class="theme-btn"
-                                                   href="{% url 'app_news:news_single' news.id news.slug %}">
+                                                   href="{% url 'app_news:news_single' news.slug %}">
                                                     بیشتر بخوانید
                                                     <i class="fas fa-arrow-left"></i>
                                                 </a>

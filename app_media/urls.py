@@ -37,16 +37,9 @@ urlpatterns = [
         name="media_tag",
     ),
 
-    # ✅ Redirect از URL قدیمی /media/5/
+    # ✅ URL جدید: /media/عنوان/  (بدون pid)
     path(
-        "<int:pid>/",
-        views.media_single_redirect,
-        name="media_single_old",
-    ),
-
-    # ✅ URL جدید: /media/5/عنوان/
-    path(
-        "<int:pid>/<str:slug>/",
+        "<str:slug>/",
         views.media_single,
         name="media_single",
     ),
