@@ -13,7 +13,7 @@ from .utils import (
 
 URL_NAME_TO_PAGE_KEY = {
 
-    # app_core
+    # app_core (فارسی)
     "home": "home",
     "about": "about",
     "contact": "contact",
@@ -26,13 +26,17 @@ URL_NAME_TO_PAGE_KEY = {
     "about_en": "about",
     "contact_en": "contact",
     "contact_security_en": "contact_security",
+    "search_en": "search",
 
-    # صفحات ثابت دیگر که ممکن است داشته باشی
+    # صفحات ثابت دیگر (فارسی)
     # "certificate": "certificate",
     # "vision_missions": "vision_missions",
     # "sustainability": "sustainability",
 
-    # اگر url_name های دیگری داری، اینجا اضافه کن
+    # صفحات ثابت دیگر (انگلیسی)
+    # "certificate_en": "certificate",
+    # "vision_missions_en": "vision_missions",
+    # "sustainability_en": "sustainability",
 }
 
 
@@ -42,6 +46,7 @@ URL_NAME_TO_PAGE_KEY = {
 
 URL_NAME_TO_MODEL = {
 
+    # ---- فارسی ----
     "product_single": ("app_product", "product"),
     "product_detail": ("app_product", "product"),
 
@@ -57,7 +62,31 @@ URL_NAME_TO_MODEL = {
     "resume_single": ("app_resume", "resume"),
     "resume_detail": ("app_resume", "resume"),
 
-    # اگر url_name های دیگری داری، اینجا اضافه کن
+    "tender_single": ("app_tender", "tender"),
+    "tender_holding_single": ("app_tender_holding", "holding"),
+    "auction_single": ("app_auction", "auction"),
+    "hr_single": ("app_hr", "jobopportunity"),
+
+    # ---- انگلیسی ----
+    "product_single_en": ("app_product", "product"),
+    "product_detail_en": ("app_product", "product"),
+
+    "blog_single_en": ("app_blog", "blog"),
+    "blog_detail_en": ("app_blog", "blog"),
+
+    "news_single_en": ("app_news", "news"),
+    "news_detail_en": ("app_news", "news"),
+
+    "media_single_en": ("app_media", "media"),
+    "media_detail_en": ("app_media", "media"),
+
+    "resume_single_en": ("app_resume", "resume"),
+    "resume_detail_en": ("app_resume", "resume"),
+
+    "tender_single_en": ("app_tender", "tender"),
+    "tender_holding_single_en": ("app_tender_holding", "holding"),
+    "auction_single_en": ("app_auction", "auction"),
+    "hr_single_en": ("app_hr", "jobopportunity"),
 }
 
 

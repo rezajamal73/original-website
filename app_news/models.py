@@ -1,6 +1,7 @@
 # app_news/models.py
 from functools import partial
 
+from django.conf import settings
 from django.db import models
 from django.utils.text import slugify
 from django.urls import reverse
@@ -234,19 +235,33 @@ class News(TimeStampedModel):
         return self.title_fa
 
     # =====================================================
-    # URL ها
+    # URL ها — همیشه absolute (کامل با دامنه)
     # =====================================================
     def get_absolute_url(self):
-        """URL فارسی: /news/عنوان-خبر/"""
-        return reverse("app_news:news_single", kwargs={
+        """
+        URL کامل فارسی:
+        https://nkavosh.com/news/عنوان-خبر/
+        """
+        path = reverse("app_news:news_single", kwargs={
             "slug": self.slug,
         })
+        site_url = getattr(settings, "SITE_URL", "").rstrip("/")
+        if site_url:
+            return f"{site_url}{path}"
+        return path
 
     def get_absolute_url_en(self):
-        """URL انگلیسی: /en/news/news-title/"""
-        return reverse("app_news_en:news_single_en", kwargs={
+        """
+        URL کامل انگلیسی:
+        https://nkavosh.com/en/news/news-title/
+        """
+        path = reverse("app_news_en:news_single_en", kwargs={
             "slug": self.slug_en,
         })
+        site_url = getattr(settings, "SITE_URL", "").rstrip("/")
+        if site_url:
+            return f"{site_url}{path}"
+        return path
 
 
 # ------------------------------------------------------

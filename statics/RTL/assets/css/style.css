@@ -77,6 +77,25 @@ Table of contents
 =======================================================*/
 
 
+html, body {
+    overflow-x: hidden !important;
+    width: 100%;
+}
+
+.offcanvas {
+    max-width: 85vw !important;
+}
+
+.offcanvas-start {
+    right: 0 !important;
+    left: auto !important;
+}
+
+.company-brand-text {
+    min-width: 0;
+    flex-shrink: 1;
+    overflow: hidden;
+}
 
 /*====================
 1. Google fonts---------------------------------------------------------------------------------------------------------------------------
@@ -11635,3 +11654,4 @@ label {
 .hospital-badge:hover {
     background-color: var(--theme-color2);
 }
+

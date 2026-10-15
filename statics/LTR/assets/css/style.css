@@ -2,7 +2,7 @@
 Template Name   : Mocart
 Description     : Multipurpose eCommerce HTML5 Template
 Author          : LunarTemp
-Version         : 1.0
+Version         : 1.0 (LTR Version)
 =======================================================*/
 
 
@@ -19,70 +19,118 @@ Table of contents
 8. Theme button
 9. Scroll top css
 10. Header top css
-11. Navbar css
-12. Mega menu
-13. Multi level dropdown menu
-14. Search popup
-15. Hero css 
-16. Small banner css 
-17. Mid banner css 
-18. Big banner css 
-19. Popup banner css 
-20. Category css 
-21. Shop css 
-22. Shop cart css 
-23. Shop checkout css
-24. Shop checkout complete css 
-25. Shop single css 
-26. Compare css 
-27. Price range css 
-28. Product css 
-29. Product list css
-30. Modal quick view css 
-31. Bs custom css 
-32. Countdown css
-33. Deal css 
-34. Feature css 
-35. About css 
-36. Counter css 
-37. Team css 
-38. Play btn
-39. Video css 
-40. Testimonial css 
-41. Brand css 
-42. Help css 
-43. Invoices css 
-44. Faq css 
-45. Auth css 
-46. User css 
-47. Coming soon css 
-48. Error css 
-49. Terms/privacy css 
-50. Mail success css 
-51. Blog css 
-52. Blog single css
-53. Widget sidebar css
-54. Pagination css 
-55. Breadcrumb css 
-56. Contact us css 
-57. Gallery css 
-58. Affiliate css 
-59. Cta css 
-60. Process css 
-61. Instagram css 
-62. Choose css 
-63. Newsletter css 
-64. Footer css 
-65. Home 2 css 
+11. Header middle css
+12. Navbar css
+13. Mega menu
+14. Multi level dropdown menu
+15. Search popup
+16. Hero css
+17. Small banner css
+18. Mid banner css
+19. Big banner css
+20. Popup banner css
+21. Category css
+22. Shop css
+23. Shop cart css
+24. Shop checkout css
+25. Shop checkout complete css
+26. Shop single css
+27. Compare css
+28. Price range css
+29. Product css
+30. Product list css
+31. Modal quick view css
+32. Bs custom css
+33. Countdown css
+34. Deal css
+35. Feature css
+36. About css
+37. Counter css
+38. Team css
+39. Play btn
+40. Video css
+41. Testimonial css
+42. Brand css
+43. Help css
+44. Invoices css
+45. Faq css
+46. Auth css
+47. User css
+48. Coming soon css
+49. Error css
+50. Terms/privacy css
+51. Mail success css
+52. Blog css
+53. Blog single css
+54. Widget sidebar css
+55. Pagination css
+56. Breadcrumb css
+57. Contact us css
+58. Gallery css
+59. Affiliate css
+60. Cta css
+61. Process css
+62. Instagram css
+63. Choose css
+64. Newsletter css
+65. Footer css
+66. Home 2 css
+67. Home 4 css
+68. Home 5 css
+69. Home 6 css
+70. Home 7 css
+71. Home 8 css
+72. Home 9 css
+73. Home 10 css
 =======================================================*/
 
 
+html, body {
+    overflow-x: hidden !important;
+    width: 100%;
+}
+
+.offcanvas {
+    max-width: 85vw !important;
+}
+
+.offcanvas-start {
+    left: 0 !important;
+    right: auto !important;
+}
+
+.company-brand-text {
+    min-width: 0;
+    flex-shrink: 1;
+    overflow: hidden;
+}
 
 /*====================
 1. Google fonts
 ======================*/
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Roboto:wght@100;300;400;500;700;900&display=swap');
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&amp;family=Roboto:wght@100;300;400;500;700;900&amp;display=swap');
+@font-face {
+    font-family: "Peyda";
+    src: url(../fonts/PeydaWebFaNum-Medium.woff2);
+}
+
+
+/* =========================================
+   ENGLISH VERSION - English Numbers
+   ========================================= */
+
+html[lang="en"] body {
+    font-family: "Inter", sans-serif;
+}
+
+html[lang="en"] .counter,
+html[lang="en"] .counter-amount {
+    font-family: "Inter", sans-serif !important;
+    direction: ltr;
+    font-variant-numeric: lining-nums;
+    font-feature-settings: "lnum";
+}
 
 
 /*====================
@@ -181,7 +229,15 @@ ul {
 }
 
 li {
-  list-style: none;
+    list-style: none;
+}
+
+html[lang="fa"] li {
+    text-align: right;
+}
+
+html[lang="en"] li {
+    text-align: left;
 }
 
 h1,
@@ -222,7 +278,19 @@ h6 {
 }
 
 p {
-  margin: 0px;
+    margin: 0;
+}
+
+html[lang="fa"] p {
+    text-align: right;
+}
+
+html[lang="en"] p {
+    text-align: left;
+}
+
+.mb-10 {
+    margin-bottom: 10px;
 }
 
 .img,
@@ -393,7 +461,7 @@ label {
 }
 
 .py-100 {
-  padding: 100px 0;
+  padding: 20px 0;
 }
 
 .py-90 {
@@ -497,7 +565,8 @@ label {
 }
 
 .pb-100 {
-  padding-bottom: 100px;
+  padding-bottom: 20px;
+  padding-top: 30px;
 }
 
 .pb-110 {
@@ -936,7 +1005,7 @@ label {
   .header-top-right .header-top-list li{
     padding-right: 0px;
   }
-  
+
   .header-top .dropdown-toggle::after{
     float: unset;
   }
@@ -1296,7 +1365,7 @@ label {
 
 
 /*====================
-11. Navbar css
+12. Navbar css
 ======================*/
 
 .navbar {
@@ -1353,8 +1422,10 @@ label {
   margin-right: 0;
 }
 
-.navbar-brand img {
-  width: 180px;
+.navbar-brand img{
+    width: 180px !important;
+    max-width: 90px !important;
+    height: auto !important;
 }
 
 .navbar .dropdown-toggle::after {
@@ -1970,18 +2041,18 @@ label {
 
 
 /*============================
-12. Mega menu
+13. Mega menu
 ==============================*/
 
 @media all and (min-width: 992px){
   .nav-item.mega-menu {
     position: static;
   }
-  
+
   .navbar .nav-item.mega-menu .dropdown-menu{
     width: 98.2%;
     left: 12px;
-  } 
+  }
 
   .mega-menu .mega-content{
     padding: 12px 16px 10px 16px;
@@ -2024,7 +2095,7 @@ label {
 
 
 /*============================
-13. Multi level dropdown menu
+14. Multi level dropdown menu
 ==============================*/
 
 .navbar .nav-item .dropdown-submenu {
@@ -2089,7 +2160,7 @@ label {
 
 
 /* ======================
-14. Search popup
+15. Search popup
 ====================== */
 
 .search-popup {
@@ -2221,7 +2292,7 @@ label {
 
 
 /*====================
-15. Hero css 
+16. Hero css
 ======================*/
 
 .hero-section {
@@ -2237,6 +2308,7 @@ label {
   display: flex;
   align-items: center;
   justify-content: center;
+  min-height: 510px;
 }
 
 .hero-single .hero-content {
@@ -2277,7 +2349,7 @@ label {
   display: flex;
   align-items: center;
   gap: 10px;
-} 
+}
 
 
 /* hero slider */
@@ -2360,7 +2432,7 @@ label {
   top: 0;
   width: 100%;
   height: 100%;
-  background-image: url(../img/shape/01.png);
+  /*background-image: url(../img/shape/01.png);*/
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -2582,7 +2654,7 @@ label {
 
 
 /*====================
-16. Small banner css 
+17. Small banner css
 ======================*/
 
 .small-banner{
@@ -2667,7 +2739,7 @@ label {
 
 
 /*====================
-17. Mid banner css 
+18. Mid banner css
 ======================*/
 
 .mid-banner{
@@ -2737,7 +2809,7 @@ label {
   .mid-banner .banner-item h3 {
     font-size: 19px;
   }
-} 
+}
 
 @media all and (max-width: 991px) {
   .mid-banner .banner-item p{
@@ -2760,7 +2832,7 @@ label {
 
 
 /*====================
-18. Big banner css 
+19. Big banner css
 ======================*/
 
 .big-banner{
@@ -2813,7 +2885,7 @@ label {
 
 
 /*====================
-19. Popup banner css 
+20. Popup banner css
 ======================*/
 
 .popup-banner .modal-content{
@@ -2927,7 +2999,7 @@ label {
 
 
 /*====================
-20. Category css 
+21. Category css
 ======================*/
 
 .category-item a{
@@ -3221,7 +3293,7 @@ label {
 
 
 /*====================
-21. Shop css 
+22. Shop css
 ======================*/
 
 /* shop sidebar */
@@ -3315,12 +3387,12 @@ label {
   color: var(--body-text-color);
   width: 100%;
   margin-left: 4px;
-} 
+}
 
 .shop-checkbox-list .form-check-label span{
   float: right;
   margin-right: 3px;
-} 
+}
 
 .shop-checkbox-list.color li{
   display: inline-block;
@@ -3529,7 +3601,7 @@ label {
 
 
 /*===================
-22. Shop cart css 
+23. Shop cart css
 =====================*/
 
 .shop-cart thead tr {
@@ -3716,7 +3788,7 @@ label {
 
 
 /*===================
-23. Shop checkout css 
+24. Shop checkout css
 =====================*/
 
 .shop-checkout-step .accordion-item{
@@ -3941,7 +4013,7 @@ label {
 
 
 /*============================
-24. Shop checkout complete css 
+25. Shop checkout complete css
 ==============================*/
 
 .shop-checkout-complete{
@@ -3987,7 +4059,7 @@ label {
 
 
 /*===================
-25. Shop single css 
+26. Shop single css
 =====================*/
 
 .shop-single{
@@ -4036,7 +4108,7 @@ label {
   margin: 6.8px;
   padding: 0;
   width: 23%;
-} 
+}
 
 .shop-single-gallery .flex-control-thumbs li:first-child{
   margin-left: 0;
@@ -4329,7 +4401,7 @@ label {
 @media all and (max-width: 1399px) {
   .shop-single-gallery .flex-control-thumbs li{
     margin: 6px;
-  } 
+  }
 
   .shop-single-action .theme-btn2{
     margin-left: 2px;
@@ -4364,7 +4436,7 @@ label {
 @media all and (max-width: 767px) {
   .shop-single-gallery .flex-control-thumbs li{
     margin: 4.6px;
-  } 
+  }
 
   .shop-single-size{
     margin-top: 20px;
@@ -4392,7 +4464,7 @@ label {
 
 
 /*====================
-26. Compare css 
+27. Compare css
 ======================*/
 
 .compare-table {
@@ -4460,7 +4532,7 @@ label {
 
 
 /*===================
-27. Price range css 
+28. Price range css
 =====================*/
 
 .price-range-box{
@@ -4508,11 +4580,12 @@ label {
 
 
 /*====================
-28. Product css 
+29. Product css
 ======================*/
 
 .product-area{
   position: relative;
+  padding-top: 30px;
 }
 
 .product-item{
@@ -4876,7 +4949,7 @@ label {
 
 
 /*====================
-29. Product list css 
+30. Product list css
 ======================*/
 
 .product-list{
@@ -4933,7 +5006,7 @@ label {
 }
 
 .product-list-item:last-child{
-  margin-bottom: 0;  
+  margin-bottom: 0;
 }
 
 .product-list-img{
@@ -5017,7 +5090,7 @@ label {
 
 
 /*======================
-30. Product section css 
+31. Product section css
 ========================*/
 
 .ps-img{
@@ -5077,7 +5150,7 @@ label {
 
 
 /*======================
-30. Modal quick view css 
+31. Modal quick view css
 ========================*/
 
 .quickview .modal-content{
@@ -5164,7 +5237,7 @@ label {
 
 .quickview-social a{
   width: 30px;
-  height: 30;
+  height: 30px;
   line-height: 32px;
   text-align: center;
   color: var(--color-dark);
@@ -5176,7 +5249,7 @@ label {
 
 
 /*====================
-31. Bs custom css 
+32. Bs custom css
 ======================*/
 
 /* tooltip */
@@ -5220,7 +5293,7 @@ label {
 
 
 /*=============================
-32. Countdown css
+33. Countdown css
 ===============================*/
 
 .countdown{
@@ -5251,7 +5324,7 @@ label {
 
 
 /*====================
-33. Deal css 
+34. Deal css
 ======================*/
 
 .deal-area{
@@ -5364,7 +5437,6 @@ label {
 .deal-area2 .deal-wrap{
   padding: 50px 40px 30px 40px;
   border-radius: 30px;
-  background-image: url(../img/shape/07.jpg);
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
@@ -5426,7 +5498,7 @@ label {
 
 
 /*====================
-34. Seller css 
+35. Seller css
 ======================*/
 
 .seller-area{
@@ -5477,7 +5549,7 @@ label {
     width: 118px;
     height: 118px;
   }
-  
+
   .seller-img img{
     width: 60px;
   }
@@ -5486,7 +5558,7 @@ label {
 
 
 /*====================
-35. Become seller css
+36. Become seller css
 ======================*/
 
 .become-seller{
@@ -5601,7 +5673,7 @@ label {
 
 
 /*====================
-36. Vendor css
+37. Vendor css
 ======================*/
 
 .vendor-area{
@@ -5696,7 +5768,7 @@ label {
 
 
 /*====================
-37. Vendor store css 
+38. Vendor store css
 ======================*/
 
 .vendor-store{
@@ -5794,7 +5866,7 @@ label {
 
 
 /*====================
-34. Feature css 
+39. Feature css
 ======================*/
 
 .feature-area{
@@ -5816,7 +5888,6 @@ label {
   top: 0;
   width: 100%;
   height: 100%;
-  background-image: url(../img/shape/02.jpg);
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -5893,7 +5964,7 @@ label {
   .feature-content{
     flex: 1;
   }
-  
+
   .feature-wrap .feature-item{
     border-right: none;
   }
@@ -6048,9 +6119,13 @@ label {
 
 
 /*====================
-35. About css 
+40. About css
 ======================*/
-
+.about-img img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
 .about-left{
   position: relative;
 }
@@ -6068,11 +6143,11 @@ label {
 }
 
 .about-img .img-1{
-  border-radius: 200px 200px 200px 0;
+  border-radius: 200px 200px 0 200px;
 }
 
 .about-img .img-2{
-  border-radius: 0 200px 200px 200px;
+  border-radius: 200px 0 200px 200px;
 }
 
 .about-experience{
@@ -6083,13 +6158,15 @@ label {
   top: 50px;
   left: 50%;
   background:  var(--color-white);
-  border-radius: 100px 100px 100px 0;
-  padding: 10px 30px 10px 10px;
+  border-radius: 100px 100px 0 100px;
+  padding: 10px 10px 10px 30px;
   color: var(--color-dark);
   box-shadow: var(--box-shadow);
 }
 
 .about-experience-icon{
+  display: flex;
+  justify-content: center;
   color: var(--color-white);
   font-size: 45px;
   width: 70px;
@@ -6157,13 +6234,21 @@ label {
 
 
 /*====================
-36. Counter css 
+41. Counter css
 ======================*/
+.counter-wrapper {
+  background: transparent;
+  padding: 40px 0;
+}
 
 .counter-area {
   position: relative;
-  background: var(--theme-color);
-  z-index: 1;
+  background: #eaf8fd;
+  border-radius: 20px;
+  padding: 40px 20px;
+  z-index: 0 !important;
+  max-width: 1300px;
+  margin: 30px auto 0 auto;
 }
 
 .counter-box {
@@ -6176,6 +6261,10 @@ label {
 }
 
 .counter-box .icon {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   position: relative;
   text-align: center;
   font-size: 60px;
@@ -6183,38 +6272,37 @@ label {
   width: 100px;
   height: 100px;
   line-height: 83px;
-  color: var(--color-white);
-  border: 3px solid var(--color-white);
-  background:  var(--color-dark);
+  color: #032e63;
+  border: #032e63;
+  background: #01a0e2;
   z-index: 1;
 }
 
-.counter-box .icon img{
-  filter:brightness(0) invert(1);
+.counter-box .icon img {
   width: 55px;
 }
 
 .counter-box .counter {
   display: block;
   line-height: 1;
-  color: var(--color-white);
+  color: #032e63;
   font-size: 50px;
   font-weight: 600;
 }
 
-.counter-box .counter-amount{
+.counter-box .counter-amount {
   display: flex;
-  color: var(--color-white);
+  color: #032e63;
 }
 
-.counter-box .counter-amount .counter-sign{
-  margin-left: 5px;
+.counter-box .counter-amount .counter-sign {
+  margin-right: 5px;
   font-size: 20px;
   font-weight: 500;
 }
 
 .counter-box .title {
-  color: var(--color-white);
+  color: #01a0e2;
   margin-top: 10px;
   font-size: 20px;
   font-weight: 600;
@@ -6228,9 +6316,8 @@ label {
 }
 
 
-
 /*===================
-37. Team css 
+42. Team css
 =====================*/
 
 .team-area {
@@ -6306,7 +6393,7 @@ label {
 
 
 /*===================
-38. Play btn
+43. Play btn
 =====================*/
 
 .play-btn {
@@ -6357,7 +6444,7 @@ label {
 
 
 /*====================
-39. Video css 
+44. Video css
 ======================*/
 
 .video-content {
@@ -6415,9 +6502,9 @@ label {
 
 
 
- 
+
 /*====================
-40. Testimonial css 
+45. Testimonial css
 ======================*/
 
 .testimonial-area {
@@ -6436,7 +6523,6 @@ label {
   top: 0;
   width: 100%;
   height: 100%;
-  background-image: url(../img/shape/03.jpg);
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
@@ -6545,7 +6631,7 @@ label {
 
 /* testimonial-area 3 */
 .testimonial-area3 .testimonial-wrap{
-  background: linear-gradient(to right, #FCCBC6, #F9EAC8);
+  background: linear-gradient(to left, #FCCBC6, #F9EAC8);
   border-radius: 50px;
   padding: 50px;
 }
@@ -6586,7 +6672,7 @@ label {
 
 
 /*====================
-41. Brand css 
+46. Brand css
 ======================*/
 
 .brand-area{
@@ -6610,7 +6696,7 @@ label {
 
 
 /*====================
-42. Help css 
+47. Help css
 ======================*/
 
 .help-area{
@@ -6689,7 +6775,7 @@ label {
   margin-top: 15px;
   margin-bottom: 10px;
   font-size: 20px;
-} 
+}
 
 .help-item .theme-btn{
   border-radius: 50px;
@@ -6710,7 +6796,7 @@ label {
 
 
 /*====================
-43. Invoices css 
+48. Invoices css
 ======================*/
 
 .invoice-area{
@@ -6771,12 +6857,12 @@ label {
 }
 
 .invoice-table table,
-.invoice-table td, 
+.invoice-table td,
 .invoice-table th {
   border: 1px solid var(--border-info-color);
 }
 
-.invoice-table td, 
+.invoice-table td,
 .invoice-table th {
   padding: 10px 20px;
 }
@@ -6796,7 +6882,7 @@ label {
 
 
 /*====================
-44. Faq css 
+49. Faq css
 ======================*/
 
 .faq-area{
@@ -6880,10 +6966,13 @@ label {
   }
 }
 
-
+.accordion-button::after{
+  margin-left: 0;
+  margin-right: auto;
+}
 
 /*====================
-45. Auth css 
+50. Auth css
 ======================*/
 
 .login-form {
@@ -6916,7 +7005,12 @@ label {
 }
 
 .login-form .form-group {
+  padding-left: 0;
   margin-bottom: 20px;
+}
+
+.login-form .form-check label {
+  padding-right: 1.5em;
 }
 
 .login-form label {
@@ -6941,6 +7035,7 @@ label {
 }
 
 .login-form .form-check-input {
+  float: right;
   box-shadow: none;
 }
 
@@ -6967,7 +7062,7 @@ label {
 }
 
 .login-form .theme-btn i {
-  margin-right: 5px;
+  margin-left: 5px;
 }
 
 .login-form .form-check-input {
@@ -7090,7 +7185,7 @@ label {
 
 
 /*====================
-46. User css 
+51. User css
 ======================*/
 
 /* nav account */
@@ -7924,7 +8019,7 @@ label {
 }
 
 .user-payout .payout-method .payout-method-img img{
-  width: 100px; 
+  width: 100px;
   margin-right: 10px;
 }
 
@@ -7934,7 +8029,7 @@ label {
   }
 }
 
-/* user setting */
+/* user settings */
 .user-setting .form-check{
   margin-bottom: 10px;
 }
@@ -8250,7 +8345,7 @@ label {
 
 
 /*====================
-47. Coming soon css 
+52. Coming soon css
 ======================*/
 
 .coming-soon {
@@ -8362,7 +8457,7 @@ label {
 
 
 /*====================
-48. Error css 
+53. Error css
 ======================*/
 
 .error-wrapper {
@@ -8404,7 +8499,7 @@ label {
 
 
 /*====================
-49. Terms/privacy css 
+54. Terms/privacy css
 ====================== */
 
 .terms-content:not(:last-child) {
@@ -8426,6 +8521,14 @@ label {
   margin-bottom: 15px;
 }
 
+.terms-content p {
+  text-align: justify;
+  text-justify: inter-word;
+  line-height: 2.8;
+  font-size: 16px;
+  color: #333;
+}
+
 .terms-content p:not(:last-child) {
   margin-bottom: 26px;
 }
@@ -8436,8 +8539,9 @@ label {
 
 
 
+
 /*============================
-50. Mail success css 
+55. Mail success css
 ==============================*/
 
 .mail-success{
@@ -8477,7 +8581,7 @@ label {
 
 
 /*====================
-51. Blog css 
+56. Blog css
 ======================*/
 
 .blog-area{
@@ -8505,7 +8609,7 @@ label {
 
 .blog-item:hover .blog-item-img img{
   transform: scale(1.1);
-} 
+}
 
 .blog-date{
   position: absolute;
@@ -8594,7 +8698,7 @@ label {
 
 
 /*========================
-52. Blog single css
+57. Blog single css
 ==========================*/
 
 .blog-thumb-img {
@@ -8885,7 +8989,7 @@ label {
 
 
 /*=======================
-53. Widget sidebar css
+58. Widget sidebar css
 =========================*/
 
 .widget {
@@ -9046,12 +9150,13 @@ label {
 .widget .tag-list a:hover {
   background-color: var(--theme-color);
   color: var(--color-white);
+
 }
 
 
 
 /*====================
-54. Pagination css 
+59. Pagination css
 ======================*/
 
 .pagination-area{
@@ -9087,7 +9192,7 @@ label {
 
 
 /*====================
-55. Breadcrumb css 
+60. Breadcrumb css
 ======================*/
 
 .site-breadcrumb {
@@ -9169,7 +9274,7 @@ label {
 
 
 /*===================
-56. Contact us css 
+61. Contact us css
 =====================*/
 
 .contact-area {
@@ -9285,7 +9390,7 @@ label {
 
 
 /* ========================
-57. Gallery css 
+62. Gallery css
 =========================== */
 
 .gallery-item {
@@ -9358,7 +9463,7 @@ label {
 
 
 /* ===================
-58. Affiliate css 
+63. Affiliate css
 ====================== */
 
 .affiliate-area{
@@ -9432,7 +9537,7 @@ label {
 
 
 /* ===================
-59. Cta css 
+64. Cta css
 ====================== */
 
 .cta-area{
@@ -9476,7 +9581,7 @@ label {
   color: var(--theme-color);
   text-transform: uppercase;
   letter-spacing: 5px;
-  font-size: 600;
+  font-size: 600px;
 }
 
 .cta-content h1{
@@ -9501,7 +9606,7 @@ label {
 
 
 /* ===================
-60. Process css 
+65. Process css
 ====================== */
 
 .process-area{
@@ -9537,8 +9642,7 @@ label {
   top: 0;
   font-weight: 800;
   font-size: 40px;
-  color: transparent;
-  -webkit-text-stroke: 1px var(--theme-color);
+  color: var(--theme-color);
 }
 
 .process-item h4{
@@ -9549,28 +9653,49 @@ label {
 
 
 /* ===================
-61. Instagram css 
+66. Instagram css
 ====================== */
 
-.instagram-area{
+.instagram-area {
   position: relative;
 }
 
 .instagram-item {
   position: relative;
+  overflow: hidden;
 }
 
-.instagram-img img{
+.instagram-img {
+  position: relative;
+  text-align: center;
+}
+
+.instagram-img img {
   border-radius: 50px;
+  display: block;
+  max-width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.company-link {
+  display: inline-block;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  z-index: 3;
+}
+
+.company-name {
+  margin-top: 10px;
+  font-size: 15px;
+  font-weight: 500;
 }
 
 .instagram-item::after {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 0;
-  height: 100%;
+  inset: 0;
   background: rgba(0, 0, 0, 0.3);
   border-radius: 50px;
   opacity: 0;
@@ -9578,39 +9703,43 @@ label {
   transition: 0.4s;
 }
 
-.instagram-item a {
+.instagram-item .hover-link {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: absolute;
   top: 50%;
   left: 50%;
   width: 45px;
   height: 45px;
-  line-height: 45px;
   border-radius: 50%;
   background: var(--theme-color);
   color: var(--color-white);
   font-size: 20px;
   visibility: hidden;
   opacity: 0;
-  text-align: center;
-  z-index: 2;
+  z-index: 4;
   transition: 0.4s;
   transform: translate(-50%, -50%);
 }
 
 .instagram-item:hover::after {
-  width: 100%;
   opacity: 1;
 }
 
-.instagram-item:hover a {
+.instagram-item:hover .hover-link {
   visibility: visible;
   opacity: 1;
+}
+
+.owl-carousel .owl-item img {
+  pointer-events: auto !important;
 }
 
 
 
 /*====================
-62. Choose css 
+67. Choose css
 ======================*/
 
 .choose-area{
@@ -9618,7 +9747,7 @@ label {
 }
 
 .choose-img img{
-  border-radius: 100px 100px 0 100px;
+  border-radius: 100px 100px 100px 0;
   box-shadow: var(--box-shadow);
 }
 
@@ -9631,7 +9760,7 @@ label {
   gap: 18px;
   padding: 20px;
   background: var(--color-white);
-  border-radius: 50px 0 50px 50px;
+  border-radius: 0 50px 50px 50px;
 }
 
 .choose-icon{
@@ -9640,7 +9769,7 @@ label {
   line-height: 76px;
   text-align: center;
   background: var(--theme-color);
-  border-radius: 50px 0 50px 50px;
+  border-radius: 0 50px 50px 50px;
 }
 
 .choose-icon img{
@@ -9683,7 +9812,7 @@ label {
 
 
 /*====================
-63. Newsletter css 
+68. Newsletter css
 ======================*/
 
 .newsletter-area{
@@ -9692,7 +9821,6 @@ label {
 
 .newsletter-wrap{
   position: relative;
-  background-image: url(../img/newsletter/01.jpg);
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -9771,7 +9899,6 @@ label {
 /* newsletter area 2 */
 .newsletter-area2 .newsletter-wrap{
   padding: 80px 50px;
-  background-image: url(../img/newsletter/bg.jpg);
 }
 
 .newsletter-area2 .newsletter-wrap::before{
@@ -9793,7 +9920,7 @@ label {
 
 
 /*====================
-64. Footer css 
+69. Footer css
 ======================*/
 
 .footer-area {
@@ -9809,7 +9936,6 @@ label {
   top: 0;
   width: 100%;
   height: 100%;
-  background-image: url(../img/shape/04.jpg);
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
@@ -9829,6 +9955,7 @@ label {
 .footer-logo img {
   width: 210px;
   margin-bottom: 15px;
+  max-width: 60px;
 }
 
 .footer-widget-title {
@@ -10188,10 +10315,37 @@ label {
   color: var(--color-white);
 }
 
+.footer-contact-phone {
+  align-items: flex-start;
+}
 
+.footer-contact-phone .phone-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-contact-phone .phone-line {
+  line-height: 1.8;
+}
+
+.footer-contact-phone a {
+  color: var(--footer-text-color);
+}
+/* ===== Fix multi-line address icon deformation ===== */
+.footer-contact li {
+  align-items: flex-start;
+}
+
+.footer-contact li i {
+  flex-shrink: 0;
+  width: 35px;
+  height: 35px;
+  line-height: 35px;
+  margin-top: 3px;
+}
 
 /*====================
-65. Home 2 css 
+70. Home 2 css
 ======================*/
 
 .home-2 .navbar{
@@ -10324,7 +10478,6 @@ label {
 }
 
 .home-2 .ft-bg::before{
-  background-image: url(../img/shape/06.jpg);
   opacity: .15;
 }
 
@@ -10370,12 +10523,12 @@ label {
   .home-2 .search-form .form-group{
     margin-bottom: 20px;
   }
-} 
+}
 
 
 
 /*====================
-65. Home 4 css 
+71. Home 4 css
 ======================*/
 
 .home-4 .header-top{
@@ -10527,7 +10680,7 @@ label {
 
 
 /*====================
-65. Home 5 css 
+72. Home 5 css
 ======================*/
 
 .home-5 .navbar{
@@ -10595,7 +10748,6 @@ label {
 }
 
 .home-5 .ft-bg::before{
-  background-image: url(../img/shape/06.jpg);
   opacity: .15;
 }
 
@@ -10645,11 +10797,11 @@ label {
 .home-5 .header-line .line-6{
   background: #FBA1B7;
   width: 10%;
-} 
+}
 
 
 /*====================
-65. Home 6 css 
+73. Home 6 css
 ======================*/
 
 .home-6 .header-top{
@@ -10725,7 +10877,6 @@ label {
 }
 
 .home-6 .ft-bg::before{
-  background-image: url(../img/shape/0.jpg);
   opacity: .05;
 }
 
@@ -10747,7 +10898,7 @@ label {
 
 
 /*====================
-65. Home 7 css 
+74. Home 7 css
 ======================*/
 
 .home-7 .header-top{
@@ -10766,7 +10917,7 @@ label {
 
 
 /*====================
-65. Home 8 css 
+75. Home 8 css
 ======================*/
 
 .home-8 .header-middle{
@@ -10795,7 +10946,7 @@ label {
 
 
 /*====================
-65. Home 9 css 
+76. Home 9 css
 ======================*/
 
 .home-9 .header-top{
@@ -10829,7 +10980,6 @@ label {
 }
 
 .home-9 .ft-bg::before{
-  background-image: url(../img/shape/06.jpg);
   opacity: .15;
 }
 
@@ -10842,7 +10992,7 @@ label {
 
 
 /*====================
-65. Home 10 css 
+77. Home 10 css
 ======================*/
 
 .home-10 .navbar{
@@ -10902,7 +11052,6 @@ label {
 }
 
 .home-10 .ft-bg::before{
-  background-image: url(../img/shape/06.jpg);
   opacity: .15;
 }
 
@@ -10935,4 +11084,496 @@ label {
   .home-10 .hero-img .text-shape-2{
     font-size: 35px;
   }
+}
+
+.company-brand-text {
+    padding-right: 15px;
+}
+
+.company-brand-text .line-1 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #032e63;
+    letter-spacing: -0.5px;
+}
+
+.company-brand-text .line-2 {
+    font-size: 25px;
+    font-weight: 700;
+    color: #01a0e2;
+    letter-spacing: -0.5px;
+    margin-top: -3px;
+}
+
+/* ---------- Card ---------- */
+.dept-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow: 0 8px 30px rgba(0,0,0,.06);
+    transition: box-shadow .35s ease, transform .35s ease;
+}
+
+.dept-card[open] {
+    transform: translateY(-4px);
+    box-shadow: 0 18px 45px rgba(37,99,235,.15);
+}
+
+/* ---------- Header ---------- */
+.dept-header {
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+}
+
+.dept-header::-webkit-details-marker {
+    display: none;
+}
+
+/* ---------- Icon ---------- */
+.dept-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2563eb;
+    transition: all .3s ease;
+}
+
+.dept-card[open] .dept-icon {
+    background: linear-gradient(135deg,#2563eb,#3b82f6);
+    color: #fff;
+    transform: scale(1.1);
+}
+
+/* ---------- Title ---------- */
+.dept-title {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 600;
+    color:#053262 ;
+}
+
+/* ---------- Arrow ---------- */
+.dept-arrow {
+    color: #94a3b8;
+    transition: transform .35s ease, color .35s ease;
+}
+
+.dept-card[open] .dept-arrow {
+    transform: rotate(180deg);
+    color: #2563eb;
+}
+
+/* ---------- Body animation ---------- */
+.dept-body {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px dashed #e5e7eb;
+
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows .4s ease;
+}
+
+.dept-card[open] .dept-body {
+    grid-template-rows: 1fr;
+}
+
+.dept-body > * {
+    overflow: hidden;
+}
+
+/* ---------- Items ---------- */
+.dept-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    margin-bottom: 10px;
+    opacity: 0;
+    transform: translateY(-4px);
+    animation: fadeIn .35s ease forwards;
+}
+
+.dept-card[open] .dept-item {
+    animation-delay: .1s;
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dept-item.muted {
+    color: #6b7280;
+}
+
+.end-date {
+    color: #e53935;
+}
+
+.date-separator {
+    color: #000;
+}
+
+.status-indicator {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.status-ongoing {
+    background-color: rgba(25, 135, 84, 0.15);
+    color: #198754;
+    border: 1px solid rgba(25, 135, 84, 0.3);
+}
+
+.status-extended {
+    background-color: rgba(255, 193, 7, 0.15);
+    color: #fd7e14;
+    border: 1px solid rgba(255, 193, 7, 0.3);
+}
+
+.status-finished {
+    background-color: rgba(220, 53, 69, 0.15);
+    color: #dc3545;
+    border: 1px solid rgba(220, 53, 69, 0.3);
+}
+
+.all-products-link {
+    position: relative;
+    text-decoration: none;
+    color: #053262;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    padding-bottom: 6px;
+    transition: color 0.25s ease;
+}
+
+.all-products-link::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 28px;
+    height: 2.5px;
+    background: linear-gradient(
+        90deg,
+        #38B6FF,
+        #5ed3ff,
+        #38B6FF
+    );
+    border-radius: 4px;
+    transform: translateX(-50%);
+    transition: width 0.35s ease, box-shadow 0.35s ease;
+    box-shadow: 0 0 0 rgba(56, 182, 255, 0);
+}
+
+.all-products-link:hover {
+    color: #38B6FF;
+}
+
+.all-products-link:hover::after {
+    width: 100%;
+    box-shadow: 0 0 10px rgba(56, 182, 255, 0.6);
+}
+
+.company-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 20px 15px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.company-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 30px rgba(56,182,255,0.18);
+}
+
+.company-logo {
+    height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.company-logo img {
+    max-height: 80px;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.company-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #053262;
+    margin: 0;
+}
+/* ===== QuickView Close Button ===== */
+.quickview-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f4f4f4;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.quickview-close:hover {
+  background: var(--theme-color);
+  color: #fff;
+  transform: rotate(90deg);
+}
+
+/* ===== CTA Button ===== */
+.btn-theme {
+  background: linear-gradient(135deg, var(--theme-color), #4f46e5);
+  color: #fff;
+  border-radius: 12px;
+  padding: 12px 22px;
+  font-weight: 600;
+  font-size: 15px;
+  border: none;
+  transition: all 0.35s ease;
+  box-shadow: 0 10px 25px rgba(79, 70, 229, 0.25);
+}
+
+.btn-theme i {
+  transition: transform 0.3s ease;
+}
+
+.btn-theme:hover {
+  background: linear-gradient(135deg, #4f46e5, var(--theme-color));
+  box-shadow: 0 15px 35px rgba(79, 70, 229, 0.35);
+  transform: translateY(-2px);
+  color: #fff;
+}
+
+.btn-theme:hover i {
+  transform: translateX(4px);
+}
+
+
+.product-description h5,
+#qr-code strong {
+  position: relative;
+  padding-bottom: 8px;
+  margin-bottom: 18px;
+  display: block;
+}
+
+.product-description h5::after,
+#qr-code strong::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 40px;
+  height: 2px;
+  background-color: #38b6ff;
+  border-radius: 2px;
+}
+
+.recruit-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    margin-bottom: 12px;
+}
+
+.recruit-badge i {
+    font-size: 14px;
+}
+
+.recruit-badge.open {
+    background: linear-gradient(135deg, #1abc9c, #16a085);
+    color: #fff;
+    animation: pulse 1.8s infinite;
+}
+
+.recruit-badge.closed {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: #fff;
+    opacity: 0.85;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(26, 188, 156, 0.6);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(26, 188, 156, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(26, 188, 156, 0);
+    }
+}
+
+/* ================================
+   Product Card – Premium Version
+================================ */
+
+.product-card {
+    position: relative;
+    background: linear-gradient(180deg, #ffffff, #fafafa);
+    border-radius: 18px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    transition:
+        transform 0.35s cubic-bezier(.4,0,.2,1),
+        box-shadow 0.35s ease,
+        border-color 0.35s ease;
+}
+
+.product-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        120deg,
+        rgba(255,255,255,0.6),
+        rgba(255,255,255,0)
+    );
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    pointer-events: none;
+}
+
+.product-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(13,110,253,0.15);
+    box-shadow:
+        0 25px 60px rgba(0, 0, 0, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+.product-card:hover::after {
+    opacity: 1;
+}
+
+/* ================================
+   Image Wrapper
+================================ */
+
+.product-img-wrapper {
+    position: relative;
+    aspect-ratio: 1 / 1;
+    background: #f5f6f8;
+    overflow: hidden;
+}
+
+.product-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1);
+    transition:
+        transform 0.6s cubic-bezier(.25,.46,.45,.94),
+        filter 0.4s ease;
+}
+
+.product-card:hover .product-img-wrapper img {
+    transform: scale(1.12);
+    filter: contrast(1.05) saturate(1.05);
+}
+
+/* ================================
+   Product Body
+================================ */
+
+.product-body {
+    padding: 16px 14px 18px;
+    background: linear-gradient(
+        180deg,
+        rgba(255,255,255,0),
+        rgba(255,255,255,1)
+    );
+}
+
+/* ================================
+   Title
+================================ */
+
+.product-title {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.product-title a {
+    color: #1f2937;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.25s ease;
+}
+
+.product-card:hover .product-title a {
+    color: #0d6efd;
+}
+
+/* ================================
+   Banner – Premium Hover
+================================ */
+
+.banner-item {
+    display: block;
+    overflow: hidden;
+    border-radius: 18px;
+}
+
+.banner-item img {
+    width: 100%;
+    transition:
+        transform 0.5s cubic-bezier(.4,0,.2,1),
+        box-shadow 0.5s ease;
+}
+
+.banner-item:hover img {
+    transform: scale(1.06);
+    box-shadow: 0 25px 55px rgba(0,0,0,0.18);
+}
+
+.hospital-badge {
+    background-color: var(--theme-color);
+    color: #fff;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    transition: background-color .3s ease;
+}
+
+.hospital-badge:hover {
+    background-color: var(--theme-color2);
 }

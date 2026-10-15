@@ -3,7 +3,9 @@
 {% block submit_buttons_bottom %}
     {{ block.super }}
 
-    <div class="submit-row" style="margin-top:10px;">
+    <div class="submit-row" style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
+
+        {# 🔍 تحلیل مجدد SEO — فقط امتیاز و چک‌ها #}
         <input type="submit"
                value="🔍 تحلیل مجدد SEO"
                name="_reanalyze_seo"
@@ -11,5 +13,26 @@
                style="background:#417690;color:#fff;padding:10px 15px;
                       border:none;border-radius:4px;cursor:pointer;
                       font-size:13px;">
+
+        {# 🔄 فراخوانی مجدد از مدل — همه فیلدها #}
+        <input type="submit"
+               value="🔄 فراخوانی مجدد از مدل"
+               name="_resync_seo"
+               class="default"
+               style="background:#198754;color:#fff;padding:10px 15px;
+                      border:none;border-radius:4px;cursor:pointer;
+                      font-size:13px;"
+               onclick="return confirm('آیا مطمئن هستید؟ همه فیلدهای خالی از مدل مربوطه پر می‌شوند.');">
+
+        {# 🗑 پاک کردن فیلدهای خالی و پر کردن مجدد — اختیاری #}
+        <input type="submit"
+               value="♻️ بازسازی کامل فیلدها"
+               name="_rebuild_seo"
+               class="default"
+               style="background:#dc3545;color:#fff;padding:10px 15px;
+                      border:none;border-radius:4px;cursor:pointer;
+                      font-size:13px;"
+               onclick="return confirm('⚠️ هشدار: همه فیلدها (حتی دستی) پاک و از مدل بازنویسی می‌شوند. مطمئن هستید؟');">
+
     </div>
 {% endblock %}

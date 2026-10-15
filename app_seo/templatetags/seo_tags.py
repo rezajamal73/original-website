@@ -37,15 +37,45 @@ def _site_info(context):
     return context.get("site_info")
 
 
+def _is_english_page(context):
+    """
+    تشخیص اینکه صفحه فعلی انگلیسی است یا فارسی.
+    بر اساس path درخواست تصمیم می‌گیرد.
+    """
+    request = context.get("request")
+
+    if not request:
+        return False
+
+    path = getattr(request, "path", "") or ""
+
+    # اگر آدرس با /en/ شروع شود → صفحه انگلیسی
+    if path.startswith("/en/") or path == "/en":
+        return True
+
+    return False
+
+
 def _default_site_title(context):
-    """عنوان پیش‌فرض سایت اگر SEO نداشتیم."""
+    """
+    عنوان پیش‌فرض سایت اگر SEO نداشتیم.
+    بر اساس زبان صفحه، فیلد مناسب را انتخاب می‌کند.
+    """
     site_info = _site_info(context)
+    is_english = _is_english_page(context)
 
     if site_info:
-        parts = [
-            getattr(site_info, "name_company_p1_fa", "") or "",
-            getattr(site_info, "name_company_p2_fa", "") or "",
-        ]
+        if is_english:
+            parts = [
+                getattr(site_info, "name_company_p1_en", "") or "",
+                getattr(site_info, "name_company_p2_en", "") or "",
+            ]
+        else:
+            parts = [
+                getattr(site_info, "name_company_p1_fa", "") or "",
+                getattr(site_info, "name_company_p2_fa", "") or "",
+            ]
+
         name = " ".join(p for p in parts if p).strip()
         if name:
             return name

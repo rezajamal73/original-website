@@ -28,10 +28,6 @@ class SEOSetting(models.Model):
 
     )
 
-    # -------------------------------------------------
-    # Yoast — وضعیت و امتیاز
-    # -------------------------------------------------
-
     ROBOTS_INDEX_CHOICES = (
         ("index", "Index"),
         ("noindex", "No Index"),
@@ -139,19 +135,39 @@ class SEOSetting(models.Model):
     )
 
     # =====================
-    # META SEO
+    # ✅ META SEO — فارسی
     # =====================
 
     title = models.CharField(
         max_length=70,
-        verbose_name="عنوان SEO",
+        blank=True,
+        verbose_name="عنوان SEO (فارسی)",
         help_text="عنوانی که در نتایج گوگل نمایش داده می‌شود. بهتر است کمتر از 70 کاراکتر باشد."
     )
 
     description = models.CharField(
         max_length=160,
-        verbose_name="توضیحات SEO",
+        blank=True,
+        verbose_name="توضیحات SEO (فارسی)",
         help_text="توضیح کوتاه صفحه برای نمایش در موتورهای جستجو. بهتر است حدود 160 کاراکتر باشد."
+    )
+
+    # =====================
+    # ✅ META SEO — انگلیسی
+    # =====================
+
+    title_en = models.CharField(
+        max_length=70,
+        blank=True,
+        verbose_name="عنوان SEO (انگلیسی)",
+        help_text="عنوان انگلیسی برای نمایش در نتایج گوگل."
+    )
+
+    description_en = models.CharField(
+        max_length=160,
+        blank=True,
+        verbose_name="توضیحات SEO (انگلیسی)",
+        help_text="توضیحات انگلیسی برای نمایش در موتورهای جستجو."
     )
 
     keywords = models.TextField(
@@ -166,9 +182,9 @@ class SEOSetting(models.Model):
         help_text="آدرس اصلی صفحه برای جلوگیری از محتوای تکراری."
     )
 
-    # -------------------------------------------------
-    # Robots  —  حفظ فیلد قدیمی برای سازگاری
-    # -------------------------------------------------
+    # =====================
+    # Robots
+    # =====================
 
     robots = models.CharField(
         max_length=100,
@@ -176,10 +192,6 @@ class SEOSetting(models.Model):
         verbose_name="Robots (سازگاری)",
         help_text="مقدار کامل robots. برای کنترل دقیق‌تر از فیلدهای Index و Follow استفاده کنید."
     )
-
-    # -------------------------------------------------
-    # Robots  —  کنترل دقیق Yoast-style
-    # -------------------------------------------------
 
     index_control = models.CharField(
         max_length=10,
@@ -202,15 +214,29 @@ class SEOSetting(models.Model):
     og_title = models.CharField(
         max_length=70,
         blank=True,
-        verbose_name="عنوان شبکه اجتماعی",
+        verbose_name="عنوان شبکه اجتماعی (فارسی)",
         help_text="عنوانی که هنگام اشتراک لینک در شبکه‌های اجتماعی نمایش داده می‌شود."
+    )
+
+    og_title_en = models.CharField(
+        max_length=70,
+        blank=True,
+        verbose_name="عنوان شبکه اجتماعی (انگلیسی)",
+        help_text="عنوان انگلیسی برای شبکه‌های اجتماعی."
     )
 
     og_description = models.CharField(
         max_length=160,
         blank=True,
-        verbose_name="توضیحات شبکه اجتماعی",
+        verbose_name="توضیحات شبکه اجتماعی (فارسی)",
         help_text="توضیح نمایش داده شده هنگام اشتراک لینک در شبکه‌های اجتماعی."
+    )
+
+    og_description_en = models.CharField(
+        max_length=160,
+        blank=True,
+        verbose_name="توضیحات شبکه اجتماعی (انگلیسی)",
+        help_text="توضیحات انگلیسی برای شبکه‌های اجتماعی."
     )
 
     og_image = models.ImageField(
@@ -242,13 +268,25 @@ class SEOSetting(models.Model):
     twitter_title = models.CharField(
         max_length=70,
         blank=True,
-        verbose_name="عنوان توییتر",
+        verbose_name="عنوان توییتر (فارسی)",
+    )
+
+    twitter_title_en = models.CharField(
+        max_length=70,
+        blank=True,
+        verbose_name="عنوان توییتر (انگلیسی)",
     )
 
     twitter_description = models.CharField(
         max_length=160,
         blank=True,
-        verbose_name="توضیحات توییتر",
+        verbose_name="توضیحات توییتر (فارسی)",
+    )
+
+    twitter_description_en = models.CharField(
+        max_length=160,
+        blank=True,
+        verbose_name="توضیحات توییتر (انگلیسی)",
     )
 
     twitter_image = models.ImageField(
@@ -284,8 +322,15 @@ class SEOSetting(models.Model):
     breadcrumb_title = models.CharField(
         max_length=120,
         blank=True,
-        verbose_name="عنوان Breadcrumb",
+        verbose_name="عنوان Breadcrumb (فارسی)",
         help_text="در صورت خالی بودن، از عنوان SEO استفاده می‌شود."
+    )
+
+    breadcrumb_title_en = models.CharField(
+        max_length=120,
+        blank=True,
+        verbose_name="عنوان Breadcrumb (انگلیسی)",
+        help_text="عنوان Breadcrumb انگلیسی."
     )
 
     # =====================
@@ -348,66 +393,25 @@ class SEOSetting(models.Model):
 
         verbose_name_plural = "⚙️ تنظیمات SEO"
 
-
         indexes = [
-
-            models.Index(
-                fields=[
-                    "content_type",
-                    "page_key",
-                ]
-            ),
-
-            models.Index(
-                fields=[
-                    "app_label",
-                    "model_name",
-                    "object_id",
-                ]
-            ),
-
-            models.Index(
-                fields=[
-                    "focus_keyphrase",
-                ]
-            ),
-
-            models.Index(
-                fields=[
-                    "hreflang_group",
-                ]
-            ),
-
+            models.Index(fields=["content_type", "page_key"]),
+            models.Index(fields=["app_label", "model_name", "object_id"]),
+            models.Index(fields=["focus_keyphrase"]),
+            models.Index(fields=["hreflang_group"]),
         ]
-
 
         constraints = [
-
             models.UniqueConstraint(
-                fields=[
-                    "app_label",
-                    "model_name",
-                    "object_id",
-                ],
-                condition=models.Q(
-                    object_id__isnull=False
-                ),
+                fields=["app_label", "model_name", "object_id"],
+                condition=models.Q(object_id__isnull=False),
                 name="unique_seo_object",
             ),
-
-
             models.UniqueConstraint(
-                fields=[
-                    "page_key",
-                ],
-                condition=models.Q(
-                    content_type="page"
-                ),
+                fields=["page_key"],
+                condition=models.Q(content_type="page"),
                 name="unique_seo_page",
             ),
-
         ]
-
 
     # =====================
     # خروجی‌های محاسباتی
@@ -415,37 +419,27 @@ class SEOSetting(models.Model):
 
     @property
     def effective_robots(self):
-        """
-        مقدار نهایی robots بر اساس index_control و follow_control.
-        برای سازگاری با تمپلیت‌هایی که seo.robots را می‌خوانند.
-        """
         return f"{self.index_control},{self.follow_control}"
-
 
     @property
     def effective_og_title(self):
         return self.og_title or self.title
 
-
     @property
     def effective_og_description(self):
         return self.og_description or self.description
-
 
     @property
     def effective_twitter_title(self):
         return self.twitter_title or self.effective_og_title
 
-
     @property
     def effective_twitter_description(self):
         return self.twitter_description or self.effective_og_description
 
-
     @property
     def effective_breadcrumb_title(self):
         return self.breadcrumb_title or self.title
-
 
     def is_published_now(self):
         now = timezone.now()
@@ -461,22 +455,19 @@ class SEOSetting(models.Model):
 
         return True
 
-
     def __str__(self):
 
         if self.page_key:
             return f"📄 {self.page_key}"
 
-
         if self.object_id:
             return f"{self.model_name} - {self.object_id}"
 
-
-        return self.title
+        return self.title or self.title_en or "—"
 
 
 # =====================================================
-#  SEODefault  —  تنظیمات پیش‌فرض برای هر نوع محتوا و زبان
+#  SEODefault  —  تنظیمات پیش‌فرض
 # =====================================================
 
 class SEODefault(models.Model):
@@ -549,15 +540,10 @@ class SEODefault(models.Model):
         verbose_name_plural = "🧩 پیش‌فرض‌های SEO"
 
         constraints = [
-
             models.UniqueConstraint(
-                fields=[
-                    "language",
-                    "content_type",
-                ],
+                fields=["language", "content_type"],
                 name="unique_seo_default_per_language",
             ),
-
         ]
 
     def __str__(self):
@@ -565,7 +551,7 @@ class SEODefault(models.Model):
 
 
 # =====================================================
-#  SEOAnalysisLog  —  لاگ تحلیل Yoast (اختیاری)
+#  SEOAnalysisLog
 # =====================================================
 
 class SEOAnalysisLog(models.Model):

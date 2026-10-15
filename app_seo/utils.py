@@ -3,6 +3,8 @@
 import json
 import threading
 
+from urllib.parse import unquote
+
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.templatetags.static import static
@@ -56,6 +58,59 @@ def _build_absolute(request, path_or_url):
         return path_or_url
 
 
+def _make_absolute(url, request=None):
+    """
+    اگر URL نسبی بود، آن را absolute کند.
+    """
+    if not url:
+        return ""
+
+    url = str(url).strip()
+
+    if url.startswith(("http://", "https://")):
+        return url
+
+    base = getattr(settings, "SITE_URL", "").rstrip("/")
+
+    if url.startswith("/"):
+        return f"{base}{url}" if base else url
+
+    if base:
+        return f"{base}/{url}"
+
+    if request is not None:
+        try:
+            return request.build_absolute_uri("/" + url)
+        except Exception:
+            pass
+
+    return url
+
+
+def _path_from_request(request):
+    if request is None:
+        return ""
+
+    try:
+        path = request.get_full_path()
+    except Exception:
+        path = getattr(request, "path", "") or ""
+
+    if not path:
+        return ""
+
+    if "%" in path:
+        try:
+            path = unquote(path)
+        except Exception:
+            pass
+
+    if not path.startswith("/"):
+        path = "/" + path
+
+    return path
+
+
 def _default_og_image_url():
     try:
         return static("images/default-og.jpg")
@@ -94,8 +149,6 @@ class SEOContext:
         self.request = request
         self._cache = {}
 
-    # ------- helper -------
-
     def _pick(self, *values):
         for v in values:
             if v is None:
@@ -106,27 +159,62 @@ class SEOContext:
         return None
 
     # =====================
+    #  ✅ تشخیص زبان صفحه
+    # =====================
+
+    @property
+    def is_english(self):
+        """تشخیص اینکه صفحه فعلی انگلیسی است یا نه."""
+        return _detect_language(self.request) == "en"
+
+    # =====================
     #  پایه
     # =====================
 
     @property
     def title(self):
-        value = self._pick(
-            getattr(self.setting, "title", None) if self.setting else None,
-            getattr(self.obj, "title_fa", None) if self.obj else None,
-            getattr(self.obj, "title_en", None) if self.obj else None,
-            getattr(self.obj, "title", None) if self.obj else None,
-        )
+        """
+        ✅ انتخاب هوشمند عنوان بر اساس زبان صفحه.
+        """
+        if self.is_english:
+            # صفحه انگلیسی: اول title_en
+            value = self._pick(
+                getattr(self.setting, "title", None) if self.setting else None,
+                getattr(self.obj, "title_en", None) if self.obj else None,
+                getattr(self.obj, "title_fa", None) if self.obj else None,
+                getattr(self.obj, "title", None) if self.obj else None,
+            )
+        else:
+            # صفحه فارسی: اول title_fa
+            value = self._pick(
+                getattr(self.setting, "title", None) if self.setting else None,
+                getattr(self.obj, "title_fa", None) if self.obj else None,
+                getattr(self.obj, "title_en", None) if self.obj else None,
+                getattr(self.obj, "title", None) if self.obj else None,
+            )
         return value or ""
 
     @property
     def description(self):
-        return self._pick(
-            getattr(self.setting, "description", None) if self.setting else None,
-            getattr(self.obj, "description_fa", None) if self.obj else None,
-            getattr(self.obj, "description_en", None) if self.obj else None,
-            getattr(self.obj, "description", None) if self.obj else None,
-        ) or ""
+        """
+        ✅ انتخاب هوشمند توضیحات بر اساس زبان صفحه.
+        """
+        if self.is_english:
+            return self._pick(
+                getattr(self.setting, "description", None) if self.setting else None,
+                getattr(self.obj, "description_en", None) if self.obj else None,
+                getattr(self.obj, "description_fa", None) if self.obj else None,
+                getattr(self.obj, "description", None) if self.obj else None,
+                getattr(self.obj, "summary_en", None) if self.obj else None,
+            ) or ""
+        else:
+            return self._pick(
+                getattr(self.setting, "description", None) if self.setting else None,
+                getattr(self.obj, "description_fa", None) if self.obj else None,
+                getattr(self.obj, "description_en", None) if self.obj else None,
+                getattr(self.obj, "description", None) if self.obj else None,
+                getattr(self.obj, "summary_fa", None) if self.obj else None,
+            ) or ""
 
     @property
     def keywords(self):
@@ -136,19 +224,38 @@ class SEOContext:
 
     @property
     def canonical(self):
+        """
+        همیشه URL کامل (absolute) برمی‌گرداند.
+        """
+        # 1. canonical دستی
         manual = getattr(self.setting, "canonical", None) if self.setting else None
         if manual:
-            return manual
+            result = _make_absolute(manual, self.request)
+            if result:
+                return result
 
-        if self.request is not None:
+        # 2. obj.get_absolute_url()
+        if self.obj is not None:
             try:
-                return self.request.build_absolute_uri(self.request.path)
+                obj_url = self.obj.get_absolute_url()
+                if obj_url:
+                    return _make_absolute(obj_url, self.request)
             except Exception:
                 pass
 
+        # 3. فیلد url
         manual_url = getattr(self.setting, "url", None) if self.setting else None
         if manual_url:
-            return manual_url
+            result = _make_absolute(manual_url, self.request)
+            if result:
+                return result
+
+        # 4. request.path
+        path = _path_from_request(self.request)
+        if path:
+            base = getattr(settings, "SITE_URL", "").rstrip("/")
+            if base:
+                return f"{base}{path}"
 
         return ""
 
@@ -232,7 +339,6 @@ class SEOContext:
                 return image.url
             except Exception:
                 return ""
-        # ✅ اصلاح: request را پاس می‌دهیم
         return _build_absolute(self.request, _default_og_image_url())
 
     # =====================
@@ -396,7 +502,7 @@ class SEOContext:
         return result
 
     # =====================
-    #  Breadcrumb
+    #  Breadcrumb  —  ✅ فقط آیتم‌های دارای URL
     # =====================
 
     @property
@@ -409,32 +515,50 @@ class SEOContext:
         home_url = _site_base_url() or "/"
         home_label = "خانه" if _detect_language(self.request) == "fa" else "Home"
 
+        # آیتم ۱: خانه — همیشه URL دارد
         items.append({
             "label": home_label,
             "url": home_url,
             "position": 1,
         })
 
+        # آیتم ۲: دسته‌بندی — فقط اگر URL معتبر دارد
         if self.content_type != "page" and self.obj is not None:
-            parent = getattr(self.obj, "category", None)
-            if parent:
-                items.append({
-                    "label": str(parent),
-                    "url": getattr(parent, "get_absolute_url", lambda: "")() or "",
-                    "position": len(items) + 1,
-                })
+            parent = (
+                getattr(self.obj, "category", None)
+                or getattr(self.obj, "category2", None)
+            )
+            if parent is not None:
+                parent_url = ""
+                get_url = getattr(parent, "get_absolute_url", None)
+                if callable(get_url):
+                    try:
+                        parent_url = get_url() or ""
+                    except Exception:
+                        parent_url = ""
 
-        items.append({
-            "label": self.breadcrumb_title,
-            "url": self.canonical or "",
-            "position": len(items) + 1,
-        })
+                # ✅ فقط اگر URL غیرخالی بود، اضافه کن
+                if parent_url:
+                    items.append({
+                        "label": str(parent),
+                        "url": parent_url,
+                        "position": len(items) + 1,
+                    })
+
+        # آیتم ۳: خود صفحه — همیشه از canonical
+        final_url = self.canonical or ""
+        if final_url:
+            items.append({
+                "label": self.breadcrumb_title,
+                "url": final_url,
+                "position": len(items) + 1,
+            })
 
         self._cache["breadcrumb"] = items
         return items
 
     # =====================
-    #  Schema  —  وصل به schema.py
+    #  Schema
     # =====================
 
     @property
@@ -450,7 +574,6 @@ class SEOContext:
 
     @property
     def schema_json_ld(self):
-        """JSON string معتبر برای قرار گرفتن داخل <script>."""
         if "schema_json_ld" in self._cache:
             return self._cache["schema_json_ld"]
 

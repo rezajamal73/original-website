@@ -8,20 +8,15 @@
     <meta charset="utf-8"/>
     <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <!-- SEO META -->
 
+    <!-- SEO META (شامل title، description، robots، canonical، og، twitter، schema و ...) -->
     {% include "seo/meta.html" %}
-    <!-- title -->
-    <title>
-        {% if site_info %}
-            {{ site_info.name_company_p1_fa }} {{ site_info.name_company_p2_fa }}
-        {% endif %}
-    </title>
 
     <!-- favicon -->
     {% if site_info and site_info.header_logo %}
         <link rel="icon" type="image/x-icon" href="{{ site_info.header_logo.url }}">
     {% endif %}
+
     <!-- css -->
     <link href="{% static 'RTL/assets/css/bootstrap.min.css' %}" rel="stylesheet"/>
     <link href="{% static 'RTL/assets/css/all-fontawesome.min.css' %}" rel="stylesheet"/>
@@ -89,7 +84,7 @@
                                         <a aria-expanded="false" class="dropdown-toggle" data-bs-toggle="dropdown"
                                            href="/">
                                             <i class="far fa-globe-americas"></i>
-                                            فارسی
+                                            زبان / Language
                                         </a>
                                         <div class="dropdown-menu">
                                             <a class="dropdown-item" href="/">
@@ -199,21 +194,6 @@
                                             تیم اجرایی و چارت سازمانی
                                         </a>
                                     </li>
-                                    <!--
-                                    <li>
-                                        <a class="dropdown-item" href="{% url 'app_chart:board_home' %}">
-                                            اعضای هیئت مدیره
-                                        </a>
-                                    </li>
-
-
-
-                                    <li>
-                                        <a class="dropdown-item" href="{% url 'app_reports:governance' %}">
-                                            اعضاء کمیته ها
-                                        </a>
-                                    </li>
-                                    -->
 
                                     <li>
                                         <a class="dropdown-item" href="{% url 'app_reports:sustainability' %}">
@@ -232,32 +212,6 @@
                                             گواهینامه ها و استاندارد ها
                                         </a>
                                     </li>
-
-                                    <!-- ✅ فعال شد -->
-                                    <!--  <li>
-                                        <a class="dropdown-item" href="{% url 'app_reports:financial' %}">
-                                            اطلاعیه ها و گزارشات مالی
-                                        </a>
-                                    </li>
-
-                                    <li>
-                                        <a class="dropdown-item" href="{% url 'app_reports:shareholder' %}">
-                                            امور سهام
-                                        </a>
-                                    </li>
-
-                                    <li>
-                                        <a class="dropdown-item" href="{% url 'app_reports:companies' %}">
-                                            شرکت های هم گروه
-                                        </a>
-                                    </li>
-
-                                    <li>
-                                        <a class="dropdown-item" href="{% url 'app_sale:sales_chart' %}">
-                                            نمودار فروش
-                                        </a>
-                                    </li>
-                                                                -->
 
                                 </ul>
                             </li>
@@ -281,41 +235,6 @@
                                     رزومه
                                 </a>
                             </li>
-
-
-                            <!--
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
-                                    مناقصات و مزایدات
-                                </a>
-                                <ul class="dropdown-menu fade-down">
-                                    <li>
-                                        <a class="dropdown-item"
-                                           href="{% url 'app_tender:tender_home' %}">
-                                            مناقصات
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item"
-                                           href="{% url 'app_auction:auction_home' %}">
-                                            مزایدات
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item"
-                                           href="{% url 'app_inquiry:inquiry_home' %}">
-                                            استعلام خرید
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item"
-                                           href="{% url 'app_tender_holding:tender_holding_home' %}">
-                                            مناقصه های هلدینگ
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
--->
 
                             <!-- ویدیوها -->
                             <li class="nav-item">
@@ -513,25 +432,11 @@
                                 </a>
                             </li>
 
-                            <!--
-                            <li>
-                                <a href="{% url 'app_chart:board_home' %}">
-                                    اعضای هیئت مدیره
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="{% url 'app_reports:governance' %}">
-                                    اعضاء کمیته ها
-                                </a>
-                            </li>
-                            -->
                             <li>
                                 <a href="{% url 'app_chart:chart' %}">
                                     تیم اجرایی و چارت سازمانی
                                 </a>
                             </li>
-
 
                             <li>
                                 <a href="{% url 'app_reports:sustainability' %}">
@@ -560,35 +465,6 @@
                                     فرصت های شغلی
                                 </a>
                             </li>
-
-                            <!--
-                            <li>
-                                <a href="{% url 'app_reports:financial' %}">
-                                    اطلاعیه ها و گزارشات مالی
-                                </a>
-                            </li>
-
-
-                            <li>
-                                <a href="{% url 'app_reports:shareholder' %}">
-                                    امور سهام
-                                </a>
-                            </li>
-
-
-                            <li>
-                                <a href="{% url 'app_reports:companies' %}">
-                                    شرکت های هم گروه
-                                </a>
-                            </li>
-
-
-                            <li>
-                                <a href="{% url 'app_sale:sales_chart' %}">
-                                    نمودار فروش
-                                </a>
-                            </li>
-                            -->
                         </ul>
                     </div>
                 </div>
@@ -611,33 +487,6 @@
                                 </a>
                             </li>
 
-                            <!--
-                            <li>
-                                <a href="{% url 'app_tender:tender_home' %}">
-                                    مناقصه
-                                </a>
-                            </li>
-
-
-                            <li>
-                                <a href="{% url 'app_auction:auction_home' %}">
-                                    مزایده
-                                </a>
-                            </li>
-
-                            <li>
-                                <a href="{% url 'app_inquiry:inquiry_home' %}">
-                                    استعلام خرید
-                                </a>
-                            </li>
-
-
-                            <li>
-                                <a href="{% url 'app_tender_holding:tender_holding_home' %}">
-                                    مناقصه های هلدینگ
-                                </a>
-                            </li>
--->
                             <li>
                                 <a href="{% url 'app_media:media_home' %}">
 

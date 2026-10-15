@@ -2,7 +2,7 @@
 {% load seo_tags %}
 
 <!DOCTYPE html>
-<html dir="RTL" lang="en">
+<html dir="LTR" lang="en">
 
 <head>
 
@@ -11,29 +11,8 @@
     <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 
-    <!-- SEO META -->
-    <title>{% seo_title %}</title>
-    <meta name="description" content="{% seo_description %}"/>
-    <meta name="keywords" content="{% seo_keywords %}"/>
-    <meta name="robots" content="{% seo_robots %}"/>
-    <link rel="canonical" href="{% seo_canonical %}"/>
-
-    <!-- Open Graph -->
-    <meta property="og:title" content="{% seo_title %}"/>
-    <meta property="og:description" content="{% seo_description %}"/>
-    <meta property="og:image" content="{% seo_og_image %}"/>
-    <meta property="og:type" content="website"/>
-
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image"/>
-    <meta name="twitter:title" content="{% seo_title %}"/>
-    <meta name="twitter:description" content="{% seo_description %}"/>
-    <meta name="twitter:image" content="{% seo_og_image %}"/>
-
-    <!-- Schema.org -->
-    <script type="application/ld+json">
-        {% seo_schema %}
-    </script>
+    {# ✅ SEO Meta — همه تگ‌های SEO از این فایل می‌آید #}
+    {% include "seo/meta.html" %}
 
     <!-- Favicon -->
     {% if site_info and site_info.header_logo %}
@@ -41,15 +20,15 @@
     {% endif %}
 
     <!-- CSS -->
-    <link href="{% static 'RTL/assets/css/bootstrap.min.css' %}" rel="stylesheet"/>
-    <link href="{% static 'RTL/assets/css/all-fontawesome.min.css' %}" rel="stylesheet"/>
-    <link href="{% static 'RTL/assets/css/animate.min.css' %}" rel="stylesheet"/>
-    <link href="{% static 'RTL/assets/css/magnific-popup.min.css' %}" rel="stylesheet"/>
-    <link href="{% static 'RTL/assets/css/owl.carousel.min.css' %}" rel="stylesheet"/>
-    <link href="{% static 'RTL/assets/css/jquery-ui.min.css' %}" rel="stylesheet"/>
-    <link href="{% static 'RTL/assets/css/nice-select.min.css' %}" rel="stylesheet"/>
-    <link href="{% static 'RTL/assets/css/style.css' %}" rel="stylesheet"/>
-    <link href="{% static 'RTL/assets/css/flex-slider.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'LTR/assets/css/bootstrap.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'LTR/assets/css/all-fontawesome.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'LTR/assets/css/animate.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'LTR/assets/css/magnific-popup.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'LTR/assets/css/owl.carousel.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'LTR/assets/css/jquery-ui.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'LTR/assets/css/nice-select.min.css' %}" rel="stylesheet"/>
+    <link href="{% static 'LTR/assets/css/style.css' %}" rel="stylesheet"/>
+    <link href="{% static 'LTR/assets/css/flex-slider.min.css' %}" rel="stylesheet"/>
 
 </head>
 
@@ -118,13 +97,13 @@
                                 <li>
                                     <div class="dropdown">
                                         <a
-                                            aria-expanded="false"
-                                            class="dropdown-toggle"
-                                            data-bs-toggle="dropdown"
-                                            href="/en/"
+                                                aria-expanded="false"
+                                                class="dropdown-toggle"
+                                                data-bs-toggle="dropdown"
+                                                href="/en/"
                                         >
                                             <i class="far fa-globe-americas"></i>
-                                            English
+                                            زبان / Language
                                         </a>
 
                                         <div class="dropdown-menu">
@@ -147,7 +126,8 @@
                                             {% for link in follow_links %}
                                                 {% if link.svg_icon and link.url %}
                                                     <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer">
-                                                        <img src="{{ link.svg_icon.url }}" width="30" height="30" alt="Social Media"/>
+                                                        <img src="{{ link.svg_icon.url }}" width="30" height="30"
+                                                             alt="Social Media"/>
                                                     </a>
                                                 {% endif %}
                                             {% endfor %}
@@ -195,12 +175,12 @@
                         </a>
                     </div>
                     <button
-                        aria-controls="offcanvasNavbar"
-                        aria-label="Toggle navigation"
-                        class="navbar-toggler"
-                        data-bs-target="#offcanvasNavbar"
-                        data-bs-toggle="offcanvas"
-                        type="button"
+                            aria-controls="offcanvasNavbar"
+                            aria-label="Toggle navigation"
+                            class="navbar-toggler"
+                            data-bs-target="#offcanvasNavbar"
+                            data-bs-toggle="offcanvas"
+                            type="button"
                     >
                         <span></span>
                         <span></span>
@@ -210,10 +190,10 @@
 
                 <!-- Offcanvas Menu -->
                 <div
-                    aria-labelledby="offcanvasNavbarLabel"
-                    class="offcanvas offcanvas-start"
-                    id="offcanvasNavbar"
-                    tabindex="-1"
+                        aria-labelledby="offcanvasNavbarLabel"
+                        class="offcanvas offcanvas-start"
+                        id="offcanvasNavbar"
+                        tabindex="-1"
                 >
                     <div class="offcanvas-header">
                         <a class="offcanvas-brand" href="{% url 'app_core_en:home_en' %}" id="offcanvasNavbarLabel">
@@ -284,7 +264,6 @@
 
                             <!-- Media -->
                             <li class="nav-item">
-                                {# ✅ media_home_en جای home_en #}
                                 <a class="nav-link" href="{% url 'app_media_en:media_home_en' %}">
                                     Media
                                 </a>
@@ -312,14 +291,12 @@
                                 <ul class="dropdown-menu fade-down">
                                     {% if site_info.phone_security_1 or site_info.phone_security_2 or site_info.phone_security_3 or site_info.email_security or site_info.fax_security %}
                                         <li>
-                                            {# ✅ contact_security_en (نه contact_security_en) #}
                                             <a class="dropdown-item" href="{% url 'app_core_en:contact_security_en' %}">
                                                 Contact Security Department
                                             </a>
                                         </li>
                                     {% endif %}
                                     <li>
-                                        {# ✅ contact_en #}
                                         <a class="dropdown-item" href="{% url 'app_core_en:contact_en' %}">
                                             Contact Us
                                         </a>
@@ -331,14 +308,13 @@
 
                         <!-- Navigation Search -->
                         <div class="nav-right icon">
-                            {# ✅ search_en #}
                             <form action="{% url 'app_core_en:search_en' %}" method="get"
                                   style="display:flex;align-items:center;gap:8px;">
                                 <input
-                                    type="text"
-                                    name="q"
-                                    placeholder="Search..."
-                                    style="width:180px;height:38px;border:1px solid #ddd;border-radius:25px;padding:0 15px;outline:none;"
+                                        type="text"
+                                        name="q"
+                                        placeholder="Search..."
+                                        style="width:180px;height:38px;border:1px solid #ddd;border-radius:25px;padding:0 15px;outline:none;"
                                 >
                                 <button type="submit" class="nav-right-link"
                                         style="border:none;background:none;padding:0;cursor:pointer;">
@@ -362,7 +338,6 @@
     <button class="close-search">
         <span class="far fa-times"></span>
     </button>
-    {# ✅ search_en #}
     <form action="{% url 'app_core_en:search_en' %}" method="get">
         <div class="form-group">
             <input class="form-control" type="search" name="q" placeholder="Search here..." required>
@@ -502,7 +477,6 @@
                                 <a href="{% url 'app_product_en:product_list_en' %}">Products</a>
                             </li>
                             <li>
-                                {# ✅ media_home_en #}
                                 <a href="{% url 'app_media_en:media_home_en' %}">Media</a>
                             </li>
                             <li>
@@ -517,13 +491,12 @@
 
                             {% if site_info.phone_security_1 or site_info.phone_security_2 or site_info.phone_security_3 or site_info.email_security or site_info.fax_security %}
                                 <li>
-                                    {# ✅ contact_security_en #}
-                                    <a href="{% url 'app_core_en:contact_security_en' %}">Contact Security Department</a>
+                                    <a href="{% url 'app_core_en:contact_security_en' %}">Contact Security
+                                        Department</a>
                                 </li>
                             {% endif %}
 
                             <li>
-                                {# ✅ contact_en #}
                                 <a href="{% url 'app_core_en:contact_en' %}">Contact Us</a>
                             </li>
                         </ul>
@@ -538,7 +511,6 @@
                         {% for category in categories %}
                             <ul class="footer-list">
                                 <li>
-                                    {# ✅ category_en #}
                                     <a href="{% url 'app_product_en:category_en' slug=category.slug_en %}">
                                         {{ category.title_en }}
                                     </a>
@@ -572,7 +544,8 @@
                                 {% for link in follow_links %}
                                     {% if link.svg_icon and link.url %}
                                         <a href="{{ link.url }}" target="_blank" rel="noopener noreferrer">
-                                            <img src="{{ link.svg_icon.url }}" width="30" height="30" alt="Social Media"/>
+                                            <img src="{{ link.svg_icon.url }}" width="30" height="30"
+                                                 alt="Social Media"/>
                                         </a>
                                     {% endif %}
                                 {% endfor %}
@@ -593,22 +566,22 @@
 <!-- Scroll Top End -->
 
 <!-- JS -->
-<script src="{% static 'RTL/assets/js/jquery-3.7.1.min.js' %}"></script>
-<script src="{% static 'RTL/assets/js/modernizr.min.js' %}"></script>
-<script src="{% static 'RTL/assets/js/bootstrap.bundle.min.js' %}"></script>
-<script src="{% static 'RTL/assets/js/imagesloaded.pkgd.min.js' %}"></script>
-<script src="{% static 'RTL/assets/js/jquery.magnific-popup.min.js' %}"></script>
-<script src="{% static 'RTL/assets/js/isotope.pkgd.min.js' %}"></script>
-<script src="{% static 'RTL/assets/js/jquery.appear.min.js' %}"></script>
-<script src="{% static 'RTL/assets/js/jquery.easing.min.js' %}"></script>
-<script src="{% static 'RTL/assets/js/owl.carousel.min.js' %}"></script>
-<script src="{% static 'RTL/assets/js/counter-up.js' %}"></script>
-<script src="{% static 'RTL/assets/js/jquery-ui.min.js' %}"></script>
-<script src="{% static 'RTL/assets/js/jquery.nice-select.min.js' %}"></script>
-<script src="{% static 'RTL/assets/js/countdown.min.js' %}"></script>
-<script src="{% static 'RTL/assets/js/wow.min.js' %}"></script>
-<script src="{% static 'RTL/assets/js/flex-slider.js' %}"></script>
-<script src="{% static 'RTL/assets/js/main.js' %}"></script>
+<script src="{% static 'LTR/assets/js/jquery-3.7.1.min.js' %}"></script>
+<script src="{% static 'LTR/assets/js/modernizr.min.js' %}"></script>
+<script src="{% static 'LTR/assets/js/bootstrap.bundle.min.js' %}"></script>
+<script src="{% static 'LTR/assets/js/imagesloaded.pkgd.min.js' %}"></script>
+<script src="{% static 'LTR/assets/js/jquery.magnific-popup.min.js' %}"></script>
+<script src="{% static 'LTR/assets/js/isotope.pkgd.min.js' %}"></script>
+<script src="{% static 'LTR/assets/js/jquery.appear.min.js' %}"></script>
+<script src="{% static 'LTR/assets/js/jquery.easing.min.js' %}"></script>
+<script src="{% static 'LTR/assets/js/owl.carousel.min.js' %}"></script>
+<script src="{% static 'LTR/assets/js/counter-up.js' %}"></script>
+<script src="{% static 'LTR/assets/js/jquery-ui.min.js' %}"></script>
+<script src="{% static 'LTR/assets/js/jquery.nice-select.min.js' %}"></script>
+<script src="{% static 'LTR/assets/js/countdown.min.js' %}"></script>
+<script src="{% static 'LTR/assets/js/wow.min.js' %}"></script>
+<script src="{% static 'LTR/assets/js/flex-slider.js' %}"></script>
+<script src="{% static 'LTR/assets/js/main.js' %}"></script>
 
 </body>
 </html>

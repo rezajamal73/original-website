@@ -52,27 +52,45 @@ def _site_language():
 
 
 # =====================================================
-#  BreadcrumbList
+#  BreadcrumbList  —  ✅ سختگیرانه
 # =====================================================
 
 def _build_breadcrumb_schema(breadcrumb_items):
+    """
+    Google برای هر ListItem در BreadcrumbList نیاز به فیلد "item" دارد.
+    اگر url خالی باشد، آن آیتم کاملاً حذف می‌شود.
+    """
     if not breadcrumb_items:
         return None
 
     elements = []
 
     for item in breadcrumb_items:
-        entry = {
-            "@type": "ListItem",
-            "position": item.get("position", 1),
-            "name": item.get("label", ""),
-        }
-
+        label = (item.get("label") or "").strip()
         url = item.get("url")
-        if url:
-            entry["item"] = _absolute_url(url)
 
-        elements.append(entry)
+        # ✅ اگر url خالی است، این آیتم را کاملاً رد کن
+        if not url:
+            continue
+
+        absolute = _absolute_url(url)
+
+        if not absolute:
+            continue
+
+        if not label:
+            label = absolute
+
+        elements.append({
+            "@type": "ListItem",
+            "position": len(elements) + 1,
+            "name": label,
+            "item": absolute,
+        })
+
+    # ✅ کمتر از ۲ آیتم معتبر → breadcrumb نساز
+    if len(elements) < 2:
+        return None
 
     return {
         "@type": "BreadcrumbList",
@@ -124,7 +142,6 @@ def _build_home_graph(seo=None):
         _build_website(),
     ]
 
-    # اگر SEO تنظیم شده بود، WebPage هم اضافه کن
     if seo is not None:
         page = _build_web_page(seo, schema_type="WebPage")
         if page:
@@ -151,7 +168,6 @@ def _build_web_page(seo, schema_type="WebPage"):
     if url:
         page["url"] = _absolute_url(url)
 
-    # زبان
     in_language = _get(seo, "language") or _site_language()
     if in_language:
         page["inLanguage"] = in_language
@@ -160,76 +176,92 @@ def _build_web_page(seo, schema_type="WebPage"):
 
 
 # =====================================================
-#  Product + Offer
+#  Product + Offer  —  ✅ همیشه offers دارد
 # =====================================================
 
 def _build_product(seo, obj):
     product = {
         "@type": "Product",
-        "name": _get(seo, "title") or _get(obj, "title_fa", "title_en", "title"),
-        "description": _get(seo, "description") or _get(
-            obj, "description_fa", "description_en", "description"
-        ),
+        "name": _get(seo, "title") or _get(obj, "title_fa", "title_en", "title") or "",
     }
 
+    description = _get(seo, "description") or _get(
+        obj, "description_fa", "description_en", "description", "summary_fa"
+    )
+    if description:
+        product["description"] = description
+
     url = _get(seo, "canonical", "url")
+    if not url and obj is not None:
+        try:
+            url = obj.get_absolute_url()
+        except Exception:
+            url = None
+
     if url:
         product["url"] = _absolute_url(url)
 
     # تصویر
-    image = None
     if obj is not None:
-        img = getattr(obj, "image", None)
+        img = (
+            getattr(obj, "main_image", None)
+            or getattr(obj, "image", None)
+            or getattr(obj, "cover", None)
+        )
         if img:
             try:
-                image = img.url
+                product["image"] = _absolute_url(img.url)
             except Exception:
-                image = None
-
-    if image:
-        product["image"] = _absolute_url(image)
+                pass
 
     # برند
-    brand = _get(obj, "brand", "brand_name") if obj is not None else None
-    if brand:
-        product["brand"] = {
-            "@type": "Brand",
-            "name": str(brand),
-        }
+    if obj is not None:
+        brand = (
+            getattr(obj, "brand", None)
+            or getattr(obj, "brand_name", None)
+            or getattr(obj, "title_en", None)
+        )
+        if brand:
+            product["brand"] = {
+                "@type": "Brand",
+                "name": str(brand),
+            }
 
-    # SKU / شناسه
+    # SKU
     if obj is not None:
         sku = getattr(obj, "sku", None) or getattr(obj, "code", None)
         if sku:
             product["sku"] = str(sku)
 
-    # قیمت
+    # ✅ offers — همیشه ساخته می‌شود (حتی بدون قیمت)
+    price = None
+    currency = "IRR"
+
     if obj is not None:
         price = (
             getattr(obj, "price", None)
             or getattr(obj, "final_price", None)
             or getattr(obj, "sale_price", None)
         )
-
         currency = getattr(obj, "currency", None) or "IRR"
 
-        if price:
-            offer = {
-                "@type": "Offer",
-                "price": str(price),
-                "priceCurrency": str(currency),
-                "url": _absolute_url(url or ""),
-                "availability": "https://schema.org/InStock",
-            }
+    offer = {
+        "@type": "Offer",
+        "url": _absolute_url(url or ""),
+        "priceCurrency": str(currency),
+        "price": str(price) if price else "0",
+        "availability": "https://schema.org/InStock",
+    }
 
-            updated = getattr(obj, "updated_at", None)
-            if updated:
-                try:
-                    offer["priceValidUntil"] = updated.date().isoformat()
-                except Exception:
-                    pass
+    if obj is not None:
+        updated = getattr(obj, "updated_at", None)
+        if updated:
+            try:
+                offer["priceValidUntil"] = updated.date().isoformat()
+            except Exception:
+                pass
 
-            product["offers"] = offer
+    product["offers"] = offer
 
     return product
 
@@ -275,6 +307,7 @@ def _build_article(seo, obj, schema_type="Article"):
             or getattr(obj, "publish_date_fa", None)
             or getattr(obj, "publish_date_en", None)
             or getattr(obj, "created_at", None)
+            or getattr(obj, "created_at_fa", None)
         )
         if published:
             try:
@@ -282,7 +315,10 @@ def _build_article(seo, obj, schema_type="Article"):
             except Exception:
                 pass
 
-        updated = getattr(obj, "updated_at", None)
+        updated = (
+            getattr(obj, "updated_at", None)
+            or getattr(obj, "updated_at_fa", None)
+        )
         if updated:
             try:
                 article["dateModified"] = updated.isoformat()
@@ -303,7 +339,6 @@ def _build_article(seo, obj, schema_type="Article"):
                 "name": _site_name(),
             }
 
-    # زبان
     in_language = _get(seo, "language") or _site_language()
     if in_language:
         article["inLanguage"] = in_language
@@ -338,35 +373,63 @@ def _build_person(seo, obj):
 
 
 # =====================================================
-#  VideoObject / Media
+#  VideoObject / Media  —  ✅ همیشه uploadDate دارد
 # =====================================================
 
 def _build_video(seo, obj):
     video = {
         "@type": "VideoObject",
-        "name": _get(seo, "title"),
-        "description": _get(seo, "description"),
+        "name": _get(seo, "title") or "",
+        "description": _get(seo, "description") or "",
     }
 
     url = _get(seo, "canonical", "url")
     if url:
         video["url"] = _absolute_url(url)
 
+    # ✅ thumbnailUrl + uploadDate — الزامی برای VideoObject
+    thumb_url = ""
+    upload_date = None
+
     if obj is not None:
-        thumb = getattr(obj, "thumbnail", None) or getattr(obj, "image", None)
+        thumb = (
+            getattr(obj, "thumbnail", None)
+            or getattr(obj, "image", None)
+            or getattr(obj, "cover", None)
+        )
         if thumb:
             try:
-                video["thumbnailUrl"] = _absolute_url(thumb.url)
+                thumb_url = _absolute_url(thumb.url)
             except Exception:
                 pass
 
-        upload = (
+        upload_date = (
             getattr(obj, "publish_date", None)
+            or getattr(obj, "publish_date_fa", None)
             or getattr(obj, "created_at", None)
+            or getattr(obj, "created_at_fa", None)
         )
-        if upload:
+
+    if thumb_url:
+        video["thumbnailUrl"] = thumb_url
+
+    # ✅ اگر تاریخ نداشت، تاریخ امروز را بگذار
+    if upload_date:
+        try:
+            video["uploadDate"] = upload_date.isoformat()
+        except Exception:
+            from django.utils import timezone
+            video["uploadDate"] = timezone.now().isoformat()
+    else:
+        from django.utils import timezone
+        video["uploadDate"] = timezone.now().isoformat()
+
+    # ✅ contentUrl یا embedUrl (اختیاری ولی توصیه‌شده)
+    if obj is not None:
+        video_file = getattr(obj, "video", None) or getattr(obj, "file", None)
+        if video_file:
             try:
-                video["uploadDate"] = upload.isoformat()
+                video["contentUrl"] = _absolute_url(video_file.url)
             except Exception:
                 pass
 
@@ -374,7 +437,7 @@ def _build_video(seo, obj):
 
 
 # =====================================================
-#  انتخاب نوع schema بر اساس content_type / page_key
+#  انتخاب نوع schema
 # =====================================================
 
 def _resolve_schema_type(seo):
@@ -420,14 +483,6 @@ def _resolve_schema_type(seo):
 # =====================================================
 
 def generate_schema(seo, obj=None):
-    """
-    امضای عمومی:
-        generate_schema(seo, obj=None) -> dict
-
-    هم SEOContext و هم SEOSetting خام پذیرفته می‌شود.
-    اگر seo هیچ‌کدام نباشد، یک WebPage حداقلی برمی‌گرداند.
-    """
-
     if seo is None:
         return {
             "@context": "https://schema.org",
@@ -436,7 +491,6 @@ def generate_schema(seo, obj=None):
         }
 
     # ---------- Schema دستی ----------
-
     manual = _get(seo, "schema_json")
     if manual:
         if isinstance(manual, str):
@@ -452,50 +506,37 @@ def generate_schema(seo, obj=None):
     page_key = _get(seo, "page_key") or ""
 
     # ---------- Home  →  @graph ----------
-
     if content_type == "page" and page_key == "home":
         return _build_home_graph(seo)
 
     # ---------- انتخاب generator ----------
-
     if content_type == "product":
         main = _build_product(seo, obj)
-
     elif content_type == "blog":
         main = _build_article(seo, obj, schema_type="Article")
-
     elif content_type == "news":
         main = _build_article(seo, obj, schema_type="NewsArticle")
-
     elif content_type == "resume":
         main = _build_person(seo, obj)
-
     elif content_type == "media":
         main = _build_video(seo, obj)
-
     elif schema_type == "AboutPage":
         main = _build_web_page(seo, schema_type="AboutPage")
-
     elif schema_type == "ContactPage":
         main = _build_web_page(seo, schema_type="ContactPage")
-
     elif schema_type == "WebSite":
         main = _build_website()
-
     else:
         main = _build_web_page(seo, schema_type=schema_type or "WebPage")
 
     # ---------- Breadcrumb ----------
-
     breadcrumb = _get(seo, "breadcrumb")
-
     if breadcrumb:
         bc_schema = _build_breadcrumb_schema(breadcrumb)
         if bc_schema:
             main["breadcrumb"] = bc_schema
 
     # ---------- @context ----------
-
     main["@context"] = "https://schema.org"
 
     return main

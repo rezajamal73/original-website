@@ -39,9 +39,7 @@ def _score_label(score):
 
 
 def _safe(html):
-    """
-    اگر HTML رشته بود، mark_safe کن.
-    """
+    """اگر HTML رشته بود، mark_safe کن."""
     if html is None:
         return ""
     return mark_safe(str(html))
@@ -101,7 +99,9 @@ class SEOSettingAdmin(admin.ModelAdmin):
 
     search_fields = (
         "title",
+        "title_en",
         "description",
+        "description_en",
         "keywords",
         "focus_keyphrase",
         "page_key",
@@ -170,11 +170,14 @@ class SEOSettingAdmin(admin.ModelAdmin):
             {
                 "description": (
                     "اطلاعاتی که موتورهای جستجو مانند گوگل "
-                    "برای نمایش صفحه استفاده می‌کنند."
+                    "برای نمایش صفحه استفاده می‌کنند. "
+                    "برای هر زبان فیلد جداگانه پر کنید."
                 ),
                 "fields": (
                     "title",
+                    "title_en",
                     "description",
+                    "description_en",
                     "keywords",
                     "canonical",
                 ),
@@ -205,7 +208,9 @@ class SEOSettingAdmin(admin.ModelAdmin):
                 ),
                 "fields": (
                     "og_title",
+                    "og_title_en",
                     "og_description",
+                    "og_description_en",
                     "og_type",
                     "og_image",
                     "og_preview",
@@ -219,7 +224,9 @@ class SEOSettingAdmin(admin.ModelAdmin):
                 "fields": (
                     "twitter_card",
                     "twitter_title",
+                    "twitter_title_en",
                     "twitter_description",
+                    "twitter_description_en",
                     "twitter_image",
                     "twitter_preview",
                 ),
@@ -250,6 +257,7 @@ class SEOSettingAdmin(admin.ModelAdmin):
                 ),
                 "fields": (
                     "breadcrumb_title",
+                    "breadcrumb_title_en",
                     "breadcrumb_preview",
                 ),
             },
@@ -309,13 +317,14 @@ class SEOSettingAdmin(admin.ModelAdmin):
     def title_short(self, obj):
         if obj.title:
             return obj.title[:60] + ("…" if len(obj.title) > 60 else "")
+        if obj.title_en:
+            return obj.title_en[:60] + ("…" if len(obj.title_en) > 60 else "")
         return f"— {obj.page_key or obj.object_id or '—'}"
 
     @admin.display(description="نوع محتوا")
     def content_type_badge(self, obj):
         return obj.get_content_type_display()
 
-    # ✅ اصلاح‌شده: mark_safe به‌جای format_html بدون آرگومان
     @admin.display(description="وضعیت")
     def status_badge(self, obj):
         if obj.is_active:
@@ -368,8 +377,8 @@ class SEOSettingAdmin(admin.ModelAdmin):
     @admin.display(description="پیش‌نمایش در گوگل")
     def google_preview(self, obj):
 
-        title = obj.title or "عنوان SEO"
-        description = obj.description or "توضیحات SEO ..."
+        title = obj.title_en or obj.title or "عنوان SEO"
+        description = obj.description_en or obj.description or "توضیحات SEO ..."
         url = obj.canonical or obj.url or "https://example.com/"
 
         title = title[:60] + ("…" if len(title) > 60 else "")
@@ -407,10 +416,21 @@ class SEOSettingAdmin(admin.ModelAdmin):
     @admin.display(description="پیش‌نمایش کارت توییتر")
     def twitter_preview(self, obj):
 
-        title = obj.twitter_title or obj.og_title or obj.title or "عنوان توییتر"
+        title = (
+            obj.twitter_title_en
+            or obj.twitter_title
+            or obj.og_title_en
+            or obj.og_title
+            or obj.title_en
+            or obj.title
+            or "عنوان توییتر"
+        )
         description = (
-            obj.twitter_description
+            obj.twitter_description_en
+            or obj.twitter_description
+            or obj.og_description_en
             or obj.og_description
+            or obj.description_en
             or obj.description
             or "توضیحات توییتر ..."
         )
@@ -476,7 +496,13 @@ class SEOSettingAdmin(admin.ModelAdmin):
         if obj.content_type != "page":
             items.append(obj.get_content_type_display())
 
-        items.append(obj.breadcrumb_title or obj.title or "—")
+        items.append(
+            obj.breadcrumb_title_en
+            or obj.breadcrumb_title
+            or obj.title_en
+            or obj.title
+            or "—"
+        )
 
         html_items = []
 
@@ -533,10 +559,40 @@ class SEOSettingAdmin(admin.ModelAdmin):
             return "—"
 
     # =================================================
-    #  دکمه «تحلیل مجدد SEO»
+    #  کمک‌تابع: پیدا کردن مدل مربوطه از SEOSetting
+    # =================================================
+
+    def _get_related_object(self, seo):
+        """
+        مدل مربوطه به این SEOSetting را پیدا می‌کند.
+        """
+        from django.apps import apps
+
+        if not seo.app_label or not seo.model_name or not seo.object_id:
+            return None
+
+        try:
+            Model = apps.get_model(seo.app_label, seo.model_name)
+        except LookupError:
+            return None
+
+        if Model is None:
+            return None
+
+        try:
+            return Model.objects.filter(pk=seo.object_id).first()
+        except Exception:
+            return None
+
+    # =================================================
+    #  دکمه‌های سفارشی
     # =================================================
 
     def response_change(self, request, obj):
+
+        # ==============================
+        #  1) تحلیل مجدد SEO
+        # ==============================
 
         if "_reanalyze_seo" in request.POST:
             try:
@@ -552,6 +608,88 @@ class SEOSettingAdmin(admin.ModelAdmin):
                 messages.error(
                     request,
                     f"❌ خطا در تحلیل: {e}"
+                )
+
+            return redirect(request.path)
+
+        # ==============================
+        #  2) فراخوانی مجدد از مدل (فقط فیلدهای خالی)
+        # ==============================
+
+        if "_resync_seo" in request.POST:
+            try:
+                from .signals import _update_seo_setting
+
+                obj_model = self._get_related_object(obj)
+
+                if obj_model is None:
+                    messages.warning(
+                        request,
+                        "⚠️ مدل مربوطه پیدا نشد. نمی‌توان فیلدها را از مدل خواند."
+                    )
+                    return redirect(request.path)
+
+                _update_seo_setting(obj_model)
+                obj.refresh_from_db()
+
+                messages.success(
+                    request,
+                    "✅ فیلدهای خالی از مدل مربوطه پر شد."
+                )
+            except Exception as e:
+                messages.error(
+                    request,
+                    f"❌ خطا در فراخوانی مجدد: {e}"
+                )
+
+            return redirect(request.path)
+
+        # ==============================
+        #  3) بازسازی کامل فیلدها
+        # ==============================
+
+        if "_rebuild_seo" in request.POST:
+            try:
+                from .signals import _extract_all_fields
+                from .analyzer import analyze_and_save
+
+                obj_model = self._get_related_object(obj)
+
+                if obj_model is None:
+                    messages.warning(
+                        request,
+                        "⚠️ مدل مربوطه پیدا نشد."
+                    )
+                    return redirect(request.path)
+
+                data = _extract_all_fields(obj_model)
+
+                if not data.get("og_image"):
+                    data.pop("og_image", None)
+                if not data.get("twitter_image"):
+                    data.pop("twitter_image", None)
+
+                for field, value in data.items():
+                    setattr(obj, field, value)
+
+                if not obj.title:
+                    obj.title = "بدون عنوان"
+
+                obj.save()
+
+                try:
+                    analyze_and_save(obj)
+                except Exception:
+                    pass
+
+                messages.success(
+                    request,
+                    "♻️ همه فیلدها از مدل بازسازی و ذخیره شدند."
+                )
+            except Exception as e:
+                messages.error(
+                    request,
+                    f"❌ خطا در بازسازی: {e}"
                 )
 
             return redirect(request.path)
@@ -666,6 +804,7 @@ class SEOAnalysisLogAdmin(admin.ModelAdmin):
 
     search_fields = (
         "seo_setting__title",
+        "seo_setting__title_en",
         "seo_setting__page_key",
     )
 
