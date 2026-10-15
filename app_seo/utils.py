@@ -168,31 +168,50 @@ class SEOContext:
         return _detect_language(self.request) == "en"
 
     # =====================
-    #  پایه
+    #  ✅ پایه — عنوان
     # =====================
 
     @property
     def title(self):
         """
         ✅ انتخاب هوشمند عنوان بر اساس زبان صفحه.
+
+        در صفحه انگلیسی: ابتدا title_en → سپس title → سپس title_fa
+        در صفحه فارسی:   ابتدا title   → سپس title_fa → سپس title_en
         """
         if self.is_english:
-            # صفحه انگلیسی: اول title_en
+            # ---- صفحه انگلیسی ----
             value = self._pick(
+                # 1) setting.title_en (اگر در ادمین پر شده)
+                getattr(self.setting, "title_en", None) if self.setting else None,
+                # 2) setting.title (ممکن است عنوان انگلیسی باشد)
                 getattr(self.setting, "title", None) if self.setting else None,
+                # 3) obj.title_en
                 getattr(self.obj, "title_en", None) if self.obj else None,
+                # 4) obj.title_fa (fallback)
                 getattr(self.obj, "title_fa", None) if self.obj else None,
+                # 5) obj.title
                 getattr(self.obj, "title", None) if self.obj else None,
             )
         else:
-            # صفحه فارسی: اول title_fa
+            # ---- صفحه فارسی ----
             value = self._pick(
+                # 1) setting.title
                 getattr(self.setting, "title", None) if self.setting else None,
+                # 2) obj.title_fa
                 getattr(self.obj, "title_fa", None) if self.obj else None,
-                getattr(self.obj, "title_en", None) if self.obj else None,
+                # 3) obj.title
                 getattr(self.obj, "title", None) if self.obj else None,
+                # 4) setting.title_en (fallback)
+                getattr(self.setting, "title_en", None) if self.setting else None,
+                # 5) obj.title_en (fallback)
+                getattr(self.obj, "title_en", None) if self.obj else None,
             )
         return value or ""
+
+    # =====================
+    #  ✅ پایه — توضیحات
+    # =====================
 
     @property
     def description(self):
@@ -201,19 +220,33 @@ class SEOContext:
         """
         if self.is_english:
             return self._pick(
+                # 1) setting.description_en
+                getattr(self.setting, "description_en", None) if self.setting else None,
+                # 2) setting.description
                 getattr(self.setting, "description", None) if self.setting else None,
+                # 3) obj.description_en
                 getattr(self.obj, "description_en", None) if self.obj else None,
-                getattr(self.obj, "description_fa", None) if self.obj else None,
-                getattr(self.obj, "description", None) if self.obj else None,
+                # 4) obj.summary_en
                 getattr(self.obj, "summary_en", None) if self.obj else None,
+                # 5) obj.description_fa
+                getattr(self.obj, "description_fa", None) if self.obj else None,
+                # 6) obj.description
+                getattr(self.obj, "description", None) if self.obj else None,
             ) or ""
         else:
             return self._pick(
+                # 1) setting.description
                 getattr(self.setting, "description", None) if self.setting else None,
+                # 2) obj.description_fa
                 getattr(self.obj, "description_fa", None) if self.obj else None,
-                getattr(self.obj, "description_en", None) if self.obj else None,
-                getattr(self.obj, "description", None) if self.obj else None,
+                # 3) obj.summary_fa
                 getattr(self.obj, "summary_fa", None) if self.obj else None,
+                # 4) obj.description
+                getattr(self.obj, "description", None) if self.obj else None,
+                # 5) setting.description_en (fallback)
+                getattr(self.setting, "description_en", None) if self.setting else None,
+                # 6) obj.description_en (fallback)
+                getattr(self.obj, "description_en", None) if self.obj else None,
             ) or ""
 
     @property
@@ -298,17 +331,37 @@ class SEOContext:
 
     @property
     def og_title(self):
-        return self._pick(
-            getattr(self.setting, "og_title", None) if self.setting else None,
-            self.title,
-        ) or ""
+        """
+        ✅ انتخاب هوشمند og_title بر اساس زبان.
+        """
+        if self.is_english:
+            return self._pick(
+                getattr(self.setting, "og_title_en", None) if self.setting else None,
+                getattr(self.setting, "og_title", None) if self.setting else None,
+                self.title,
+            ) or ""
+        else:
+            return self._pick(
+                getattr(self.setting, "og_title", None) if self.setting else None,
+                self.title,
+            ) or ""
 
     @property
     def og_description(self):
-        return self._pick(
-            getattr(self.setting, "og_description", None) if self.setting else None,
-            self.description,
-        ) or ""
+        """
+        ✅ انتخاب هوشمند og_description بر اساس زبان.
+        """
+        if self.is_english:
+            return self._pick(
+                getattr(self.setting, "og_description_en", None) if self.setting else None,
+                getattr(self.setting, "og_description", None) if self.setting else None,
+                self.description,
+            ) or ""
+        else:
+            return self._pick(
+                getattr(self.setting, "og_description", None) if self.setting else None,
+                self.description,
+            ) or ""
 
     @property
     def og_type(self):
@@ -353,17 +406,37 @@ class SEOContext:
 
     @property
     def twitter_title(self):
-        return self._pick(
-            getattr(self.setting, "twitter_title", None) if self.setting else None,
-            self.og_title,
-        ) or ""
+        """
+        ✅ انتخاب هوشمند twitter_title بر اساس زبان.
+        """
+        if self.is_english:
+            return self._pick(
+                getattr(self.setting, "twitter_title_en", None) if self.setting else None,
+                getattr(self.setting, "twitter_title", None) if self.setting else None,
+                self.og_title,
+            ) or ""
+        else:
+            return self._pick(
+                getattr(self.setting, "twitter_title", None) if self.setting else None,
+                self.og_title,
+            ) or ""
 
     @property
     def twitter_description(self):
-        return self._pick(
-            getattr(self.setting, "twitter_description", None) if self.setting else None,
-            self.og_description,
-        ) or ""
+        """
+        ✅ انتخاب هوشمند twitter_description بر اساس زبان.
+        """
+        if self.is_english:
+            return self._pick(
+                getattr(self.setting, "twitter_description_en", None) if self.setting else None,
+                getattr(self.setting, "twitter_description", None) if self.setting else None,
+                self.og_description,
+            ) or ""
+        else:
+            return self._pick(
+                getattr(self.setting, "twitter_description", None) if self.setting else None,
+                self.og_description,
+            ) or ""
 
     @property
     def twitter_image(self):
@@ -421,10 +494,20 @@ class SEOContext:
 
     @property
     def breadcrumb_title(self):
-        return self._pick(
-            getattr(self.setting, "breadcrumb_title", None) if self.setting else None,
-            self.title,
-        ) or ""
+        """
+        ✅ انتخاب هوشمند breadcrumb_title بر اساس زبان.
+        """
+        if self.is_english:
+            return self._pick(
+                getattr(self.setting, "breadcrumb_title_en", None) if self.setting else None,
+                getattr(self.setting, "breadcrumb_title", None) if self.setting else None,
+                self.title,
+            ) or ""
+        else:
+            return self._pick(
+                getattr(self.setting, "breadcrumb_title", None) if self.setting else None,
+                self.title,
+            ) or ""
 
     @property
     def hreflang_group(self):
@@ -502,7 +585,7 @@ class SEOContext:
         return result
 
     # =====================
-    #  Breadcrumb  —  ✅ فقط آیتم‌های دارای URL
+    #  Breadcrumb
     # =====================
 
     @property
@@ -515,14 +598,14 @@ class SEOContext:
         home_url = _site_base_url() or "/"
         home_label = "خانه" if _detect_language(self.request) == "fa" else "Home"
 
-        # آیتم ۱: خانه — همیشه URL دارد
+        # آیتم ۱: خانه
         items.append({
             "label": home_label,
             "url": home_url,
             "position": 1,
         })
 
-        # آیتم ۲: دسته‌بندی — فقط اگر URL معتبر دارد
+        # آیتم ۲: دسته‌بندی
         if self.content_type != "page" and self.obj is not None:
             parent = (
                 getattr(self.obj, "category", None)
@@ -537,7 +620,6 @@ class SEOContext:
                     except Exception:
                         parent_url = ""
 
-                # ✅ فقط اگر URL غیرخالی بود، اضافه کن
                 if parent_url:
                     items.append({
                         "label": str(parent),
@@ -545,7 +627,7 @@ class SEOContext:
                         "position": len(items) + 1,
                     })
 
-        # آیتم ۳: خود صفحه — همیشه از canonical
+        # آیتم ۳: خود صفحه
         final_url = self.canonical or ""
         if final_url:
             items.append({

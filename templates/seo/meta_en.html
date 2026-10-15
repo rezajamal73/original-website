@@ -1,0 +1,101 @@
+{% load static %}
+{% load seo_tags %}
+
+{# ===================================================== #}
+{#  SEO Meta Template — English Version (Final)          #}
+{# ===================================================== #}
+
+{% with seo=seo|default:request.seo %}
+
+{# ---------- 1) Title — استفاده از تگ اختصاصی انگلیسی ---------- #}
+<title>{% seo_title_en %}</title>
+
+{# ---------- 2) Description ---------- #}
+{% seo_description_en as desc_en %}
+{% if desc_en %}
+    <meta name="description" content="{{ desc_en }}">
+{% endif %}
+
+{# ---------- 3) Keywords ---------- #}
+{% if seo and seo.keywords %}
+    <meta name="keywords" content="{{ seo.keywords }}">
+{% endif %}
+
+{# ---------- 4) Robots ---------- #}
+{% if seo and seo.robots %}
+    <meta name="robots" content="{{ seo.robots }}">
+{% endif %}
+
+{# ---------- 5) Canonical ---------- #}
+{% if seo.canonical %}
+    <link rel="canonical" href="{{ seo.canonical }}">
+{% elif request %}
+    <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
+{% endif %}
+
+{# ---------- 6) Hreflang ---------- #}
+{% if seo and seo.hreflang %}
+    {% for alt in seo.hreflang %}
+        {% if alt.url %}
+            {% if alt.url|slice:":4" == "http" %}
+                <link rel="alternate" hreflang="{{ alt.lang }}" href="{{ alt.url }}">
+            {% elif request %}
+                <link rel="alternate" hreflang="{{ alt.lang }}"
+                      href="{{ request.scheme }}://{{ request.get_host }}{{ alt.url }}">
+            {% endif %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+{# ---------- 7) Open Graph ---------- #}
+<meta property="og:type" content="{{ seo.og_type|default:'website' }}">
+
+{% seo_title_en as og_title_en %}
+{% if og_title_en %}
+    <meta property="og:title" content="{{ og_title_en }}">
+{% endif %}
+
+{% if desc_en %}
+    <meta property="og:description" content="{{ desc_en }}">
+{% endif %}
+
+{% if seo.canonical %}
+    <meta property="og:url" content="{{ seo.canonical }}">
+{% elif request %}
+    <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
+{% endif %}
+
+{% if seo.og_image_url %}
+    <meta property="og:image" content="{{ seo.og_image_url }}">
+{% endif %}
+
+{% if og_title_en %}
+    <meta property="og:site_name" content="{{ og_title_en }}">
+{% endif %}
+
+{# ---------- 8) Twitter Card ---------- #}
+<meta name="twitter:card" content="{{ seo.twitter_card|default:'summary_large_image' }}">
+
+{% if og_title_en %}
+    <meta name="twitter:title" content="{{ og_title_en }}">
+{% endif %}
+
+{% if desc_en %}
+    <meta name="twitter:description" content="{{ desc_en }}">
+{% endif %}
+
+{% if seo.twitter_image_url %}
+    <meta name="twitter:image" content="{{ seo.twitter_image_url }}">
+{% endif %}
+
+{# ---------- 9) Schema ---------- #}
+{% if seo and seo.schema_json_ld %}
+    <script type="application/ld+json">{{ seo.schema_json_ld|safe }}</script>
+{% else %}
+    {% seo_schema as fallback_schema %}
+    {% if fallback_schema %}
+        <script type="application/ld+json">{{ fallback_schema|safe }}</script>
+    {% endif %}
+{% endif %}
+
+{% endwith %}

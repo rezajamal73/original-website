@@ -90,7 +90,7 @@ def _default_site_title(context):
 
 @register.simple_tag(takes_context=True)
 def seo_title(context):
-    """عنوان SEO صفحه."""
+    """عنوان SEO صفحه (بر اساس زبان)."""
     seo = _get_seo(context)
 
     if seo and getattr(seo, "title", None):
@@ -100,16 +100,120 @@ def seo_title(context):
 
 
 # =====================================================
+#  ✅ Title English — تگ اختصاصی برای صفحه انگلیسی
+# =====================================================
+
+@register.simple_tag(takes_context=True)
+def seo_title_en(context):
+    """
+    عنوان SEO مخصوص صفحه انگلیسی.
+
+    اولویت:
+    1. setting.title_en
+    2. obj.title_en
+    3. setting.title (فارسی به عنوان fallback)
+    4. obj.title_fa
+    5. default_site_title
+    """
+    seo = _get_seo(context)
+
+    if seo is None:
+        return _default_site_title(context)
+
+    setting = getattr(seo, "setting", None) or seo
+    obj = getattr(seo, "obj", None)
+
+    # 1) setting.title_en
+    title_en = getattr(setting, "title_en", None)
+    if title_en and str(title_en).strip():
+        return title_en
+
+    # 2) obj.title_en
+    if obj is not None:
+        obj_title_en = getattr(obj, "title_en", None)
+        if obj_title_en and str(obj_title_en).strip():
+            return obj_title_en
+
+    # 3) setting.title (فارسی)
+    title = getattr(setting, "title", None)
+    if title and str(title).strip():
+        return title
+
+    # 4) obj.title_fa
+    if obj is not None:
+        obj_title_fa = getattr(obj, "title_fa", None)
+        if obj_title_fa and str(obj_title_fa).strip():
+            return obj_title_fa
+
+    # 5) fallback
+    return _default_site_title(context)
+
+
+# =====================================================
 #  Description
 # =====================================================
 
 @register.simple_tag(takes_context=True)
 def seo_description(context):
-    """توضیحات SEO صفحه."""
+    """توضیحات SEO صفحه (بر اساس زبان)."""
     seo = _get_seo(context)
 
     if seo and getattr(seo, "description", None):
         return seo.description
+
+    return ""
+
+
+# =====================================================
+#  ✅ Description English — تگ اختصاصی برای صفحه انگلیسی
+# =====================================================
+
+@register.simple_tag(takes_context=True)
+def seo_description_en(context):
+    """
+    توضیحات SEO مخصوص صفحه انگلیسی.
+
+    اولویت:
+    1. setting.description_en
+    2. obj.description_en
+    3. setting.description (فارسی)
+    4. obj.description_fa
+    5. obj.description
+    """
+    seo = _get_seo(context)
+
+    if seo is None:
+        return ""
+
+    setting = getattr(seo, "setting", None) or seo
+    obj = getattr(seo, "obj", None)
+
+    # 1) setting.description_en
+    desc_en = getattr(setting, "description_en", None)
+    if desc_en and str(desc_en).strip():
+        return desc_en
+
+    # 2) obj.description_en
+    if obj is not None:
+        obj_desc_en = getattr(obj, "description_en", None)
+        if obj_desc_en and str(obj_desc_en).strip():
+            return obj_desc_en
+
+    # 3) setting.description (فارسی)
+    desc = getattr(setting, "description", None)
+    if desc and str(desc).strip():
+        return desc
+
+    # 4) obj.description_fa
+    if obj is not None:
+        obj_desc_fa = getattr(obj, "description_fa", None)
+        if obj_desc_fa and str(obj_desc_fa).strip():
+            return obj_desc_fa
+
+        # 5) obj.description
+        obj_desc = getattr(obj, "description", None)
+        if obj_desc and str(obj_desc).strip():
+            return obj_desc
 
     return ""
 
@@ -170,7 +274,7 @@ def seo_canonical(context):
 
 
 # =====================================================
-#  OG Image URL  —  هم SEOContext هم SEOSetting
+#  OG Image URL
 # =====================================================
 
 @register.simple_tag(takes_context=True)
@@ -179,12 +283,10 @@ def seo_og_image(context):
     seo = _get_seo(context)
 
     if seo:
-        # SEOContext → property
         url = getattr(seo, "og_image_url", None)
         if url:
             return url
 
-        # SEOSetting خام → فیلد ImageField
         image = getattr(seo, "og_image", None)
         if image:
             try:
