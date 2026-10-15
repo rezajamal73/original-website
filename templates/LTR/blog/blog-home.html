@@ -2,6 +2,7 @@
 
 {% load static %}
 {% load blog_tags %}
+{% load i18n %}
 
 {% block content %}
 
@@ -73,15 +74,20 @@
                                         <!-- DATE -->
                                         <span class="blog-date">
                                             <i class="far fa-calendar-alt"></i>
-                                            {{ blog.publish_date_en }}
+                                            {# ✅ تاریخ میلادی با فرمت انگلیسی #}
+                                            {% language 'en' %}
+                                                {{ blog.publish_date_en|date:"F d, Y" }}
+                                            {% endlanguage %}
                                         </span>
 
 
                                         <!-- IMAGE -->
                                         <div class="blog-item-img">
                                             <a href="{{ blog.get_absolute_url_en }}">
-                                                <img src="{{ blog.image.url }}"
-                                                     alt="{{ blog.title_en }}">
+                                                {% if blog.image %}
+                                                    <img src="{{ blog.image.url }}"
+                                                         alt="{{ blog.title_en|default:blog.title_fa }}">
+                                                {% endif %}
                                             </a>
                                         </div>
 
@@ -92,14 +98,14 @@
                                             <!-- TITLE -->
                                             <h4 class="blog-title">
                                                 <a href="{{ blog.get_absolute_url_en }}">
-                                                    {{ blog.title_en }}
+                                                    {{ blog.title_en|default:blog.title_fa }}
                                                 </a>
                                             </h4>
 
 
                                             <!-- DESCRIPTION -->
                                             <p>
-                                                {{ blog.content_1_en|striptags|truncatechars:120 }}
+                                                {{ blog.content_1_en|default:blog.content_1_fa|striptags|truncatechars:120 }}
                                             </p>
 
 

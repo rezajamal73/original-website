@@ -50,8 +50,8 @@
                             <ul>
                                 {% for cat in categories_2 %}
                                     <li>
-                                        {# ✅ slug فارسی #}
-                                        <a href="{% url 'app_news:news_category' cat.slug %}">
+                                        <a href="{% url 'app_news:news_category' cat.slug %}"
+                                           class="{% if category and category.id == cat.id %}active{% endif %}">
                                             <span>{{ cat.title_fa }}</span>
                                         </a>
                                     </li>

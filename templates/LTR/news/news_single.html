@@ -1,39 +1,43 @@
-{% extends 'RTL/core/base.html' %}
+{% extends 'LTR/core/base-en.html' %}
 {% load static %}
+{% load i18n %}
+
 {% block content %}
     <main class="main">
         <!-- breadcrumb -->
         <div class="site-breadcrumb">
-            <div class="site-breadcrumb-bg" style="background: url('{{ banner.image.url }}')">
-            </div>
+            {% if banner and banner.image %}
+                <div class="site-breadcrumb-bg"
+                     style="background: url('{{ banner.image.url }}')">
+                </div>
+            {% else %}
+                <div class="site-breadcrumb-bg"></div>
+            {% endif %}
             <div class="container">
                 <div class="site-breadcrumb-wrap">
                     <h4 class="breadcrumb-title">
-                        اخبار شرکت
+                        Company News
                     </h4>
                     <ul class="breadcrumb-menu">
                         <li>
-                            <a href="{% url 'app_core:home' %}">
-                                <i class="far fa-home">
-                                </i>
-                                خانه
+                            <a href="{% url 'app_core_en:home_en' %}">
+                                <i class="far fa-home"></i>
+                                Home
                             </a>
                         </li>
                         <li>
-                            <a href="{% url 'app_news:news_home' %}">
-                                <i class="far">
-                                </i>
-                                کلیه اخبار ها
+                            <a href="{% url 'app_news_en:news_home_en' %}">
+                                <i class="far"></i>
+                                All News
                             </a>
                         </li>
-                        <li class="active">{{ news.title_fa }}
-                        </li>
+                        <li class="active">{{ news.title_en }}</li>
                     </ul>
                 </div>
-
             </div>
         </div>
         <!-- breadcrumb end -->
+
         <!-- blog single area -->
         <div class="blog-single-area py-100">
             <div class="container">
@@ -43,63 +47,78 @@
                         <div class="blog-single-wrap">
                             <div class="blog-single-content">
 
-                                <!-- تصویر خبر -->
-                                <div class="blog-thumb-img">
-                                    <img src="{{ news.image.url }}" alt="{{ news.title_fa }}">
-                                </div>
+                                <!-- news image -->
+                                {% if news.image %}
+                                    <div class="blog-thumb-img">
+                                        <img src="{{ news.image.url }}" alt="{{ news.title_en }}">
+                                    </div>
+                                {% endif %}
 
                                 <div class="blog-info">
 
-                                    <!-- متای خبر -->
+                                    <!-- news meta -->
                                     <div class="blog-meta">
                                         <div class="blog-meta-left">
                                             <ul>
                                                 <li>
                                                     {% if site_info %}
                                                         <i class="far fa-user"></i>
-                                                        {{ site_info.name_company_p1_fa }}
-                                                        {{ site_info.name_company_p2_fa }}
+                                                        {{ site_info.name_company_p1_en }}
+                                                        {{ site_info.name_company_p2_en }}
                                                     {% endif %}
                                                 </li>
                                                 <li>
                                                     <i class="far fa-calendar-alt"></i>
-                                                    {{ news.publish_date_fa }}
+                                                    {# ✅ تاریخ میلادی با فرمت درست انگلیسی #}
+                                                    {% language 'en' %}
+                                                        {{ news.publish_date_en|date:"F d, Y" }}
+                                                    {% endlanguage %}
                                                 </li>
                                             </ul>
                                         </div>
                                     </div>
                                 </div>
 
-                                <!-- جزئیات خبر -->
+                                <!-- news details -->
                                 <div class="blog-details">
                                     <h3 class="blog-details-title mb-20">
-                                        {{ news.title_fa }}
+                                        {{ news.title_en }}
                                     </h3>
 
-                                    <p class="mb-10">
-                                        {{ news.summary_fa|linebreaks }}
-                                    </p>
+                                    {% if news.summary_en %}
+                                        <p class="mb-10">
+                                            {{ news.summary_en|linebreaks }}
+                                        </p>
+                                    {% endif %}
+
+                                    {% if news.content_en %}
+                                        <p class="mb-10">
+                                            {{ news.content_en|linebreaks }}
+                                        </p>
+                                    {% endif %}
                                 </div>
 
-                                {% if news.images.all %}
+                                <!-- image gallery -->
+                                {% if news.images.exists %}
                                     <div class="blog-author">
 
-                                        <!-- عنوان بالای گالری -->
                                         <h5 class="mb-3" style="display:block; width:100%; clear:both;">
-                                            عکس‌ها:
+                                            Photos:
                                         </h5>
 
-                                        <!-- گالری تصاویر -->
                                         <div class="row g-4 popup-gallery">
                                             {% for img in news.images.all %}
                                                 <div class="col-md-4 col-lg-3">
                                                     <div class="gallery-item wow fadeInUp" data-wow-delay=".25s">
                                                         <div class="gallery-img">
-                                                            <img alt="{{ img.caption }}" src="{{ img.image.url }}"/>
-                                                            <a class="popup-img gallery-link"
-                                                               href="{{ img.image.url }}">
-                                                                <i class="fal fa-plus"></i>
-                                                            </a>
+                                                            {% if img.image %}
+                                                                <img alt="{{ img.caption|default:news.title_en }}"
+                                                                     src="{{ img.image.url }}"/>
+                                                                <a class="popup-img gallery-link"
+                                                                   href="{{ img.image.url }}">
+                                                                    <i class="fal fa-plus"></i>
+                                                                </a>
+                                                            {% endif %}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -109,72 +128,68 @@
                                     </div>
                                 {% endif %}
 
-
-                                <!-- بخش ویدیوها -->
+                                <!-- videos section -->
                                 {% if news.videos.exists %}
                                     <h5 class="mb-3" style="display:block; width:100%; clear:both;">
-                                        ویدیوها:
+                                        Videos:
                                     </h5>
 
                                     <div class="row g-4">
                                         {% for vid in news.videos.all %}
                                             <div class="col-md-6 col-lg-4">
-
-                                                <!-- نمایش ساده‌ی ویدیو -->
                                                 <video controls style="width:100%; border-radius:8px;">
                                                     <source src="{{ vid.video.url }}" type="video/mp4">
-                                                    مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.
+                                                    Your browser does not support the video tag.
                                                 </video>
-
-                                                {% if vid.caption %}
-                                                    <p class="mt-2 text-center">{{ vid.caption }}</p>
-                                                {% endif %}
-
                                             </div>
                                         {% endfor %}
                                     </div>
                                 {% endif %}
-                                <!-- خط بالا -->
+
                                 <hr style="margin-bottom: 20px;">
 
                                 <div class="blog-details-tags pb-20"
                                      style="display: flex; gap: 40px; align-items: center; flex-wrap: wrap;">
 
-                                    <!-- دسته‌بندی -->
+                                    <!-- category -->
                                     <div style="display: flex; align-items: center; gap: 8px;">
-                                        <h5 style="margin: 0;">دسته‌بندی:</h5>
-                                        {% with category=news.category %}
-                                            {% if category %}
-                                                <a href="{% url 'app_news:news_category' category.slug %}">
-                                                    {{ category.title_fa }}
-                                                </a>
-                                            {% endif %}
-                                        {% endwith %}
+                                        <h5 style="margin: 0;">Category:</h5>
+                                        {% if news.category %}
+                                            {# ✅ fallback: slug_en یا slug فارسی #}
+                                            <a href="{% url 'app_news_en:news_category_en' news.category.slug_en|default:news.category.slug %}">
+                                                {{ news.category.title_en|default:news.category.title_fa }}
+                                            </a>
+                                        {% else %}
+                                            <span>—</span>
+                                        {% endif %}
                                     </div>
 
-                                    <!-- برچسب‌ها -->
+                                    <!-- tags -->
                                     <div style="display: flex; align-items: center; gap: 8px;">
-                                        <h5 style="margin: 0;">برچسب‌ها:</h5>
+                                        <h5 style="margin: 0;">Tags:</h5>
 
-                                        <ul style="margin: 0; padding: 0; list-style: none; display: flex; gap: 10px;">
-
+                                        <ul style="margin: 0; padding: 0; list-style: none; display: flex; gap: 10px; flex-wrap: wrap;">
                                             {% for tag in news.tags.all %}
                                                 <li>
-                                                    <a href="{% url 'app_news:news_tag' slug=tag.slug %}">
-                                                        <p>{{ tag.title_fa }}</p>
+                                                    {# ✅ fallback: slug_en یا slug فارسی #}
+                                                    <a href="{% url 'app_news_en:news_tag_en' tag.slug_en|default:tag.slug %}">
+                                                        <p>{{ tag.title_en|default:tag.title_fa }}</p>
                                                     </a>
                                                 </li>
+                                            {% empty %}
+                                                <li><p>No tags</p></li>
                                             {% endfor %}
                                         </ul>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        </div>
+        <!-- blog single area end -->
 
     </main>
 {% endblock %}

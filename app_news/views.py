@@ -2,6 +2,7 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.db.models import Q
+from django.http import Http404
 
 from app_news.models import News, NewsCategory, NewsTag
 from app_seo.utils import SEOManager
@@ -37,6 +38,21 @@ def _paginate(request, queryset, per_page=8):
 
 
 # =====================================================
+# CATEGORIES HELPER  ← ✅ جدید
+# =====================================================
+def _get_categories_2():
+    """
+    دسته‌بندی‌هایی که حداقل یک خبر منتشرشده دارند.
+    """
+    return (
+        NewsCategory.objects
+        .filter(news__status="published")
+        .distinct()
+        .order_by("id")
+    )
+
+
+# =====================================================
 # NEWS HOME
 # =====================================================
 def news_home(request, slug=None):
@@ -65,11 +81,7 @@ def news_home(request, slug=None):
     context = {
         "news_list": news_list,
         "active_category_slug": slug,
-        "categories_2": (
-            NewsCategory.objects
-            .filter(news__status="published")
-            .distinct()
-        ),
+        "categories_2": _get_categories_2(),   # ✅
         "seo": SEOManager.get_page("news"),
         "is_english": is_english,
     }
@@ -82,10 +94,8 @@ def news_home(request, slug=None):
 
 
 # =====================================================
-# NEWS SINGLE — با pid + slug
+# NEWS SINGLE — با slug
 # =====================================================
-# app_news/views.py — فقط news_single
-
 def news_single(request, slug: str):
     """
     فارسی:    /news/عنوان-خبر/
@@ -131,20 +141,20 @@ def news_single(request, slug: str):
 # =====================================================
 def news_single_redirect(request, pid):
     """
-    ریدایرکت از URL قدیمی (فقط pid) به URL جدید (pid + slug).
+    ریدایرکت از URL قدیمی (فقط pid) به URL جدید (slug).
     """
     is_english = is_english_request(request)
 
     news = get_object_or_404(News, pk=pid)
 
     if is_english:
-        target = "app_news_en:news_single_en"
+        target = "app_news:news_single"   # ✅ اصلاح: app_news (نه app_news_en)
         redirect_slug = news.slug_en or news.slug
     else:
         target = "app_news:news_single"
         redirect_slug = news.slug
 
-    return redirect(target, pid=pid, slug=redirect_slug, permanent=True)
+    return redirect(target, slug=redirect_slug, permanent=True)
 
 
 # =====================================================
@@ -156,11 +166,17 @@ def news_tag(request, slug):
     """
     is_english = is_english_request(request)
 
-    # ✅ انتخاب اسلاگ درست بر اساس زبان
+    # ✅ انتخاب اسلاگ درست بر اساس زبان + fallback
     if is_english:
-        tag = get_object_or_404(NewsTag, slug_en=slug)
+        tag = (
+            NewsTag.objects.filter(slug_en=slug).first()
+            or NewsTag.objects.filter(slug=slug).first()
+        )
     else:
-        tag = get_object_or_404(NewsTag, slug=slug)
+        tag = NewsTag.objects.filter(slug=slug).first()
+
+    if not tag:
+        raise Http404(f"Tag '{slug}' not found")
 
     news_queryset = (
         News.objects
@@ -175,6 +191,8 @@ def news_tag(request, slug):
     context = {
         "tag": tag,
         "news_list": news_list,
+        "active_category_slug": None,
+        "categories_2": _get_categories_2(),   # ✅
         "seo": SEOManager.get_page("news"),
         "is_english": is_english,
     }
@@ -195,11 +213,17 @@ def news_category(request, slug):
     """
     is_english = is_english_request(request)
 
-    # ✅ انتخاب اسلاگ درست بر اساس زبان
+    # ✅ انتخاب اسلاگ درست بر اساس زبان + fallback به slug فارسی
     if is_english:
-        category = get_object_or_404(NewsCategory, slug_en=slug)
+        category = (
+            NewsCategory.objects.filter(slug_en=slug).first()
+            or NewsCategory.objects.filter(slug=slug).first()
+        )
     else:
-        category = get_object_or_404(NewsCategory, slug=slug)
+        category = NewsCategory.objects.filter(slug=slug).first()
+
+    if not category:
+        raise Http404(f"Category '{slug}' not found")
 
     news_queryset = (
         News.objects
@@ -214,6 +238,8 @@ def news_category(request, slug):
     context = {
         "category": category,
         "news_list": news_list,
+        "active_category_slug": slug,
+        "categories_2": _get_categories_2(),   # ✅ حالا در این view هم پاس داده می‌شود
         "seo": SEOManager.get_page("news"),
         "is_english": is_english,
     }
@@ -261,6 +287,8 @@ def news_search(request):
     context = {
         "news_list": news_list,
         "search_query": query,
+        "active_category_slug": None,
+        "categories_2": _get_categories_2(),   # ✅
         "seo": SEOManager.get_page("news"),
         "is_english": is_english,
     }

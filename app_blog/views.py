@@ -22,11 +22,9 @@ def blog_home(request, slug=None, author_username=None):
         else "RTL/blog/blog-home.html"
     )
 
-    # ==========================================
-    # ✅ DEBUG
-    # ==========================================
+    # DEBUG - بدون ایموجی
     print("=" * 60)
-    print(f"🔍 DEBUG blog_home")
+    print("DEBUG blog_home")
     print(f"   URL: {request.path}")
     print(f"   is_english: {is_english}")
     print(f"   slug: {slug!r}")
@@ -35,9 +33,6 @@ def blog_home(request, slug=None, author_username=None):
         print(f"   namespace: {request.resolver_match.namespace}")
         print(f"   url_name: {request.resolver_match.url_name}")
 
-    # ==========================================
-    # ✅ ساده: همه مقالات منتشرشده
-    # ==========================================
     blogs_queryset = blog.objects.filter(status="published")
     print(f"   after status filter: {blogs_queryset.count()}")
 
@@ -52,7 +47,6 @@ def blog_home(request, slug=None, author_username=None):
         blogs_queryset = blogs_queryset.filter(author__username=author_username)
         print(f"   after author filter: {blogs_queryset.count()}")
 
-    # ✅ ترتیب ساده
     blogs_queryset = blogs_queryset.order_by("-created_at_fa")
     print(f"   final count: {blogs_queryset.count()}")
     print("=" * 60)

@@ -1,5 +1,6 @@
-{% extends 'RTL/core/base.html' %}
+{% extends 'LTR/core/base-en.html' %}
 {% load static %}
+{% load i18n %}
 
 {% block content %}
     <main class="main">
@@ -17,18 +18,18 @@
             <div class="container">
                 <div class="site-breadcrumb-wrap">
                     <h4 class="breadcrumb-title">
-                        اخبار ما
+                        Our News
                     </h4>
                     <ul class="breadcrumb-menu">
                         <li>
-                            <a href="{% url 'app_core:home' %}">
+                            <a href="{% url 'app_core_en:home_en' %}">
                                 <i class="far fa-home"></i>
-                                خانه
+                                Home
                             </a>
                         </li>
                         <li class="active">
-                            <a href="{% url 'app_news:news_home' %}">
-                                کلیه اخبار
+                            <a href="{% url 'app_news_en:news_home_en' %}">
+                                All News
                             </a>
                         </li>
                     </ul>
@@ -43,16 +44,17 @@
 
                 {% if news_list %}
 
-                    <!-- هدر و دسته‌بندی‌ها -->
+                    <!-- header and categories -->
                     <div class="row">
                         <div class="blog-details-tags pb-20">
-                            <h5>دسته‌بندی‌ها:</h5>
+                            <h5>Categories:</h5>
                             <ul>
                                 {% for cat in categories_2 %}
                                     <li>
-                                        {# ✅ slug فارسی #}
-                                        <a href="{% url 'app_news:news_category' cat.slug %}">
-                                            <span>{{ cat.title_fa }}</span>
+                                        {# ✅ fallback: slug_en یا slug فارسی #}
+                                        <a href="{% url 'app_news_en:news_category_en' cat.slug_en|default:cat.slug %}"
+                                           class="{% if category and category.id == cat.id %}active{% endif %}">
+                                            <span>{{ cat.title_en|default:cat.title_fa }}</span>
                                         </a>
                                     </li>
                                 {% endfor %}
@@ -63,16 +65,16 @@
 
                         <div class="col-lg-6 mx-auto">
                             <div class="site-heading text-center">
-                                <span class="site-title-tagline">اخبار ما</span>
+                                <span class="site-title-tagline">Our News</span>
                                 <h2 class="site-title">
-                                    آخرین اخبار
-                                    <span>شرکت</span>
+                                    Latest
+                                    <span>Company</span> News
                                 </h2>
                             </div>
                         </div>
                     </div>
 
-                    <!-- 🔽 محتوای اصلی -->
+                    <!-- main content -->
                     <div class="blog-area py-100">
                         <div class="container">
 
@@ -82,16 +84,19 @@
                                         <div class="blog-item wow fadeInUp">
 
                                             <div class="blog-item-img">
-                                                {# ✅ news.id + news.slug #}
-                                                <a href="{% url 'app_news:news_single' news.id news.slug %}">
+                                                {# ✅ fallback: slug_en یا slug فارسی #}
+                                                <a href="{% url 'app_news_en:news_single_en' slug=news.slug_en|default:news.slug %}">
                                                     {% if news.image %}
                                                         <img src="{{ news.image.url }}"
-                                                             alt="{{ news.title_fa }}">
+                                                             alt="{{ news.title_en|default:news.title_fa }}">
                                                     {% endif %}
                                                 </a>
                                                 <span class="blog-date">
                                                     <i class="far fa-calendar-alt"></i>
-                                                    {{ news.publish_date_fa }}
+                                                    {# ✅ تاریخ میلادی با فرمت انگلیسی #}
+                                                    {% language 'en' %}
+                                                        {{ news.publish_date_en|date:"F d, Y" }}
+                                                    {% endlanguage %}
                                                 </span>
                                             </div>
 
@@ -101,15 +106,15 @@
                                                         <li>
                                                             {% if site_info %}
                                                                 <i class="far fa-user-circle"></i>
-                                                                {{ site_info.name_company_p1_fa }}
-                                                                {{ site_info.name_company_p2_fa }}
+                                                                {{ site_info.name_company_p1_en }}
+                                                                {{ site_info.name_company_p2_en }}
                                                             {% endif %}
                                                         </li>
                                                         <li>
                                                             {% for tag in news.tags.all %}
-                                                                {# ✅ tag.slug #}
-                                                                <a href="{% url 'app_news:news_tag' tag.slug %}">
-                                                                    <i class="far fa-comments"></i> {{ tag.title_fa }}
+                                                                {# ✅ fallback: slug_en یا slug فارسی #}
+                                                                <a href="{% url 'app_news_en:news_tag_en' slug=tag.slug_en|default:tag.slug %}">
+                                                                    <i class="far fa-comments"></i> {{ tag.title_en|default:tag.title_fa }}
                                                                 </a>
                                                                 {% if not forloop.last %} / {% endif %}
                                                             {% endfor %}
@@ -118,19 +123,19 @@
                                                 </div>
 
                                                 <h4 class="blog-title">
-                                                    {# ✅ news.id + news.slug #}
-                                                    <a href="{% url 'app_news:news_single' news.id news.slug %}">
-                                                        {{ news.title_fa }}
+                                                    {# ✅ fallback: slug_en یا slug فارسی #}
+                                                    <a href="{% url 'app_news_en:news_single_en' slug=news.slug_en|default:news.slug %}">
+                                                        {{ news.title_en|default:news.title_fa }}
                                                     </a>
                                                 </h4>
 
-                                                <p>{{ news.summary_fa|default:news.content_fa|truncatechars:120 }}</p>
+                                                <p>{{ news.summary_en|default:news.content_en|default:news.summary_fa|truncatechars:120 }}</p>
 
-                                                {# ✅ news.id + news.slug #}
+                                                {# ✅ fallback: slug_en یا slug فارسی #}
                                                 <a class="theme-btn"
-                                                   href="{% url 'app_news:news_single' news.id news.slug %}">
-                                                    بیشتر بخوانید
-                                                    <i class="fas fa-arrow-left"></i>
+                                                   href="{% url 'app_news_en:news_single_en' slug=news.slug_en|default:news.slug %}">
+                                                    Read More
+                                                    <i class="fas fa-arrow-right"></i>
                                                 </a>
                                             </div>
                                         </div>
@@ -146,7 +151,7 @@
                                             <li class="page-item">
                                                 <a class="page-link"
                                                    href="?page={{ news_list.previous_page_number }}">
-                                                    <i class="far fa-arrow-right"></i>
+                                                    <i class="far fa-arrow-left"></i>
                                                 </a>
                                             </li>
                                         {% endif %}
@@ -161,7 +166,7 @@
                                             <li class="page-item">
                                                 <a class="page-link"
                                                    href="?page={{ news_list.next_page_number }}">
-                                                    <i class="far fa-arrow-left"></i>
+                                                    <i class="far fa-arrow-right"></i>
                                                 </a>
                                             </li>
                                         {% endif %}
@@ -173,9 +178,8 @@
                     </div>
 
                 {% else %}
-                    <!-- ✅ اگر هیچ خبری وارد نشده بود -->
                     <div class="alert alert-info text-center mt-5">
-                        اطلاعاتی وارد نشده است
+                        No information has been entered.
                     </div>
                 {% endif %}
 

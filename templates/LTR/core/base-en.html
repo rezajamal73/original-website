@@ -227,7 +227,7 @@
                                     </li>
                                     <li>
                                         <a class="dropdown-item" href="{% url 'app_chart_en:chart_en' %}">
-                                            Executive Team & Organizational Chart
+                                            Executive Team & Chart
                                         </a>
                                     </li>
                                     <li>
@@ -252,6 +252,12 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'app_product_en:product_list_en' %}">
                                     Products
+                                </a>
+                            </li>
+                            <!-- اخبار -->
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'app_news_en:news_home_en' %}">
+                                    Nwes
                                 </a>
                             </li>
 
@@ -453,7 +459,7 @@
                                 <a href="{% url 'app_core_en:about_en' %}">About Us</a>
                             </li>
                             <li>
-                                <a href="{% url 'app_chart_en:chart_en' %}">Executive Team & Organizational Chart</a>
+                                <a href="{% url 'app_chart_en:chart_en' %}">Executive Team & Chart</a>
                             </li>
                             <li>
                                 <a href="{% url 'app_reports_en:sustainability_en' %}">Corporate Governance</a>
@@ -463,6 +469,17 @@
                             </li>
                             <li>
                                 <a href="{% url 'app_reports_en:certificate_en' %}">Certificates & Standards</a>
+                            </li>
+
+                            {% if site_info.phone_security_1 or site_info.phone_security_2 or site_info.phone_security_3 or site_info.email_security or site_info.fax_security %}
+                                <li>
+                                    <a href="{% url 'app_core_en:contact_security_en' %}">Contact Security
+                                        Department</a>
+                                </li>
+                            {% endif %}
+
+                            <li>
+                                <a href="{% url 'app_core_en:contact_en' %}">Contact Us</a>
                             </li>
                         </ul>
                     </div>
@@ -486,19 +503,14 @@
                                 <a href="{% url 'app_blog_en:blog_home_en' %}">Articles</a>
                             </li>
                             <li>
+                                <a href="{% url 'app_news_en:news_home_en' %}">
+                                    news
+                                </a>
+                            </li>
+                            <li>
                                 <a href="{% url 'app_resume_en:resume_en' %}">Resume</a>
                             </li>
 
-                            {% if site_info.phone_security_1 or site_info.phone_security_2 or site_info.phone_security_3 or site_info.email_security or site_info.fax_security %}
-                                <li>
-                                    <a href="{% url 'app_core_en:contact_security_en' %}">Contact Security
-                                        Department</a>
-                                </li>
-                            {% endif %}
-
-                            <li>
-                                <a href="{% url 'app_core_en:contact_en' %}">Contact Us</a>
-                            </li>
                         </ul>
                     </div>
                 </div>
