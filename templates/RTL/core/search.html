@@ -6,137 +6,412 @@
 
 <style>
 
-.search-header{
-    background:#f8f9fa;
-    padding:30px;
-    border-radius:20px;
-    text-align:center;
-    margin-bottom:50px;
+/* ============================================= */
+/* 🎨 متغیرهای رنگ سازمانی */
+/* ============================================= */
+.search-page {
+    --theme-color: #38B6FF;
+    --theme-color2: #053262;
+    --theme-gradient: linear-gradient(135deg, #38B6FF 0%, #053262 100%);
+    --theme-soft: rgba(56, 182, 255, 0.08);
+    --theme-border: rgba(56, 182, 255, 0.2);
+
+    /* ✅ عرض ثابت کارت‌ها */
+    --card-width: 150px;
+    --card-gap: 16px;
+
+    font-family: 'Vazirmatn', 'Segoe UI', Tahoma, sans-serif;
+    color: #1a1a1a;
 }
 
-.search-header h2{
-    margin:0;
-    font-size:28px;
-    font-weight:700;
+.search-page * {
+    box-sizing: border-box;
 }
 
-.search-section{
-    margin-bottom:60px;
+
+/* ============================================= */
+/* 🎨 SEARCH HEADER */
+/* ============================================= */
+.search-header {
+    position: relative;
+    background: var(--theme-gradient);
+    padding: 45px 30px;
+    border-radius: 24px;
+    text-align: center;
+    margin-bottom: 50px;
+    overflow: hidden;
+    box-shadow: 0 15px 40px rgba(56, 182, 255, 0.25);
 }
 
-.search-section-title{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    font-size:22px;
-    font-weight:700;
-    margin-bottom:25px;
-    padding-bottom:12px;
-    border-bottom:2px solid #eee;
+.search-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 300px;
+    height: 300px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
 }
 
-.search-card{
-    display:block;
-    background:#fff;
-    border-radius:16px;
-    overflow:hidden;
-    text-decoration:none;
-    color:#222;
-    box-shadow:0 4px 12px rgba(0,0,0,.08);
-    transition:.3s;
-    height:100%;
+.search-header::after {
+    content: '';
+    position: absolute;
+    bottom: -50%;
+    left: -10%;
+    width: 250px;
+    height: 250px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
 }
 
-.search-card:hover{
-    transform:translateY(-5px);
-    box-shadow:0 10px 25px rgba(0,0,0,.15);
-    color:#222;
+.search-header h2 {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    font-size: 26px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 0.3px;
 }
 
-.search-card img{
-    width:100%;
-    height:180px;
-    object-fit:cover;
+.search-header h2 i {
+    margin-left: 10px;
+    opacity: 0.9;
 }
 
-.search-body{
-    padding:15px;
+.search-header .search-query {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 4px 14px;
+    border-radius: 30px;
+    font-weight: 600;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-.search-title{
-    font-size:16px;
-    font-weight:700;
-    line-height:1.8;
-    min-height:58px;
 
-    display:-webkit-box;
-    -webkit-line-clamp:2;
-    -webkit-box-orient:vertical;
-    overflow:hidden;
+/* ============================================= */
+/* 🎨 SECTION */
+/* ============================================= */
+.search-section {
+    margin-bottom: 60px;
+    animation: fadeInUp 0.5s ease-out;
 }
 
-.search-desc{
-    font-size:13px;
-    color:#666;
-    line-height:1.9;
-    margin-top:8px;
-
-    display:-webkit-box;
-    -webkit-line-clamp:3;
-    -webkit-box-orient:vertical;
-    overflow:hidden;
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.empty-box{
-    background:#f8f9fa;
-    border:1px dashed #ddd;
-    border-radius:12px;
-    text-align:center;
-    padding:25px;
-    color:#777;
+.search-section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--theme-color2);
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #f0f0f0;
+    position: relative;
 }
 
-.counter-badge{
-    background:#0d6efd;
-    color:#fff;
-    border-radius:30px;
-    padding:4px 12px;
-    font-size:13px;
+.search-section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    right: 0;
+    width: 60px;
+    height: 3px;
+    background: var(--theme-gradient);
+    border-radius: 3px;
+}
+
+.search-section-title i {
+    font-size: 20px;
+    color: var(--theme-color);
+}
+
+
+/* ============================================= */
+/* 🎨 COUNTER BADGE */
+/* ============================================= */
+.counter-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    height: 26px;
+    padding: 0 12px;
+    background: var(--theme-gradient);
+    color: #fff;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    box-shadow: 0 4px 10px rgba(56, 182, 255, 0.35);
+}
+
+
+/* ============================================= */
+/* 🎨 GRID — ✅ عرض ثابت، بدون کشسان شدن */
+/* ============================================= */
+.search-grid {
+    display: grid;
+    gap: var(--card-gap);
+
+    /* ✅ کارت‌های با عرض ثابت، خودکار تا سقف جا پر می‌شوند */
+    grid-template-columns: repeat(auto-fill, var(--card-width));
+
+    /* ✅ چیدمان از سمت راست (RTL) */
+    justify-content: flex-start;
+}
+
+
+/* ============================================= */
+/* 🎨 CARD */
+/* ============================================= */
+.search-card {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 14px;
+    overflow: hidden;
+    text-decoration: none;
+    color: #1a1a1a;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 100%;
+    width: var(--card-width);          /* ✅ عرض ثابت */
+    border: 1px solid #f0f0f0;
+    position: relative;
+}
+
+.search-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 12px 28px rgba(56, 182, 255, 0.2);
+    color: #1a1a1a;
+    border-color: transparent;
+}
+
+.search-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--theme-gradient);
+    opacity: 0;
+    transition: opacity 0.35s;
+    z-index: 2;
+}
+
+.search-card:hover::before {
+    opacity: 1;
+}
+
+.search-card-img {
+    position: relative;
+    overflow: hidden;
+    background: #f8f9fa;
+}
+
+.search-card img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.search-card:hover img {
+    transform: scale(1.08);
+}
+
+.search-body {
+    padding: 10px 12px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.search-title {
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1.5;
+    color: var(--theme-color2);
+    min-height: 36px;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    transition: color 0.3s;
+}
+
+.search-card:hover .search-title {
+    color: var(--theme-color);
+}
+
+.search-desc {
+    font-size: 10px;
+    color: #888;
+    line-height: 1.5;
+    margin-top: 6px;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+
+/* ============================================= */
+/* 🎨 RESPONSIVE — فقط عرض کارت کم می‌شود */
+/* ============================================= */
+@media (max-width: 992px) {
+    .search-page {
+        --card-width: 140px;
+        --card-gap: 14px;
+    }
+}
+
+@media (max-width: 768px) {
+    .search-page {
+        --card-width: 130px;
+        --card-gap: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .search-page {
+        --card-width: 130px;
+        --card-gap: 10px;
+    }
+    .search-grid {
+        justify-content: center;
+    }
+}
+
+
+/* ============================================= */
+/* 🎨 NO RESULTS */
+/* ============================================= */
+.no-results-box {
+    text-align: center;
+    padding: 80px 30px;
+    background: linear-gradient(135deg, #f8fbff 0%, #ffffff 100%);
+    border: 2px dashed var(--theme-border);
+    border-radius: 24px;
+    animation: fadeInUp 0.5s ease-out;
+}
+
+.no-results-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 90px;
+    height: 90px;
+    background: var(--theme-soft);
+    border-radius: 50%;
+    margin-bottom: 24px;
+    color: var(--theme-color);
+    font-size: 34px;
+}
+
+.no-results-box h4 {
+    margin: 0 0 10px;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--theme-color2);
+}
+
+.no-results-box p {
+    margin: 0;
+    font-size: 15px;
+    color: #888;
+    line-height: 1.7;
+}
+
+.no-results-box .query-highlight {
+    display: inline-block;
+    background: var(--theme-soft);
+    color: var(--theme-color);
+    padding: 2px 10px;
+    border-radius: 8px;
+    font-weight: 600;
+    margin: 0 4px;
 }
 
 </style>
 
-<main class="main">
+
+<main class="main search-page">
 
     <div class="container py-5">
 
+        <!-- Search Header -->
         <div class="search-header">
             <h2>
                 <i class="far fa-search"></i>
                 نتایج جستجو برای
-                <span class="text-primary">"{{ query }}"</span>
+                <span class="search-query">"{{ query }}"</span>
             </h2>
         </div>
 
-        <!-- محصولات -->
-        <div class="search-section">
+        {# ✅ اگه هیچ نتیجه‌ای نیست #}
+        {% if not products and not news and not blogs %}
 
-            <h3 class="search-section-title">
-                <i class="text-primary"></i>
-                محصولات
-                <span class="counter-badge">{{ products|length }}</span>
-            </h3>
+            <div class="no-results-box">
 
+                <div class="no-results-icon">
+                    <i class="far fa-search-minus"></i>
+                </div>
+
+                <h4>نتیجه‌ای یافت نشد</h4>
+
+                <p>
+                    متأسفانه چیزی برای
+                    <span class="query-highlight">"{{ query }}"</span>
+                    پیدا نکردیم.
+                    <br>
+                    لطفاً کلمات دیگری امتحان کنید.
+                </p>
+
+            </div>
+
+        {% else %}
+
+            <!-- ================================================= -->
+            <!-- محصولات -->
+            <!-- ================================================= -->
             {% if products %}
-                <div class="row">
+                <div class="search-section">
 
-                    {% for item in products %}
-                        <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+                    <h3 class="search-section-title">
+                        <i class="fas fa-box"></i>
+                        محصولات
+                        <span class="counter-badge">{{ products|length }}</span>
+                    </h3>
 
-                            <a href="{% url 'app_product:product_single' item.id %}" class="search-card">
+                    <div class="search-grid">
+
+                        {% for item in products %}
+                            <a href="{% url 'app_product:product_single' item.slug %}" class="search-card">
 
                                 {% if item.main_image %}
-                                    <img src="{{ item.main_image.url }}" alt="{{ item.title_fa }}">
+                                    <div class="search-card-img">
+                                        <img src="{{ item.main_image.url }}" alt="{{ item.title_fa }}">
+                                    </div>
                                 {% endif %}
 
                                 <div class="search-body">
@@ -147,45 +422,42 @@
 
                                     {% if item.summary_fa %}
                                         <div class="search-desc">
-                                            {{ item.summary_fa|truncatechars:100 }}
+                                            {{ item.summary_fa|striptags|truncatechars:60 }}
                                         </div>
                                     {% endif %}
 
                                 </div>
 
                             </a>
+                        {% endfor %}
 
-                        </div>
-                    {% endfor %}
+                    </div>
 
-                </div>
-            {% else %}
-                <div class="empty-box">
-                    محصولی یافت نشد
                 </div>
             {% endif %}
 
-        </div>
 
-        <!-- اخبار -->
-        <div class="search-section">
-
-            <h3 class="search-section-title">
-                <i class="text-danger"></i>
-                اخبار
-                <span class="counter-badge bg-danger">{{ news|length }}</span>
-            </h3>
-
+            <!-- ================================================= -->
+            <!-- اخبار -->
+            <!-- ================================================= -->
             {% if news %}
-                <div class="row">
+                <div class="search-section">
 
-                    {% for item in news %}
-                        <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+                    <h3 class="search-section-title">
+                        <i class="fas fa-newspaper"></i>
+                        اخبار
+                        <span class="counter-badge">{{ news|length }}</span>
+                    </h3>
 
-                            <a href="{% url 'app_news:news_single' item.id %}" class="search-card">
+                    <div class="search-grid">
+
+                        {% for item in news %}
+                            <a href="{% url 'app_news:news_single' item.slug %}" class="search-card">
 
                                 {% if item.image %}
-                                    <img src="{{ item.image.url }}" alt="{{ item.title_fa }}">
+                                    <div class="search-card-img">
+                                        <img src="{{ item.image.url }}" alt="{{ item.title_fa }}">
+                                    </div>
                                 {% endif %}
 
                                 <div class="search-body">
@@ -196,45 +468,42 @@
 
                                     {% if item.summary_fa %}
                                         <div class="search-desc">
-                                            {{ item.summary_fa|truncatechars:100 }}
+                                            {{ item.summary_fa|striptags|truncatechars:60 }}
                                         </div>
                                     {% endif %}
 
                                 </div>
 
                             </a>
+                        {% endfor %}
 
-                        </div>
-                    {% endfor %}
+                    </div>
 
-                </div>
-            {% else %}
-                <div class="empty-box">
-                    خبری یافت نشد
                 </div>
             {% endif %}
 
-        </div>
 
-        <!-- مقالات -->
-        <div class="search-section">
-
-            <h3 class="search-section-title">
-                <i class="=text-success"></i>
-                مقالات
-                <span class="counter-badge bg-success">{{ blogs|length }}</span>
-            </h3>
-
+            <!-- ================================================= -->
+            <!-- مقالات -->
+            <!-- ================================================= -->
             {% if blogs %}
-                <div class="row">
+                <div class="search-section">
 
-                    {% for item in blogs %}
-                        <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+                    <h3 class="search-section-title">
+                        <i class="fas fa-file-alt"></i>
+                        مقالات
+                        <span class="counter-badge">{{ blogs|length }}</span>
+                    </h3>
 
-                            <a href="{% url 'app_blog:blog_single' item.id %}" class="search-card">
+                    <div class="search-grid">
+
+                        {% for item in blogs %}
+                            <a href="{{ item.get_absolute_url }}" class="search-card">
 
                                 {% if item.image %}
-                                    <img src="{{ item.image.url }}" alt="{{ item.title_fa }}">
+                                    <div class="search-card-img">
+                                        <img src="{{ item.image.url }}" alt="{{ item.title_fa }}">
+                                    </div>
                                 {% endif %}
 
                                 <div class="search-body">
@@ -243,27 +512,23 @@
                                         {{ item.title_fa }}
                                     </div>
 
-                                    {% if item.summary_fa %}
+                                    {% if item.content_1_fa %}
                                         <div class="search-desc">
-                                            {{ item.summary_fa|truncatechars:100 }}
+                                            {{ item.content_1_fa|striptags|truncatechars:60 }}
                                         </div>
                                     {% endif %}
 
                                 </div>
 
                             </a>
+                        {% endfor %}
 
-                        </div>
-                    {% endfor %}
+                    </div>
 
-                </div>
-            {% else %}
-                <div class="empty-box">
-                    مقاله‌ای یافت نشد
                 </div>
             {% endif %}
 
-        </div>
+        {% endif %}
 
     </div>
 

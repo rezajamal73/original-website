@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 from django.urls import reverse
 from adminsortable2.admin import SortableAdminMixin
 
@@ -93,8 +94,10 @@ class HeroBannerAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
 
     list_display = (
         "order",
-        "image_icon",
+        "media_icon",
         "display_title",
+        "media_type_display",
+        "duration",
         "status_icon",
         "admin_actions",
     )
@@ -106,11 +109,27 @@ class HeroBannerAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
         "title_p1_en",
     )
 
-    list_filter = ("status",)
-    readonly_fields = ("image_preview",)
+    list_filter = ("status", "media_type")
+    readonly_fields = ("media_preview",)
 
     fieldsets = (
-        ("📌 وضعیت انتشار", {"fields": ("status",)}),
+        ("📌 وضعیت انتشار", {"fields": ("status", "order")}),
+        ("⏱️ تنظیمات نمایش", {
+            "fields": ("duration",),
+            "description": "مدت زمان نمایش این اسلاید به ثانیه"
+        }),
+        ("🎯 نوع مدیا (فقط یکی را انتخاب کنید)", {
+            "fields": ("media_type",),
+            "description": "⚠️ توجه: پس از انتخاب نوع مدیا، فقط فیلد مربوط به آن را پر کنید. فیلد دیگر باید خالی بماند."
+        }),
+        ("🖼️ تصویر بنر", {
+            "fields": ("image",),
+            "description": "فقط در صورتی که «تصویر» را انتخاب کرده‌اید، این فیلد را پر کنید."
+        }),
+        ("🎬 ویدیو/GIF بنر", {
+            "fields": ("video",),
+            "description": "فقط در صورتی که «ویدیو / GIF» را انتخاب کرده‌اید، این فیلد را پر کنید. فرمت‌های مجاز: MP4, WebM, OGG, GIF"
+        }),
         ("📝 اطلاعات فارسی", {
             "fields": (
                 "label_fa",
@@ -129,7 +148,7 @@ class HeroBannerAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
                 "subtitle_en",
             )
         }),
-        ("🖼️ تصویر بنر", {"fields": ("image", "image_preview")}),
+        ("👁️ پیش‌نمایش", {"fields": ("media_preview",)}),
     )
 
     def display_title(self, obj):
@@ -137,25 +156,82 @@ class HeroBannerAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
 
     display_title.short_description = "عنوان"
 
-    def image_icon(self, obj):
-        if obj.image:
+    def media_type_display(self, obj):
+        """نمایش نوع مدیا در لیست ادمین"""
+        if obj.media_type == "image":
+            return format_html(
+                "<span style='color:#1e88e5; font-weight:bold;'>{}</span>",
+                "🖼️ تصویر"
+            )
+        return format_html(
+            "<span style='color:#d7263d; font-weight:bold;'>{}</span>",
+            "🎬 ویدیو"
+        )
+
+    media_type_display.short_description = "نوع مدیا"
+
+    def media_icon(self, obj):
+        """آیکون مدیا در لیست ادمین"""
+        if obj.media_type == "video" and obj.video:
+            ext = obj.video.name.split('.')[-1].lower()
+            if ext == 'gif':
+                return format_html(
+                    "<img src='{}' width='50' style='border-radius:6px;' title='GIF'>",
+                    obj.video.url,
+                )
+            return format_html(
+                "<span style='font-size:24px;' title='ویدیو'>🎬</span>"
+            )
+        if obj.media_type == "image" and obj.image:
             return format_html(
                 "<img src='{}' width='40' style='border-radius:6px;'>",
                 obj.image.url,
             )
         return "—"
 
-    image_icon.short_description = "تصویر"
+    media_icon.short_description = "مدیا"
 
-    def image_preview(self, obj):
-        if obj.image:
+    def media_preview(self, obj):
+        """پیش‌نمایش کامل مدیا بر اساس نوع انتخاب‌شده"""
+        if obj.media_type == "video" and obj.video:
+            ext = obj.video.name.split('.')[-1].lower()
+            if ext == 'gif':
+                return format_html(
+                    "<div style='text-align:center;'>"
+                    "<img src='{}' style='max-width:400px; border-radius:10px;'><br>"
+                    "<small style='color:#666;'>📁 {}</small>"
+                    "</div>",
+                    obj.video.url,
+                    obj.video.name,
+                )
+            elif ext in ['mp4', 'webm', 'ogg']:
+                return format_html(
+                    "<div style='text-align:center;'>"
+                    "<video width='400' controls autoplay muted loop style='border-radius:10px;'>"
+                    "<source src='{}' type='video/{}'>"
+                    "مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند."
+                    "</video><br>"
+                    "<small style='color:#666;'>📁 {}</small>"
+                    "</div>",
+                    obj.video.url,
+                    ext,
+                    obj.video.name,
+                )
+        if obj.media_type == "image" and obj.image:
             return format_html(
-                "<img src='{}' width='220' style='border-radius:10px;'>",
+                "<div style='text-align:center;'>"
+                "<img src='{}' width='300' style='border-radius:10px;'><br>"
+                "<small style='color:#666;'>📁 {}</small>"
+                "</div>",
                 obj.image.url,
+                obj.image.name,
             )
-        return "تصویری وجود ندارد"
+        return format_html(
+            "<span style='color:#d7263d;'>{}</span>",
+            "هیچ مدیایی آپلود نشده است",
+        )
 
-    image_preview.short_description = "پیش‌نمایش تصویر"
+    media_preview.short_description = "پیش‌نمایش مدیا"
 
     status_icon = make_status_icon("✅ منتشر شده", "⛔ پیش‌نویس")
 

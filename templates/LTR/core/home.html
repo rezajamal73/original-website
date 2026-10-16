@@ -23,9 +23,24 @@
 
                             <div class="hero-single"
                                  dir="ltr"
-                                    {% if banner.image %}
-                                 style="background-image: url('{{ banner.image.url }}');"
+                                 data-duration="{{ banner.duration_ms }}"
+                                 data-media-type="{{ banner.media_source_type }}"
+                                    {% if banner.media_source_type == 'image' and banner.media_url %}
+                                 style="background-image: url('{{ banner.media_url }}');"
                                     {% endif %}>
+
+                                {# ---------- ویدیو / GIF به صورت element ---------- #}
+                                {% if banner.media_source_type == 'video' %}
+                                    <video class="hero-media-bg"
+                                           autoplay muted loop playsinline
+                                           {% if banner.image %}poster="{{ banner.image.url }}"{% endif %}>
+                                        <source src="{{ banner.media_url }}">
+                                    </video>
+                                {% elif banner.media_source_type == 'gif' %}
+                                    <img class="hero-media-bg"
+                                         src="{{ banner.media_url }}"
+                                         alt="{{ banner }}">
+                                {% endif %}
 
                                 <div class="container">
 
@@ -58,8 +73,8 @@
 
                                                         {% if banner.title_p2_en %}
                                                             <span>
-                                                            {{ banner.title_p2_en }}
-                                                        </span>
+                                                        {{ banner.title_p2_en }}
+                                                    </span>
                                                         {% endif %}
 
                                                         {% if banner.title_p3_en %}
@@ -118,14 +133,27 @@
 
                     {% for banner in banners %}
 
-                        <div class="hero-single" dir="ltr">
+                        <div class="hero-single"
+                             dir="ltr"
+                             data-duration="{{ banner.duration_ms }}"
+                             data-media-type="{{ banner.media_source_type }}">
 
-                            {# Background Image #}
-                            <div class="hero-single-bg"
-                                    {% if banner.image %}
-                                 style="background-image: url('{{ banner.image.url }}');"
-                                    {% endif %}>
-                            </div>
+                            {# ---------- ویدیو / GIF / تصویر ---------- #}
+                            {% if banner.media_source_type == 'video' %}
+                                <video class="hero-media-bg"
+                                       autoplay muted loop playsinline
+                                       {% if banner.image %}poster="{{ banner.image.url }}"{% endif %}>
+                                    <source src="{{ banner.media_url }}">
+                                </video>
+                            {% elif banner.media_source_type == 'gif' %}
+                                <img class="hero-media-bg"
+                                     src="{{ banner.media_url }}"
+                                     alt="{{ banner }}">
+                            {% elif banner.media_source_type == 'image' and banner.media_url %}
+                                <div class="hero-single-bg"
+                                     style="background-image: url('{{ banner.media_url }}');">
+                                </div>
+                            {% endif %}
 
 
                             <div class="container">
@@ -164,8 +192,8 @@
                                                     {% if banner.title_p2_en %}
 
                                                         <span>
-                                                        {{ banner.title_p2_en }}
-                                                    </span>
+                                                    {{ banner.title_p2_en }}
+                                                </span>
 
                                                     {% endif %}
 

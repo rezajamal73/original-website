@@ -1,4 +1,5 @@
 {% load static %}
+{% load i18n %}
 
 <div class="widget recent-post">
 
@@ -11,8 +12,10 @@
             <div class="recent-post-img">
                 {# ✅ اصلاح شد: get_absolute_url_en #}
                 <a href="{{ post.get_absolute_url_en }}">
-                    <img src="{{ post.image.url }}"
-                         alt="{{ post.title_en|default:post.title_fa }}">
+                    {% if post.image %}
+                        <img src="{{ post.image.url }}"
+                             alt="{{ post.title_en|default:post.title_fa }}">
+                    {% endif %}
                 </a>
             </div>
 
@@ -26,7 +29,10 @@
 
                 <span>
                     <i class="far fa-clock"></i>
-                    {{ post.publish_date_en }}
+                    {# ✅ تاریخ میلادی با فرمت انگلیسی #}
+                    {% language 'en' %}
+                        {{ post.publish_date_en|date:"F d, Y" }}
+                    {% endlanguage %}
                 </span>
             </div>
 

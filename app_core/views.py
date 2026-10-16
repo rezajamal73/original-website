@@ -1,3 +1,4 @@
+# app_core/views.py
 import random
 
 from django.shortcuts import render, get_object_or_404
@@ -45,15 +46,7 @@ def _generate_captcha():
 
 def home(request, slug=None):
 
-    # -------------------------------------------------
-    # Detect language
-    # -------------------------------------------------
-
     is_english = is_english_request(request)
-
-    # -------------------------------------------------
-    # Template
-    # -------------------------------------------------
 
     template = (
         "LTR/core/home.html"
@@ -63,11 +56,22 @@ def home(request, slug=None):
 
     # -------------------------------------------------
     # Hero Banners
+    # ✅ فیلتر بر اساس media_type
+    # - اگر media_type=image → باید image داشته باشد
+    # - اگر media_type=video → باید video داشته باشد
     # -------------------------------------------------
 
     banners = (
         HeroBanner.objects
         .filter(status="published")
+        .exclude(
+            # حذف بنرهایی که media_type=image دارند ولی image خالی است
+            Q(media_type="image", image="") |
+            Q(media_type="image", image__isnull=True) |
+            # حذف بنرهایی که media_type=video دارند ولی video خالی است
+            Q(media_type="video", video="") |
+            Q(media_type="video", video__isnull=True)
+        )
         .order_by("order", "id")
     )
 
@@ -84,17 +88,22 @@ def home(request, slug=None):
     )
 
     # -------------------------------------------------
-    # Blogs
+    # Blogs (✅ فقط با title_en در حالت انگلیسی)
     # -------------------------------------------------
 
-    blogs = (
+    blogs_qs = (
         blog.objects
         .filter(status="published")
         .order_by(
             "-publish_date_fa",
             "-publish_date_en"
-        )[:3]
+        )
     )
+
+    if is_english:
+        blogs_qs = blogs_qs.exclude(title_en="").exclude(title_en__isnull=True)
+
+    blogs = blogs_qs[:3]
 
     # -------------------------------------------------
     # Category
@@ -102,54 +111,45 @@ def home(request, slug=None):
 
     active_category = None
 
-    product_filter = Q(
-        status="published"
-    )
+    product_filter = Q(status="published")
 
     if slug:
-        # ✅ انتخاب slug درست بر اساس زبان
         if is_english:
-            active_category = get_object_or_404(
-                ProductCategory,
-                slug_en=slug
-            )
+            active_category = get_object_or_404(ProductCategory, slug_en=slug)
         else:
-            active_category = get_object_or_404(
-                ProductCategory,
-                slug=slug
-            )
+            active_category = get_object_or_404(ProductCategory, slug=slug)
 
-        product_filter &= Q(
-            category=active_category
-        )
+        product_filter &= Q(category=active_category)
 
     # -------------------------------------------------
-    # Special Products
+    # Special Products (✅ فقط با title_en در حالت انگلیسی)
     # -------------------------------------------------
 
-    special_products = (
+    special_products_qs = (
         Product.objects
         .filter(
             product_filter,
             special=True
         )
-        .order_by(
-            "priority",
-            "title_fa"
-        )[:12]
+        .order_by("priority", "title_fa")
     )
+
+    if is_english:
+        special_products_qs = special_products_qs.exclude(title_en="").exclude(title_en__isnull=True)
+
+    special_products = special_products_qs[:12]
 
     # -------------------------------------------------
     # Special Product Banners
+    # ✅ فقط بنرهای دارای تصویر
     # -------------------------------------------------
 
     special_product_banners = (
         SpecialProductBanner.objects
         .filter(status="published")
-        .order_by(
-            "order",
-            "created_at"
-        )[:4]
+        .exclude(image="")
+        .exclude(image__isnull=True)
+        .order_by("order", "created_at")[:4]
     )
 
     # -------------------------------------------------
@@ -172,23 +172,20 @@ def home(request, slug=None):
             section_type="about",
             is_published=True
         )
-        .prefetch_related(
-            "texts",
-            "about_items"
-        )
-        .select_related(
-            "about_year"
-        )
+        .prefetch_related("texts", "about_items")
+        .select_related("about_year")
         .first()
     )
 
     # -------------------------------------------------
     # About Banner
+    # ✅ فقط بنرهای دارای تصویر
     # -------------------------------------------------
 
     about_banner = (
         AboutBanner.objects
         .filter(status="published")
+        .exclude(image_1="", image_2="")
         .first()
     )
 
@@ -212,20 +209,20 @@ def home(request, slug=None):
             status="published",
             is_special=True
         )
-        .prefetch_related(
-            "images",
-            "videos"
-        )
+        .prefetch_related("images", "videos")
         .order_by("order")
     )
 
     # -------------------------------------------------
     # Main Banner
+    # ✅ فقط بنرهای دارای تصویر
     # -------------------------------------------------
 
     main_banner = (
         MainBanner.objects
         .filter(status="published")
+        .exclude(image="")
+        .exclude(image__isnull=True)
         .first()
     )
 
@@ -234,43 +231,23 @@ def home(request, slug=None):
     # -------------------------------------------------
 
     context = {
-
         "banners": banners,
-
         "about_banner": about_banner,
-
         "active_slider": active_slider,
-
         "blogs": blogs,
-
         "special_products": special_products,
-
         "special_product_banners": special_product_banners,
-
         "active_category": active_category,
-
         "statistics": statistics,
-
         "section": about_section,
-
         "group_companies": group_companies,
-
         "home_medias": home_medias,
-
         "main_banner": main_banner,
-
         "seo": SEOManager.get_page("home"),
-
-        # Language
         "is_english": is_english,
-
     }
 
-    return render(
-        request,
-        template,
-        context
-    )
+    return render(request, template, context)
 
 
 # =====================================================
@@ -293,32 +270,24 @@ def about(request):
             section_type="history",
             is_published=True
         )
-        .prefetch_related(
-            "texts__attachments"
-        )
+        .prefetch_related("texts__attachments")
         .first()
     )
 
     context = {
-
         "section": section,
-
         "banner": (
             OtherBanner.objects
             .filter(status="published")
+            .exclude(image="")
+            .exclude(image__isnull=True)
             .first()
         ),
-
         "seo": SEOManager.get_page("about"),
-
         "is_english": is_english,
     }
 
-    return render(
-        request,
-        template,
-        context
-    )
+    return render(request, template, context)
 
 
 # =====================================================
@@ -336,27 +305,15 @@ def contact(request):
     )
 
     if "contact_captcha" not in request.session:
-
-        request.session["contact_captcha"] = (
-            _generate_captcha()
-        )
+        request.session["contact_captcha"] = _generate_captcha()
 
     context = {
-
-        "captcha_code": (
-            request.session["contact_captcha"]
-        ),
-
+        "captcha_code": request.session["contact_captcha"],
         "seo": SEOManager.get_page("contact"),
-
         "is_english": is_english,
     }
 
-    return render(
-        request,
-        template,
-        context
-    )
+    return render(request, template, context)
 
 
 # =====================================================
@@ -374,29 +331,15 @@ def contact_security(request):
     )
 
     if "security_captcha" not in request.session:
-
-        request.session["security_captcha"] = (
-            _generate_captcha()
-        )
+        request.session["security_captcha"] = _generate_captcha()
 
     context = {
-
-        "captcha_code": (
-            request.session["security_captcha"]
-        ),
-
-        "seo": SEOManager.get_page(
-            "contact_security"
-        ),
-
+        "captcha_code": request.session["security_captcha"],
+        "seo": SEOManager.get_page("contact_security"),
         "is_english": is_english,
     }
 
-    return render(
-        request,
-        template,
-        context
-    )
+    return render(request, template, context)
 
 
 # =====================================================
@@ -424,7 +367,7 @@ def error(request):
 
 
 # =====================================================
-# SEARCH
+# SEARCH  ✅ اصلاح کامل
 # =====================================================
 
 def search(request):
@@ -437,65 +380,89 @@ def search(request):
         else "RTL/core/search.html"
     )
 
-    q = request.GET.get(
-        "q",
-        ""
-    ).strip()
+    q = request.GET.get("q", "").strip()
+
+    # -------------------------------------------------
+    # ✅ فیلتر Q بر اساس زبان
+    # -------------------------------------------------
+
+    if is_english:
+        products_q = (
+            Q(title_en__icontains=q) |
+            Q(summary_en__icontains=q)
+        )
+        blogs_q = (
+            Q(title_en__icontains=q) |
+            Q(content_1_en__icontains=q)
+        )
+        news_q = (
+            Q(title_en__icontains=q) |
+            Q(summary_en__icontains=q)
+        )
+    else:
+        products_q = (
+            Q(title_fa__icontains=q) |
+            Q(summary_fa__icontains=q)
+        )
+        blogs_q = (
+            Q(title_fa__icontains=q) |
+            Q(content_1_fa__icontains=q)
+        )
+        news_q = (
+            Q(title_fa__icontains=q) |
+            Q(summary_fa__icontains=q)
+        )
+
+    # -------------------------------------------------
+    # Products
+    # -------------------------------------------------
+
+    products = (
+        Product.objects
+        .filter(products_q, status="published")
+        .order_by("priority")
+    )
+
+    if is_english:
+        products = products.exclude(title_en="").exclude(title_en__isnull=True)
+
+    # -------------------------------------------------
+    # Blogs
+    # -------------------------------------------------
+
+    blogs_qs = (
+        blog.objects
+        .filter(blogs_q, status="published")
+        .order_by("-publish_date_fa", "-id")
+    )
+
+    if is_english:
+        blogs_qs = blogs_qs.exclude(title_en="").exclude(title_en__isnull=True)
+
+    # -------------------------------------------------
+    # News
+    # -------------------------------------------------
+
+    news_qs = (
+        News.objects
+        .filter(news_q, status="published")
+        .order_by("-publish_date_fa", "-id")
+    )
+
+    if is_english:
+        news_qs = news_qs.exclude(title_en="").exclude(title_en__isnull=True)
+
+    # -------------------------------------------------
+    # Context
+    # -------------------------------------------------
 
     context = {
-
         "query": q,
-
-        # -------------------------------------------------
-        # Products
-        # -------------------------------------------------
-
-        "products": Product.objects.filter(
-            (
-                Q(title_fa__icontains=q)
-                |
-                Q(title_en__icontains=q)
-            ),
-            status="published"
-        ),
-
-        # -------------------------------------------------
-        # Blogs
-        # -------------------------------------------------
-
-        "blogs": blog.objects.filter(
-            (
-                Q(title_fa__icontains=q)
-                |
-                Q(title_en__icontains=q)
-            ),
-            status="published"
-        ),
-
-        # -------------------------------------------------
-        # News
-        # -------------------------------------------------
-
-        "news": News.objects.filter(
-            (
-                Q(title_fa__icontains=q)
-                |
-                Q(title_en__icontains=q)
-            ),
-            status="published"
-        ),
-
-        # -------------------------------------------------
-        # SEO
-        # -------------------------------------------------
-
+        "products": products,
+        "blogs": blogs_qs,
+        "news": news_qs,
         "seo": SEOManager.get_page("search"),
-
         "is_english": is_english,
     }
 
-    return render(
-        request,
-        template,
-        context
-    )
+    return render(request, template, context)

@@ -357,6 +357,22 @@
 
                         <div class="tab-pane fade" id="qr-code">
 
+                            {# ✅ Scan URL (instead of Product Code) #}
+                            {% if product.qr_data %}
+                                <div class="text-center mb-4">
+                                    <h5 class="fw-bold mb-2">
+                                        Scan URL:
+                                    </h5>
+                                    <a href="{{ product.qr_data }}"
+                                       target="_blank"
+                                       class="badge bg-primary fs-5 px-4 py-2 text-break"
+                                       style="direction: ltr;">
+                                        {{ product.qr_data }}
+                                    </a>
+                                </div>
+                            {% endif %}
+
+                            {# ✅ QR Code #}
                             {% if product.qr_code %}
 
                                 <div class="text-center">

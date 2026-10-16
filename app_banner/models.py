@@ -1,3 +1,4 @@
+import os
 from functools import partial
 
 from django.db import models
@@ -57,8 +58,29 @@ class HeroBanner(models.Model):
         ("published", "منتشر شده"),
     )
 
+    MEDIA_TYPE_CHOICES = (
+        ("image", "🖼️ تصویر"),
+        ("video", "🎬 ویدیو / GIF"),
+    )
+
     order = models.PositiveIntegerField(
         default=0, verbose_name="اولویت نمایش"
+    )
+
+    # ✅ مدت زمان نمایش اسلاید (ثانیه)
+    duration = models.PositiveIntegerField(
+        default=5,
+        verbose_name="مدت زمان نمایش (ثانیه)",
+        help_text="مدت زمانی که این اسلاید نمایش داده می‌شود. مثلاً 5 = ۵ ثانیه"
+    )
+
+    # ✅ نوع مدیا (فقط یکی از دو حالت)
+    media_type = models.CharField(
+        max_length=10,
+        choices=MEDIA_TYPE_CHOICES,
+        default="image",
+        verbose_name="نوع مدیا",
+        help_text="⚠️ فقط یکی از دو حالت را انتخاب کنید و فقط فیلد مربوط به آن را پر کنید."
     )
 
     # ---------- فارسی ----------
@@ -102,7 +124,19 @@ class HeroBanner(models.Model):
     # ✅ media/<app_label>/hero/...
     image = models.ImageField(
         upload_to=partial(app_upload_to, subfolder="hero"),
-        verbose_name="تصویر بنر"
+        blank=True,
+        null=True,
+        verbose_name="تصویر بنر",
+        help_text="فقط در صورتی که «تصویر» را به عنوان نوع مدیا انتخاب کرده‌اید."
+    )
+
+    # ✅ media/<app_label>/hero/videos/...
+    video = models.FileField(
+        upload_to=partial(app_upload_to, subfolder="hero/videos"),
+        blank=True,
+        null=True,
+        verbose_name="ویدیو/GIF بنر",
+        help_text="فقط در صورتی که «ویدیو / GIF» را انتخاب کرده‌اید. فرمت‌های مجاز: MP4, WebM, OGG, GIF"
     )
 
     status = models.CharField(
@@ -115,8 +149,46 @@ class HeroBanner(models.Model):
 
     class Meta:
         verbose_name = "بنر های اصلی پوستر"
-        verbose_name_plural = "بنر های اصلی پوستر "
+        verbose_name_plural = "بنر های اصلی پوستر"
         ordering = ("order",)
+
+    def clean(self):
+        """اعتبارسنجی بر اساس نوع مدیای انتخاب‌شده"""
+
+        # ---------- اعتبارسنجی بر اساس media_type ----------
+        if self.media_type == "image":
+            if not self.image:
+                raise ValidationError({
+                    "image": "لطفاً تصویر بنر را آپلود کنید."
+                })
+            if self.video:
+                raise ValidationError({
+                    "video": "شما نوع «تصویر» را انتخاب کرده‌اید. لطفاً فیلد ویدیو را خالی کنید یا نوع مدیا را به «ویدیو / GIF» تغییر دهید."
+                })
+
+        elif self.media_type == "video":
+            if not self.video:
+                raise ValidationError({
+                    "video": "لطفاً ویدیو یا GIF بنر را آپلود کنید."
+                })
+            if self.image:
+                raise ValidationError({
+                    "image": "شما نوع «ویدیو / GIF» را انتخاب کرده‌اید. لطفاً فیلد تصویر را خالی کنید یا نوع مدیا را به «تصویر» تغییر دهید."
+                })
+
+            # اعتبارسنجی فرمت ویدیو
+            ext = os.path.splitext(self.video.name)[1].lower()
+            allowed_extensions = ['.mp4', '.webm', '.ogg', '.gif']
+            if ext not in allowed_extensions:
+                raise ValidationError({
+                    "video": f"فرمت ویدیو باید یکی از موارد زیر باشد: {', '.join(allowed_extensions)}"
+                })
+
+        # ---------- اعتبارسنجی مدت زمان ----------
+        if self.duration < 1:
+            raise ValidationError({
+                "duration": "مدت زمان نمایش نمی‌تواند کمتر از ۱ ثانیه باشد."
+            })
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -130,7 +202,32 @@ class HeroBanner(models.Model):
 
             self.slug = slug
 
+        self.full_clean()
         super().save(*args, **kwargs)
+
+    @property
+    def media_source_type(self):
+        """نوع منبع مدیا برای template (image / gif / video)"""
+        if self.media_type == "video" and self.video:
+            ext = os.path.splitext(self.video.name)[1].lower()
+            if ext == '.gif':
+                return 'gif'
+            return 'video'
+        return 'image'
+
+    @property
+    def media_url(self):
+        """آدرس مدیا بر اساس نوع انتخاب‌شده"""
+        if self.media_type == "video" and self.video:
+            return self.video.url
+        if self.media_type == "image" and self.image:
+            return self.image.url
+        return None
+
+    @property
+    def duration_ms(self):
+        """مدت زمان به میلی‌ثانیه (برای استفاده در JavaScript)"""
+        return self.duration * 1000
 
     def __str__(self):
         return self.label_fa or self.title_p1_fa or f"بنر اسلایدر #{self.pk}"

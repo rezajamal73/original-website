@@ -11655,3 +11655,58 @@ label {
     background-color: var(--theme-color2);
 }
 
+/* ============================================
+   HERO MEDIA - ویدیو و GIF
+   ============================================ */
+
+/* کانتینر اصلی اسلاید - برای background-image */
+.hero-single {
+    position: relative;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 510px;
+}
+
+/* ویدیو و GIF به صورت element روی اسلاید */
+.hero-media-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* محتوای روی مدیا */
+.hero-single .container {
+    position: relative;
+    z-index: 2;
+}
+
+/* برای hs-2 که bg جدا دارد */
+.hs-2 .hero-single-bg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    right: 0;
+    top: 0;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    z-index: 0;
+}
+
+.hs-2 .hero-single {
+    position: relative;
+    padding-top: 150px;
+    padding-bottom: 150px;
+    z-index: 1;
+}

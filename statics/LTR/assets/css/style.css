@@ -138,8 +138,8 @@ html[lang="en"] .counter-amount {
 ======================*/
 
 :root {
-  --body-font: 'Roboto', sans-serif;
-  --heading-font: 'Inter', sans-serif;
+  --body-font: 'Peyda', sans-serif;
+  --heading-font: 'Peyda', sans-serif;
   --theme-color: #38B6FF;
   --theme-color2: #053262;
   --theme-color-light: rgba(0, 191, 255, .08);
@@ -152,7 +152,7 @@ html[lang="en"] .counter-amount {
   --color-skyblue: #00BFFF;
   --color-yellow: #FBA707;
   --color-gray: #ECECEC;
-  --color-red: #FD6A6A;
+  --color-red: #053262;
   --hero-overlay-color: #01060F;
   --slider-arrow-bg: rgba(255, 255, 255, 0.2);
   --box-shadow: 0 0 40px 5px rgb(0 0 0 / 5%);
@@ -6251,6 +6251,8 @@ label {
   margin: 30px auto 0 auto;
 }
 
+
+/* باقی کد بدون تغییر */
 .counter-box {
   display: flex;
   align-items: center;
@@ -6265,20 +6267,25 @@ label {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+
   position: relative;
   text-align: center;
+
   font-size: 60px;
   border-radius: 50%;
   width: 100px;
   height: 100px;
   line-height: 83px;
+
   color: #032e63;
   border: #032e63;
   background: #01a0e2;
+
   z-index: 1;
 }
 
 .counter-box .icon img {
+
   width: 55px;
 }
 
@@ -6308,6 +6315,7 @@ label {
   font-weight: 600;
   text-transform: capitalize;
 }
+
 
 @media all and (max-width: 991px) {
   .counter-area .counter-box {
@@ -11576,4 +11584,61 @@ label {
 
 .hospital-badge:hover {
     background-color: var(--theme-color2);
+}
+
+
+/* ============================================
+   HERO MEDIA - ویدیو و GIF
+   ============================================ */
+
+/* کانتینر اصلی اسلاید - برای background-image */
+.hero-single {
+    position: relative;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 510px;
+}
+
+/* ویدیو و GIF به صورت element روی اسلاید */
+.hero-media-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* محتوای روی مدیا */
+.hero-single .container {
+    position: relative;
+    z-index: 2;
+}
+
+/* برای hs-2 که bg جدا دارد */
+.hs-2 .hero-single-bg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    right: 0;
+    top: 0;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    z-index: 0;
+}
+
+.hs-2 .hero-single {
+    position: relative;
+    padding-top: 150px;
+    padding-bottom: 150px;
+    z-index: 1;
 }

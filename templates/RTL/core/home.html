@@ -10,45 +10,92 @@
                         {% if banners %}
                             {% for banner in banners %}
                                 <div class="hero-single" dir="rtl"
-                                     style="background-image: url({{ banner.image.url }});">
+                                     data-duration="{{ banner.duration_ms }}"
+                                     data-media-type="{{ banner.media_source_type }}"
+                                        {% if banner.media_source_type == 'image' and banner.media_url %}
+                                     style="background-image: url('{{ banner.media_url }}');"
+                                        {% endif %}>
+
+                                    {# ---------- ویدیو / GIF به صورت element ---------- #}
+                                    {% if banner.media_source_type == 'video' %}
+                                        <video class="hero-media-bg"
+                                               autoplay muted loop playsinline
+                                               {% if banner.image %}poster="{{ banner.image.url }}"{% endif %}>
+                                            <source src="{{ banner.media_url }}">
+                                        </video>
+                                    {% elif banner.media_source_type == 'gif' %}
+                                        <img class="hero-media-bg"
+                                             src="{{ banner.media_url }}"
+                                             alt="{{ banner }}">
+                                    {% endif %}
+
                                     <div class="container">
                                         <div class="row align-items-center">
                                             <div class="col-lg-6">
                                                 <div class="hero-content">
 
-                                                    {% if banner.label_fa %}
-                                                        <h6 class="hero-sub-title"
-                                                            data-animation="fadeInUp"
-                                                            data-delay=".25s">
-                                                            {{ banner.label_fa }}
-                                                        </h6>
+                                                    {# ---------- برچسب ---------- #}
+                                                    {% if is_english %}
+                                                        {% if banner.label_en %}
+                                                            <h6 class="hero-sub-title"
+                                                                data-animation="fadeInUp"
+                                                                data-delay=".25s">
+                                                                {{ banner.label_en }}
+                                                            </h6>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        {% if banner.label_fa %}
+                                                            <h6 class="hero-sub-title"
+                                                                data-animation="fadeInUp"
+                                                                data-delay=".25s">
+                                                                {{ banner.label_fa }}
+                                                            </h6>
+                                                        {% endif %}
                                                     {% endif %}
-                                                    {% if banner.title_p1_fa or banner.title_p2_fa or banner.title_p3_fa %}
-                                                        <h1 class="hero-title"
-                                                            data-animation="fadeInRight"
-                                                            data-delay=".50s">
-                                                            {{ banner.title_p1_fa|default_if_none:"" }}
-                                                            {% if banner.title_p2_fa %}
-                                                                <span>{{ banner.title_p2_fa }}</span>
-                                                            {% endif %}
-                                                            {{ banner.title_p3_fa|default_if_none:"" }}
-                                                        </h1>
+
+                                                    {# ---------- عنوان ---------- #}
+                                                    {% if is_english %}
+                                                        {% if banner.title_p1_en or banner.title_p2_en or banner.title_p3_en %}
+                                                            <h1 class="hero-title"
+                                                                data-animation="fadeInRight"
+                                                                data-delay=".50s">
+                                                                {{ banner.title_p1_en|default_if_none:"" }}
+                                                                {% if banner.title_p2_en %}
+                                                                    <span>{{ banner.title_p2_en }}</span>
+                                                                {% endif %}
+                                                                {{ banner.title_p3_en|default_if_none:"" }}
+                                                            </h1>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        {% if banner.title_p1_fa or banner.title_p2_fa or banner.title_p3_fa %}
+                                                            <h1 class="hero-title"
+                                                                data-animation="fadeInRight"
+                                                                data-delay=".50s">
+                                                                {{ banner.title_p1_fa|default_if_none:"" }}
+                                                                {% if banner.title_p2_fa %}
+                                                                    <span>{{ banner.title_p2_fa }}</span>
+                                                                {% endif %}
+                                                                {{ banner.title_p3_fa|default_if_none:"" }}
+                                                            </h1>
+                                                        {% endif %}
                                                     {% endif %}
-                                                    {% if banner.subtitle_fa %}
-                                                        <p data-animation="fadeInLeft"
-                                                           data-delay=".75s">
-                                                            {{ banner.subtitle_fa }}
-                                                        </p>
+
+                                                    {# ---------- زیرعنوان ---------- #}
+                                                    {% if is_english %}
+                                                        {% if banner.subtitle_en %}
+                                                            <p data-animation="fadeInLeft"
+                                                               data-delay=".75s">
+                                                                {{ banner.subtitle_en }}
+                                                            </p>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        {% if banner.subtitle_fa %}
+                                                            <p data-animation="fadeInLeft"
+                                                               data-delay=".75s">
+                                                                {{ banner.subtitle_fa }}
+                                                            </p>
+                                                        {% endif %}
                                                     {% endif %}
-                                                    {#                                                <div class="hero-btn"#}
-                                                    {#                                                     data-animation="fadeInUp"#}
-                                                    {#                                                     data-delay="1s">#}
-                                                    {#                                                    <a class="theme-btn"#}
-                                                    {#                                                       href="{% url 'app_product:product_list' %}">#}
-                                                    {#                                                        بیشتر بدانید#}
-                                                    {#                                                        <i class="fas fa-arrow-left"></i>#}
-                                                    {#                                                    </a>#}
-                                                    {#                                                </div>#}
 
                                                 </div>
                                             </div>
@@ -61,46 +108,98 @@
                 </div>
             </div>
         {% endif %}
+
         {% if active_slider == "hs_2" %}
             <div class="hero-section hs-2 mt-20">
                 <div class="hero-slider owl-carousel owl-theme" dir="ltr">
                     {% if banners %}
                         {% for banner in banners %}
-                            <div class="hero-single" dir="rtl">
-                                <div class="hero-single-bg"
-                                     style="background-image: url({{ banner.image.url }})">
-                                </div>
+                            <div class="hero-single" dir="rtl"
+                                 data-duration="{{ banner.duration_ms }}"
+                                 data-media-type="{{ banner.media_source_type }}">
+
+                                {# ---------- ویدیو / GIF / تصویر ---------- #}
+                                {% if banner.media_source_type == 'video' %}
+                                    <video class="hero-media-bg"
+                                           autoplay muted loop playsinline
+                                           {% if banner.image %}poster="{{ banner.image.url }}"{% endif %}>
+                                        <source src="{{ banner.media_url }}">
+                                    </video>
+                                {% elif banner.media_source_type == 'gif' %}
+                                    <img class="hero-media-bg"
+                                         src="{{ banner.media_url }}"
+                                         alt="{{ banner }}">
+                                {% elif banner.media_source_type == 'image' and banner.media_url %}
+                                    <div class="hero-single-bg"
+                                         style="background-image: url('{{ banner.media_url }}')"></div>
+                                {% endif %}
 
                                 <div class="container">
                                     <div class="row align-items-center">
                                         <div class="col-lg-6">
                                             <div class="hero-content">
 
-                                                {% if banner.label_fa %}
-                                                    <h6 class="hero-sub-title"
-                                                        data-animation="fadeInUp"
-                                                        data-delay=".25s">
-                                                        {{ banner.label_fa }}
-                                                    </h6>
+                                                {# ---------- برچسب ---------- #}
+                                                {% if is_english %}
+                                                    {% if banner.label_en %}
+                                                        <h6 class="hero-sub-title"
+                                                            data-animation="fadeInUp"
+                                                            data-delay=".25s">
+                                                            {{ banner.label_en }}
+                                                        </h6>
+                                                    {% endif %}
+                                                {% else %}
+                                                    {% if banner.label_fa %}
+                                                        <h6 class="hero-sub-title"
+                                                            data-animation="fadeInUp"
+                                                            data-delay=".25s">
+                                                            {{ banner.label_fa }}
+                                                        </h6>
+                                                    {% endif %}
                                                 {% endif %}
 
-                                                {% if banner.title_p1_fa or banner.title_p2_fa or banner.title_p3_fa %}
-                                                    <h1 class="hero-title"
-                                                        data-animation="fadeInRight"
-                                                        data-delay=".50s">
-                                                        {{ banner.title_p1_fa|default_if_none:"" }}
-                                                        {% if banner.title_p2_fa %}
-                                                            <span>{{ banner.title_p2_fa }}</span>
-                                                        {% endif %}
-                                                        {{ banner.title_p3_fa|default_if_none:"" }}
-                                                    </h1>
+                                                {# ---------- عنوان ---------- #}
+                                                {% if is_english %}
+                                                    {% if banner.title_p1_en or banner.title_p2_en or banner.title_p3_en %}
+                                                        <h1 class="hero-title"
+                                                            data-animation="fadeInRight"
+                                                            data-delay=".50s">
+                                                            {{ banner.title_p1_en|default_if_none:"" }}
+                                                            {% if banner.title_p2_en %}
+                                                                <span>{{ banner.title_p2_en }}</span>
+                                                            {% endif %}
+                                                            {{ banner.title_p3_en|default_if_none:"" }}
+                                                        </h1>
+                                                    {% endif %}
+                                                {% else %}
+                                                    {% if banner.title_p1_fa or banner.title_p2_fa or banner.title_p3_fa %}
+                                                        <h1 class="hero-title"
+                                                            data-animation="fadeInRight"
+                                                            data-delay=".50s">
+                                                            {{ banner.title_p1_fa|default_if_none:"" }}
+                                                            {% if banner.title_p2_fa %}
+                                                                <span>{{ banner.title_p2_fa }}</span>
+                                                            {% endif %}
+                                                            {{ banner.title_p3_fa|default_if_none:"" }}
+                                                        </h1>
+                                                    {% endif %}
                                                 {% endif %}
 
-                                                {% if banner.subtitle_fa %}
-                                                    <p data-animation="fadeInLeft"
-                                                       data-delay=".75s">
-                                                        {{ banner.subtitle_fa }}
-                                                    </p>
+                                                {# ---------- زیرعنوان ---------- #}
+                                                {% if is_english %}
+                                                    {% if banner.subtitle_en %}
+                                                        <p data-animation="fadeInLeft"
+                                                           data-delay=".75s">
+                                                            {{ banner.subtitle_en }}
+                                                        </p>
+                                                    {% endif %}
+                                                {% else %}
+                                                    {% if banner.subtitle_fa %}
+                                                        <p data-animation="fadeInLeft"
+                                                           data-delay=".75s">
+                                                            {{ banner.subtitle_fa }}
+                                                        </p>
+                                                    {% endif %}
                                                 {% endif %}
 
                                             </div>

@@ -261,6 +261,23 @@
                         </div>
 
                         <div class="tab-pane fade" id="qr-code">
+
+                            {# ✅ آدرس URL اسکن (جای کد محصول) #}
+                            {% if product.qr_data %}
+                                <div class="text-center mb-4">
+                                    <h5 class="fw-bold mb-2">
+                                        آدرس اسکن:
+                                    </h5>
+                                    <a href="{{ product.qr_data }}"
+                                       target="_blank"
+                                       class="badge bg-primary fs-5 px-4 py-2 text-break"
+                                       style="direction: ltr;">
+                                        {{ product.qr_data }}
+                                    </a>
+                                </div>
+                            {% endif %}
+
+                            {# ✅ QR Code #}
                             {% if product.qr_code %}
                                 <div class="text-center">
                                     <img src="{{ product.qr_code.url }}"
@@ -271,6 +288,7 @@
                             {% else %}
                                 <p class="text-muted">QR کد برای این محصول موجود نیست.</p>
                             {% endif %}
+
                         </div>
 
                     </div>
