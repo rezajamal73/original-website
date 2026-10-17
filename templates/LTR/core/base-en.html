@@ -14,9 +14,10 @@
     {# ✅ SEO Meta — همه تگ‌های SEO از این فایل می‌آید #}
     {% include "seo/meta_en.html" %}
 
-    <!-- Favicon -->
+    <!-- Favicon from Django Admin -->
     {% if site_info and site_info.header_logo %}
-        <link rel="icon" type="image/x-icon" href="{{ site_info.header_logo.url }}">
+       <link rel="icon" href="{{ site_info.header_logo.url }}">
+       <link rel="shortcut icon" href="{{ site_info.header_logo.url }}">
     {% endif %}
 
     <!-- CSS -->

@@ -12,9 +12,10 @@
     <!-- SEO META (شامل title، description، robots، canonical، og، twitter، schema و ...) -->
     {% include "seo/meta_fa.html" %}
 
-    <!-- favicon -->
+    <!-- Favicon from Django Admin -->
     {% if site_info and site_info.header_logo %}
-        <link rel="icon" type="image/x-icon" href="{{ site_info.header_logo.url }}">
+      <link rel="icon" href="{{ site_info.header_logo.url }}">
+     <link rel="shortcut icon" href="{{ site_info.header_logo.url }}">
     {% endif %}
 
     <!-- css -->

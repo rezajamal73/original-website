@@ -86,9 +86,33 @@ html, body {
     max-width: 85vw !important;
 }
 
-.offcanvas-start {
-    right: 0 !important;
-    left: auto !important;
+/* ==========================================
+   NKAVOSH - MOBILE OFFCANVAS MENU FIX
+   Open menu from LEFT side
+   ========================================== */
+
+@media (max-width: 991.98px) {
+
+    .offcanvas.offcanvas-start {
+        left: 0 !important;
+        right: auto !important;
+        transform: translateX(-100%);
+    }
+
+    .offcanvas.offcanvas-start.show,
+    .offcanvas.offcanvas-start.showing {
+        transform: translateX(0);
+    }
+
+    .offcanvas.offcanvas-start.hiding {
+        transform: translateX(-100%);
+    }
+
+    .offcanvas.offcanvas-start .offcanvas-body,
+    .offcanvas.offcanvas-start .offcanvas-header {
+        direction: rtl;
+        text-align: right;
+    }
 }
 
 .company-brand-text {
