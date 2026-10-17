@@ -1,35 +1,32 @@
+
 # app_seo/sitemaps.py
-
-"""
-Sitemapهای app_seo — نسخه‌ی کامل و درست.
-
-- همه‌ی اپ‌های پروژه پوشش داده شده.
-- URL nameها دقیقاً بر اساس registry پروژه.
-- فارسی و انگلیسی جداگانه.
-- lastmod برای آبجکت‌ها.
-"""
 
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse, NoReverseMatch
-from django.conf import settings
+from django.db.models import Q
+from urllib.parse import urlsplit
 
 
-# =====================================================
-#  کمک‌تابع‌ها
-# =====================================================
+# ==========================================
+# Helpers
+# ==========================================
 
-def _get_updated_at(obj):
-    """خواندن امن آخرین تاریخ به‌روزرسانی."""
+def safe_reverse(name):
+    try:
+        return reverse(name)
+    except NoReverseMatch:
+        return None
+
+
+def updated_at(obj):
     for field in (
         "updated_at",
         "updated_at_fa",
         "updated_at_en",
+        "modified_at",
         "created_at",
         "created_at_fa",
         "created_at_en",
-        "publish_date",
-        "publish_date_fa",
-        "publish_date_en",
     ):
         value = getattr(obj, field, None)
         if value:
@@ -37,107 +34,125 @@ def _get_updated_at(obj):
     return None
 
 
-def _site_url():
-    return getattr(settings, "SITE_URL", "").rstrip("/")
-
-
-def _should_index(page_key):
-    """چک می‌کنه آیا این صفحه اجازه‌ی ایندکس داره."""
-    from .utils import SEOManager
-
-    try:
-        seo = SEOManager.get_page(page_key)
-    except Exception:
-        return True
-
-    if seo is None:
-        return True
-
-    robots = getattr(seo, "robots", "") or ""
-
-    if "noindex" in robots:
-        return False
-
-    if page_key in ("404", "search"):
-        return False
-
-    return True
-
-
-def _safe_reverse(url_name, kwargs=None):
-    """reverse امن. اگه خطا بده، None برمی‌گردونه."""
-    try:
-        return reverse(url_name, kwargs=kwargs or {})
-    except NoReverseMatch:
-        return None
-    except Exception:
+def clean_path(value):
+    if not isinstance(value, str):
         return None
 
+    value = value.strip()
 
-# =====================================================
-#  Static Pages  —  صفحات ثابت فارسی
-# =====================================================
+    if not value:
+        return None
 
-class StaticViewSitemap(Sitemap):
-    """
-    صفحات ثابت + لیست‌های اصلی همه‌ی اپ‌ها (فارسی).
-    """
+    if value.startswith(("http://", "https://")):
+        value = urlsplit(value).path
 
+    if not value or value == "/":
+        return value
+
+    if not value.startswith("/"):
+        return None
+
+    return value
+
+
+def object_url(obj, english=False):
+    method_name = (
+        "get_absolute_url_en"
+        if english
+        else "get_absolute_url"
+    )
+
+    method = getattr(obj, method_name, None)
+
+    if not callable(method):
+        return None
+
+    try:
+        return clean_path(method())
+    except (NoReverseMatch, ValueError, AttributeError):
+        return None
+
+
+def published_objects(model, english=False):
+    qs = model.objects.all()
+
+    fields = {
+        field.name
+        for field in model._meta.fields
+    }
+
+    if "status" in fields:
+        status_field = model._meta.get_field("status")
+
+        choices = getattr(status_field, "choices", None)
+
+        if choices:
+            valid_statuses = [
+                key for key, label in choices
+                if key not in (
+                    "draft",
+                    "deleted",
+                    "hidden",
+                    "inactive",
+                )
+            ]
+
+            if valid_statuses:
+                qs = qs.filter(
+                    status__in=valid_statuses
+                )
+
+    slug_field = "slug_en" if english else "slug"
+
+    if slug_field in fields:
+        qs = qs.exclude(
+            **{slug_field: ""}
+        ).exclude(
+            **{slug_field + "__isnull": True}
+        )
+
+    return qs
+
+
+# ==========================================
+# Base Sitemap
+# ==========================================
+
+class BaseSitemap(Sitemap):
     protocol = "https"
-    priority = 0.8
+    i18n = False
     changefreq = "weekly"
-    i18n = True
+    priority = 0.7
 
-    # ---- صفحات ثابتی که به noindex احترام می‌ذارن ----
-    SEO_PAGES = [
-        ("home", "app_core:home"),
-        ("about", "app_core:about"),
-        ("contact", "app_core:contact"),
-    ]
+    def lastmod(self, obj):
+        return updated_at(obj)
 
-    # ---- لیست‌های اصلی اپ‌ها ----
-    OTHER_URLS = [
-        # app_core
+
+# ==========================================
+# Static Persian Pages
+# ==========================================
+
+class StaticViewSitemap(BaseSitemap):
+    priority = 0.8
+
+    URL_NAMES = [
+        "app_core:home",
+        "app_core:about",
+        "app_core:contact",
         "app_core:category",
-
-        # app_product
         "app_product:product_list",
-
-        # app_blog
         "app_blog:blog_home",
-
-        # app_news
         "app_news:news_home",
-
-        # app_media
         "app_media:media_home",
-
-        # app_resume
         "app_resume:resume",
-
-        # app_catalog
         "app_catalog:catalog",
-
-        # app_tender
         "app_tender:tender_home",
-
-        # app_tender_holding
         "app_tender_holding:tender_holding_home",
-
-        # app_auction
         "app_auction:auction_home",
-
-        # app_hr
         "app_hr:hr_home",
-
-        # app_chart
         "app_chart:chart",
         "app_chart:board_home",
-
-        # app_inquiry
         "app_inquiry:inquiry_home",
-
-        # app_reports
         "app_reports:vision_missions",
         "app_reports:financial",
         "app_reports:shareholder",
@@ -146,92 +161,51 @@ class StaticViewSitemap(Sitemap):
         "app_reports:certificate",
         "app_reports:department_contact_list",
         "app_reports:companies",
-
-        # app_sale
         "app_sale:sales_chart",
     ]
 
     def items(self):
-        valid = []
+        paths = []
+        seen = set()
 
-        # ---- SEO_PAGES با چک noindex ----
-        for page_key, url_name in self.SEO_PAGES:
-            if _safe_reverse(url_name) is None:
-                continue
-            if not _should_index(page_key):
-                continue
-            valid.append(url_name)
+        for name in self.URL_NAMES:
+            path = safe_reverse(name)
 
-        # ---- OTHER_URLS ----
-        seo_url_names = {u for _, u in self.SEO_PAGES}
-
-        for url_name in self.OTHER_URLS:
-            if url_name in seo_url_names:
+            if not path or path in seen:
                 continue
-            if _safe_reverse(url_name) is None:
-                continue
-            valid.append(url_name)
 
-        return valid
+            seen.add(path)
+            paths.append(path)
+
+        return paths
 
     def location(self, item):
-        return reverse(item)
+        return item
 
 
-# =====================================================
-#  Static Pages EN  —  صفحات ثابت انگلیسی
-# =====================================================
+# ==========================================
+# Static English Pages
+# ==========================================
 
-class StaticViewSitemapEN(Sitemap):
-    """
-    صفحات ثابت انگلیسی.
-    """
-
-    protocol = "https"
+class StaticViewSitemapEN(BaseSitemap):
     priority = 0.8
-    changefreq = "weekly"
 
-    OTHER_URLS = [
-        # app_core_en
+    URL_NAMES = [
         "app_core_en:home_en",
         "app_core_en:about_en",
         "app_core_en:contact_en",
-
-        # app_product_en
         "app_product_en:product_list_en",
-
-        # app_blog_en
         "app_blog_en:blog_home_en",
-
-        # app_news_en
         "app_news_en:news_home_en",
-
-        # app_media_en
         "app_media_en:media_home_en",
-
-        # app_resume_en
         "app_resume_en:resume_en",
-
-        # app_catalog_en
         "app_catalog_en:catalog_en",
-
-        # app_tender_en
         "app_tender_en:tender_home_en",
-
-        # app_tender_holding_en
         "app_tender_holding_en:tender_holding_home_en",
-
-        # app_auction_en
         "app_auction_en:auction_home_en",
-
-        # app_chart_en
         "app_chart_en:chart_en",
         "app_chart_en:board_home_en",
-
-        # app_inquiry_en
         "app_inquiry_en:inquiry_home_en",
-
-        # app_reports_en
         "app_reports_en:vision_missions_en",
         "app_reports_en:financial_en",
         "app_reports_en:shareholder_en",
@@ -240,303 +214,231 @@ class StaticViewSitemapEN(Sitemap):
         "app_reports_en:certificate_en",
         "app_reports_en:department_contact_list_en",
         "app_reports_en:companies_en",
-
-        # app_sale_en
         "app_sale_en:sales_chart_en",
     ]
 
     def items(self):
-        valid = []
-        for url_name in self.OTHER_URLS:
-            if _safe_reverse(url_name) is None:
+        paths = []
+        seen = set()
+
+        for name in self.URL_NAMES:
+            path = safe_reverse(name)
+
+            if not path or path in seen:
                 continue
-            valid.append(url_name)
-        return valid
+
+            seen.add(path)
+            paths.append(path)
+
+        return paths
 
     def location(self, item):
-        return reverse(item)
+        return item
 
 
-# =====================================================
-#  Products
-# =====================================================
+# ==========================================
+# Dynamic Sitemap Base
+# ==========================================
 
-class ProductSitemap(Sitemap):
-    protocol = "https"
-    changefreq = "weekly"
-    priority = 0.9
-    i18n = True
-
-    def items(self):
-        try:
-            from app_product.models import Product
-            return Product.objects.filter(status="published")
-        except Exception:
-            return []
-
-    def lastmod(self, obj):
-        return _get_updated_at(obj)
-
-    def location(self, obj):
-        try:
-            return obj.get_absolute_url()
-        except Exception:
-            return ""
-
-
-# =====================================================
-#  Blogs
-# =====================================================
-
-class BlogSitemap(Sitemap):
-    protocol = "https"
-    changefreq = "weekly"
+class DynamicSitemap(BaseSitemap):
+    model = None
+    english = False
     priority = 0.7
-    i18n = True
 
     def items(self):
-        try:
-            from app_blog.models import blog
-            return blog.objects.filter(status="published")
-        except Exception:
+        if self.model is None:
             return []
 
-    def lastmod(self, obj):
-        return _get_updated_at(obj)
+        candidates = published_objects(
+            self.model,
+            english=self.english
+        )
+
+        valid = []
+        seen = set()
+
+        for obj in candidates:
+            path = object_url(
+                obj,
+                english=self.english
+            )
+
+            if not path:
+                continue
+
+            if path in seen:
+                continue
+
+            # Prevent accidental root URLs
+            if path == "/":
+                continue
+
+            seen.add(path)
+            valid.append(obj)
+
+        return valid
 
     def location(self, obj):
-        try:
-            return reverse(
-                "app_blog:blog_single",
-                kwargs={"pid": obj.id},
+        path = object_url(
+            obj,
+            english=self.english
+        )
+
+        if not path:
+            raise ValueError(
+                "Invalid sitemap URL for object "
+                + str(obj.pk)
             )
-        except Exception:
-            return ""
+
+        return path
 
 
-# =====================================================
-#  News
-# =====================================================
+# ==========================================
+# Products
+# ==========================================
 
-class NewsSitemap(Sitemap):
-    protocol = "https"
+from app_product.models import Product
+
+
+class ProductSitemap(DynamicSitemap):
+    model = Product
+    priority = 0.9
+
+
+class ProductEnglishSitemap(DynamicSitemap):
+    model = Product
+    english = True
+    priority = 0.9
+
+
+# ==========================================
+# Blog
+# ==========================================
+
+from app_blog.models import blog
+
+
+class BlogSitemap(DynamicSitemap):
+    model = blog
+
+
+class BlogEnglishSitemap(DynamicSitemap):
+    model = blog
+    english = True
+
+
+# ==========================================
+# News
+# ==========================================
+
+from app_news.models import News
+
+
+class NewsSitemap(DynamicSitemap):
+    model = News
     changefreq = "daily"
     priority = 0.8
-    i18n = True
-
-    def items(self):
-        try:
-            from app_news.models import News
-            return News.objects.filter(status="published")
-        except Exception:
-            return []
-
-    def lastmod(self, obj):
-        return _get_updated_at(obj)
-
-    def location(self, obj):
-        try:
-            return reverse(
-                "app_news:news_single",
-                kwargs={"pid": obj.id},
-            )
-        except Exception:
-            return ""
 
 
-# =====================================================
-#  Media
-# =====================================================
+class NewsEnglishSitemap(DynamicSitemap):
+    model = News
+    english = True
+    changefreq = "daily"
+    priority = 0.8
 
-class MediaSitemap(Sitemap):
-    protocol = "https"
-    changefreq = "weekly"
+
+# ==========================================
+# Media
+# ==========================================
+
+from app_media.models import Media
+
+
+class MediaSitemap(DynamicSitemap):
+    model = Media
     priority = 0.6
-    i18n = True
-
-    def items(self):
-        try:
-            from app_media.models import Media
-            return Media.objects.filter(status="published")
-        except Exception:
-            return []
-
-    def lastmod(self, obj):
-        return _get_updated_at(obj)
-
-    def location(self, obj):
-        try:
-            return reverse(
-                "app_media:media_single",
-                kwargs={"slug": obj.slug},
-            )
-        except Exception:
-            return ""
 
 
-# =====================================================
-#  Tender
-# =====================================================
-
-class TenderSitemap(Sitemap):
-    protocol = "https"
-    changefreq = "weekly"
-    priority = 0.7
-    i18n = True
-
-    def items(self):
-        try:
-            from app_tender.models import tender
-            return tender.objects.filter(status="published")
-        except Exception:
-            return []
-
-    def lastmod(self, obj):
-        return _get_updated_at(obj)
-
-    def location(self, obj):
-        try:
-            return reverse(
-                "app_tender:tender_single",
-                kwargs={"pid": obj.id},
-            )
-        except Exception:
-            return ""
-
-
-# =====================================================
-#  Tender Holding
-# =====================================================
-
-class HoldingSitemap(Sitemap):
-    protocol = "https"
-    changefreq = "weekly"
-    priority = 0.7
-    i18n = True
-
-    def items(self):
-        try:
-            from app_tender_holding.models import holding
-            return holding.objects.filter(status="published")
-        except Exception:
-            return []
-
-    def lastmod(self, obj):
-        return _get_updated_at(obj)
-
-    def location(self, obj):
-        try:
-            return reverse(
-                "app_tender_holding:tender_holding_single",
-                kwargs={"pid": obj.id},
-            )
-        except Exception:
-            return ""
-
-
-# =====================================================
-#  Auction
-# =====================================================
-
-class AuctionSitemap(Sitemap):
-    protocol = "https"
-    changefreq = "weekly"
-    priority = 0.7
-    i18n = True
-
-    def items(self):
-        try:
-            from app_auction.models import auction
-            return auction.objects.filter(status="published")
-        except Exception:
-            return []
-
-    def lastmod(self, obj):
-        return _get_updated_at(obj)
-
-    def location(self, obj):
-        try:
-            return reverse(
-                "app_auction:auction_single",
-                kwargs={"pid": obj.id},
-            )
-        except Exception:
-            return ""
-
-
-# =====================================================
-#  Catalog
-# =====================================================
-
-class CatalogSitemap(Sitemap):
-    protocol = "https"
-    changefreq = "monthly"
+class MediaEnglishSitemap(DynamicSitemap):
+    model = Media
+    english = True
     priority = 0.6
-    i18n = True
-
-    def items(self):
-        try:
-            from app_catalog.models import companycatalog
-            return companycatalog.objects.all()
-        except Exception:
-            return []
-
-    def lastmod(self, obj):
-        return _get_updated_at(obj)
-
-    def location(self, obj):
-        try:
-            return obj.get_absolute_url()
-        except Exception:
-            return ""
 
 
-# =====================================================
-#  HR / Job Opportunity
-# =====================================================
+# ==========================================
+# Tenders
+# ==========================================
 
-class HRSitemap(Sitemap):
-    protocol = "https"
-    changefreq = "weekly"
-    priority = 0.7
-    i18n = True
-
-    def items(self):
-        try:
-            from app_hr.models import jobopportunity
-            return jobopportunity.objects.all()
-        except Exception:
-            return []
-
-    def lastmod(self, obj):
-        return _get_updated_at(obj)
-
-    def location(self, obj):
-        try:
-            return reverse(
-                "app_hr:hr_single",
-                kwargs={"pid": obj.id},
-            )
-        except Exception:
-            return ""
+from app_tender.models import Tender
 
 
-# =====================================================
-#  Sitemap Index
-# =====================================================
+class TenderSitemap(DynamicSitemap):
+    model = Tender
+
+
+class TenderEnglishSitemap(DynamicSitemap):
+    model = Tender
+    english = True
+
+
+# ==========================================
+# Tender Holding
+# ==========================================
+
+from app_tender_holding.models import Holding
+
+
+class HoldingSitemap(DynamicSitemap):
+    model = Holding
+
+
+class HoldingEnglishSitemap(DynamicSitemap):
+    model = Holding
+    english = True
+
+
+# ==========================================
+# Auctions
+# ==========================================
+
+from app_auction.models import Auction
+
+
+class AuctionSitemap(DynamicSitemap):
+    model = Auction
+
+
+class AuctionEnglishSitemap(DynamicSitemap):
+    model = Auction
+    english = True
+
+
+# ==========================================
+# Sitemap Registry
+# ==========================================
 
 sitemaps = {
     "static": StaticViewSitemap,
     "static_en": StaticViewSitemapEN,
+
     "products": ProductSitemap,
+    "products_en": ProductEnglishSitemap,
+
     "blogs": BlogSitemap,
+    "blogs_en": BlogEnglishSitemap,
+
     "news": NewsSitemap,
+    "news_en": NewsEnglishSitemap,
+
     "media": MediaSitemap,
+    "media_en": MediaEnglishSitemap,
+
     "tenders": TenderSitemap,
+    "tenders_en": TenderEnglishSitemap,
+
     "holdings": HoldingSitemap,
+    "holdings_en": HoldingEnglishSitemap,
+
     "auctions": AuctionSitemap,
-    "catalogs": CatalogSitemap,
-    "hr": HRSitemap,
+    "auctions_en": AuctionEnglishSitemap,
 }
-
-

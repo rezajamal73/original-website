@@ -1,9 +1,10 @@
+
 # app_seo/utils.py
 
 import json
 import threading
 
-from urllib.parse import unquote
+from urllib.parse import unquote, urlsplit
 
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
@@ -13,7 +14,7 @@ from .models import SEOSetting, SEODefault
 
 
 # =====================================================
-#  Thread-local storage
+# Thread-local storage
 # =====================================================
 
 _thread_locals = threading.local()
@@ -33,25 +34,31 @@ def clear_current_request():
 
 
 # =====================================================
-#  کمک‌تابع‌ها
+# Helper functions
 # =====================================================
 
 def _detect_language(request):
     if request is None:
         return "fa"
+
     path = getattr(request, "path", "") or ""
+
     if path.startswith("/en/"):
         return "en"
+
     return "fa"
 
 
 def _build_absolute(request, path_or_url):
     if not path_or_url:
         return ""
+
     if path_or_url.startswith(("http://", "https://")):
         return path_or_url
+
     if request is None:
         return path_or_url
+
     try:
         return request.build_absolute_uri(path_or_url)
     except Exception:
@@ -60,7 +67,7 @@ def _build_absolute(request, path_or_url):
 
 def _make_absolute(url, request=None):
     """
-    اگر URL نسبی بود، آن را absolute کند.
+    Convert a relative URL to an absolute URL.
     """
     if not url:
         return ""
@@ -92,7 +99,7 @@ def _path_from_request(request):
         return ""
 
     try:
-        path = request.get_full_path()
+        path = request.path
     except Exception:
         path = getattr(request, "path", "") or ""
 
@@ -111,6 +118,24 @@ def _path_from_request(request):
     return path
 
 
+def _same_url(left, right):
+    """
+    Compare URLs ignoring trailing slashes,
+    query strings and fragments.
+    """
+    if not left or not right:
+        return False
+
+    a = urlsplit(left)
+    b = urlsplit(right)
+
+    return (
+        a.netloc.lower().removeprefix("www.")
+        == b.netloc.lower().removeprefix("www.")
+        and a.path.rstrip("/") == b.path.rstrip("/")
+    )
+
+
 def _default_og_image_url():
     try:
         return static("images/default-og.jpg")
@@ -123,7 +148,7 @@ def _site_base_url():
 
 
 # =====================================================
-#  SEOContext
+# SEOContext
 # =====================================================
 
 class SEOContext:
@@ -141,160 +166,239 @@ class SEOContext:
         self.default = default
         self.obj = obj
         self.page_key = page_key
+
         self.content_type = (
             content_type
             or (setting.content_type if setting else None)
             or "page"
         )
+
         self.request = request
         self._cache = {}
 
     def _pick(self, *values):
-        for v in values:
-            if v is None:
+        for value in values:
+            if value is None:
                 continue
-            if isinstance(v, str) and not v.strip():
+
+            if isinstance(value, str) and not value.strip():
                 continue
-            return v
+
+            return value
+
         return None
 
-    # =====================
-    #  ✅ تشخیص زبان صفحه
-    # =====================
+    # =================================================
+    # Language
+    # =================================================
 
     @property
     def is_english(self):
-        """تشخیص اینکه صفحه فعلی انگلیسی است یا نه."""
         return _detect_language(self.request) == "en"
 
-    # =====================
-    #  ✅ پایه — عنوان
-    # =====================
+    # =================================================
+    # Title
+    # =================================================
 
     @property
     def title(self):
-        """
-        ✅ انتخاب هوشمند عنوان بر اساس زبان صفحه.
-
-        در صفحه انگلیسی: ابتدا title_en → سپس title → سپس title_fa
-        در صفحه فارسی:   ابتدا title   → سپس title_fa → سپس title_en
-        """
         if self.is_english:
-            # ---- صفحه انگلیسی ----
             value = self._pick(
-                # 1) setting.title_en (اگر در ادمین پر شده)
-                getattr(self.setting, "title_en", None) if self.setting else None,
-                # 2) setting.title (ممکن است عنوان انگلیسی باشد)
-                getattr(self.setting, "title", None) if self.setting else None,
-                # 3) obj.title_en
-                getattr(self.obj, "title_en", None) if self.obj else None,
-                # 4) obj.title_fa (fallback)
-                getattr(self.obj, "title_fa", None) if self.obj else None,
-                # 5) obj.title
-                getattr(self.obj, "title", None) if self.obj else None,
+                getattr(self.setting, "title_en", None)
+                if self.setting else None,
+
+                getattr(self.obj, "title_en", None)
+                if self.obj else None,
+
+                getattr(self.obj, "title_fa", None)
+                if self.obj else None,
+
+                getattr(self.obj, "title", None)
+                if self.obj else None,
+
+                getattr(self.setting, "title", None)
+                if self.setting else None,
             )
         else:
-            # ---- صفحه فارسی ----
             value = self._pick(
-                # 1) setting.title
-                getattr(self.setting, "title", None) if self.setting else None,
-                # 2) obj.title_fa
-                getattr(self.obj, "title_fa", None) if self.obj else None,
-                # 3) obj.title
-                getattr(self.obj, "title", None) if self.obj else None,
-                # 4) setting.title_en (fallback)
-                getattr(self.setting, "title_en", None) if self.setting else None,
-                # 5) obj.title_en (fallback)
-                getattr(self.obj, "title_en", None) if self.obj else None,
+                getattr(self.setting, "title", None)
+                if self.setting else None,
+
+                getattr(self.obj, "title_fa", None)
+                if self.obj else None,
+
+                getattr(self.obj, "title_en", None)
+                if self.obj else None,
+
+                getattr(self.obj, "title", None)
+                if self.obj else None,
             )
+
         return value or ""
 
-    # =====================
-    #  ✅ پایه — توضیحات
-    # =====================
+    # =================================================
+    # Description
+    # =================================================
 
     @property
     def description(self):
-        """
-        ✅ انتخاب هوشمند توضیحات بر اساس زبان صفحه.
-        """
         if self.is_english:
             return self._pick(
-                # 1) setting.description_en
-                getattr(self.setting, "description_en", None) if self.setting else None,
-                # 2) setting.description
-                getattr(self.setting, "description", None) if self.setting else None,
-                # 3) obj.description_en
-                getattr(self.obj, "description_en", None) if self.obj else None,
-                # 4) obj.summary_en
-                getattr(self.obj, "summary_en", None) if self.obj else None,
-                # 5) obj.description_fa
-                getattr(self.obj, "description_fa", None) if self.obj else None,
-                # 6) obj.description
-                getattr(self.obj, "description", None) if self.obj else None,
+                getattr(self.setting, "description_en", None)
+                if self.setting else None,
+
+                getattr(self.obj, "description_en", None)
+                if self.obj else None,
+
+                getattr(self.obj, "description_fa", None)
+                if self.obj else None,
+
+                getattr(self.obj, "description", None)
+                if self.obj else None,
+
+                getattr(self.obj, "summary_en", None)
+                if self.obj else None,
+
+                getattr(self.setting, "description", None)
+                if self.setting else None,
             ) or ""
-        else:
-            return self._pick(
-                # 1) setting.description
-                getattr(self.setting, "description", None) if self.setting else None,
-                # 2) obj.description_fa
-                getattr(self.obj, "description_fa", None) if self.obj else None,
-                # 3) obj.summary_fa
-                getattr(self.obj, "summary_fa", None) if self.obj else None,
-                # 4) obj.description
-                getattr(self.obj, "description", None) if self.obj else None,
-                # 5) setting.description_en (fallback)
-                getattr(self.setting, "description_en", None) if self.setting else None,
-                # 6) obj.description_en (fallback)
-                getattr(self.obj, "description_en", None) if self.obj else None,
-            ) or ""
+
+        return self._pick(
+            getattr(self.setting, "description", None)
+            if self.setting else None,
+
+            getattr(self.obj, "description_fa", None)
+            if self.obj else None,
+
+            getattr(self.obj, "description_en", None)
+            if self.obj else None,
+
+            getattr(self.obj, "description", None)
+            if self.obj else None,
+
+            getattr(self.obj, "summary_fa", None)
+            if self.obj else None,
+        ) or ""
+
+    # =================================================
+    # Keywords
+    # =================================================
 
     @property
     def keywords(self):
         return self._pick(
-            getattr(self.setting, "keywords", None) if self.setting else None,
+            getattr(self.setting, "keywords", None)
+            if self.setting else None,
         ) or ""
+
+    # =================================================
+    # Canonical
+    # =================================================
 
     @property
     def canonical(self):
         """
-        همیشه URL کامل (absolute) برمی‌گرداند.
+        Return canonical URL appropriate for page language.
+
+        Preserve an intentional manual canonical.
+
+        If the stored canonical is the automatically
+        generated Persian object URL, replace it with
+        the English object URL on English pages.
         """
-        # 1. canonical دستی
-        manual = getattr(self.setting, "canonical", None) if self.setting else None
-        if manual:
-            result = _make_absolute(manual, self.request)
-            if result:
-                return result
 
-        # 2. obj.get_absolute_url()
+        manual = (
+            getattr(self.setting, "canonical", None)
+            if self.setting else None
+        )
+
+        manual_url = (
+            _make_absolute(manual, self.request)
+            if manual else ""
+        )
+
         if self.obj is not None:
+
+            fa_method = getattr(
+                self.obj,
+                "get_absolute_url",
+                None,
+            )
+
+            en_method = getattr(
+                self.obj,
+                "get_absolute_url_en",
+                None,
+            )
+
             try:
-                obj_url = self.obj.get_absolute_url()
-                if obj_url:
-                    return _make_absolute(obj_url, self.request)
+                fa_url = (
+                    _make_absolute(
+                        fa_method(),
+                        self.request,
+                    )
+                    if callable(fa_method)
+                    else ""
+                )
             except Exception:
-                pass
+                fa_url = ""
 
-        # 3. فیلد url
-        manual_url = getattr(self.setting, "url", None) if self.setting else None
+            try:
+                en_url = (
+                    _make_absolute(
+                        en_method(),
+                        self.request,
+                    )
+                    if callable(en_method)
+                    else ""
+                )
+            except Exception:
+                en_url = ""
+
+            if self.is_english and en_url:
+
+                if (
+                    manual_url
+                    and fa_url
+                    and _same_url(manual_url, fa_url)
+                ):
+                    return en_url
+
+                return manual_url or en_url
+
+            if manual_url:
+                return manual_url
+
+            if fa_url and not self.is_english:
+                return fa_url
+
+            if en_url and self.is_english:
+                return en_url
+
         if manual_url:
-            result = _make_absolute(manual_url, self.request)
-            if result:
-                return result
+            return manual_url
 
-        # 4. request.path
+        stored_url = (
+            getattr(self.setting, "url", None)
+            if self.setting else None
+        )
+
+        if stored_url:
+            return _make_absolute(
+                stored_url,
+                self.request,
+            )
+
         path = _path_from_request(self.request)
-        if path:
-            base = getattr(settings, "SITE_URL", "").rstrip("/")
-            if base:
-                return f"{base}{path}"
 
-        return ""
+        return (
+            _make_absolute(path, self.request)
+            if path else ""
+        )
 
-    # =====================
-    #  Robots
-    # =====================
+    # =================================================
+    # Robots
+    # =================================================
 
     @property
     def robots(self):
@@ -304,13 +408,28 @@ class SEOContext:
             return "noindex,nofollow"
 
         if self.setting is not None:
-            index_control = getattr(self.setting, "index_control", None)
-            follow_control = getattr(self.setting, "follow_control", None)
+
+            index_control = getattr(
+                self.setting,
+                "index_control",
+                None,
+            )
+
+            follow_control = getattr(
+                self.setting,
+                "follow_control",
+                None,
+            )
 
             if index_control and follow_control:
                 return f"{index_control},{follow_control}"
 
-            legacy = getattr(self.setting, "robots", None)
+            legacy = getattr(
+                self.setting,
+                "robots",
+                None,
+            )
+
             if legacy:
                 return legacy
 
@@ -318,55 +437,58 @@ class SEOContext:
 
     @property
     def index_control(self):
-        return self.robots.split(",")[0].strip() or "index"
+        return (
+            self.robots.split(",")[0].strip()
+            or "index"
+        )
 
     @property
     def follow_control(self):
         parts = self.robots.split(",")
-        return parts[1].strip() if len(parts) > 1 else "follow"
 
-    # =====================
-    #  Open Graph
-    # =====================
+        return (
+            parts[1].strip()
+            if len(parts) > 1
+            else "follow"
+        )
+
+    # =================================================
+    # Open Graph
+    # =================================================
 
     @property
     def og_title(self):
-        """
-        ✅ انتخاب هوشمند og_title بر اساس زبان.
-        """
-        if self.is_english:
-            return self._pick(
-                getattr(self.setting, "og_title_en", None) if self.setting else None,
-                getattr(self.setting, "og_title", None) if self.setting else None,
-                self.title,
-            ) or ""
-        else:
-            return self._pick(
-                getattr(self.setting, "og_title", None) if self.setting else None,
-                self.title,
-            ) or ""
+        return self._pick(
+            getattr(self.setting, "og_title_en", None)
+            if self.setting and self.is_english
+            else None,
+
+            getattr(self.setting, "og_title", None)
+            if self.setting and not self.is_english
+            else None,
+
+            self.title,
+        ) or ""
 
     @property
     def og_description(self):
-        """
-        ✅ انتخاب هوشمند og_description بر اساس زبان.
-        """
-        if self.is_english:
-            return self._pick(
-                getattr(self.setting, "og_description_en", None) if self.setting else None,
-                getattr(self.setting, "og_description", None) if self.setting else None,
-                self.description,
-            ) or ""
-        else:
-            return self._pick(
-                getattr(self.setting, "og_description", None) if self.setting else None,
-                self.description,
-            ) or ""
+        return self._pick(
+            getattr(self.setting, "og_description_en", None)
+            if self.setting and self.is_english
+            else None,
+
+            getattr(self.setting, "og_description", None)
+            if self.setting and not self.is_english
+            else None,
+
+            self.description,
+        ) or ""
 
     @property
     def og_type(self):
         return self._pick(
-            getattr(self.setting, "og_type", None) if self.setting else None,
+            getattr(self.setting, "og_type", None)
+            if self.setting else None,
         ) or "website"
 
     @property
@@ -376,103 +498,136 @@ class SEOContext:
 
         image = None
 
-        if self.setting is not None and getattr(self.setting, "og_image", None):
+        if (
+            self.setting is not None
+            and getattr(self.setting, "og_image", None)
+        ):
             image = self.setting.og_image
-        elif self.default is not None and getattr(self.default, "default_og_image", None):
+
+        elif (
+            self.default is not None
+            and getattr(self.default, "default_og_image", None)
+        ):
             image = self.default.default_og_image
 
         self._cache["og_image"] = image
+
         return image
 
     @property
     def og_image_url(self):
         image = self.og_image
+
         if image:
             try:
-                return image.url
+                return _make_absolute(
+                    image.url,
+                    self.request,
+                )
             except Exception:
                 return ""
-        return _build_absolute(self.request, _default_og_image_url())
 
-    # =====================
-    #  Twitter Card
-    # =====================
+        return _build_absolute(
+            self.request,
+            _default_og_image_url(),
+        )
+
+    # =================================================
+    # Twitter
+    # =================================================
 
     @property
     def twitter_card(self):
         return self._pick(
-            getattr(self.setting, "twitter_card", None) if self.setting else None,
+            getattr(self.setting, "twitter_card", None)
+            if self.setting else None,
         ) or "summary_large_image"
 
     @property
     def twitter_title(self):
-        """
-        ✅ انتخاب هوشمند twitter_title بر اساس زبان.
-        """
-        if self.is_english:
-            return self._pick(
-                getattr(self.setting, "twitter_title_en", None) if self.setting else None,
-                getattr(self.setting, "twitter_title", None) if self.setting else None,
-                self.og_title,
-            ) or ""
-        else:
-            return self._pick(
-                getattr(self.setting, "twitter_title", None) if self.setting else None,
-                self.og_title,
-            ) or ""
+        return self._pick(
+            getattr(self.setting, "twitter_title_en", None)
+            if self.setting and self.is_english
+            else None,
+
+            getattr(self.setting, "twitter_title", None)
+            if self.setting and not self.is_english
+            else None,
+
+            self.og_title,
+        ) or ""
 
     @property
     def twitter_description(self):
-        """
-        ✅ انتخاب هوشمند twitter_description بر اساس زبان.
-        """
-        if self.is_english:
-            return self._pick(
-                getattr(self.setting, "twitter_description_en", None) if self.setting else None,
-                getattr(self.setting, "twitter_description", None) if self.setting else None,
-                self.og_description,
-            ) or ""
-        else:
-            return self._pick(
-                getattr(self.setting, "twitter_description", None) if self.setting else None,
-                self.og_description,
-            ) or ""
+        return self._pick(
+            getattr(self.setting, "twitter_description_en", None)
+            if self.setting and self.is_english
+            else None,
+
+            getattr(self.setting, "twitter_description", None)
+            if self.setting and not self.is_english
+            else None,
+
+            self.og_description,
+        ) or ""
 
     @property
     def twitter_image(self):
-        if self.setting is not None and getattr(self.setting, "twitter_image", None):
+        if (
+            self.setting is not None
+            and getattr(self.setting, "twitter_image", None)
+        ):
             return self.setting.twitter_image
+
         return self.og_image
 
     @property
     def twitter_image_url(self):
         image = self.twitter_image
+
         if image:
             try:
-                return image.url
+                return _make_absolute(
+                    image.url,
+                    self.request,
+                )
             except Exception:
                 return ""
+
         return self.og_image_url
 
-    # =====================
-    #  Yoast
-    # =====================
+    # =================================================
+    # Yoast
+    # =================================================
 
     @property
     def focus_keyphrase(self):
         return self._pick(
-            getattr(self.setting, "focus_keyphrase", None) if self.setting else None,
+            getattr(self.setting, "focus_keyphrase", None)
+            if self.setting else None,
         ) or ""
 
     @property
     def seo_score(self):
         if self.setting is not None:
-            return getattr(self.setting, "seo_score", 0) or 0
+            return (
+                getattr(self.setting, "seo_score", 0)
+                or 0
+            )
+
         return 0
+
+    # =================================================
+    # Schema
+    # =================================================
 
     @property
     def schema_type(self):
-        manual = getattr(self.setting, "schema_type", None) if self.setting else None
+        manual = (
+            getattr(self.setting, "schema_type", None)
+            if self.setting else None
+        )
+
         if manual and manual != "auto":
             return manual
 
@@ -484,109 +639,138 @@ class SEOContext:
             "media": "VideoObject",
             "resume": "Person",
         }
-        return mapping.get(self.content_type, "WebPage")
+
+        return mapping.get(
+            self.content_type,
+            "WebPage",
+        )
 
     @property
     def schema_json(self):
-        if self.setting is not None and getattr(self.setting, "schema_json", None):
+        if (
+            self.setting is not None
+            and getattr(self.setting, "schema_json", None)
+        ):
             return self.setting.schema_json
+
         return None
+
+    # =================================================
+    # Breadcrumb title
+    # =================================================
 
     @property
     def breadcrumb_title(self):
-        """
-        ✅ انتخاب هوشمند breadcrumb_title بر اساس زبان.
-        """
-        if self.is_english:
-            return self._pick(
-                getattr(self.setting, "breadcrumb_title_en", None) if self.setting else None,
-                getattr(self.setting, "breadcrumb_title", None) if self.setting else None,
-                self.title,
-            ) or ""
-        else:
-            return self._pick(
-                getattr(self.setting, "breadcrumb_title", None) if self.setting else None,
-                self.title,
-            ) or ""
+        return self._pick(
+            getattr(self.setting, "breadcrumb_title_en", None)
+            if self.setting and self.is_english
+            else None,
+
+            getattr(self.setting, "breadcrumb_title", None)
+            if self.setting and not self.is_english
+            else None,
+
+            self.title,
+        ) or ""
+
+    # =================================================
+    # Hreflang group
+    # =================================================
 
     @property
     def hreflang_group(self):
         return self._pick(
-            getattr(self.setting, "hreflang_group", None) if self.setting else None,
+            getattr(self.setting, "hreflang_group", None)
+            if self.setting else None,
         ) or ""
 
-    # =====================
-    #  زمان‌بندی
-    # =====================
+    # =================================================
+    # Publishing
+    # =================================================
 
     @property
     def publish_status(self):
         return self._pick(
-            getattr(self.setting, "publish_status", None) if self.setting else None,
+            getattr(self.setting, "publish_status", None)
+            if self.setting else None,
         ) or "published"
 
     @property
     def is_published_now(self):
         if self.setting is None:
             return True
+
         try:
             return self.setting.is_published_now()
         except Exception:
             return True
 
-    # =====================
-    #  Hreflang
-    # =====================
+    # =================================================
+    # Hreflang
+    # =================================================
 
     @property
     def hreflang(self):
         if "hreflang" in self._cache:
             return self._cache["hreflang"]
 
-        group = self.hreflang_group
+        # One SEOSetting may represent both languages
+        # of the same object.
 
-        if not group:
-            self._cache["hreflang"] = []
-            return []
+        if self.obj is not None:
+            urls = {}
 
-        siblings = (
-            SEOSetting.objects
-            .filter(
-                is_active=True,
-                hreflang_group=group,
-            )
-            .exclude(pk=getattr(self.setting, "pk", None))
-        )
+            for lang, method_name in (
+                ("fa", "get_absolute_url"),
+                ("en", "get_absolute_url_en"),
+            ):
+                method = getattr(
+                    self.obj,
+                    method_name,
+                    None,
+                )
 
-        current_lang = _detect_language(self.request)
+                if callable(method):
+                    try:
+                        path = method()
 
-        result = [
-            {
-                "lang": current_lang,
-                "url": self.canonical or "",
-                "is_current": True,
-            }
-        ]
+                        if path:
+                            urls[lang] = _make_absolute(
+                                path,
+                                self.request,
+                            )
+                    except Exception:
+                        pass
 
-        for sib in siblings:
-            lang = "fa"
-            if sib.url and "/en/" in sib.url:
-                lang = "en"
-            elif sib.url and sib.url.startswith("en."):
-                lang = "en"
+            if (
+                len(urls) == 2
+                and urls["fa"] != urls["en"]
+            ):
+                result = [
+                    {
+                        "lang": lang,
+                        "url": url,
+                        "is_current": (
+                            lang
+                            == _detect_language(self.request)
+                        ),
+                    }
+                    for lang, url in urls.items()
+                ]
 
-            result.append({
-                "lang": lang,
-                "url": sib.canonical or sib.url or "",
-                "is_current": False,
-            })
+                self._cache["hreflang"] = result
 
-        self._cache["hreflang"] = result
-        return result
+                return result
 
-    # =====================
-    #  Breadcrumb
-    # =====================
+        # Do not invent alternate URLs for static pages.
+
+        self._cache["hreflang"] = []
+
+        return []
+
+    # =================================================
+    # Breadcrumb
+    # =================================================
 
     @property
     def breadcrumb(self):
@@ -596,24 +780,37 @@ class SEOContext:
         items = []
 
         home_url = _site_base_url() or "/"
-        home_label = "خانه" if _detect_language(self.request) == "fa" else "Home"
 
-        # آیتم ۱: خانه
+        home_label = (
+            "خانه"
+            if _detect_language(self.request) == "fa"
+            else "Home"
+        )
+
         items.append({
             "label": home_label,
             "url": home_url,
             "position": 1,
         })
 
-        # آیتم ۲: دسته‌بندی
-        if self.content_type != "page" and self.obj is not None:
+        if (
+            self.content_type != "page"
+            and self.obj is not None
+        ):
             parent = (
                 getattr(self.obj, "category", None)
                 or getattr(self.obj, "category2", None)
             )
+
             if parent is not None:
                 parent_url = ""
-                get_url = getattr(parent, "get_absolute_url", None)
+
+                get_url = getattr(
+                    parent,
+                    "get_absolute_url",
+                    None,
+                )
+
                 if callable(get_url):
                     try:
                         parent_url = get_url() or ""
@@ -627,8 +824,8 @@ class SEOContext:
                         "position": len(items) + 1,
                     })
 
-        # آیتم ۳: خود صفحه
         final_url = self.canonical or ""
+
         if final_url:
             items.append({
                 "label": self.breadcrumb_title,
@@ -637,11 +834,12 @@ class SEOContext:
             })
 
         self._cache["breadcrumb"] = items
+
         return items
 
-    # =====================
-    #  Schema
-    # =====================
+    # =================================================
+    # Schema
+    # =================================================
 
     @property
     def schema(self):
@@ -650,8 +848,13 @@ class SEOContext:
 
         from .schema import generate_schema
 
-        result = generate_schema(self, obj=self.obj)
+        result = generate_schema(
+            self,
+            obj=self.obj,
+        )
+
         self._cache["schema"] = result
+
         return result
 
     @property
@@ -660,31 +863,39 @@ class SEOContext:
             return self._cache["schema_json_ld"]
 
         schema = self.schema
+
         if not schema:
             self._cache["schema_json_ld"] = ""
             return ""
 
         try:
-            result = json.dumps(schema, ensure_ascii=False)
+            result = json.dumps(
+                schema,
+                ensure_ascii=False,
+            )
         except (TypeError, ValueError):
             result = ""
 
         self._cache["schema_json_ld"] = result
+
         return result
 
-    # =====================
-    #  Debug
-    # =====================
+    # =================================================
+    # Debug
+    # =================================================
 
     def __bool__(self):
         return True
 
     def __repr__(self):
-        return f"<SEOContext page_key={self.page_key} type={self.content_type}>"
+        return (
+            f"<SEOContext page_key={self.page_key} "
+            f"type={self.content_type}>"
+        )
 
 
 # =====================================================
-#  SEOManager
+# SEOManager
 # =====================================================
 
 class SEOManager:
@@ -695,6 +906,7 @@ class SEOManager:
             return SEOContext()
 
         request = get_current_request()
+
         language = _detect_language(request)
 
         setting = (
@@ -732,7 +944,11 @@ class SEOManager:
 
         request = get_current_request()
 
-        content_type = ContentType.objects.get_for_model(instance.__class__)
+        content_type = (
+            ContentType.objects.get_for_model(
+                instance.__class__
+            )
+        )
 
         setting = (
             SEOSetting.objects
@@ -753,7 +969,10 @@ class SEOManager:
             "resume": "resume",
         }
 
-        internal_ct = ct_map.get(content_type.model, "other")
+        internal_ct = ct_map.get(
+            content_type.model,
+            "other",
+        )
 
         language = _detect_language(request)
 
@@ -776,8 +995,16 @@ class SEOManager:
         )
 
     @staticmethod
-    def get_by_id(app_label, model_name, object_id):
-        if not app_label or not model_name or not object_id:
+    def get_by_id(
+        app_label,
+        model_name,
+        object_id,
+    ):
+        if (
+            not app_label
+            or not model_name
+            or not object_id
+        ):
             return SEOContext()
 
         request = get_current_request()

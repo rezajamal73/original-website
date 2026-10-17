@@ -159,13 +159,15 @@ class HeroBannerAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
     def media_type_display(self, obj):
         """نمایش نوع مدیا در لیست ادمین"""
         if obj.media_type == "image":
-            return format_html(
-                "<span style='color:#1e88e5; font-weight:bold;'>{}</span>",
-                "🖼️ تصویر"
+            return mark_safe(
+                "<span style='color:#1e88e5; font-weight:bold;'>🖼️ تصویر</span>"
             )
-        return format_html(
-            "<span style='color:#d7263d; font-weight:bold;'>{}</span>",
-            "🎬 ویدیو"
+        elif obj.media_type == "video":
+            return mark_safe(
+                "<span style='color:#d7263d; font-weight:bold;'>🎬 ویدیو</span>"
+            )
+        return mark_safe(
+            "<span style='color:#999;'>—</span>"
         )
 
     media_type_display.short_description = "نوع مدیا"
@@ -179,7 +181,8 @@ class HeroBannerAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
                     "<img src='{}' width='50' style='border-radius:6px;' title='GIF'>",
                     obj.video.url,
                 )
-            return format_html(
+            # ✅ اصلاح: mark_safe به جای format_html بدون آرگومان
+            return mark_safe(
                 "<span style='font-size:24px;' title='ویدیو'>🎬</span>"
             )
         if obj.media_type == "image" and obj.image:
@@ -226,9 +229,8 @@ class HeroBannerAdmin(ActionButtonsMixin, SortableAdminMixin, admin.ModelAdmin):
                 obj.image.url,
                 obj.image.name,
             )
-        return format_html(
-            "<span style='color:#d7263d;'>{}</span>",
-            "هیچ مدیایی آپلود نشده است",
+        return mark_safe(
+            "<span style='color:#d7263d;'>هیچ مدیایی آپلود نشده است</span>"
         )
 
     media_preview.short_description = "پیش‌نمایش مدیا"

@@ -1,77 +1,1142 @@
+
 {% extends 'RTL/core/base.html' %}
+{% load static %}
 
 {% block content %}
 
-    <!-- breadcrumb -->
-    <div class="site-breadcrumb">
-        <div class="site-breadcrumb-bg"
-             style="background: url('{{ banner.image.url }}')">
-        </div>
+<div class="site-breadcrumb">
+    <div class="site-breadcrumb-bg"
+         style="{% if banner and banner.image %}background-image: url('{{ banner.image.url }}');{% endif %}">
+    </div>
 
-        <div class="container">
-            <div class="site-breadcrumb-wrap">
-                <h4 class="breadcrumb-title">کاتالوگ</h4>
-                <ul class="breadcrumb-menu">
-                    <li>
-                        <a href="/">
-                            <i class="far fa-home"></i>
-                            خانه
-                        </a>
-                    </li>
-                    <li class="active">کاتالوگ شرکت</li>
-                </ul>
-            </div>
+    <div class="container">
+        <div class="site-breadcrumb-wrap">
+            <h4 class="breadcrumb-title">کاتالوگ</h4>
+
+            <ul class="breadcrumb-menu">
+                <li>
+                    <a href="/">
+                        <i class="far fa-home"></i>
+                        خانه
+                    </a>
+                </li>
+                <li class="active">کاتالوگ شرکت</li>
+            </ul>
         </div>
     </div>
-    <!-- breadcrumb end -->
+</div>
 
-    <div class="container my-5">
+<style>
 
-        {% if catalog %}
+.nk-catalog {
+    --theme-color: #38B6FF;
+    --theme-color2: #053262;
+    --nk-soft: #edf8ff;
+}
 
-            <!-- Title -->
-            <div class="text-center mb-4">
-                <h2 class="mb-2">{{ catalog.title_fa }}</h2>
-                {% if catalog.description_fa %}
-                    <p class="text-muted">{{ catalog.description_fa }}</p>
-                {% endif %}
-            </div>
+.nk-catalog .nk-shell {
+    padding: 8px;
+    border: 1px solid rgba(5,50,98,.13);
+    border-radius: 20px;
+    background: linear-gradient(145deg,#ffffff,#eaf6ff);
+    box-shadow: 0 16px 40px rgba(5,50,98,.09);
+}
 
-            <!-- PDF Viewer -->
-            <div class="card shadow-sm mb-4">
-                <div style="width:100%; height:80vh;">
-                    <iframe
-                            src="{{ catalog.pdf_file.url }}"
-                            style="width:100%; height:100%; border:none;"
-                            loading="lazy">
-                    </iframe>
-                </div>
-            </div>
+.nk-catalog .nk-stage {
+    position: relative;
+    width: 100%;
+    overflow: hidden !important;
+    direction: ltr;
+    border-radius: 14px;
+    background: radial-gradient(
+        ellipse at center,
+        #ffffff,
+        #edf7ff
+    );
+    scrollbar-width: none !important;
+    -ms-overflow-style: none;
+    touch-action: pan-y;
+}
 
-            <!-- Download + Dates -->
-            <div class="text-center">
-                <a href="{{ catalog.pdf_file.url }}"
-                   class="btn btn-primary btn-lg mb-3"
-                   download>
-                    دانلود کاتالوگ (PDF)
-                </a>
-                <div class="text-muted small">
-                    آخرین بروزرسانی:
-                    <br>
-                    {{ catalog.updated_at_jalali }} | {{ catalog.updated_at_gregorian }}
-                </div>
-            </div>
+.nk-catalog .nk-stage::-webkit-scrollbar {
+    display: none !important;
+}
 
-        {% else %}
+.nk-catalog .nk-stage.nk-pannable {
+    cursor: grab;
+    touch-action: none;
+}
 
-            <div class="container py-100">
-                <div class="alert alert-info text-center">
-                    اطلاعاتی وارد نشده است
-                </div>
-            </div>
+.nk-catalog .nk-stage.nk-dragging,
+.nk-catalog .nk-stage.nk-dragging * {
+    cursor: grabbing !important;
+    user-select: none !important;
+}
 
+.nk-catalog .nk-book-viewport {
+    position: relative;
+    width: 100%;
+    margin: 0 auto;
+    overflow: hidden;
+}
+
+.nk-catalog .nk-book-zoom {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform-origin: top left;
+    transition: transform .20s ease;
+    will-change: transform;
+}
+
+.nk-catalog .nk-stage.nk-dragging .nk-book-zoom {
+    transition: none !important;
+}
+
+.nk-catalog #nk-flipbook {
+    direction: ltr;
+    margin: 0;
+}
+
+.nk-catalog .nk-page {
+    background: #fff;
+    overflow: hidden;
+    box-shadow: inset 0 0 18px rgba(5,50,98,.04);
+}
+
+.nk-catalog .nk-page img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background: #fff;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+    pointer-events: none;
+}
+
+.nk-catalog .nk-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 6px;
+    margin-top: 8px;
+    direction: rtl;
+}
+
+.nk-catalog .nk-btn {
+    min-height: 42px;
+    padding: 8px 14px;
+    border: 1px solid #d4e7f5;
+    border-radius: 12px;
+    background: #fff;
+    color: var(--theme-color2);
+    font-family: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background .18s ease,
+        transform .18s ease,
+        box-shadow .18s ease;
+}
+
+.nk-catalog .nk-btn:hover:not(:disabled) {
+    background: var(--nk-soft);
+    border-color: var(--theme-color);
+    box-shadow: 0 5px 16px rgba(56,182,255,.16);
+    transform: translateY(-1px);
+}
+
+.nk-catalog .nk-btn:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+}
+
+.nk-catalog .nk-btn-primary {
+    background: linear-gradient(135deg,#38B6FF,#053262);
+    color: #fff;
+    border-color: #053262;
+}
+
+.nk-catalog .nk-btn-primary:hover:not(:disabled) {
+    background: linear-gradient(135deg,#159fe9,#053262);
+    color: #fff;
+}
+
+.nk-catalog .nk-page-counter {
+    color: var(--theme-color2);
+    font-weight: 800;
+    min-width: 105px;
+    text-align: center;
+    direction: rtl;
+}
+
+.nk-catalog .nk-zoom-percent {
+    color: var(--theme-color2);
+    font-size: 13px;
+    font-weight: 800;
+    min-width: 48px;
+    text-align: center;
+    direction: ltr;
+}
+
+.nk-catalog .nk-autoplay {
+    min-width: 140px;
+}
+
+.nk-catalog .nk-status {
+    text-align: center;
+    color: #526f91;
+    padding: 14px;
+}
+
+.nk-catalog .nk-progress {
+    height: 5px;
+    max-width: 320px;
+    margin: 0 auto 10px;
+    background: #d8eaf7;
+    border-radius: 99px;
+    overflow: hidden;
+}
+
+.nk-catalog .nk-progress > div {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg,#38B6FF,#053262);
+    transition: width .2s;
+}
+
+.nk-catalog .nk-download {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 12px;
+    background: linear-gradient(135deg,#38B6FF,#053262);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 800;
+    box-shadow: 0 8px 22px rgba(5,50,98,.16);
+}
+
+.nk-catalog .nk-download:hover {
+    color: #fff;
+    background: #053262;
+}
+
+.nk-catalog .nk-help {
+    margin: 4px 0 2px;
+    text-align: center;
+    color: #607c96;
+    font-size: 12px;
+}
+
+@media (max-width:650px) {
+    .nk-catalog .nk-shell {
+        padding: 5px;
+        border-radius: 15px;
+    }
+
+    .nk-catalog .nk-toolbar {
+        gap: 5px;
+        padding: 8px 4px;
+    }
+
+    .nk-catalog .nk-btn {
+        min-height: 38px;
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+
+    .nk-catalog .nk-page-counter {
+        min-width: 75px;
+        font-size: 12px;
+    }
+
+    .nk-catalog .nk-autoplay {
+        min-width: 120px;
+    }
+}
+
+@media (prefers-reduced-motion:reduce) {
+    .nk-catalog .nk-book-zoom,
+    .nk-catalog .nk-btn {
+        transition: none;
+    }
+}
+</style>
+
+<div class="container my-5 nk-catalog">
+
+{% if catalog %}
+
+    <div class="text-center mb-4">
+        <h2 class="mb-2">{{ catalog.title_fa }}</h2>
+
+        {% if catalog.description_fa %}
+            <p class="text-muted">
+                {{ catalog.description_fa }}
+            </p>
         {% endif %}
+    </div>
+
+    <div class="nk-shell mb-4">
+
+        <div id="nk-status"
+             class="nk-status"
+             role="status">
+            در حال آماده‌سازی کاتالوگ...
+        </div>
+
+        <div id="nk-progress"
+             class="nk-progress">
+            <div id="nk-progress-bar"></div>
+        </div>
+
+        <!-- کتاب -->
+        <div id="nk-stage" class="nk-stage">
+            <div id="nk-book-viewport"
+                 class="nk-book-viewport">
+                <div id="nk-book-zoom"
+                     class="nk-book-zoom">
+                    <div id="nk-flipbook" dir="ltr"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- کنترل‌های کاتالوگ -->
+        <div class="nk-toolbar"
+             aria-label="کنترل‌های کاتالوگ">
+
+            <button type="button"
+                    class="nk-btn nk-btn-primary nk-prev"
+                    disabled>
+                قبلی
+            </button>
+
+            <span class="nk-page-counter">
+                <span class="nk-current">۰</span>
+                /
+                <span class="nk-total">۰</span>
+            </span>
+
+            <button type="button"
+                    class="nk-btn nk-btn-primary nk-next"
+                    disabled>
+                بعدی
+            </button>
+
+            <button type="button"
+                    class="nk-btn nk-zoom-out"
+                    title="کوچک‌نمایی"
+                    disabled>
+                −
+            </button>
+
+            <span id="nk-zoom-percent"
+                  class="nk-zoom-percent">
+                100%
+            </span>
+
+            <button type="button"
+                    class="nk-btn nk-zoom-in"
+                    title="بزرگ‌نمایی"
+                    disabled>
+                +
+            </button>
+
+            <button type="button"
+                    class="nk-btn nk-reset"
+                    disabled>
+                اندازه اصلی
+            </button>
+
+            <button type="button"
+                    class="nk-btn nk-btn-primary nk-autoplay"
+                    id="nk-autoplay"
+                    aria-pressed="true"
+                    disabled>
+                ⏸ توقف خودکار
+            </button>
+
+        </div>
 
     </div>
+
+    <div class="text-center">
+        <a href="{{ catalog.pdf_file.url }}"
+           class="nk-download mb-3"
+           download>
+            دانلود کاتالوگ (PDF)
+        </a>
+
+        <div class="text-muted small">
+            آخرین بروزرسانی:
+            <br>
+            {{ catalog.updated_at_jalali }}
+            |
+            {{ catalog.updated_at_gregorian }}
+        </div>
+    </div>
+
+{% else %}
+
+    <div class="container py-100">
+        <div class="alert alert-info text-center">
+            اطلاعاتی وارد نشده است
+        </div>
+    </div>
+
+{% endif %}
+
+</div>
+
+{% if catalog %}
+
+{{ catalog.pdf_file.url|json_script:"nk-pdf-url" }}
+
+<script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.min.js"></script>
+
+<script type="module">
+
+import * as pdfjsLib from
+'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs';
+
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs';
+
+const pdfUrl = JSON.parse(
+    document.getElementById('nk-pdf-url').textContent
+);
+
+const statusEl = document.getElementById('nk-status');
+const progress = document.getElementById('nk-progress');
+const progressBar = document.getElementById('nk-progress-bar');
+
+const stage = document.getElementById('nk-stage');
+const viewportEl = document.getElementById('nk-book-viewport');
+const zoomEl = document.getElementById('nk-book-zoom');
+const bookEl = document.getElementById('nk-flipbook');
+
+const prevButtons = document.querySelectorAll('.nk-prev');
+const nextButtons = document.querySelectorAll('.nk-next');
+const zoomInButtons = document.querySelectorAll('.nk-zoom-in');
+const zoomOutButtons = document.querySelectorAll('.nk-zoom-out');
+const resetButtons = document.querySelectorAll('.nk-reset');
+
+const autoplayButton = document.getElementById('nk-autoplay');
+const zoomPercent = document.getElementById('nk-zoom-percent');
+
+const AUTO_INTERVAL = 10000;
+
+let book = null;
+let total = 0;
+let zoom = 1;
+
+let pageWidth = 420;
+let pageHeight = 594;
+
+let busy = true;
+let turning = false;
+
+let bookWidth = 0;
+let bookHeight = 0;
+let portraitMode = false;
+
+let panX = 0;
+let panY = 0;
+
+let dragging = false;
+let dragPointerId = null;
+let dragStartX = 0;
+let dragStartY = 0;
+let startPanX = 0;
+let startPanY = 0;
+
+/* تنظیمات ورق‌زدن خودکار */
+let autoplayEnabled = true;
+let autoplayTimer = null;
+let autoplayDirection = 1;
+let autoFlipPending = false;
+
+function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+}
+
+function spreadWidth() {
+    return portraitMode
+        ? bookWidth
+        : bookWidth * 2;
+}
+
+function panBounds() {
+    const frameWidth = viewportEl.clientWidth;
+    const frameHeight = viewportEl.clientHeight;
+
+    const scaledWidth = spreadWidth() * zoom;
+    const scaledHeight = bookHeight * zoom;
+
+    const minX = Math.min(0, frameWidth - scaledWidth);
+    const maxX = Math.max(0, (frameWidth - scaledWidth) / 2);
+
+    const minY = Math.min(0, frameHeight - scaledHeight);
+    const maxY = Math.max(0, (frameHeight - scaledHeight) / 2);
+
+    return {
+        minX, maxX,
+        minY, maxY,
+        frameWidth, frameHeight,
+        scaledWidth, scaledHeight
+    };
+}
+
+function renderPan() {
+    zoomEl.style.transform =
+        `translate3d(${panX}px, ${panY}px, 0) scale(${zoom})`;
+}
+
+/* بزرگ‌نمایی بدون ساخت دوباره کتاب */
+function applyZoom(center = false) {
+    if (!book) return;
+
+    const frameWidth = stage.clientWidth;
+
+    const frameHeight = Math.min(
+        bookHeight * zoom,
+        Math.max(320, window.innerHeight * .78)
+    );
+
+    viewportEl.style.width = frameWidth + 'px';
+    viewportEl.style.height =
+        Math.ceil(frameHeight) + 'px';
+
+    zoomEl.style.width = spreadWidth() + 'px';
+    zoomEl.style.height = bookHeight + 'px';
+
+    const bounds = panBounds();
+
+    if (center || zoom === 1) {
+        panX = (bounds.frameWidth - bounds.scaledWidth) / 2;
+        panY = Math.max(
+            0,
+            (bounds.frameHeight - bounds.scaledHeight) / 2
+        );
+    }
+
+    panX = clamp(
+        panX,
+        bounds.minX,
+        bounds.maxX
+    );
+
+    panY = clamp(
+        panY,
+        bounds.minY,
+        bounds.maxY
+    );
+
+    renderPan();
+
+    stage.classList.toggle('nk-pannable', zoom > 1);
+
+    zoomPercent.textContent =
+        Math.round(zoom * 100) + '%';
+
+    updateControls();
+}
+
+/* مدیریت تایمر */
+function clearAutoplayTimer() {
+    if (autoplayTimer !== null) {
+        clearTimeout(autoplayTimer);
+        autoplayTimer = null;
+    }
+}
+
+function updateAutoplayButton() {
+    autoplayButton.disabled =
+        busy || !book || total <= 1;
+
+    autoplayButton.textContent = autoplayEnabled
+        ? '⏸ توقف خودکار'
+        : '▶ ادامه خودکار';
+
+    autoplayButton.setAttribute(
+        'aria-pressed',
+        autoplayEnabled ? 'true' : 'false'
+    );
+}
+
+/* تشخیص جهت در ابتدا و انتهای کتاب */
+function chooseAutoDirection() {
+    if (!book || total <= 1) return;
+
+    const current = book.getCurrentPageIndex();
+
+    if (current <= 0) {
+        autoplayDirection = 1;
+    } else if (current >= total - 1) {
+        autoplayDirection = -1;
+    }
+}
+
+/* ورق زدن خودکار در دو جهت */
+function performAutoFlip() {
+    if (
+        !book ||
+        !autoplayEnabled ||
+        busy ||
+        turning ||
+        dragging ||
+        document.hidden ||
+        autoFlipPending
+    ) {
+        return;
+    }
+
+    chooseAutoDirection();
+
+    const previousIndex = book.getCurrentPageIndex();
+
+    autoFlipPending = true;
+
+    try {
+        if (autoplayDirection === 1) {
+            book.flipNext('bottom');
+        } else {
+            book.flipPrev('bottom');
+        }
+    } catch (error) {
+        console.error('خطا در ورق زدن خودکار:', error);
+
+        autoFlipPending = false;
+        scheduleAutoplay();
+        return;
+    }
+
+    /*
+     * در نمایش دوصفحه‌ای، آخرین نمای کتاب
+     * ممکن است از صفحه total - 2 شروع شود.
+     * اگر ورق بعدی وجود نداشت، جهت را برگردان.
+     */
+    setTimeout(() => {
+        if (!book || !autoFlipPending) return;
+
+        const newIndex = book.getCurrentPageIndex();
+
+        if (newIndex === previousIndex && !turning) {
+            autoplayDirection *= -1;
+            autoFlipPending = false;
+
+            if (autoplayEnabled && !document.hidden) {
+                scheduleAutoplay();
+            }
+        }
+    }, 1200);
+}
+
+function scheduleAutoplay() {
+    clearAutoplayTimer();
+
+    if (
+        !autoplayEnabled ||
+        !book ||
+        busy ||
+        turning ||
+        dragging ||
+        document.hidden ||
+        total <= 1 ||
+        autoFlipPending
+    ) {
+        return;
+    }
+
+    autoplayTimer = setTimeout(() => {
+        autoplayTimer = null;
+        performAutoFlip();
+    }, AUTO_INTERVAL);
+}
+
+function pauseAutoplay() {
+    autoplayEnabled = false;
+    clearAutoplayTimer();
+    updateAutoplayButton();
+}
+
+function resumeAutoplay() {
+    if (!book || busy || total <= 1) return;
+
+    autoplayEnabled = true;
+    updateAutoplayButton();
+
+    if (!turning && !autoFlipPending) {
+        scheduleAutoplay();
+    }
+}
+
+autoplayButton.addEventListener('click', () => {
+    if (autoplayEnabled) {
+        pauseAutoplay();
+    } else {
+        resumeAutoplay();
+    }
+});
+
+document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+        clearAutoplayTimer();
+    } else if (autoplayEnabled) {
+        scheduleAutoplay();
+    }
+});
+
+/* وضعیت دکمه‌ها */
+function updateControls() {
+    const current = book
+        ? book.getCurrentPageIndex() + 1
+        : 0;
+
+    document.querySelectorAll('.nk-current').forEach(
+        el => el.textContent = current
+    );
+
+    document.querySelectorAll('.nk-total').forEach(
+        el => el.textContent = total
+    );
+
+    prevButtons.forEach(
+        b => b.disabled =
+            busy || turning || current <= 1
+    );
+
+    nextButtons.forEach(
+        b => b.disabled =
+            busy || turning || current >= total
+    );
+
+    zoomInButtons.forEach(
+        b => b.disabled =
+            busy || turning || zoom >= 1.75
+    );
+
+    zoomOutButtons.forEach(
+        b => b.disabled =
+            busy || turning || zoom <= 1
+    );
+
+    resetButtons.forEach(
+        b => b.disabled =
+            busy || turning || zoom === 1
+    );
+
+    updateAutoplayButton();
+}
+
+/* اندازه اولیه */
+function fitSize() {
+    const available = Math.max(
+        240,
+        stage.clientWidth - 16
+    );
+
+    const isMobile =
+        window.matchMedia('(max-width:650px)').matches;
+
+    const ratio = pageHeight / pageWidth;
+
+    const widthByScreen = isMobile
+        ? available
+        : available / 2;
+
+    const maxHeight = isMobile
+        ? Math.max(300, window.innerHeight * .78)
+        : Math.max(450, window.innerHeight * .84);
+
+    const widthByHeight = maxHeight / ratio;
+
+    return Math.max(
+        160,
+        Math.floor(
+            Math.min(widthByScreen, widthByHeight)
+        )
+    );
+}
+
+/* ساخت کتاب فقط یک بار */
+function initBook(pageNodes) {
+    bookEl.replaceChildren(...pageNodes);
+
+    const w = fitSize();
+    const h = Math.round(
+        w * pageHeight / pageWidth
+    );
+
+    bookWidth = w;
+    bookHeight = h;
+
+    portraitMode =
+        window.matchMedia('(max-width:650px)').matches;
+
+    viewportEl.style.width = stage.clientWidth + 'px';
+    viewportEl.style.height = h + 'px';
+
+    zoomEl.style.width = spreadWidth() + 'px';
+    zoomEl.style.height = h + 'px';
+
+    book = new St.PageFlip(bookEl, {
+        width: w,
+        height: h,
+        size: 'fixed',
+
+        minWidth: 160,
+        minHeight: 150,
+
+        maxShadowOpacity: .35,
+        showCover: false,
+        mobileScrollSupport: false,
+        usePortrait: true,
+
+        flippingTime: 650,
+        drawShadow: true,
+        startPage: 0,
+        autoSize: true
+    });
+
+    book.loadFromHTML(
+        bookEl.querySelectorAll('.nk-page')
+    );
+
+    book.on('flip', () => {
+        autoFlipPending = false;
+        clearAutoplayTimer();
+
+        updateControls();
+
+        if (autoplayEnabled && !turning) {
+            scheduleAutoplay();
+        }
+    });
+
+    book.on('changeState', event => {
+        const wasTurning = turning;
+
+        turning = event.data === 'flipping';
+
+        updateControls();
+
+        if (turning) {
+            clearAutoplayTimer();
+        } else if (wasTurning) {
+            autoFlipPending = false;
+
+            if (autoplayEnabled) {
+                scheduleAutoplay();
+            }
+        }
+    });
+
+    book.on('changeOrientation', event => {
+        portraitMode = event.data === 'portrait';
+
+        requestAnimationFrame(() => {
+            applyZoom(true);
+        });
+    });
+
+    requestAnimationFrame(() => {
+        applyZoom(true);
+    });
+
+    updateControls();
+}
+
+/* ورق زدن دستی */
+prevButtons.forEach(
+    b => b.addEventListener('click', () => {
+        if (book && !busy && !turning) {
+            clearAutoplayTimer();
+            autoFlipPending = false;
+
+            book.flipPrev('bottom');
+
+            if (autoplayEnabled) {
+                scheduleAutoplay();
+            }
+        }
+    })
+);
+
+nextButtons.forEach(
+    b => b.addEventListener('click', () => {
+        if (book && !busy && !turning) {
+            clearAutoplayTimer();
+            autoFlipPending = false;
+
+            book.flipNext('bottom');
+
+            if (autoplayEnabled) {
+                scheduleAutoplay();
+            }
+        }
+    })
+);
+
+/* زوم */
+function setZoom(next) {
+    if (!book || busy || turning) return;
+
+    zoom = clamp(
+        Math.round(next * 100) / 100,
+        1,
+        1.75
+    );
+
+    applyZoom(true);
+}
+
+zoomInButtons.forEach(
+    b => b.addEventListener('click', () => {
+        setZoom(zoom + .25);
+    })
+);
+
+zoomOutButtons.forEach(
+    b => b.addEventListener('click', () => {
+        setZoom(zoom - .25);
+    })
+);
+
+resetButtons.forEach(
+    b => b.addEventListener('click', () => {
+        setZoom(1);
+    })
+);
+
+/* حرکت با ماوس و لمس در حالت زوم */
+stage.addEventListener('pointerdown', event => {
+    if (!book || busy || turning || zoom <= 1) {
+        return;
+    }
+
+    if (
+        event.pointerType === 'mouse' &&
+        event.button !== 0
+    ) {
+        return;
+    }
+
+    dragging = true;
+    dragPointerId = event.pointerId;
+
+    dragStartX = event.clientX;
+    dragStartY = event.clientY;
+
+    startPanX = panX;
+    startPanY = panY;
+
+    stage.classList.add('nk-dragging');
+
+    clearAutoplayTimer();
+
+    try {
+        stage.setPointerCapture(event.pointerId);
+    } catch (error) {}
+
+    event.preventDefault();
+    event.stopPropagation();
+}, true);
+
+stage.addEventListener('pointermove', event => {
+    if (
+        !dragging ||
+        event.pointerId !== dragPointerId
+    ) {
+        return;
+    }
+
+    const bounds = panBounds();
+
+    panX = clamp(
+        startPanX + event.clientX - dragStartX,
+        bounds.minX,
+        bounds.maxX
+    );
+
+    panY = clamp(
+        startPanY + event.clientY - dragStartY,
+        bounds.minY,
+        bounds.maxY
+    );
+
+    renderPan();
+
+    event.preventDefault();
+    event.stopPropagation();
+}, true);
+
+function stopDragging(event) {
+    if (
+        !dragging ||
+        event.pointerId !== dragPointerId
+    ) {
+        return;
+    }
+
+    dragging = false;
+    dragPointerId = null;
+
+    stage.classList.remove('nk-dragging');
+
+    try {
+        if (stage.hasPointerCapture(event.pointerId)) {
+            stage.releasePointerCapture(event.pointerId);
+        }
+    } catch (error) {}
+
+    event.stopPropagation();
+
+    if (autoplayEnabled) {
+        scheduleAutoplay();
+    }
+}
+
+stage.addEventListener(
+    'pointerup',
+    stopDragging,
+    true
+);
+
+stage.addEventListener(
+    'pointercancel',
+    stopDragging,
+    true
+);
+
+stage.addEventListener('lostpointercapture', () => {
+    if (!dragging) return;
+
+    dragging = false;
+    dragPointerId = null;
+
+    stage.classList.remove('nk-dragging');
+
+    if (autoplayEnabled) {
+        scheduleAutoplay();
+    }
+});
+
+/* دریافت و آماده‌سازی PDF */
+async function loadCatalog() {
+    try {
+        if (!window.St?.PageFlip) {
+            throw new Error('PageFlip library unavailable');
+        }
+
+        const pdf = await pdfjsLib.getDocument({
+            url: pdfUrl
+        }).promise;
+
+        total = pdf.numPages;
+
+        if (!total) {
+            throw new Error('Empty PDF');
+        }
+
+        const firstPage = await pdf.getPage(1);
+
+        const firstViewport = firstPage.getViewport({
+            scale: 1
+        });
+
+        pageWidth = firstViewport.width;
+        pageHeight = firstViewport.height;
+
+        const pages = [];
+
+        for (let i = 1; i <= total; i++) {
+            statusEl.textContent =
+                `در حال آماده‌سازی صفحه ${i} از ${total}...`;
+
+            const page = i === 1
+                ? firstPage
+                : await pdf.getPage(i);
+
+            const base = page.getViewport({
+                scale: 1
+            });
+
+            const v = page.getViewport({
+                scale: Math.min(
+                    1.5,
+                    1100 / base.width
+                )
+            });
+
+            const canvas = document.createElement('canvas');
+
+            canvas.width = Math.ceil(v.width);
+            canvas.height = Math.ceil(v.height);
+
+            await page.render({
+                canvasContext: canvas.getContext('2d'),
+                viewport: v
+            }).promise;
+
+            const img = document.createElement('img');
+
+            img.src = canvas.toDataURL(
+                'image/jpeg',
+                .85
+            );
+
+            img.alt = `صفحه ${i} کاتالوگ`;
+            img.loading = 'eager';
+            img.draggable = false;
+
+            const node = document.createElement('div');
+            node.className = 'nk-page';
+            node.appendChild(img);
+
+            pages.push(node);
+
+            canvas.width = 0;
+            canvas.height = 0;
+
+            progressBar.style.width =
+                `${Math.round(i / total * 100)}%`;
+        }
+
+        initBook(pages);
+
+        busy = false;
+
+        statusEl.hidden = true;
+        progress.hidden = true;
+
+        updateControls();
+
+        /* شروع خودکار پس از بارگذاری کامل */
+        scheduleAutoplay();
+
+    } catch (error) {
+        console.error('Catalog viewer:', error);
+
+        clearAutoplayTimer();
+
+        statusEl.textContent =
+            'نمایش آنلاین کاتالوگ ممکن نشد. لطفاً از دکمه دانلود استفاده کنید.';
+
+        progress.hidden = true;
+    }
+}
+
+loadCatalog();
+
+</script>
+
+
+
+{% endif %}
 
 {% endblock %}

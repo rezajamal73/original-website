@@ -1,0 +1,451 @@
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, follow">
+
+    <title>نقشه سایت |  ℛ𝒥</title>
+
+    <style>
+        :root {
+            --primary: #155e91;
+            --primary-dark: #103b60;
+            --accent: #0ea5a4;
+            --background: #f3f6fb;
+            --surface: #ffffff;
+            --text: #1d3045;
+            --muted: #718096;
+            --border: #e4ebf3;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Tahoma, Arial, sans-serif;
+            background: var(--background);
+            color: var(--text);
+        }
+
+        .hero {
+            background: linear-gradient(120deg, #0c304f, #176b9c);
+            color: #fff;
+            padding: 48px 20px 80px;
+            text-align: center;
+        }
+
+        .hero h1 {
+            margin: 0 0 14px;
+            font-size: clamp(24px, 3vw, 36px);
+            font-weight: 800;
+        }
+
+        .hero p {
+            margin: 0;
+            color: #d5e9f6;
+            font-size: 14px;
+            line-height: 2;
+        }
+
+        .wrapper {
+            max-width: 1450px;
+            margin: -43px auto 50px;
+            padding: 0 22px;
+            position: relative;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat {
+            background: #fff;
+            padding: 20px;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(18, 55, 86, .05);
+            text-align: center;
+        }
+
+        .stat-label {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 29px;
+            font-weight: 800;
+            color: var(--primary-dark);
+            direction: ltr;
+        }
+
+        .columns {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+            gap: 20px;
+            align-items: start;
+        }
+
+        .panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(18, 55, 86, .05);
+            min-width: 0;
+        }
+
+        .panel-head {
+            padding: 22px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .panel-head.fa {
+            border-top: 4px solid var(--primary);
+        }
+
+        .panel-head.en {
+            border-top: 4px solid var(--accent);
+        }
+
+        .panel-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 17px;
+        }
+
+        .panel-title h2 {
+            margin: 0;
+            font-size: 19px;
+            color: var(--primary-dark);
+        }
+
+        .lang-badge {
+            background: #e9f3fc;
+            color: #155e91;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .panel-head.en .lang-badge {
+            background: #e4f7f4;
+            color: #087f78;
+        }
+
+        .search-input {
+            width: 100%;
+            border: 1px solid #dce5ef;
+            border-radius: 10px;
+            padding: 13px 15px;
+            font-family: inherit;
+            font-size: 13px;
+            outline: none;
+            background: #f9fbfe;
+            color: var(--text);
+            transition: .2s;
+        }
+
+        .search-input:focus {
+            border-color: #3895cf;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(56,149,207,.10);
+        }
+
+        .url-list {
+            list-style: none;
+            margin: 0;
+            padding: 12px;
+            counter-reset: item;
+        }
+
+        .url-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 13px 12px;
+            margin: 4px 0;
+            border-radius: 11px;
+            transition: background .2s;
+            min-width: 0;
+        }
+
+        .url-item:hover {
+            background: #f1f7fc;
+        }
+
+        .number {
+            flex-shrink: 0;
+            width: 30px;
+            height: 30px;
+            display: grid;
+            place-items: center;
+            border-radius: 9px;
+            background: #e8f2fa;
+            color: #17699b;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .english .number {
+            background: #e4f7f4;
+            color: #07867d;
+        }
+
+        .url-item a {
+            color: #235f89;
+            font-size: 12.5px;
+            line-height: 2;
+            text-decoration: none;
+            overflow-wrap: anywhere;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .url-item a:hover {
+            color: #0a8ab2;
+            text-decoration: underline;
+        }
+
+        .english .url-item a {
+            color: #24766e;
+        }
+
+        .english .url-item a:hover {
+            color: #0c9b90;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 32px 12px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 35px;
+            font-size: 12px;
+            color: var(--muted);
+            line-height: 2;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
+        @media (max-width: 800px) {
+            .columns {
+                grid-template-columns: 1fr;
+            }
+
+            .summary {
+                gap: 9px;
+            }
+
+            .stat {
+                padding: 15px 8px;
+            }
+
+            .stat-value {
+                font-size: 23px;
+            }
+
+            .stat-label {
+                font-size: 11px;
+            }
+
+            .wrapper {
+                padding: 0 12px;
+            }
+
+            .panel-head {
+                padding: 17px;
+            }
+
+            .hero {
+                padding: 38px 15px 75px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="hero">
+        <h1>نقشه سایت</h1>
+        <p>
+            دسترسی سریع به تمامی صفحات فارسی و انگلیسی
+            <br>
+            WEBSITE SITEMAP
+        </p>
+    </header>
+
+    <main class="wrapper">
+
+        <section class="summary">
+            <div class="stat">
+                <div class="stat-label">کل صفحات</div>
+                <div class="stat-value" id="totalCount">0</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-label">صفحات فارسی</div>
+                <div class="stat-value" id="faCount">0</div>
+            </div>
+
+            <div class="stat">
+                <div class="stat-label">صفحات انگلیسی</div>
+                <div class="stat-value" id="enCount">0</div>
+            </div>
+        </section>
+
+        <section class="columns">
+
+            <!-- RIGHT: PERSIAN -->
+            <div class="panel persian" dir="rtl">
+
+                <div class="panel-head fa">
+                    <div class="panel-title">
+                        <h2>صفحات فارسی</h2>
+                        <span class="lang-badge">FA / فارسی</span>
+                    </div>
+
+                    <input
+                        id="searchFa"
+                        class="search-input"
+                        type="search"
+                        placeholder="جست‌وجو در آدرس‌های فارسی..."
+                        aria-label="جست‌وجوی صفحات فارسی"
+                    >
+                </div>
+
+                <ol id="faList" class="url-list">
+                    {% for item in urls %}
+                        {% if '/en/' not in item.url %}
+                            <li class="url-item">
+                                <span class="number"></span>
+                                <a href="{{ item.url }}"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   dir="auto">{{ item.readable_url }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ol>
+
+                <p id="faEmpty" class="empty" hidden>
+                    آدرسی با این عبارت پیدا نشد.
+                </p>
+            </div>
+
+            <!-- LEFT: ENGLISH -->
+            <div class="panel english" dir="ltr">
+
+                <div class="panel-head en">
+                    <div class="panel-title">
+                        <h2>English Pages</h2>
+                        <span class="lang-badge">EN / English</span>
+                    </div>
+
+                    <input
+                        id="searchEn"
+                        class="search-input"
+                        type="search"
+                        placeholder="Search English URLs..."
+                        aria-label="Search English pages"
+                    >
+                </div>
+
+                <ol id="enList" class="url-list">
+                    {% for item in urls %}
+                        {% if '/en/' in item.url %}
+                            <li class="url-item">
+                                <span class="number"></span>
+                                <a href="{{ item.url }}"
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   dir="ltr">{{ item.readable_url }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ol>
+
+                <p id="enEmpty" class="empty" hidden>
+                    No matching URLs found.
+                </p>
+            </div>
+
+        </section>
+
+        <footer class="footer">
+            © ℛ𝒥
+            <br>
+            نقشه سایت فارسی و انگلیسی
+        </footer>
+
+    </main>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const faItems = Array.from(
+                document.querySelectorAll("#faList .url-item")
+            );
+
+            const enItems = Array.from(
+                document.querySelectorAll("#enList .url-item")
+            );
+
+            document.getElementById("faCount").textContent = faItems.length;
+            document.getElementById("enCount").textContent = enItems.length;
+            document.getElementById("totalCount").textContent =
+                faItems.length + enItems.length;
+
+            function setupSearch(inputId, items, emptyId) {
+                const input = document.getElementById(inputId);
+                const empty = document.getElementById(emptyId);
+
+                function filterItems() {
+                    const query = input.value.trim().toLocaleLowerCase();
+                    let visibleCount = 0;
+
+                    items.forEach(function (item) {
+                        const text = item.textContent.toLocaleLowerCase();
+                        const matched = text.includes(query);
+
+                        item.hidden = !matched;
+
+                        if (matched) {
+                            visibleCount++;
+                            item.querySelector(".number").textContent =
+                                visibleCount;
+                        }
+                    });
+
+                    empty.hidden = visibleCount > 0;
+                }
+
+                input.addEventListener("input", filterItems);
+                filterItems();
+            }
+
+            setupSearch("searchFa", faItems, "faEmpty");
+            setupSearch("searchEn", enItems, "enEmpty");
+
+        });
+    </script>
+
+</body>
+</html>
