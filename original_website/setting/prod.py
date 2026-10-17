@@ -1,13 +1,35 @@
+
 from original_website.settings import *
 from pathlib import Path
+from django.core.management.utils import get_random_secret_key
+import os
 
-# Quick-start development setting - unsuitable for production
-# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
+# ------------------------------------------------------------------
+# SECURITY — Automatic persistent SECRET_KEY
+# کلید فقط یک بار ساخته می‌شود و در اجراهای بعدی ثابت می‌ماند.
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-gs9k^w59&yy8$%+^g8q=%0d@3fhsn3=y6u&p_p^k$=o3&ir(2$'
+SECRET_FILE = Path.home() / ".nkavosh_django_secret"
 
-# SECURITY WARNING: don't run with debug turned on in production!
+try:
+    fd = os.open(
+        str(SECRET_FILE),
+        os.O_WRONLY | os.O_CREAT | os.O_EXCL,
+        0o600
+    )
+except FileExistsError:
+    pass
+else:
+    with os.fdopen(fd, "w", encoding="utf-8") as f:
+        f.write(get_random_secret_key())
+
+SECRET_KEY = SECRET_FILE.read_text(encoding="utf-8").strip()
+
+if not SECRET_KEY:
+    raise RuntimeError("Django SECRET_KEY file is empty.")
+
+# ------------------------------------------------------------------
+# PRODUCTION
+
 DEBUG = False
 
 ALLOWED_HOSTS = ['nkavosh.com', 'www.nkavosh.com']
@@ -29,7 +51,7 @@ DATABASES = {
 
 # ------------------------------------------------------------------
 # STATIC
-STATIC_URL  = '/static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = PUBLIC_HTML / 'static'
 STATICFILES_DIRS = [
     BASE_DIR / 'statics',
@@ -37,7 +59,7 @@ STATICFILES_DIRS = [
 
 # ------------------------------------------------------------------
 # MEDIA — مستقیم تو public_html/media
-MEDIA_URL  = '/media/'
+MEDIA_URL = '/media/'
 MEDIA_ROOT = PUBLIC_HTML / 'media'
 
 # ------------------------------------------------------------------
