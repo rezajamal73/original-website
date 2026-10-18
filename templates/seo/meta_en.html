@@ -1,6 +1,7 @@
 
 {% load static %}
 {% load seo_tags %}
+{% load seo_security %}
 
 {% with seo=seo|default:request.seo %}
 
@@ -10,24 +11,29 @@
 {# ---------- Description ---------- #}
 {% seo_description_en as desc_en %}
 {% if desc_en %}
-    <meta name="description" content="{{ desc_en }}">
+    <meta name="description"
+          content="{{ desc_en }}">
 {% endif %}
 
 {# ---------- Keywords ---------- #}
 {% if seo and seo.keywords %}
-    <meta name="keywords" content="{{ seo.keywords }}">
+    <meta name="keywords"
+          content="{{ seo.keywords }}">
 {% endif %}
 
 {# ---------- Robots ---------- #}
 {% if seo and seo.robots %}
-    <meta name="robots" content="{{ seo.robots }}">
+    <meta name="robots"
+          content="{{ seo.robots }}">
 {% endif %}
 
 {# ---------- Canonical ---------- #}
 {% if seo and seo.canonical %}
-    <link rel="canonical" href="{{ seo.canonical }}">
+    <link rel="canonical"
+          href="{{ seo.canonical }}">
 {% elif request %}
-    <link rel="canonical" href="https://nkavosh.com{{ request.path }}">
+    <link rel="canonical"
+          href="https://nkavosh.com{{ request.path }}">
 {% endif %}
 
 {# ---------- Hreflang ---------- #}
@@ -101,12 +107,18 @@
 
 {# ---------- Structured Data ---------- #}
 {% if seo and seo.schema_json_ld %}
-    <script type="application/ld+json">{{ seo.schema_json_ld|safe }}</script>
+    {% with json_ld=seo.schema_json_ld|safe_json_ld %}
+        {% if json_ld %}
+            <script type="application/ld+json">{{ json_ld }}</script>
+        {% endif %}
+    {% endwith %}
 {% else %}
     {% seo_schema as fallback_schema %}
-    {% if fallback_schema %}
-        <script type="application/ld+json">{{ fallback_schema|safe }}</script>
-    {% endif %}
+    {% with json_ld=fallback_schema|safe_json_ld %}
+        {% if json_ld %}
+            <script type="application/ld+json">{{ json_ld }}</script>
+        {% endif %}
+    {% endwith %}
 {% endif %}
 
 {% endwith %}

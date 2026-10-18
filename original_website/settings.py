@@ -17,87 +17,91 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SITE_URL = "https://nkavosh.com"
 
+
+# ==========================================================
 # Application definition
+# ==========================================================
 
 INSTALLED_APPS = [
     "captcha",
+    
+   # "unfold",
     "jazzmin",
+    "axes",
+    "adminsortable2",
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "django_jalali",
+    "django.contrib.humanize",
 
-    'adminsortable2',
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'django_jalali',
-    'django.contrib.humanize',
+    # اپ‌های پروژه
+    "app_core.apps.AppBaseConfig",
+    "app_banner.apps.AppBannerConfig",
+    "app_blog.apps.AppBlogConfig",
+    "app_news.apps.AppNewsConfig",
+    "app_chart.apps.AppChartConfig",
+    "app_product.apps.AppProductConfig",
+    "app_tender.apps.AppTenderConfig",
+    "app_tender_holding.apps.AppTenderHoldingConfig",
+    "app_inquiry.apps.AppInquiryConfig",
+    "app_admin",
+    "app_auction.apps.AppAuctionConfig",
+    "app_security.apps.AppSecurityConfig",
+    "app_contact.apps.AppContactConfig",
+    "app_reports.apps.AppReportsConfig",
+    "app_hr.apps.AppHrConfig",
+    "app_media.apps.AppMediaConfig",
+    "app_sale.apps.AppSaleConfig",
+    "app_catalog.apps.AppCatalogConfig",
+    "app_visit.apps.AppVisitConfig",
+    "app_resume.apps.AppResumeConfig",
+    "app_log.apps.AppLogConfig",
+    "app_seo.apps.AppSeoConfig",
+    "app_backup.apps.AppBackupConfig",
 
-    # ============ اپ‌های پروژه ============
-    'app_core.apps.AppBaseConfig',
-    'app_banner.apps.AppBannerConfig',
-    'app_blog.apps.AppBlogConfig',
-    'app_news.apps.AppNewsConfig',
-    'app_chart.apps.AppChartConfig',
-    'app_product.apps.AppProductConfig',
-    'app_tender.apps.AppTenderConfig',
-    'app_tender_holding.apps.AppTenderHoldingConfig',
-    'app_inquiry.apps.AppInquiryConfig',
-    'app_admin',
-    'app_auction.apps.AppAuctionConfig',
-    'app_security.apps.AppSecurityConfig',
-    'app_contact.apps.AppContactConfig',
-    'app_reports.apps.AppReportsConfig',
-    'app_hr.apps.AppHrConfig',
-    'app_media.apps.AppMediaConfig',
-    'app_sale.apps.AppSaleConfig',
-    'app_catalog.apps.AppCatalogConfig',
-    'app_visit.apps.AppVisitConfig',
-    'app_resume.apps.AppResumeConfig',
-    'app_log.apps.AppLogConfig',
-    'app_seo.apps.AppSeoConfig',
-    'app_backup.apps.AppBackupConfig',
-
-    # ============ اپ‌های Django ============
-    'django.contrib.sites',
-    'django.contrib.sitemaps',
+    # اپ‌های Django
+    "django.contrib.sites",
+    "django.contrib.sitemaps",
 ]
+
 
 MIDDLEWARE = [
-
-    'app_core.middleware.DecodePathInfoMiddleware',   # ← اول از همه
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-
+    "app_core.middleware.DecodePathInfoMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "axes.middleware.AxesMiddleware",
     # ثبت بازدید
-    'app_visit.middleware.VisitMiddleware',   # ← اینجا
+    "app_visit.middleware.VisitMiddleware",
 
-    'app_log.middleware.CurrentRequestMiddleware',
-    'app_seo.middleware.SEOMiddleware',
+    "app_log.middleware.CurrentRequestMiddleware",
+    "app_seo.middleware.SEOMiddleware",
 
-    'django.contrib.messages.middleware.MessageMiddleware',  # ← بعد از Visit
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
 
-ROOT_URLCONF = 'original_website.urls'
+ROOT_URLCONF = "original_website.urls"
+
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
-        ,
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [BASE_DIR / "templates"],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
                 "app_seo.context_processors.seo",
                 "app_core.context_processors.common_context",
             ],
@@ -105,32 +109,48 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'original_website.wsgi.application'
+
+WSGI_APPLICATION = "original_website.wsgi.application"
 
 
-
+# ==========================================================
 # Password validation
-# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
+# ==========================================================
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": (
+            "django.contrib.auth.password_validation."
+            "UserAttributeSimilarityValidator"
+        ),
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": (
+            "django.contrib.auth.password_validation."
+            "MinimumLengthValidator"
+        ),
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": (
+            "django.contrib.auth.password_validation."
+            "CommonPasswordValidator"
+        ),
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": (
+            "django.contrib.auth.password_validation."
+            "NumericPasswordValidator"
+        ),
     },
 ]
 
-# Internationalization
-# https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'fa'
+# ==========================================================
+# Internationalization
+# ==========================================================
+
+LANGUAGE_CODE = "fa"
+
 LANGUAGES = [
     ("fa", "فارسی"),
 ]
@@ -138,69 +158,70 @@ LANGUAGES = [
 TIME_ZONE = "Asia/Tehran"
 
 USE_I18N = True
-
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = '/static/'
-MEDIA_URL = '/media/'
+# ==========================================================
+# Static files
+# ==========================================================
+
+STATIC_URL = "/static/"
+MEDIA_URL = "/media/"
 
 
+# ==========================================================
+# CAPTCHA
+# ==========================================================
 
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
-# تعداد کاراکترها
 CAPTCHA_LENGTH = 5
 
-# اعتبار (دقیقه)
 CAPTCHA_TIMEOUT = 5
 
-# اندازه تصویر
 CAPTCHA_IMAGE_SIZE = (220, 70)
 
-# اندازه فونت
 CAPTCHA_FONT_SIZE = 34
 
-# چرخش کم برای خوانایی بیشتر
 CAPTCHA_LETTER_ROTATION = (-8, 8)
 
-# فقط نویز نقطه‌ای
 CAPTCHA_NOISE_FUNCTIONS = (
     "captcha.helpers.noise_dots",
 )
 
-# بدون فیلتر اضافی
 CAPTCHA_FILTER_FUNCTIONS = ()
 
-# رنگ‌ها
 CAPTCHA_BACKGROUND_COLOR = "#ffffff"
+
 CAPTCHA_FOREGROUND_COLOR = "#111111"
+
 
 from django.templatetags.static import static
 from django.urls import reverse_lazy
 
-# ═══════════════════════════════════════════════════════════
-# 1. تنظیمات اصلی JAZZMIN
-# ═══════════════════════════════════════════════════════════
 
+# ==========================================================
+# 1. JAZZMIN SETTINGS
+# ==========================================================
 JAZZMIN_SETTINGS = {
+    # ======================================================
+    # برندینگ
+    # ======================================================
 
-    # ═══ برندینگ ═══
     "site_title": "پنل مدیریت پیشرفته",
     "site_header": "پنل مدیریت",
-    "site_brand": "داشبورد مدیریت",              # ✅ فاصله اضافه حذف شد
+    "site_brand": "ℛ𝒥",
     "welcome_sign": "👋",
     "copyright": "RJ ۱۴۰۵ - تمامی حقوق محفوظ است",
 
-    "site_logo": "admin-custom/images/logos/logo.png",
-    "login_logo": "admin-custom/images/logos/logo.png",
+    "site_logo": None,
+    "login_logo": None,
     "login_logo_dark": "admin-custom/images/logos/logo.png",
     "site_icon": "admin-custom/images/logos/favicon.ico",
 
-    # ═══ منوی بالای هدر ═══
+
+    # ======================================================
+    # منوی بالای هدر
+    # ======================================================
+
     "topmenu_links": [
 
         {
@@ -209,37 +230,31 @@ JAZZMIN_SETTINGS = {
             "new_window": True,
         },
 
-        # کاتالوگ
         {
             "app": "app_catalog",
             "label": "📚 کاتالوگ",
         },
 
-        # بنرها
         {
             "app": "app_banner",
             "label": "🎨 بنرها",
         },
 
-        # رزومه
         {
             "app": "app_resume",
             "label": "📁 رزومه",
         },
 
-        # SEO
         {
             "app": "app_seo",
             "label": "🔍 سئو",
         },
 
-        # بکاپ
         {
             "app": "app_backup",
             "label": "💾 پشتیبان‌گیری",
         },
 
-        # لاگ
         {
             "app": "app_log",
             "label": "📜 لاگ سیستم",
@@ -247,12 +262,14 @@ JAZZMIN_SETTINGS = {
 
     ],
 
-    # ═══ سایدبار ═══
+
+    # ======================================================
+    # تنظیمات سایدبار
+    # ======================================================
+
     "show_sidebar": True,
     "navigation_expanded": False,
 
-    # ✅ اپ‌هایی که توی سایدبار نمایش داده نمی‌شن
-    # ولی هنوز از طریق URL و topmenu_links قابل دسترسن
     "hide_apps": [
         "app_tender",
         "app_tender_holding",
@@ -261,22 +278,28 @@ JAZZMIN_SETTINGS = {
         "app_sale",
     ],
 
-    # ✅ مدل‌هایی که توی سایدبار نمایش داده نمی‌شن
     "hide_models": [
         "app_chart.BoardMember",
     ],
 
-    # ═══ ترتیب نمایش ═══
+
+    # ======================================================
+    # ترتیب نمایش منوها
+    # ======================================================
+
     "order_with_respect_to": [
 
         # ─── ۱. فروش و محصولات ───
+
         "app_product",
         "app_product.Product",
         "app_product.ProductCategory",
         "app_product.ProductCategory2",
         "app_product.ProductTag",
 
+
         # ─── ۲. محتوا ───
+
         "app_blog",
         "app_blog.blog",
         "app_blog.blog_Category",
@@ -290,7 +313,9 @@ JAZZMIN_SETTINGS = {
         "app_media",
         "app_media.Media",
 
+
         # ─── ۳. مناقصه و مزایده ───
+
         "app_tender",
         "app_tender.Tender",
         "app_tender.TenderCategory",
@@ -301,14 +326,18 @@ JAZZMIN_SETTINGS = {
         "app_auction",
         "app_auction.Auction",
 
+
         # ─── ۴. استعلام و فروش ───
+
         "app_inquiry",
         "app_inquiry.PurchaseInquiry",
 
         "app_sale",
         "app_sale.SalesReport",
 
+
         # ─── ۵. سازمان ───
+
         "app_chart",
         "app_chart.Person",
         "app_chart.BoardMember",
@@ -317,26 +346,35 @@ JAZZMIN_SETTINGS = {
         "app_hr.JobOpportunity",
         "app_hr.JobApplication",
 
+
         # ─── ۶. ارتباطات ───
+
         "app_contact",
         "app_contact.ContactMessage",
 
         "app_security",
         "app_security.SecurityContact",
 
+
         # ─── ۷. کاتالوگ ───
+
         "app_catalog",
         "app_catalog.CompanyCatalog",
 
+
         # ─── ۸. بنرها ───
+
         "app_banner",
         "app_banner.HeroSliderSetting",
         "app_banner.HeroBanner",
         "app_banner.MainBanner",
         "app_banner.OtherBanner",
         "app_banner.SpecialProductBanner",
+        "app_banner.AboutBanner",
+
 
         # ─── ۹. اطلاعات شرکت ───
+
         "app_reports",
         "app_reports.SiteMainInfo",
         "app_reports.CorporateSection",
@@ -347,45 +385,84 @@ JAZZMIN_SETTINGS = {
         "app_reports.Project",
         "app_reports.CorporateText",
 
+
         # ─── ۱۰. رزومه ───
+
         "app_resume",
         "app_resume.Resume",
         "app_resume.ResumeProvince",
 
+
         # ─── ۱۱. بازدید ───
+
         "app_visit",
         "app_visit.Visit",
 
+
         # ─── ۱۲. سئو ───
+
         "app_seo",
         "app_seo.SEOSetting",
+        "app_seo.SEOAnalysisLog",
+        "app_seo.SEODefault",
 
-        # ─── ۱۳. لاگ ───
+
+        # ─── ۱۳. لاگ سیستم ───
+
         "app_log",
         "app_log.SystemLog",
 
-        # ─── ۱۴. بکاپ ───
+
+        # ─── ۱۴. مدیریت امنیت IP ───
+
+        "app_admin",
+        "app_admin.SecurityIPRule",
+        "app_admin.SecurityAuditLog",
+
+
+        # ─── ۱۵. گزارش‌های امنیتی Axes ───
+
+        "axes",
+        "axes.AccessAttempt",
+        "axes.AccessFailureLog",
+        "axes.AccessLog",
+
+
+        # ─── ۱۶. پشتیبان‌گیری ───
+
         "app_backup",
         "app_backup.Backup",
 
-        # ─── ۱۵. وب‌گاه‌ها ───
+
+        # ─── ۱۷. وب‌گاه‌ها ───
+
         "django.contrib.sites",
         "sites",
         "sites.Site",
 
-        # ─── ۱۶. مدیریت سایت ───
+
+        # ─── ۱۸. مدیریت سایت ───
+
         "admin",
         "admin.LogEntry",
 
-        # ─── ۱۷. کاربران ───
+
+        # ─── ۱۹. کاربران ───
+
         "app_core",
         "app_core.UserProxy",
         "app_core.GroupProxy",
 
     ],
 
-    # ═══ آیکون‌های Font Awesome ═══
+
+    # ======================================================
+    # آیکون‌های Font Awesome
+    # ======================================================
+
     "icons": {
+
+        # ─── محصولات ───
 
         "app_product": "",
         "app_product.Product": "fas fa-box-open",
@@ -393,18 +470,30 @@ JAZZMIN_SETTINGS = {
         "app_product.ProductCategory2": "fas fa-folder-tree",
         "app_product.ProductTag": "fas fa-tags",
 
+
+        # ─── وبلاگ ───
+
         "app_blog": "",
         "app_blog.blog": "fas fa-pen-nib",
         "app_blog.blog_Category": "fas fa-folder",
         "app_blog.blog_Tag": "fas fa-tags",
+
+
+        # ─── اخبار ───
 
         "app_news": "",
         "app_news.News": "fas fa-newspaper",
         "app_news.NewsCategory": "fas fa-folder-open",
         "app_news.NewsTag": "fas fa-tags",
 
+
+        # ─── رسانه ───
+
         "app_media": "",
         "app_media.Media": "fas fa-photo-video",
+
+
+        # ─── مناقصات ───
 
         "app_tender": "",
         "app_tender.Tender": "fas fa-file-contract",
@@ -413,22 +502,40 @@ JAZZMIN_SETTINGS = {
         "app_tender_holding": "",
         "app_tender_holding.Holding": "fas fa-building",
 
+
+        # ─── مزایده ───
+
         "app_auction": "",
         "app_auction.Auction": "fas fa-gavel",
+
+
+        # ─── استعلام ───
 
         "app_inquiry": "",
         "app_inquiry.PurchaseInquiry": "fas fa-file-invoice-dollar",
 
+
+        # ─── فروش ───
+
         "app_sale": "",
         "app_sale.SalesReport": "fas fa-chart-line",
+
+
+        # ─── چارت سازمانی ───
 
         "app_chart": "",
         "app_chart.Person": "fas fa-user-tie",
         "app_chart.BoardMember": "fas fa-user-shield",
 
+
+        # ─── منابع انسانی ───
+
         "app_hr": "",
         "app_hr.JobOpportunity": "fas fa-briefcase",
         "app_hr.JobApplication": "fas fa-file-signature",
+
+
+        # ─── ارتباطات ───
 
         "app_contact": "",
         "app_contact.ContactMessage": "fas fa-envelope-open-text",
@@ -436,8 +543,14 @@ JAZZMIN_SETTINGS = {
         "app_security": "",
         "app_security.SecurityContact": "fas fa-shield-alt",
 
+
+        # ─── کاتالوگ ───
+
         "app_catalog": "",
         "app_catalog.CompanyCatalog": "fas fa-book",
+
+
+        # ─── بنرها ───
 
         "app_banner": "",
         "app_banner.HeroSliderSetting": "fas fa-sliders-h",
@@ -445,6 +558,10 @@ JAZZMIN_SETTINGS = {
         "app_banner.MainBanner": "fas fa-flag",
         "app_banner.OtherBanner": "fas fa-image",
         "app_banner.SpecialProductBanner": "fas fa-star",
+        "app_banner.AboutBanner": "fas fa-images",
+
+
+        # ─── اطلاعات شرکت ───
 
         "app_reports": "",
         "app_reports.SiteMainInfo": "fas fa-info-circle",
@@ -456,105 +573,175 @@ JAZZMIN_SETTINGS = {
         "app_reports.CorporateText": "fas fa-align-left",
         "app_reports.Project": "fas fa-project-diagram",
 
+
+        # ─── بازدید ───
+
         "app_visit": "",
         "app_visit.Visit": "fas fa-eye",
+
+
+        # ─── رزومه ───
 
         "app_resume": "",
         "app_resume.Resume": "fas fa-file-alt",
         "app_resume.ResumeProvince": "fas fa-map-marker-alt",
 
-        "app_seo": "",
-        "app_seo.SEOSetting": "fas fa-search",
+
+        # ─── سئو ───
+
+        "app_seo": "fas fa-search",
+        "app_seo.SEOSetting": "fas fa-cog",
+        "app_seo.SEOAnalysisLog": "fas fa-chart-line",
+        "app_seo.SEODefault": "fas fa-puzzle-piece",
+
+
+        # ─── لاگ سیستم ───
 
         "app_log": "",
         "app_log.SystemLog": "fas fa-history",
 
+
+        # ─── مدیریت امنیت IP ───
+
+        "app_admin": "",
+        "app_admin.SecurityIPRule": "fas fa-ban",
+        "app_admin.SecurityAuditLog": "fas fa-clipboard-list",
+
+
+        # ─── گزارش‌های امنیتی Axes ───
+
+        "axes": "",
+        "axes.AccessAttempt": "fas fa-user-lock",
+        "axes.AccessFailureLog": "fas fa-exclamation-triangle",
+        "axes.AccessLog": "fas fa-sign-in-alt",
+
+
+        # ─── پشتیبان‌گیری ───
+
         "app_backup": "",
         "app_backup.Backup": "fas fa-database",
 
+
         # ─── وب‌گاه‌ها ───
+
         "sites": "",
         "sites.Site": "fas fa-globe",
 
+
         # ─── مدیریت سایت ───
+
         "admin": "",
         "admin.LogEntry": "fas fa-cogs",
 
+
         # ─── کاربران ───
+
         "app_core": "",
         "app_core.UserProxy": "fas fa-user",
         "app_core.GroupProxy": "fas fa-user-friends",
 
     },
 
+
+    # ======================================================
     # آیکون‌های پیش‌فرض
+    # ======================================================
+
     "default_icon_parents": "fas fa-folder-open",
     "default_icon_children": "fas fa-circle",
 
-    # ═══ تنظیمات UI ═══
+
+    # ======================================================
+    # تنظیمات UI
+    # ======================================================
+
     "related_modal_active": False,
+
     "custom_css": "admin-custom/css/admin-custom.css",
     "custom_js": "admin-custom/js/admin-custom.js",
+
     "use_google_fonts_cdn": False,
     "show_ui_builder": False,
 
+
+    # ======================================================
     # فرم تغییر
+    # ======================================================
+
     "changeform_format": "horizontal_tabs",
+
     "changeform_format_overrides": {
         "auth.user": "collapsible",
         "auth.group": "collapsible",
     },
 
+
+    # ======================================================
     # زبان
+    # ======================================================
+
     "language_chooser": False,
+
 }
+
+
+# ==========================================================
+# 2. JAZZMIN UI TWEAKS
+# ==========================================================
 
 JAZZMIN_UI_TWEAKS = {
 
-    # ═══ تم‌ها ═══
-    "theme": "flatly",  # تم اصلی (نور)
-    "dark_mode_theme": "darkly",  # تم دارک (خودکار)
+    # ─── تم‌ها ───
 
-    # ═══ رنگ‌بندی برند ═══
-    "brand_colour": "navbar-primary",  # یا "navbar-info", "navbar-success"
-    "accent": "accent-primary",  # رنگ تاکیدی
-    "navbar": "navbar-dark",  # نوار بالا (dark/light)
-    "sidebar": "sidebar-dark-primary",  # سایدبار
+    "theme": "flatly",
+    "dark_mode_theme": "darkly",
 
-    # ═══ اندازه فونت‌ها ═══
+
+    # ─── رنگ‌بندی برند ───
+
+    "brand_colour": "navbar-primary",
+    "accent": "accent-primary",
+    "navbar": "navbar-dark",
+    "sidebar": "sidebar-dark-primary",
+
+
+    # ─── اندازه فونت‌ها ───
+
     "navbar_small_text": False,
     "footer_small_text": False,
     "body_small_text": False,
     "brand_small_text": False,
     "sidebar_nav_small_text": False,
 
-    # ═══ نوار بالا ═══
-    "navbar_fixed": True,  # ثابت در بالا
-    "no_navbar_border": True,  # بدون حاشیه
 
-    # ═══ سایدبار ═══
-    "sidebar_fixed": True,  # ثابت
-    "sidebar_nav_child_indent": True,  # تورفتگی زیرمنوها
-    "sidebar_nav_compact_style": True,  # استایل فشرده
-    "sidebar_nav_legacy_style": False,  # غیرفعال کردن استایل قدیمی
-    "sidebar_nav_flat_style": True,  # استایل تخت و مدرن
-    "sidebar_disable_expand": False,  # قابلیت باز/بسته شدن
+    # ─── نوار بالا ───
 
-    # ═══ فوتر ═══
+    "navbar_fixed": True,
+    "no_navbar_border": True,
+
+
+    # ─── سایدبار ───
+
+    "sidebar_fixed": True,
+    "sidebar_nav_child_indent": True,
+    "sidebar_nav_compact_style": True,
+    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_flat_style": True,
+    "sidebar_disable_expand": False,
+
+
+    # ─── فوتر ───
+
     "footer_fixed": False,
 
-    # ═══ چیدمان صفحه ═══
-    "layout_boxed": False,  # صفحه تمام‌عرض
 
-    # ═══ دکمه‌ها ═══
-    # "button_classes": {
-    #     "primary": "btn-primary",  # دکمه‌های کامل با رنگ
-    #     "secondary": "btn-secondary",
-    #     "info": "btn-info",
-    #     "warning": "btn-warning",
-    #     "danger": "btn-danger",
-    #     "success": "btn-success",
-    # },
+    # ─── چیدمان صفحه ───
+
+    "layout_boxed": False,
+
+
+    # ─── دکمه‌ها ───
+
     "button_classes": {
         "primary": "btn-outline-primary",
         "secondary": "btn-outline-secondary",
@@ -564,13 +751,17 @@ JAZZMIN_UI_TWEAKS = {
         "success": "btn-outline-success",
     },
 
-    # ═══ ویژگی‌های اضافی ═══
-    "actions_sticky_top": True,  # دکمه‌های عملیاتی چسبنده
+
+    # ─── ویژگی‌های اضافی ───
+
+    "actions_sticky_top": True,
+
 }
 
-# ═══════════════════════════════════════════════════════════
-# 3. تنظیمات اختیاری برای جستجو و فیلتر
-# ═══════════════════════════════════════════════════════════
+
+# ==========================================================
+# 3. GLOBAL SEARCH
+# ==========================================================
 
 JAZZMIN_SETTINGS["global_search"] = [
     "app_product.Product",
@@ -578,3 +769,657 @@ JAZZMIN_SETTINGS["global_search"] = [
     "app_news.News",
     "auth.User",
 ]
+
+
+# ============================================================
+# PARSA NOVIN KAVOSH - DJANGO UNFOLD SETTINGS
+# Django Unfold 0.110.0
+# Replacement for all old Jazzmin settings
+# ============================================================
+
+from django.urls import reverse, reverse_lazy, NoReverseMatch
+from django.templatetags.static import static
+
+
+# ============================================================
+# 1. SAFE ADMIN MENU HELPERS
+# ============================================================
+
+def nk_admin_url(app_label, model_name):
+    return f"admin:{app_label}_{model_name.lower()}_changelist"
+
+
+def nk_admin_permission(request, app_label, model_name):
+    """
+    Show a menu link only when:
+    - The user is authorized
+    - The admin page exists
+    - The user has model view/change permission
+    """
+    user = request.user
+
+    if not user.is_authenticated or not user.is_active:
+        return False
+
+    if not user.is_staff:
+        return False
+
+    try:
+        reverse(nk_admin_url(app_label, model_name))
+    except NoReverseMatch:
+        return False
+
+    if user.is_superuser:
+        return True
+
+    model = model_name.lower()
+
+    return (
+        user.has_perm(f"{app_label}.view_{model}")
+        or user.has_perm(f"{app_label}.change_{model}")
+    )
+
+
+def nk_admin_item(title, icon, app_label, model_name):
+    """
+    Build a safe Unfold navigation item.
+    """
+    return {
+        "title": title,
+        "icon": icon,
+        "link": lambda request, a=app_label, m=model_name: reverse(
+            nk_admin_url(a, m)
+        ),
+        "permission": lambda request, a=app_label, m=model_name: (
+            nk_admin_permission(request, a, m)
+        ),
+    }
+
+
+def nk_menu_group(title, items):
+    return {
+        "title": title,
+        "separator": True,
+        "collapsible": True,
+        "items": items,
+    }
+
+
+# ============================================================
+# 2. UNFOLD SETTINGS
+# ============================================================
+
+UNFOLD = {
+
+    # --------------------------------------------------------
+    # BRANDING
+    # --------------------------------------------------------
+
+    "SITE_TITLE": "مدیریت پارسا نوین کاوش",
+
+    "SITE_HEADER": "پارسا نوین کاوش",
+
+    "SITE_SUBHEADER": "سامانه مدیریت وب‌سایت",
+
+    "SITE_SYMBOL": "dashboard",
+
+    "SITE_URL": "/",
+
+    "SITE_LOGO": {
+        "light": lambda request: static(
+            "admin-custom/images/logos/logo.png"
+        ),
+        "dark": lambda request: static(
+            "admin-custom/images/logos/logo.png"
+        ),
+    },
+
+    "SITE_FAVICONS": [
+        {
+            "rel": "icon",
+            "href": lambda request: static(
+                "admin-custom/images/logos/favicon.ico"
+            ),
+        }
+    ],
+
+    # --------------------------------------------------------
+    # INTERFACE
+    # --------------------------------------------------------
+
+    "SHOW_HISTORY": True,
+    "SHOW_VIEW_ON_SITE": True,
+    "SHOW_BACK_BUTTON": True,
+    "SHOW_LANGUAGES": False,
+
+    # Keep built-in light/dark/system theme selection.
+    # No old Jazzmin CSS or JS is loaded here.
+
+    # --------------------------------------------------------
+    # SIDEBAR
+    # --------------------------------------------------------
+
+    "SIDEBAR": {
+
+        "show_search": True,
+
+        "show_all_applications": False,
+
+        "navigation": [
+
+            # =================================================
+            # DASHBOARD
+            # =================================================
+
+            nk_menu_group("داشبورد", [
+
+                {
+                    "title": "صفحه اصلی مدیریت",
+                    "icon": "dashboard",
+                    "link": reverse_lazy("admin:index"),
+                },
+
+                {
+                    "title": "مشاهده وب‌سایت",
+                    "icon": "language",
+                    "link": "/",
+                },
+
+            ]),
+
+            # =================================================
+            # PRODUCTS
+            # =================================================
+
+            nk_menu_group("محصولات و فروش", [
+
+                nk_admin_item(
+                    "محصولات",
+                    "inventory_2",
+                    "app_product",
+                    "Product"
+                ),
+
+                nk_admin_item(
+                    "دسته‌بندی محصولات",
+                    "category",
+                    "app_product",
+                    "ProductCategory"
+                ),
+
+                nk_admin_item(
+                    "شکل محصول",
+                    "view_module",
+                    "app_product",
+                    "ProductCategory2"
+                ),
+
+                nk_admin_item(
+                    "برچسب محصولات",
+                    "sell",
+                    "app_product",
+                    "ProductTag"
+                ),
+
+                nk_admin_item(
+                    "گزارش‌های فروش",
+                    "monitoring",
+                    "app_sale",
+                    "SalesReport"
+                ),
+
+            ]),
+
+            # =================================================
+            # ARTICLES
+            # =================================================
+
+            nk_menu_group("مقالات", [
+
+                nk_admin_item(
+                    "مقالات",
+                    "article",
+                    "app_blog",
+                    "blog"
+                ),
+
+                nk_admin_item(
+                    "دسته‌بندی مقالات",
+                    "folder",
+                    "app_blog",
+                    "blog_Category"
+                ),
+
+                nk_admin_item(
+                    "برچسب مقالات",
+                    "sell",
+                    "app_blog",
+                    "blog_Tag"
+                ),
+
+            ]),
+
+            # =================================================
+            # NEWS AND MEDIA
+            # =================================================
+
+            nk_menu_group("اخبار و رسانه", [
+
+                nk_admin_item(
+                    "اخبار",
+                    "newspaper",
+                    "app_news",
+                    "News"
+                ),
+
+                nk_admin_item(
+                    "دسته‌بندی اخبار",
+                    "folder_open",
+                    "app_news",
+                    "NewsCategory"
+                ),
+
+                nk_admin_item(
+                    "برچسب اخبار",
+                    "sell",
+                    "app_news",
+                    "NewsTag"
+                ),
+
+                nk_admin_item(
+                    "رسانه‌ها",
+                    "perm_media",
+                    "app_media",
+                    "Media"
+                ),
+
+            ]),
+
+            # =================================================
+            # BANNERS
+            # =================================================
+
+            nk_menu_group("بنرها و اسلایدر", [
+
+                nk_admin_item(
+                    "تنظیمات اسلایدر",
+                    "tune",
+                    "app_banner",
+                    "HeroSliderSetting"
+                ),
+
+                nk_admin_item(
+                    "بنر هدر",
+                    "web",
+                    "app_banner",
+                    "HeroBanner"
+                ),
+
+                nk_admin_item(
+                    "بنرهای اصلی",
+                    "view_carousel",
+                    "app_banner",
+                    "MainBanner"
+                ),
+
+                nk_admin_item(
+                    "بنر داخلی",
+                    "image",
+                    "app_banner",
+                    "OtherBanner"
+                ),
+
+                nk_admin_item(
+                    "بنر محصولات ویژه",
+                    "star",
+                    "app_banner",
+                    "SpecialProductBanner"
+                ),
+
+                nk_admin_item(
+                    "تصاویر درباره ما",
+                    "imagesmode",
+                    "app_banner",
+                    "AboutBanner"
+                ),
+
+            ]),
+
+            # =================================================
+            # CATALOG
+            # =================================================
+
+            nk_menu_group("کاتالوگ", [
+
+                nk_admin_item(
+                    "کاتالوگ شرکت",
+                    "menu_book",
+                    "app_catalog",
+                    "CompanyCatalog"
+                ),
+
+            ]),
+
+            # =================================================
+            # TENDERS
+            # =================================================
+
+            nk_menu_group("مناقصات و مزایدات", [
+
+                nk_admin_item(
+                    "مناقصات",
+                    "description",
+                    "app_tender",
+                    "Tender"
+                ),
+
+                nk_admin_item(
+                    "دسته‌بندی مناقصات",
+                    "folder",
+                    "app_tender",
+                    "TenderCategory"
+                ),
+
+                nk_admin_item(
+                    "مناقصات هلدینگ",
+                    "corporate_fare",
+                    "app_tender_holding",
+                    "Holding"
+                ),
+
+                nk_admin_item(
+                    "مزایدات",
+                    "gavel",
+                    "app_auction",
+                    "Auction"
+                ),
+
+                nk_admin_item(
+                    "استعلام‌های خرید",
+                    "request_quote",
+                    "app_inquiry",
+                    "PurchaseInquiry"
+                ),
+
+            ]),
+
+            # =================================================
+            # COMPANY INFORMATION
+            # =================================================
+
+            nk_menu_group("اطلاعات شرکت", [
+
+                nk_admin_item(
+                    "اطلاعات اصلی سایت",
+                    "info",
+                    "app_reports",
+                    "SiteMainInfo"
+                ),
+
+                nk_admin_item(
+                    "بخش‌های محتوای شرکتی",
+                    "layers",
+                    "app_reports",
+                    "CorporateSection"
+                ),
+
+                nk_admin_item(
+                    "آمارهای عددی",
+                    "bar_chart",
+                    "app_reports",
+                    "CorporateStatistic"
+                ),
+
+                nk_admin_item(
+                    "شرکت‌های هم‌گروه",
+                    "apartment",
+                    "app_reports",
+                    "GroupCompany"
+                ),
+
+                nk_admin_item(
+                    "شماره تماس دپارتمان‌ها",
+                    "call",
+                    "app_reports",
+                    "DepartmentContact"
+                ),
+
+                nk_admin_item(
+                    "شبکه‌های اجتماعی",
+                    "share",
+                    "app_reports",
+                    "FollowUsLink"
+                ),
+
+                nk_admin_item(
+                    "پروژه‌ها",
+                    "account_tree",
+                    "app_reports",
+                    "Project"
+                ),
+
+                nk_admin_item(
+                    "بلاک‌های متنی",
+                    "notes",
+                    "app_reports",
+                    "CorporateText"
+                ),
+
+            ]),
+
+            # =================================================
+            # RESUME
+            # =================================================
+
+            nk_menu_group("رزومه و پروژه‌ها", [
+
+                nk_admin_item(
+                    "رزومه‌ها",
+                    "folder_shared",
+                    "app_resume",
+                    "Resume"
+                ),
+
+                nk_admin_item(
+                    "شهرها و استان‌ها",
+                    "location_on",
+                    "app_resume",
+                    "ResumeProvince"
+                ),
+
+            ]),
+
+            # =================================================
+            # ORGANIZATION
+            # =================================================
+
+            nk_menu_group("چارت سازمانی و منابع انسانی", [
+
+                nk_admin_item(
+                    "چارت سازمانی",
+                    "account_tree",
+                    "app_chart",
+                    "Person"
+                ),
+
+                nk_admin_item(
+                    "اعضای هیأت‌مدیره",
+                    "groups",
+                    "app_chart",
+                    "BoardMember"
+                ),
+
+                nk_admin_item(
+                    "فراخوان‌های جذب",
+                    "work",
+                    "app_hr",
+                    "JobOpportunity"
+                ),
+
+                nk_admin_item(
+                    "درخواست‌های استخدام",
+                    "person_search",
+                    "app_hr",
+                    "JobApplication"
+                ),
+
+            ]),
+
+            # =================================================
+            # CONTACT
+            # =================================================
+
+            nk_menu_group("ارتباطات", [
+
+                nk_admin_item(
+                    "پیام‌های تماس",
+                    "mail",
+                    "app_contact",
+                    "ContactMessage"
+                ),
+
+                nk_admin_item(
+                    "پیام‌های حراست",
+                    "shield",
+                    "app_security",
+                    "SecurityContact"
+                ),
+
+            ]),
+
+            # =================================================
+            # SEO
+            # =================================================
+
+            nk_menu_group("سئو و بازدید", [
+
+                nk_admin_item(
+                    "تنظیمات SEO",
+                    "settings_suggest",
+                    "app_seo",
+                    "SEOSetting"
+                ),
+
+                nk_admin_item(
+                    "لاگ‌های تحلیل SEO",
+                    "analytics",
+                    "app_seo",
+                    "SEOAnalysisLog"
+                ),
+
+                nk_admin_item(
+                    "پیش‌فرض‌های SEO",
+                    "extension",
+                    "app_seo",
+                    "SEODefault"
+                ),
+
+                nk_admin_item(
+                    "بازدیدها",
+                    "visibility",
+                    "app_visit",
+                    "Visit"
+                ),
+
+            ]),
+
+            # =================================================
+            # SECURITY
+            # =================================================
+
+            nk_menu_group("امنیت و دسترسی‌ها", [
+
+                nk_admin_item(
+                    "مدیریت IPهای امنیتی",
+                    "block",
+                    "app_admin",
+                    "SecurityIPRule"
+                ),
+
+                nk_admin_item(
+                    "سوابق عملیات امنیتی",
+                    "policy",
+                    "app_admin",
+                    "SecurityAuditLog"
+                ),
+
+                nk_admin_item(
+                    "لاگ‌های سیستم",
+                    "history",
+                    "app_log",
+                    "SystemLog"
+                ),
+
+                nk_admin_item(
+                    "تلاش‌های دسترسی",
+                    "lock_person",
+                    "axes",
+                    "AccessAttempt"
+                ),
+
+                nk_admin_item(
+                    "شکست‌های دسترسی",
+                    "warning",
+                    "axes",
+                    "AccessFailureLog"
+                ),
+
+                nk_admin_item(
+                    "گزارش‌های دسترسی",
+                    "login",
+                    "axes",
+                    "AccessLog"
+                ),
+
+            ]),
+
+            # =================================================
+            # BACKUP
+            # =================================================
+
+            nk_menu_group("پشتیبان‌گیری", [
+
+                nk_admin_item(
+                    "نسخه‌های پشتیبان",
+                    "backup",
+                    "app_backup",
+                    "Backup"
+                ),
+
+            ]),
+
+            # =================================================
+            # USERS
+            # =================================================
+
+            nk_menu_group("کاربران و تنظیمات", [
+
+                nk_admin_item(
+                    "کاربران",
+                    "person",
+                    "app_core",
+                    "UserProxy"
+                ),
+
+                nk_admin_item(
+                    "گروه‌های کاربری",
+                    "group",
+                    "app_core",
+                    "GroupProxy"
+                ),
+
+                nk_admin_item(
+                    "وب‌گاه‌ها",
+                    "public",
+                    "sites",
+                    "Site"
+                ),
+
+            ]),
+
+        ],
+    },
+
+}
+
+

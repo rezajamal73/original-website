@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <title>دسترسی مسدود شده | پارسا نوین کاوش</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #0b1424;
+            color: #e8edf5;
+            font-family: Tahoma, Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .security-card {
+            width: 100%;
+            max-width: 570px;
+            background: #152238;
+            border: 1px solid #35455e;
+            border-radius: 20px;
+            padding: 42px 30px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,.25);
+        }
+
+        .shield {
+            font-size: 56px;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 24px;
+            line-height: 1.8;
+            color: #ff7777;
+            margin: 0 0 20px;
+        }
+
+        p {
+            font-size: 15px;
+            line-height: 2.2;
+            color: #c7d2e2;
+        }
+
+        .notice {
+            margin-top: 25px;
+            padding: 18px;
+            background: #202f47;
+            border-right: 4px solid #e2a75d;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 2.2;
+        }
+
+        .code {
+            margin-top: 28px;
+            color: #92a3bc;
+            font-size: 13px;
+        }
+
+        .brand {
+            margin-top: 20px;
+            color: #b7c6dc;
+            font-size: 13px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="security-card">
+
+        <div class="shield">🛡️</div>
+
+        <h1>دسترسی شما به پنل مدیریت مسدود شده است</h1>
+
+        {% if reason == "axes" %}
+            <p>
+                به دلیل تعداد زیاد تلاش‌های ناموفق برای ورود،
+                دسترسی شما به‌صورت موقت محدود شده است.
+            </p>
+        {% else %}
+            <p>
+                به دلیل محدودیت امنیتی اعمال‌شده برای
+                آدرس IP شما، دسترسی به پنل مدیریت امکان‌پذیر نیست.
+            </p>
+        {% endif %}
+
+        <div class="notice">
+            اطلاعات مربوط به تلاش‌های دسترسی برای
+            بررسی امنیتی ثبت می‌شود و در صورت لزوم،
+            مطابق قوانین به مراجع قضایی ذی‌صلاح
+            ارائه خواهد شد.
+        </div>
+
+        <div class="code">
+            ERROR 403 — ACCESS DENIED
+        </div>
+
+        <div class="brand">
+            سامانه امنیت اطلاعات 
+        </div>
+        <div class="brand">
+طراحی شده توسط: ℛ𝒥
+
+</div>
+    </main>
+
+</body>
+</html>

@@ -1,12 +1,14 @@
+
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
+from django.utils.http import url_has_allowed_host_and_scheme
 
 from app_reports.models import SiteMainInfo
 from .forms import AdminLoginForm
 
 
 def admin_login(request):
-    # اگر قبلاً وارد شده باشد
+    # اگر مدیر قبلاً وارد شده باشد
     if request.user.is_authenticated and request.user.is_staff:
         return redirect("/admin/")
 
@@ -28,7 +30,17 @@ def admin_login(request):
 
             if user and user.is_staff:
                 login(request, user)
-                return redirect(request.POST.get("next") or "/admin/")
+
+                target = request.POST.get("next") or "/admin/"
+
+                if not url_has_allowed_host_and_scheme(
+                    url=target,
+                    allowed_hosts={request.get_host()},
+                    require_https=request.is_secure(),
+                ):
+                    target = "/admin/"
+
+                return redirect(target)
 
             error = "نام کاربری یا رمز عبور اشتباه است."
 

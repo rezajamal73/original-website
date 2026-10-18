@@ -1,37 +1,153 @@
+
 # app_seo/views.py
 
-from urllib.parse import unquote
+import logging
+import xml.etree.ElementTree as ET
+
+from urllib.parse import unquote, urlsplit
 
 from django.conf import settings
+from django.contrib.sitemaps.views import sitemap as django_sitemap
 from django.http import HttpResponse
 from django.shortcuts import render
-from django.contrib.sitemaps.views import sitemap as django_sitemap
 
 from app_seo.sitemaps import sitemaps
 
-import xml.etree.ElementTree as ET
+
+logger = logging.getLogger(__name__)
 
 
-# ==========================================
+# ============================================================
+# Sitemap and site URL helpers
+# ============================================================
+
+SITEMAP_NAMESPACE = {
+    "sm": "http://www.sitemaps.org/schemas/sitemap/0.9"
+}
+
+
+def _site_url(request):
+    """
+    Return the canonical site origin.
+
+    Prefer the production SITE_URL setting.
+    Never use an arbitrary Host header to generate the
+    robots.txt sitemap URL.
+    """
+
+    configured_url = str(
+        getattr(settings, "SITE_URL", "") or ""
+    ).strip().rstrip("/")
+
+    if configured_url:
+        try:
+            parts = urlsplit(configured_url)
+        except ValueError:
+            parts = None
+
+        if (
+            parts
+            and parts.scheme == "https"
+            and parts.hostname
+            and not parts.username
+            and not parts.password
+        ):
+            return (
+                "https://"
+                + parts.netloc
+            )
+
+    # Safe production fallback for this website.
+    return "https://nkavosh.com"
+
+
+def _read_sitemap_urls(xml_content):
+    """
+    Extract URL entries from Django's XML sitemap.
+
+    This function does not modify the original sitemap.
+    """
+
+    if not xml_content:
+        return []
+
+    root = ET.fromstring(xml_content)
+
+    urls = []
+    seen = set()
+
+    for item in root.findall(
+        "sm:url",
+        SITEMAP_NAMESPACE,
+    ):
+        loc = item.find(
+            "sm:loc",
+            SITEMAP_NAMESPACE,
+        )
+
+        if loc is None or not loc.text:
+            continue
+
+        original_url = loc.text.strip()
+
+        if not original_url:
+            continue
+
+        try:
+            parsed = urlsplit(original_url)
+        except ValueError:
+            continue
+
+        # Only display valid HTTP(S) URLs.
+        if parsed.scheme not in ("http", "https"):
+            continue
+
+        if not parsed.hostname:
+            continue
+
+        if parsed.username or parsed.password:
+            continue
+
+        if original_url in seen:
+            continue
+
+        seen.add(original_url)
+
+        readable_url = unquote(original_url)
+
+        urls.append(
+            {
+                "url": original_url,
+                "readable_url": readable_url,
+            }
+        )
+
+    return urls
+
+
+# ============================================================
 # Robots.txt
-# ==========================================
+# ============================================================
 
 def robots_txt(request):
     """
-    robots.txt داینامیک.
+    Dynamic robots.txt for search engines.
 
-    - از SITE_URL در settings استفاده می‌کند.
-    - مسیرهای admin, panel, search را از crawl خارج می‌کند.
-    - آدرس sitemap را اعلام می‌کند.
+    - Disallow administrative and private routes.
+    - Disallow common internal search URLs.
+    - Publish the canonical XML sitemap URL.
     """
 
-    site_url = getattr(settings, "SITE_URL", "").rstrip("/")
+    site_url = _site_url(request)
 
     lines = [
         "User-agent: *",
         "Disallow: /admin/",
         "Disallow: /panel/",
         "Disallow: /search",
+        "Disallow: /en/admin/",
+        "Disallow: /en/panel/",
+        "Disallow: /en/search",
         "Disallow: /*?q=",
         "Disallow: /*?page=",
         "",
@@ -39,56 +155,79 @@ def robots_txt(request):
         "",
     ]
 
-    return HttpResponse(
+    response = HttpResponse(
         "\n".join(lines),
-        content_type="text/plain",
+        content_type="text/plain; charset=utf-8",
     )
 
+    response["X-Content-Type-Options"] = "nosniff"
 
-# ==========================================
+    return response
+
+
+# ============================================================
 # Human-readable Sitemap
-# ==========================================
+# ============================================================
 
 def sitemap_view(request):
     """
-    نمایش خوانای آدرس‌های سایت‌مپ.
+    Display a human-readable version of the XML sitemap.
 
-    - سایت‌مپ اصلی گوگل را تغییر نمی‌دهد.
-    - آدرس‌های فارسی را خوانا نمایش می‌دهد.
-    - آدرس‌های انگلیسی را بدون تغییر نمایش می‌دهد.
+    The original /sitemap.xml route remains unchanged.
+
+    The existing template receives a list of dictionaries
+    containing:
+        - url
+        - readable_url
     """
 
-    response = django_sitemap(
-        request,
-        sitemaps=sitemaps,
-    )
+    try:
+        response = django_sitemap(
+            request,
+            sitemaps=sitemaps,
+        )
 
-    if not response.is_rendered:
-        response.render()
+        if hasattr(response, "render"):
+            if not response.is_rendered:
+                response.render()
 
-    root = ET.fromstring(response.content)
+        if response.status_code != 200:
+            logger.warning(
+                "Sitemap generation returned status %s",
+                response.status_code,
+            )
 
-    namespace = {
-        "sm": "http://www.sitemaps.org/schemas/sitemap/0.9"
-    }
+            return HttpResponse(
+                "نقشه سایت در حال حاضر در دسترس نیست.",
+                status=503,
+                content_type="text/plain; charset=utf-8",
+            )
 
-    urls = []
+        urls = _read_sitemap_urls(
+            response.content
+        )
 
-    for item in root.findall("sm:url", namespace):
+    except ET.ParseError:
+        logger.exception(
+            "Invalid XML while generating readable sitemap"
+        )
 
-        loc = item.find("sm:loc", namespace)
+        return HttpResponse(
+            "خطا در پردازش نقشه سایت.",
+            status=503,
+            content_type="text/plain; charset=utf-8",
+        )
 
-        if loc is None or not loc.text:
-            continue
+    except Exception:
+        logger.exception(
+            "Unexpected error in readable sitemap"
+        )
 
-        original_url = loc.text
-
-        readable_url = unquote(original_url)
-
-        urls.append({
-            "url": original_url,
-            "readable_url": readable_url,
-        })
+        return HttpResponse(
+            "نقشه سایت در حال حاضر در دسترس نیست.",
+            status=503,
+            content_type="text/plain; charset=utf-8",
+        )
 
     return render(
         request,

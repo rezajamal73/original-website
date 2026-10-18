@@ -1,3 +1,4 @@
+
 # app_seo/urls.py
 
 from django.urls import path
@@ -8,11 +9,7 @@ from .views import robots_txt, sitemap_view
 
 
 urlpatterns = [
-
-    # ==========================================
-    # Original XML Sitemap - Google
-    # ==========================================
-
+    # XML sitemap for search engines
     path(
         "sitemap.xml",
         sitemap,
@@ -20,24 +17,17 @@ urlpatterns = [
         name="sitemap",
     ),
 
-    # ==========================================
-    # Human-readable Sitemap
-    # ==========================================
-
+    # Human-readable sitemap
     path(
-      "map/",
-      sitemap_view,
-       name="sitemap_view",
+        "map/",
+        sitemap_view,
+        name="sitemap_view",
     ),
 
-    # ==========================================
     # Robots.txt
-    # ==========================================
-
     path(
         "robots.txt",
         robots_txt,
         name="robots_txt",
     ),
-
 ]

@@ -1,24 +1,35 @@
 
 # app_seo/sitemaps.py
 
-from django.contrib.sitemaps import Sitemap
-from django.urls import reverse, NoReverseMatch
-from django.db.models import Q
 from urllib.parse import urlsplit
 
+from django.conf import settings
+from django.contrib.sitemaps import Sitemap
+from django.core.exceptions import FieldError
+from django.db.models import Q
+from django.urls import NoReverseMatch, reverse
 
-# ==========================================
-# Helpers
-# ==========================================
+
+# ============================================================
+# URL helpers
+# ============================================================
 
 def safe_reverse(name):
+    """
+    Reverse a named URL safely.
+    """
     try:
-        return reverse(name)
+        return clean_path(reverse(name))
     except NoReverseMatch:
         return None
 
 
 def updated_at(obj):
+    """
+    Return the latest available modification timestamp.
+    """
+    values = []
+
     for field in (
         "updated_at",
         "updated_at_fa",
@@ -29,12 +40,57 @@ def updated_at(obj):
         "created_at_en",
     ):
         value = getattr(obj, field, None)
-        if value:
-            return value
-    return None
+
+        if value is not None:
+            values.append(value)
+
+    if not values:
+        return None
+
+    try:
+        return max(values)
+    except (TypeError, ValueError):
+        return values[0]
+
+
+def _allowed_hosts():
+    """
+    Hosts accepted for absolute URLs.
+
+    This intentionally does not trust arbitrary external URLs.
+    """
+    hosts = {
+        "nkavosh.com",
+        "www.nkavosh.com",
+    }
+
+    for host in getattr(settings, "ALLOWED_HOSTS", []):
+        if not isinstance(host, str):
+            continue
+
+        host = host.strip().lower()
+
+        if (
+            host
+            and host != "*"
+            and not host.startswith(".")
+        ):
+            hosts.add(host)
+
+    return hosts
 
 
 def clean_path(value):
+    """
+    Normalize a local URL for use in a sitemap.
+
+    - Accept local paths.
+    - Accept absolute URLs only for allowed hosts.
+    - Reject external hosts.
+    - Remove query strings and fragments.
+    - Reject protocol-relative URLs.
+    - Reject malformed paths.
+    """
     if not isinstance(value, str):
         return None
 
@@ -43,19 +99,56 @@ def clean_path(value):
     if not value:
         return None
 
-    if value.startswith(("http://", "https://")):
-        value = urlsplit(value).path
-
-    if not value or value == "/":
-        return value
-
-    if not value.startswith("/"):
+    if any(ord(char) < 32 for char in value):
         return None
 
-    return value
+    if "\\" in value:
+        return None
+
+    if value.startswith("//"):
+        return None
+
+    try:
+        parts = urlsplit(value)
+    except ValueError:
+        return None
+
+    if parts.scheme or parts.netloc:
+        if parts.scheme.lower() not in ("http", "https"):
+            return None
+
+        try:
+            hostname = (parts.hostname or "").lower()
+        except ValueError:
+            return None
+
+        if hostname not in _allowed_hosts():
+            return None
+
+        if parts.username or parts.password:
+            return None
+
+    path = parts.path
+
+    if not path:
+        return None
+
+    if not path.startswith("/"):
+        return None
+
+    if path.startswith("//"):
+        return None
+
+    if "\\" in path:
+        return None
+
+    return path
 
 
 def object_url(obj, english=False):
+    """
+    Get the language-specific URL of an object.
+    """
     method_name = (
         "get_absolute_url_en"
         if english
@@ -69,11 +162,26 @@ def object_url(obj, english=False):
 
     try:
         return clean_path(method())
-    except (NoReverseMatch, ValueError, AttributeError):
+    except (
+        NoReverseMatch,
+        ValueError,
+        AttributeError,
+        TypeError,
+    ):
         return None
 
 
+# ============================================================
+# Publication filters
+# ============================================================
+
 def published_objects(model, english=False):
+    """
+    Include published objects only.
+
+    For models with a 'status' field, prefer the
+    explicit 'published' status when supported.
+    """
     qs = model.objects.all()
 
     fields = {
@@ -83,40 +191,71 @@ def published_objects(model, english=False):
 
     if "status" in fields:
         status_field = model._meta.get_field("status")
-
         choices = getattr(status_field, "choices", None)
 
         if choices:
-            valid_statuses = [
-                key for key, label in choices
-                if key not in (
+            valid_keys = set()
+
+            for item in choices:
+                try:
+                    key, label = item
+                except (TypeError, ValueError):
+                    continue
+
+                if isinstance(key, str):
+                    valid_keys.add(key)
+
+            if "published" in valid_keys:
+                qs = qs.filter(status="published")
+            else:
+                excluded_statuses = (
                     "draft",
                     "deleted",
                     "hidden",
                     "inactive",
-                )
-            ]
-
-            if valid_statuses:
-                qs = qs.filter(
-                    status__in=valid_statuses
+                    "archived",
+                    "pending",
+                    "rejected",
                 )
 
-    slug_field = "slug_en" if english else "slug"
+                qs = qs.exclude(
+                    status__in=excluded_statuses
+                )
+        else:
+            qs = qs.exclude(
+                status__in=(
+                    "draft",
+                    "deleted",
+                    "hidden",
+                    "inactive",
+                    "archived",
+                    "pending",
+                    "rejected",
+                )
+            )
+
+    if "is_active" in fields:
+        qs = qs.filter(is_active=True)
+
+    slug_field = (
+        "slug_en"
+        if english
+        else "slug"
+    )
 
     if slug_field in fields:
         qs = qs.exclude(
             **{slug_field: ""}
         ).exclude(
-            **{slug_field + "__isnull": True}
+            **{f"{slug_field}__isnull": True}
         )
 
     return qs
 
 
-# ==========================================
-# Base Sitemap
-# ==========================================
+# ============================================================
+# Base sitemap
+# ============================================================
 
 class BaseSitemap(Sitemap):
     protocol = "https"
@@ -128,9 +267,9 @@ class BaseSitemap(Sitemap):
         return updated_at(obj)
 
 
-# ==========================================
-# Static Persian Pages
-# ==========================================
+# ============================================================
+# Static Persian pages
+# ============================================================
 
 class StaticViewSitemap(BaseSitemap):
     priority = 0.8
@@ -171,7 +310,10 @@ class StaticViewSitemap(BaseSitemap):
         for name in self.URL_NAMES:
             path = safe_reverse(name)
 
-            if not path or path in seen:
+            if not path:
+                continue
+
+            if path in seen:
                 continue
 
             seen.add(path)
@@ -183,9 +325,9 @@ class StaticViewSitemap(BaseSitemap):
         return item
 
 
-# ==========================================
-# Static English Pages
-# ==========================================
+# ============================================================
+# Static English pages
+# ============================================================
 
 class StaticViewSitemapEN(BaseSitemap):
     priority = 0.8
@@ -224,7 +366,10 @@ class StaticViewSitemapEN(BaseSitemap):
         for name in self.URL_NAMES:
             path = safe_reverse(name)
 
-            if not path or path in seen:
+            if not path:
+                continue
+
+            if path in seen:
                 continue
 
             seen.add(path)
@@ -236,9 +381,9 @@ class StaticViewSitemapEN(BaseSitemap):
         return item
 
 
-# ==========================================
-# Dynamic Sitemap Base
-# ==========================================
+# ============================================================
+# Dynamic sitemap base
+# ============================================================
 
 class DynamicSitemap(BaseSitemap):
     model = None
@@ -251,26 +396,25 @@ class DynamicSitemap(BaseSitemap):
 
         candidates = published_objects(
             self.model,
-            english=self.english
+            english=self.english,
         )
 
         valid = []
         seen = set()
 
-        for obj in candidates:
+        for obj in candidates.iterator():
             path = object_url(
                 obj,
-                english=self.english
+                english=self.english,
             )
 
             if not path:
                 continue
 
-            if path in seen:
+            if path == "/":
                 continue
 
-            # Prevent accidental root URLs
-            if path == "/":
+            if path in seen:
                 continue
 
             seen.add(path)
@@ -281,10 +425,10 @@ class DynamicSitemap(BaseSitemap):
     def location(self, obj):
         path = object_url(
             obj,
-            english=self.english
+            english=self.english,
         )
 
-        if not path:
+        if not path or path == "/":
             raise ValueError(
                 "Invalid sitemap URL for object "
                 + str(obj.pk)
@@ -293,9 +437,9 @@ class DynamicSitemap(BaseSitemap):
         return path
 
 
-# ==========================================
+# ============================================================
 # Products
-# ==========================================
+# ============================================================
 
 from app_product.models import Product
 
@@ -311,9 +455,9 @@ class ProductEnglishSitemap(DynamicSitemap):
     priority = 0.9
 
 
-# ==========================================
+# ============================================================
 # Blog
-# ==========================================
+# ============================================================
 
 from app_blog.models import blog
 
@@ -327,9 +471,9 @@ class BlogEnglishSitemap(DynamicSitemap):
     english = True
 
 
-# ==========================================
+# ============================================================
 # News
-# ==========================================
+# ============================================================
 
 from app_news.models import News
 
@@ -347,9 +491,9 @@ class NewsEnglishSitemap(DynamicSitemap):
     priority = 0.8
 
 
-# ==========================================
+# ============================================================
 # Media
-# ==========================================
+# ============================================================
 
 from app_media.models import Media
 
@@ -365,9 +509,9 @@ class MediaEnglishSitemap(DynamicSitemap):
     priority = 0.6
 
 
-# ==========================================
+# ============================================================
 # Tenders
-# ==========================================
+# ============================================================
 
 from app_tender.models import Tender
 
@@ -381,9 +525,9 @@ class TenderEnglishSitemap(DynamicSitemap):
     english = True
 
 
-# ==========================================
+# ============================================================
 # Tender Holding
-# ==========================================
+# ============================================================
 
 from app_tender_holding.models import Holding
 
@@ -397,9 +541,9 @@ class HoldingEnglishSitemap(DynamicSitemap):
     english = True
 
 
-# ==========================================
+# ============================================================
 # Auctions
-# ==========================================
+# ============================================================
 
 from app_auction.models import Auction
 
@@ -413,9 +557,9 @@ class AuctionEnglishSitemap(DynamicSitemap):
     english = True
 
 
-# ==========================================
-# Sitemap Registry
-# ==========================================
+# ============================================================
+# Sitemap registry
+# ============================================================
 
 sitemaps = {
     "static": StaticViewSitemap,

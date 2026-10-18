@@ -1,9 +1,14 @@
+
 # app_seo/templatetags/seo_tags.py
 
 import json
+import re
+from urllib.parse import urlsplit
 
 from django import template
+from django.conf import settings
 from django.templatetags.static import static
+from django.utils.html import format_html, format_html_join
 
 from app_seo.schema import generate_schema
 from app_seo.analyzer import analyze
@@ -13,24 +18,16 @@ register = template.Library()
 
 
 # =====================================================
-#  کمک‌تابع‌ها
+# Helpers
 # =====================================================
 
 def _get_seo(context):
-    """
-    اول از context، بعد از request.seo.
-    """
     seo = context.get("seo")
-
     if seo:
         return seo
 
     request = context.get("request")
-
-    if request:
-        return getattr(request, "seo", None)
-
-    return None
+    return getattr(request, "seo", None) if request else None
 
 
 def _site_info(context):
@@ -38,640 +35,891 @@ def _site_info(context):
 
 
 def _is_english_page(context):
-    """
-    تشخیص اینکه صفحه فعلی انگلیسی است یا فارسی.
-    بر اساس path درخواست تصمیم می‌گیرد.
-    """
     request = context.get("request")
-
-    if not request:
-        return False
-
-    path = getattr(request, "path", "") or ""
-
-    # اگر آدرس با /en/ شروع شود → صفحه انگلیسی
-    if path.startswith("/en/") or path == "/en":
-        return True
-
-    return False
+    path = getattr(request, "path", "") if request else ""
+    return path == "/en" or path.startswith("/en/")
 
 
 def _default_site_title(context):
-    """
-    عنوان پیش‌فرض سایت اگر SEO نداشتیم.
-    بر اساس زبان صفحه، فیلد مناسب را انتخاب می‌کند.
-    """
     site_info = _site_info(context)
-    is_english = _is_english_page(context)
 
     if site_info:
-        if is_english:
-            parts = [
-                getattr(site_info, "name_company_p1_en", "") or "",
-                getattr(site_info, "name_company_p2_en", "") or "",
-            ]
-        else:
-            parts = [
-                getattr(site_info, "name_company_p1_fa", "") or "",
-                getattr(site_info, "name_company_p2_fa", "") or "",
-            ]
+        suffix = "en" if _is_english_page(context) else "fa"
 
-        name = " ".join(p for p in parts if p).strip()
+        parts = [
+            getattr(
+                site_info,
+                "name_company_p1_" + suffix,
+                "",
+            ) or "",
+            getattr(
+                site_info,
+                "name_company_p2_" + suffix,
+                "",
+            ) or "",
+        ]
+
+        name = " ".join(
+            part for part in parts if part
+        ).strip()
+
         if name:
             return name
 
-    from django.conf import settings
     return getattr(settings, "SITE_NAME", "")
 
 
+def _origin():
+    raw = str(
+        getattr(
+            settings,
+            "SITE_URL",
+            "",
+        ) or "https://nkavosh.com"
+    ).strip()
+
+    try:
+        parts = urlsplit(raw)
+
+        if (
+            parts.scheme == "https"
+            and parts.hostname in (
+                "nkavosh.com",
+                "www.nkavosh.com",
+            )
+            and not parts.username
+            and not parts.password
+        ):
+            return "https://" + parts.netloc
+
+    except ValueError:
+        pass
+
+    return "https://nkavosh.com"
+
+
+def _valid_url(value, allow_relative=True):
+    if not isinstance(value, str):
+        return ""
+
+    value = value.strip()
+
+    if (
+        not value
+        or any(ord(char) < 32 for char in value)
+        or "\\" in value
+        or value.startswith("//")
+    ):
+        return ""
+
+    try:
+        parts = urlsplit(value)
+    except ValueError:
+        return ""
+
+    if parts.scheme or parts.netloc:
+        if (
+            parts.scheme != "https"
+            or parts.hostname not in (
+                "nkavosh.com",
+                "www.nkavosh.com",
+            )
+            or parts.username
+            or parts.password
+        ):
+            return ""
+
+        return value
+
+    if (
+        allow_relative
+        and value.startswith("/")
+        and not value.startswith("//")
+    ):
+        return _origin() + value
+
+    return ""
+
+
+def _items(seo, attribute):
+    value = (
+        getattr(seo, attribute, None)
+        if seo
+        else None
+    )
+
+    return (
+        value
+        if isinstance(value, (list, tuple))
+        else []
+    )
+
+
+def _item_value(item, key, default=""):
+    if isinstance(item, dict):
+        return item.get(key, default)
+
+    return getattr(item, key, default)
+
+
 # =====================================================
-#  Title
+# Title
 # =====================================================
 
 @register.simple_tag(takes_context=True)
 def seo_title(context):
-    """عنوان SEO صفحه (بر اساس زبان)."""
     seo = _get_seo(context)
 
-    if seo and getattr(seo, "title", None):
-        return seo.title
+    return (
+        getattr(seo, "title", None)
+        if seo
+        else None
+    ) or _default_site_title(context)
 
-    return _default_site_title(context)
-
-
-# =====================================================
-#  ✅ Title English — تگ اختصاصی برای صفحه انگلیسی
-# =====================================================
 
 @register.simple_tag(takes_context=True)
 def seo_title_en(context):
-    """
-    عنوان SEO مخصوص صفحه انگلیسی.
-
-    اولویت:
-    1. setting.title_en
-    2. obj.title_en
-    3. setting.title (فارسی به عنوان fallback)
-    4. obj.title_fa
-    5. default_site_title
-    """
     seo = _get_seo(context)
 
     if seo is None:
         return _default_site_title(context)
 
-    setting = getattr(seo, "setting", None) or seo
+    setting = getattr(
+        seo,
+        "setting",
+        None,
+    ) or seo
+
     obj = getattr(seo, "obj", None)
 
-    # 1) setting.title_en
-    title_en = getattr(setting, "title_en", None)
-    if title_en and str(title_en).strip():
-        return title_en
+    fields = (
+        (setting, "title_en"),
+        (obj, "title_en"),
+        (setting, "title"),
+        (obj, "title_fa"),
+    )
 
-    # 2) obj.title_en
-    if obj is not None:
-        obj_title_en = getattr(obj, "title_en", None)
-        if obj_title_en and str(obj_title_en).strip():
-            return obj_title_en
+    for source, field in fields:
+        value = (
+            getattr(source, field, None)
+            if source is not None
+            else None
+        )
 
-    # 3) setting.title (فارسی)
-    title = getattr(setting, "title", None)
-    if title and str(title).strip():
-        return title
+        if value and str(value).strip():
+            return value
 
-    # 4) obj.title_fa
-    if obj is not None:
-        obj_title_fa = getattr(obj, "title_fa", None)
-        if obj_title_fa and str(obj_title_fa).strip():
-            return obj_title_fa
-
-    # 5) fallback
     return _default_site_title(context)
 
 
 # =====================================================
-#  Description
+# Description
 # =====================================================
 
 @register.simple_tag(takes_context=True)
 def seo_description(context):
-    """توضیحات SEO صفحه (بر اساس زبان)."""
     seo = _get_seo(context)
 
-    if seo and getattr(seo, "description", None):
-        return seo.description
+    return (
+        getattr(seo, "description", "")
+        if seo
+        else ""
+    ) or ""
 
-    return ""
-
-
-# =====================================================
-#  ✅ Description English — تگ اختصاصی برای صفحه انگلیسی
-# =====================================================
 
 @register.simple_tag(takes_context=True)
 def seo_description_en(context):
-    """
-    توضیحات SEO مخصوص صفحه انگلیسی.
-
-    اولویت:
-    1. setting.description_en
-    2. obj.description_en
-    3. setting.description (فارسی)
-    4. obj.description_fa
-    5. obj.description
-    """
     seo = _get_seo(context)
 
     if seo is None:
         return ""
 
-    setting = getattr(seo, "setting", None) or seo
+    setting = getattr(
+        seo,
+        "setting",
+        None,
+    ) or seo
+
     obj = getattr(seo, "obj", None)
 
-    # 1) setting.description_en
-    desc_en = getattr(setting, "description_en", None)
-    if desc_en and str(desc_en).strip():
-        return desc_en
+    fields = (
+        (setting, "description_en"),
+        (obj, "description_en"),
+        (setting, "description"),
+        (obj, "description_fa"),
+        (obj, "description"),
+    )
 
-    # 2) obj.description_en
-    if obj is not None:
-        obj_desc_en = getattr(obj, "description_en", None)
-        if obj_desc_en and str(obj_desc_en).strip():
-            return obj_desc_en
+    for source, field in fields:
+        value = (
+            getattr(source, field, None)
+            if source is not None
+            else None
+        )
 
-    # 3) setting.description (فارسی)
-    desc = getattr(setting, "description", None)
-    if desc and str(desc).strip():
-        return desc
-
-    # 4) obj.description_fa
-    if obj is not None:
-        obj_desc_fa = getattr(obj, "description_fa", None)
-        if obj_desc_fa and str(obj_desc_fa).strip():
-            return obj_desc_fa
-
-        # 5) obj.description
-        obj_desc = getattr(obj, "description", None)
-        if obj_desc and str(obj_desc).strip():
-            return obj_desc
+        if value and str(value).strip():
+            return value
 
     return ""
 
 
 # =====================================================
-#  Keywords
+# Keywords and Robots
 # =====================================================
 
 @register.simple_tag(takes_context=True)
 def seo_keywords(context):
-    """کلمات کلیدی صفحه."""
     seo = _get_seo(context)
 
-    if seo:
-        return getattr(seo, "keywords", "") or ""
+    return (
+        getattr(seo, "keywords", "")
+        if seo
+        else ""
+    ) or ""
 
-    return ""
-
-
-# =====================================================
-#  Robots
-# =====================================================
 
 @register.simple_tag(takes_context=True)
 def seo_robots(context):
-    """مقدار robots صفحه (index,follow یا noindex,nofollow)."""
     seo = _get_seo(context)
 
-    if seo:
-        return getattr(seo, "robots", "index,follow") or "index,follow"
-
-    return "index,follow"
+    return (
+        getattr(seo, "robots", "")
+        if seo
+        else ""
+    ) or "index,follow"
 
 
 # =====================================================
-#  Canonical
+# Canonical
 # =====================================================
 
 @register.simple_tag(takes_context=True)
 def seo_canonical(context):
-    """آدرس canonical صفحه."""
     seo = _get_seo(context)
 
-    if seo:
-        canonical = getattr(seo, "canonical", None)
-        if canonical:
-            return canonical
+    canonical = (
+        getattr(seo, "canonical", None)
+        if seo
+        else None
+    )
+
+    url = (
+        _valid_url(canonical)
+        if canonical
+        else ""
+    )
+
+    if url:
+        return url
 
     request = context.get("request")
 
-    if request:
-        try:
-            return request.build_absolute_uri(request.path)
-        except Exception:
-            return ""
+    path = (
+        getattr(request, "path", "")
+        if request
+        else ""
+    )
 
-    return ""
+    return _valid_url(path) if path else ""
 
 
 # =====================================================
-#  OG Image URL
+# OG Image
 # =====================================================
 
 @register.simple_tag(takes_context=True)
 def seo_og_image(context):
-    """URL تصویر Open Graph."""
     seo = _get_seo(context)
 
     if seo:
-        url = getattr(seo, "og_image_url", None)
-        if url:
-            return url
+        url = getattr(
+            seo,
+            "og_image_url",
+            None,
+        )
 
-        image = getattr(seo, "og_image", None)
+        if url:
+            return _valid_url(str(url))
+
+        image = getattr(
+            seo,
+            "og_image",
+            None,
+        )
+
         if image:
             try:
-                return image.url
-            except Exception:
+                return _valid_url(
+                    str(image.url)
+                )
+            except (ValueError, OSError):
                 pass
 
-    request = context.get("request")
-
-    if request:
-        try:
-            return request.build_absolute_uri(
-                static("images/default-og.jpg")
-            )
-        except Exception:
-            return ""
-
-    return ""
+    return _valid_url(
+        static("images/default-og.jpg")
+    )
 
 
 # =====================================================
-#  Schema JSON-LD
+# Schema JSON-LD
 # =====================================================
 
 @register.simple_tag(takes_context=True)
 def seo_schema(context):
-    """
-    JSON-LD معتبر برای قرار گرفتن داخل <script type="application/ld+json">.
-    """
     seo = _get_seo(context)
 
-    # اول: اگر SEOContext است، schema_json_ld را بگیر
-    if seo and hasattr(seo, "schema_json_ld"):
+    if (
+        seo
+        and hasattr(
+            seo,
+            "schema_json_ld",
+        )
+    ):
         result = seo.schema_json_ld
+
         if result:
             return result
 
-    # fallback: خودمان generate کن
-    schema = generate_schema(seo)
-
     try:
-        return json.dumps(schema, ensure_ascii=False, indent=2)
-    except (TypeError, ValueError):
+        schema = generate_schema(seo)
+
+        return json.dumps(
+            schema,
+            ensure_ascii=False,
+            indent=2,
+            allow_nan=False,
+        )
+
+    except (
+        TypeError,
+        ValueError,
+        OverflowError,
+    ):
         return "{}"
 
 
 # =====================================================
-#  Breadcrumb
+# Breadcrumb
 # =====================================================
 
 @register.simple_tag(takes_context=True)
 def seo_breadcrumb(context):
-    """
-    HTML آماده Breadcrumb از SEOContext.breadcrumb.
-    """
-    seo = _get_seo(context)
-
-    if seo is None:
-        return ""
-
-    items = getattr(seo, "breadcrumb", None)
+    items = _items(
+        _get_seo(context),
+        "breadcrumb",
+    )
 
     if not items:
         return ""
 
-    html_parts = ['<nav aria-label="breadcrumb" class="seo-breadcrumb">']
-    html_parts.append('<ol class="breadcrumb">')
+    fragments = []
 
     for item in items:
-        label = item.get("label", "")
-        url = item.get("url", "")
-        is_current = item.get("is_current", False)
+        label = _item_value(
+            item,
+            "label",
+        )
 
-        if is_current or not url:
-            html_parts.append(
-                f'<li class="breadcrumb-item active" '
-                f'aria-current="page">{label}</li>'
+        url = _valid_url(
+            _item_value(item, "url")
+        )
+
+        current = _item_value(
+            item,
+            "is_current",
+            False,
+        )
+
+        if current or not url:
+            fragments.append(
+                format_html(
+                    '<li class="breadcrumb-item active" '
+                    'aria-current="page">{}</li>',
+                    label,
+                )
             )
         else:
-            html_parts.append(
-                f'<li class="breadcrumb-item">'
-                f'<a href="{url}">{label}</a></li>'
+            fragments.append(
+                format_html(
+                    '<li class="breadcrumb-item">'
+                    '<a href="{}">{}</a></li>',
+                    url,
+                    label,
+                )
             )
 
-    html_parts.append("</ol>")
-    html_parts.append("</nav>")
+    content = format_html_join(
+        "",
+        "{}",
+        ((part,) for part in fragments),
+    )
 
-    return "".join(html_parts)
+    return format_html(
+        '<nav aria-label="breadcrumb" '
+        'class="seo-breadcrumb">'
+        '<ol class="breadcrumb">{}</ol>'
+        '</nav>',
+        content,
+    )
 
 
 # =====================================================
-#  Hreflang
+# Hreflang
 # =====================================================
 
 @register.simple_tag(takes_context=True)
 def seo_hreflang(context):
-    """
-    تگ‌های <link rel="alternate"> برای hreflang.
-    """
-    seo = _get_seo(context)
-
-    if seo is None:
-        return ""
-
-    items = getattr(seo, "hreflang", None)
-
-    if not items:
-        return ""
+    items = _items(
+        _get_seo(context),
+        "hreflang",
+    )
 
     lines = []
 
     for item in items:
-        lang = item.get("lang", "")
-        url = item.get("url", "")
+        lang = str(
+            _item_value(
+                item,
+                "lang",
+            ) or ""
+        ).strip()
 
-        if not lang or not url:
-            continue
-
-        lines.append(
-            f'<link rel="alternate" hreflang="{lang}" href="{url}">'
+        url = _valid_url(
+            _item_value(
+                item,
+                "url",
+            )
         )
 
-    return "\n".join(lines)
+        valid_lang = re.fullmatch(
+            r"[A-Za-z]{2,3}"
+            r"(?:-[A-Za-z0-9]{2,8})*"
+            r"|x-default",
+            lang,
+        )
 
+        if lang and valid_lang and url:
+            lines.append(
+                format_html(
+                    '<link rel="alternate" '
+                    'hreflang="{}" href="{}">',
+                    lang,
+                    url,
+                )
+            )
 
-# =====================================================
-#  SEO Score
-# =====================================================
-
-@register.simple_tag(takes_context=True)
-def seo_score(context):
-    """نمایش امتیاز SEO با رنگ."""
-    seo = _get_seo(context)
-
-    if seo is None:
+    if not lines:
         return ""
 
-    score = getattr(seo, "seo_score", 0) or 0
-
-    if score >= 70:
-        color = "#198754"
-        label = "خوب"
-    elif score >= 40:
-        color = "#ffc107"
-        label = "قابل بهبود"
-    else:
-        color = "#dc3545"
-        label = "ضعیف"
-
-    return (
-        f'<span class="seo-score" '
-        f'style="background:{color};color:#fff;'
-        f'padding:4px 10px;border-radius:12px;'
-        f'font-size:12px;font-weight:bold;">'
-        f'{score} / 100 — {label}'
-        f'</span>'
+    return format_html_join(
+        "\n",
+        "{}",
+        ((line,) for line in lines),
     )
 
 
 # =====================================================
-#  SEO Score Value
+# SEO Score
 # =====================================================
 
 @register.simple_tag(takes_context=True)
 def seo_score_value(context):
-    """فقط عدد امتیاز SEO."""
     seo = _get_seo(context)
 
-    if seo is None:
+    try:
+        score = int(
+            getattr(
+                seo,
+                "seo_score",
+                0,
+            ) or 0
+        )
+
+        return max(
+            0,
+            min(100, score),
+        )
+
+    except (TypeError, ValueError):
         return 0
 
-    return getattr(seo, "seo_score", 0) or 0
+
+@register.simple_tag(takes_context=True)
+def seo_score(context):
+    if _get_seo(context) is None:
+        return ""
+
+    score = seo_score_value(context)
+
+    if score >= 70:
+        color = "#198754"
+        label = "خوب"
+
+    elif score >= 40:
+        color = "#ffc107"
+        label = "قابل بهبود"
+
+    else:
+        color = "#dc3545"
+        label = "ضعیف"
+
+    return format_html(
+        '<span class="seo-score" '
+        'style="background:{};color:#fff;'
+        'padding:4px 10px;border-radius:12px;'
+        'font-size:12px;font-weight:bold;">'
+        '{} / 100 — {}</span>',
+        color,
+        score,
+        label,
+    )
 
 
 # =====================================================
-#  SEO Analysis
+# SEO Analysis
 # =====================================================
 
 @register.simple_tag(takes_context=True)
 def seo_analysis(context):
-    """لیست HTML چک‌های تحلیل Yoast."""
     seo = _get_seo(context)
 
     if seo is None:
         return ""
 
-    setting = getattr(seo, "setting", None) or seo
+    setting = getattr(
+        seo,
+        "setting",
+        None,
+    ) or seo
 
     try:
-        result = analyze(setting, obj=getattr(seo, "obj", None))
+        result = analyze(
+            setting,
+            obj=getattr(
+                seo,
+                "obj",
+                None,
+            ),
+        )
+
     except Exception:
         return ""
 
-    if not result:
-        return ""
-
-    checks = result.get("flat", [])
+    checks = (
+        result.get("flat", [])
+        if isinstance(result, dict)
+        else []
+    )
 
     if not checks:
         return ""
 
-    html_parts = ['<ul class="seo-analysis-list">']
+    lines = []
 
     for item in checks:
-        icon = item.get("icon", "")
-        message = item.get("message", "")
-
-        html_parts.append(
-            f'<li>{icon} {message}</li>'
+        lines.append(
+            format_html(
+                "<li>{} {}</li>",
+                _item_value(
+                    item,
+                    "icon",
+                ),
+                _item_value(
+                    item,
+                    "message",
+                ),
+            )
         )
 
-    html_parts.append("</ul>")
+    content = format_html_join(
+        "",
+        "{}",
+        ((line,) for line in lines),
+    )
 
-    return "".join(html_parts)
+    return format_html(
+        '<ul class="seo-analysis-list">'
+        '{}</ul>',
+        content,
+    )
 
 
 # =====================================================
-#  Google Preview
+# Google Preview
 # =====================================================
 
 @register.simple_tag(takes_context=True)
 def seo_google_preview(context):
-    """HTML پیش‌نمایش گوگل (برای پنل یا debug)."""
     seo = _get_seo(context)
 
     if seo is None:
         return ""
 
-    title = getattr(seo, "title", "") or ""
-    description = getattr(seo, "description", "") or ""
-    url = getattr(seo, "canonical", "") or ""
+    title = str(
+        getattr(
+            seo,
+            "title",
+            "",
+        ) or ""
+    )
 
-    title = title[:60] + ("…" if len(title) > 60 else "")
-    description = description[:160] + ("…" if len(description) > 160 else "")
+    description = str(
+        getattr(
+            seo,
+            "description",
+            "",
+        ) or ""
+    )
 
-    return (
-        f'<div class="seo-google-preview" '
-        f'style="max-width:600px;padding:14px 16px;'
-        f'border:1px solid #dadce0;border-radius:10px;background:#fff;">'
-        f'<div style="color:#5f6368;font-size:12px;">{url}</div>'
-        f'<div style="color:#1a0dab;font-size:18px;line-height:1.3;">{title}</div>'
-        f'<div style="color:#4d5156;font-size:13px;line-height:1.5;">{description}</div>'
-        f'</div>'
+    title = title[:60] + (
+        "…" if len(title) > 60 else ""
+    )
+
+    description = description[:160] + (
+        "…" if len(description) > 160 else ""
+    )
+
+    url = seo_canonical(context)
+
+    return format_html(
+        '<div class="seo-google-preview" '
+        'style="max-width:600px;'
+        'padding:14px 16px;'
+        'border:1px solid #dadce0;'
+        'border-radius:10px;'
+        'background:#fff;">'
+        '<div style="color:#5f6368;'
+        'font-size:12px;">{}</div>'
+        '<div style="color:#1a0dab;'
+        'font-size:18px;line-height:1.3;">'
+        '{}</div>'
+        '<div style="color:#4d5156;'
+        'font-size:13px;line-height:1.5;">'
+        '{}</div>'
+        '</div>',
+        url,
+        title,
+        description,
     )
 
 
 # =====================================================
-#  Twitter Card
+# Twitter Card
 # =====================================================
 
 @register.simple_tag(takes_context=True)
 def seo_twitter_card(context):
-    """تگ‌های کامل Twitter Card."""
     seo = _get_seo(context)
 
     if seo is None:
         return ""
 
-    lines = []
-
-    card = getattr(seo, "twitter_card", "summary_large_image") or "summary_large_image"
-    lines.append(f'<meta name="twitter:card" content="{card}">')
-
-    title = (
-        getattr(seo, "twitter_title", None)
-        or getattr(seo, "og_title", None)
-    )
-    if title:
-        lines.append(f'<meta name="twitter:title" content="{title}">')
-
-    description = (
-        getattr(seo, "twitter_description", None)
-        or getattr(seo, "og_description", None)
-    )
-    if description:
-        lines.append(
-            f'<meta name="twitter:description" content="{description}">'
+    lines = [
+        format_html(
+            '<meta name="twitter:card" '
+            'content="{}">',
+            getattr(
+                seo,
+                "twitter_card",
+                None,
+            ) or "summary_large_image",
         )
+    ]
 
-    image = (
-        getattr(seo, "twitter_image_url", None)
-        or getattr(seo, "og_image_url", None)
+    values = (
+        (
+            "twitter:title",
+            getattr(
+                seo,
+                "twitter_title",
+                None,
+            ) or getattr(
+                seo,
+                "og_title",
+                None,
+            ),
+        ),
+        (
+            "twitter:description",
+            getattr(
+                seo,
+                "twitter_description",
+                None,
+            ) or getattr(
+                seo,
+                "og_description",
+                None,
+            ),
+        ),
+        (
+            "twitter:image",
+            _valid_url(
+                getattr(
+                    seo,
+                    "twitter_image_url",
+                    None,
+                ) or getattr(
+                    seo,
+                    "og_image_url",
+                    None,
+                )
+            ),
+        ),
     )
-    if image:
-        lines.append(f'<meta name="twitter:image" content="{image}">')
 
-    return "\n".join(lines)
+    for name, value in values:
+        if value:
+            lines.append(
+                format_html(
+                    '<meta name="{}" '
+                    'content="{}">',
+                    name,
+                    value,
+                )
+            )
+
+    return format_html_join(
+        "\n",
+        "{}",
+        ((line,) for line in lines),
+    )
 
 
 # =====================================================
-#  Open Graph
+# Open Graph
 # =====================================================
 
 @register.simple_tag(takes_context=True)
 def seo_og(context):
-    """تگ‌های کامل Open Graph."""
     seo = _get_seo(context)
 
     if seo is None:
         return ""
 
-    lines = []
-
-    og_type = getattr(seo, "og_type", "website") or "website"
-    lines.append(f'<meta property="og:type" content="{og_type}">')
-
-    title = getattr(seo, "og_title", None) or getattr(seo, "title", None)
-    if title:
-        lines.append(f'<meta property="og:title" content="{title}">')
-
-    description = (
-        getattr(seo, "og_description", None)
-        or getattr(seo, "description", None)
-    )
-    if description:
-        lines.append(
-            f'<meta property="og:description" content="{description}">'
+    lines = [
+        format_html(
+            '<meta property="og:type" '
+            'content="{}">',
+            getattr(
+                seo,
+                "og_type",
+                None,
+            ) or "website",
         )
+    ]
 
-    canonical = getattr(seo, "canonical", None)
-    if canonical:
-        lines.append(f'<meta property="og:url" content="{canonical}">')
+    values = (
+        (
+            "og:title",
+            getattr(
+                seo,
+                "og_title",
+                None,
+            ) or getattr(
+                seo,
+                "title",
+                None,
+            ),
+        ),
+        (
+            "og:description",
+            getattr(
+                seo,
+                "og_description",
+                None,
+            ) or getattr(
+                seo,
+                "description",
+                None,
+            ),
+        ),
+        (
+            "og:url",
+            seo_canonical(context),
+        ),
+        (
+            "og:image",
+            _valid_url(
+                getattr(
+                    seo,
+                    "og_image_url",
+                    None,
+                )
+            ),
+        ),
+    )
 
-    image = getattr(seo, "og_image_url", None)
-    if image:
-        lines.append(f'<meta property="og:image" content="{image}">')
+    for name, value in values:
+        if value:
+            lines.append(
+                format_html(
+                    '<meta property="{}" '
+                    'content="{}">',
+                    name,
+                    value,
+                )
+            )
 
-    return "\n".join(lines)
+    return format_html_join(
+        "\n",
+        "{}",
+        ((line,) for line in lines),
+    )
 
 
 # =====================================================
-#  Meta Robots Tag
+# Individual Meta Tags
 # =====================================================
 
 @register.simple_tag(takes_context=True)
 def seo_meta_robots(context):
-    """تگ <meta name="robots">."""
     robots = seo_robots(context)
 
     if not robots:
         return ""
 
-    return f'<meta name="robots" content="{robots}">'
+    return format_html(
+        '<meta name="robots" content="{}">',
+        robots,
+    )
 
-
-# =====================================================
-#  Meta Description Tag
-# =====================================================
 
 @register.simple_tag(takes_context=True)
 def seo_meta_description(context):
-    """تگ <meta name="description">."""
     description = seo_description(context)
 
     if not description:
         return ""
 
-    return f'<meta name="description" content="{description}">'
+    return format_html(
+        '<meta name="description" '
+        'content="{}">',
+        description,
+    )
 
-
-# =====================================================
-#  Meta Keywords Tag
-# =====================================================
 
 @register.simple_tag(takes_context=True)
 def seo_meta_keywords(context):
-    """تگ <meta name="keywords">."""
     keywords = seo_keywords(context)
 
     if not keywords:
         return ""
 
-    return f'<meta name="keywords" content="{keywords}">'
+    return format_html(
+        '<meta name="keywords" '
+        'content="{}">',
+        keywords,
+    )
 
-
-# =====================================================
-#  Canonical Tag
-# =====================================================
 
 @register.simple_tag(takes_context=True)
 def seo_canonical_tag(context):
-    """تگ <link rel="canonical">."""
     canonical = seo_canonical(context)
 
     if not canonical:
         return ""
 
-    return f'<link rel="canonical" href="{canonical}">'
+    return format_html(
+        '<link rel="canonical" href="{}">',
+        canonical,
+    )

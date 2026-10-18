@@ -1,16 +1,39 @@
+
 """
-WSGI config for original_website project.
+WSGI configuration for Parsa Novin Kavosh.
 
-It exposes the WSGI callable as a module-level variable named ``application``.
+Website: https://nkavosh.com
 
-For more information on this file, see
-https://docs.djangoproject.com/en/6.0/howto/deployment/wsgi/
+Production environment:
+    Django
+    SQLite
+    cPanel / Passenger
+
+This module exposes the WSGI application
+as a module-level variable named application.
 """
 
 import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'original_website.setting.dev')
+
+# ==========================================================
+# DJANGO SETTINGS
+# ==========================================================
+
+# Use production settings by default.
+# An explicitly configured environment variable
+# takes precedence.
+
+os.environ.setdefault(
+    "DJANGO_SETTINGS_MODULE",
+    "original_website.setting.dev",
+)
+
+
+# ==========================================================
+# WSGI APPLICATION
+# ==========================================================
 
 application = get_wsgi_application()

@@ -1,3 +1,4 @@
+
 import ipaddress
 import logging
 import re
@@ -76,8 +77,15 @@ class VisitMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
-        self.bot_patterns = [re.compile(p, re.I) for p in self.BOT_PATTERNS]
-        self.skip_patterns = [re.compile(p) for p in self.SKIP_PATHS]
+        self.bot_patterns = [
+            re.compile(p, re.I)
+            for p in self.BOT_PATTERNS
+        ]
+
+        self.skip_patterns = [
+            re.compile(p)
+            for p in self.SKIP_PATHS
+        ]
 
         self.visit_interval = getattr(
             settings,
@@ -85,7 +93,10 @@ class VisitMiddleware:
             60,
         )
 
-    def __call__(self, request: HttpRequest) -> HttpResponse:
+    def __call__(
+        self,
+        request: HttpRequest
+    ) -> HttpResponse:
 
         if not self.should_skip(request):
             self.record_visit(request)
@@ -102,81 +113,120 @@ class VisitMiddleware:
         if path.startswith("/api/"):
             return True
 
-        # کاربران لاگین‌شده (staff) را ثبت نکن
-        if hasattr(request, "user") and request.user.is_authenticated:
-            if request.user.is_staff or request.user.is_superuser:
-                return True
+        if hasattr(request, "user"):
+            if request.user.is_authenticated:
+                if (
+                    request.user.is_staff
+                    or request.user.is_superuser
+                ):
+                    return True
 
-        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        if (
+            request.headers.get("X-Requested-With")
+            == "XMLHttpRequest"
+        ):
             return True
 
-        return any(p.match(path) for p in self.skip_patterns)
+        return any(
+            p.match(path)
+            for p in self.skip_patterns
+        )
 
     def is_bot(self, user_agent: str) -> bool:
 
         if not user_agent:
             return False
 
-        return any(p.search(user_agent) for p in self.bot_patterns)
+        return any(
+            p.search(user_agent)
+            for p in self.bot_patterns
+        )
 
     def _valid_ip(self, ip: str) -> bool:
+
         try:
             ipaddress.ip_address(ip)
             return True
-        except Exception:
+        except ValueError:
             return False
 
     def get_ip(self, request) -> str:
         """
-        دریافت IP واقعی کاربر
-        اولویت:
-        Cloudflare -> X-Real-IP -> X-Forwarded-For -> REMOTE_ADDR
+        اعتماد به هدرهای IP فقط از پروکسی معتبر.
         """
 
-        headers = [
-            "HTTP_CF_CONNECTING_IP",
-            "HTTP_X_REAL_IP",
+        peer = (
+            request.META.get("REMOTE_ADDR") or ""
+        ).strip()
+
+        if not self._valid_ip(peer):
+            return "0.0.0.0"
+
+        trusted = set(
+            getattr(
+                settings,
+                "VISIT_TRUSTED_PROXIES",
+                (),
+            )
+        )
+
+        if peer not in trusted:
+            return peer
+
+        forwarded = request.META.get(
             "HTTP_X_FORWARDED_FOR",
-            "REMOTE_ADDR",
+            "",
+        )
+
+        chain = [
+            part.strip()
+            for part in forwarded.split(",")
+            if part.strip()
         ]
 
-        for header in headers:
-            value = request.META.get(header)
+        if not chain:
+            return peer
 
-            if not value:
-                continue
+        if any(
+            not self._valid_ip(ip)
+            for ip in chain
+        ):
+            return peer
 
-            if header == "HTTP_X_FORWARDED_FOR":
-                ips = [i.strip() for i in value.split(",")]
+        for ip in reversed(chain):
+            if ip not in trusted:
+                return ip
 
-                for ip in ips:
-                    if self._valid_ip(ip):
-                        return ip
-
-            else:
-                value = value.strip()
-
-                if self._valid_ip(value):
-                    return value
-
-        return "0.0.0.0"
+        return chain[0]
 
     def get_visit_key(self, ip, path):
         return f"visit:{ip}:{path}"
 
-    def record_visit(self, request) -> Optional[Visit]:
+    def record_visit(
+        self,
+        request
+    ) -> Optional[Visit]:
 
         try:
-
             ip = self.get_ip(request)
             path = request.path[:255]
-            user_agent = request.META.get("HTTP_USER_AGENT", "")
+
+            user_agent = request.META.get(
+                "HTTP_USER_AGENT",
+                "",
+            )
+
             is_bot = self.is_bot(user_agent)
 
-            cache_key = self.get_visit_key(ip, path)
+            cache_key = self.get_visit_key(
+                ip,
+                path,
+            )
 
-            # تشخیص دستگاه
-            device_info = DeviceDetector.detect_all(user_agent, is_bot)
+            device_info = DeviceDetector.detect_all(
+                user_agent,
+                is_bot,
+            )
 
             if cache.get(cache_key):
                 Visit.objects.filter(
@@ -185,7 +235,7 @@ class VisitMiddleware:
                 ).update(
                     last_seen=timezone.now()
                 )
-                return
+                return None
 
             visit, created = Visit.objects.get_or_create(
                 ip=ip,
@@ -193,28 +243,39 @@ class VisitMiddleware:
                 defaults={
                     "method": request.method,
                     "user_agent": user_agent[:500],
-                    "referer": request.META.get("HTTP_REFERER", "")[:500],
+                    "referer": request.META.get(
+                        "HTTP_REFERER", ""
+                    )[:500],
                     "is_bot": is_bot,
                     "device_type": device_info["device_type"],
                     "os": device_info["os"],
                     "browser": device_info["browser"],
-                    "device_model": device_info["device_model"][:100],
-                    "language": request.META.get("HTTP_ACCEPT_LANGUAGE", "")[:10],
+                    "device_model": device_info[
+                        "device_model"
+                    ][:100],
+                    "language": request.META.get(
+                        "HTTP_ACCEPT_LANGUAGE", ""
+                    )[:10],
                 },
             )
 
             if not created:
-                Visit.objects.filter(pk=visit.pk).update(
+                Visit.objects.filter(
+                    pk=visit.pk
+                ).update(
                     last_seen=timezone.now(),
                     method=request.method,
                     user_agent=user_agent[:500],
-                    referer=request.META.get("HTTP_REFERER", "")[:500],
+                    referer=request.META.get(
+                        "HTTP_REFERER", ""
+                    )[:500],
                     visit_count=F("visit_count") + 1,
-                    # بروزرسانی اطلاعات دستگاه
                     device_type=device_info["device_type"],
                     os=device_info["os"],
                     browser=device_info["browser"],
-                    device_model=device_info["device_model"][:100],
+                    device_model=device_info[
+                        "device_model"
+                    ][:100],
                 )
 
             cache.set(
@@ -229,15 +290,22 @@ class VisitMiddleware:
             return visit
 
         except Exception:
-            logger.exception("Visit middleware error")
+            logger.exception(
+                "Visit middleware error"
+            )
             return None
 
     def cleanup_old_visits(self, days=90):
 
         try:
             Visit.objects.filter(
-                created_at__lt=timezone.now() - timedelta(days=days)
+                created_at__lt=(
+                    timezone.now()
+                    - timedelta(days=days)
+                )
             ).delete()
 
         except Exception:
-            logger.exception("Visit cleanup error")
+            logger.exception(
+                "Visit cleanup error"
+            )
