@@ -27,6 +27,10 @@ from axes.models import (
 from .models import SecurityIPRule, SecurityAuditLog
 
 
+# ==========================================
+# Persian Date
+# ==========================================
+
 def persian_datetime(value):
     if not value:
         return "—"
@@ -37,10 +41,19 @@ def persian_datetime(value):
     jalali = jdatetime.datetime.fromgregorian(
         datetime=value
     )
+
     return jalali.strftime("%Y/%m/%d - %H:%M")
 
 
+# ==========================================
+# Security Actions Mixin
+# ==========================================
+
 class SecurityActionsMixin:
+
+    # --------------------------------------
+    # Permissions
+    # --------------------------------------
 
     def has_module_permission(self, request):
         return bool(
@@ -61,15 +74,51 @@ class SecurityActionsMixin:
     def has_delete_permission(self, request, obj=None):
         return self.has_module_permission(request)
 
+    # --------------------------------------
+    # Single + Bulk Delete
+    # --------------------------------------
+
     def get_actions(self, request):
         actions = super().get_actions(request)
-        actions.pop("delete_selected", None)
+
+        if self.has_delete_permission(request):
+            actions["delete_selected"] = (
+                admin.actions.delete_selected,
+                "delete_selected",
+                "🗑 حذف گروهی موارد انتخاب‌شده",
+            )
+        else:
+            actions.pop("delete_selected", None)
+
         return actions
 
-    def get_list_display(self, request):
-        columns = list(super().get_list_display(request))
+    def delete_queryset(self, request, queryset):
+        if not self.has_delete_permission(request):
+            raise PermissionDenied(
+                "شما مجوز حذف این گزارش‌ها را ندارید."
+            )
 
-        # Remove the original Gregorian date columns.
+        with transaction.atomic():
+            queryset.delete()
+
+    def delete_model(self, request, obj):
+        if not self.has_delete_permission(request, obj):
+            raise PermissionDenied(
+                "شما مجوز حذف این گزارش را ندارید."
+            )
+
+        with transaction.atomic():
+            obj.delete()
+
+    # --------------------------------------
+    # List Display
+    # --------------------------------------
+
+    def get_list_display(self, request):
+        columns = list(
+            super().get_list_display(request)
+        )
+
         date_columns = {
             "attempt_time",
             "logout_time",
@@ -83,20 +132,34 @@ class SecurityActionsMixin:
             if column not in date_columns
         ]
 
-        # Show Jalali login/attempt time.
-        columns.insert(0, "jalali_attempt_time")
+        if "jalali_attempt_time" not in columns:
+            columns.insert(
+                0,
+                "jalali_attempt_time",
+            )
 
-        # Show Jalali logout time only for access logs.
         if self.model is AccessLog:
-            columns.insert(1, "jalali_logout_time")
+            if "jalali_logout_time" not in columns:
+                columns.insert(
+                    1,
+                    "jalali_logout_time",
+                )
 
         if "security_ip_action" not in columns:
-            columns.append("security_ip_action")
+            columns.append(
+                "security_ip_action"
+            )
 
         if "delete_record_link" not in columns:
-            columns.append("delete_record_link")
+            columns.append(
+                "delete_record_link"
+            )
 
         return columns
+
+    # --------------------------------------
+    # Jalali Dates
+    # --------------------------------------
 
     @admin.display(
         description="زمان ورود / تلاش (شمسی)",
@@ -104,7 +167,11 @@ class SecurityActionsMixin:
     )
     def jalali_attempt_time(self, obj):
         return persian_datetime(
-            getattr(obj, "attempt_time", None)
+            getattr(
+                obj,
+                "attempt_time",
+                None,
+            )
         )
 
     @admin.display(
@@ -113,8 +180,16 @@ class SecurityActionsMixin:
     )
     def jalali_logout_time(self, obj):
         return persian_datetime(
-            getattr(obj, "logout_time", None)
+            getattr(
+                obj,
+                "logout_time",
+                None,
+            )
         )
+
+    # --------------------------------------
+    # Single Delete Button
+    # --------------------------------------
 
     @admin.display(description="حذف")
     def delete_record_link(self, obj):
@@ -127,9 +202,22 @@ class SecurityActionsMixin:
         )
 
         return format_html(
-            '<a href="{}" style="color:#dc3545;">حذف</a>',
+            '<a href="{}" style="'
+            'display:inline-block;'
+            'background:#c62828;'
+            'color:#ffffff;'
+            'padding:5px 12px;'
+            'border-radius:6px;'
+            'text-decoration:none;'
+            'font-weight:bold;">'
+            '🗑 حذف'
+            '</a>',
             url,
         )
+
+    # --------------------------------------
+    # IP Block Status
+    # --------------------------------------
 
     def _is_blocked(self, ip):
         now = timezone.now()
@@ -143,21 +231,38 @@ class SecurityActionsMixin:
             | Q(expires_at__gt=now)
         ).exists()
 
-    @admin.display(description="کنترل امنیت IP")
+    @admin.display(
+        description="کنترل امنیت IP"
+    )
     def security_ip_action(self, obj):
         if not obj.ip_address:
             return "IP نامشخص"
 
-        blocked = self._is_blocked(obj.ip_address)
-        action = "unblock" if blocked else "block"
-        label = "رفع مسدودی" if blocked else "مسدود کردن"
+        blocked = self._is_blocked(
+            obj.ip_address
+        )
+
+        action = (
+            "unblock"
+            if blocked
+            else "block"
+        )
+
+        label = (
+            "رفع مسدودی"
+            if blocked
+            else "مسدود کردن"
+        )
 
         url = reverse(
             (
                 f"admin:{obj._meta.app_label}_"
                 f"{obj._meta.model_name}_security_ip"
             ),
-            args=[obj.pk, action],
+            args=[
+                obj.pk,
+                action,
+            ],
         )
 
         return format_html(
@@ -165,6 +270,10 @@ class SecurityActionsMixin:
             url,
             label,
         )
+
+    # --------------------------------------
+    # Custom URLs
+    # --------------------------------------
 
     def get_urls(self):
         custom_urls = [
@@ -180,30 +289,56 @@ class SecurityActionsMixin:
             ),
         ]
 
-        return custom_urls + super().get_urls()
+        return (
+            custom_urls
+            + super().get_urls()
+        )
 
-    def change_ip_status(self, request, object_id, action):
+    # --------------------------------------
+    # Block / Unblock IP
+    # --------------------------------------
+
+    def change_ip_status(
+        self,
+        request,
+        object_id,
+        action,
+    ):
         if not self.has_module_permission(request):
             raise PermissionDenied
 
-        if action not in ("block", "unblock"):
+        if action not in (
+            "block",
+            "unblock",
+        ):
             raise PermissionDenied
 
-        obj = self.get_object(request, object_id)
+        obj = self.get_object(
+            request,
+            object_id,
+        )
 
         if obj is None or not obj.ip_address:
             raise PermissionDenied
 
         try:
             target_ip = str(
-                ipaddress.ip_address(obj.ip_address)
+                ipaddress.ip_address(
+                    obj.ip_address
+                )
             )
         except ValueError:
             raise PermissionDenied
 
-        current_ip = request.META.get("REMOTE_ADDR", "")
+        current_ip = request.META.get(
+            "REMOTE_ADDR",
+            "",
+        )
 
-        if action == "block" and target_ip == current_ip:
+        if (
+            action == "block"
+            and target_ip == current_ip
+        ):
             self.message_user(
                 request,
                 (
@@ -227,7 +362,9 @@ class SecurityActionsMixin:
 
         if request.method == "GET":
             context = {
-                **self.admin_site.each_context(request),
+                **self.admin_site.each_context(
+                    request
+                ),
                 "title": "تأیید عملیات امنیتی",
                 "target_ip": target_ip,
                 "operation": (
@@ -246,10 +383,18 @@ class SecurityActionsMixin:
             )
 
         if request.method != "POST":
-            return HttpResponse(status=405)
+            return HttpResponse(
+                status=405
+            )
+
+        # ----------------------------------
+        # Apply IP Action
+        # ----------------------------------
 
         with transaction.atomic():
+
             if action == "block":
+
                 existing = (
                     SecurityIPRule.objects
                     .select_for_update()
@@ -263,6 +408,7 @@ class SecurityActionsMixin:
                 first_rule = existing.first()
 
                 if first_rule:
+
                     existing.exclude(
                         pk=first_rule.pk
                     ).update(
@@ -275,20 +421,28 @@ class SecurityActionsMixin:
                         "مسدودسازی از گزارش Axes"
                     )
                     first_rule.created_by = request.user
+
                     first_rule.save()
+
                 else:
+
                     SecurityIPRule.objects.create(
                         ip_address=target_ip,
                         rule_type="block",
                         is_active=True,
                         expires_at=None,
-                        description="مسدودسازی از گزارش Axes",
+                        description=(
+                            "مسدودسازی از گزارش Axes"
+                        ),
                         created_by=request.user,
                     )
 
-                operation = "مسدودسازی IP از Axes"
+                operation = (
+                    "مسدودسازی IP از Axes"
+                )
 
             else:
+
                 SecurityIPRule.objects.filter(
                     ip_address=target_ip,
                     rule_type="block",
@@ -297,7 +451,13 @@ class SecurityActionsMixin:
                     is_active=False
                 )
 
-                operation = "رفع مسدودی IP از Axes"
+                operation = (
+                    "رفع مسدودی IP از Axes"
+                )
+
+            # ----------------------------------
+            # Audit Log
+            # ----------------------------------
 
             SecurityAuditLog.objects.create(
                 action=operation,
@@ -315,8 +475,14 @@ class SecurityActionsMixin:
             messages.SUCCESS,
         )
 
-        return redirect(changelist_url)
+        return redirect(
+            changelist_url
+        )
 
+
+# ==========================================
+# Access Attempt Admin
+# ==========================================
 
 class SecureAccessAttemptAdmin(
     SecurityActionsMixin,
@@ -325,12 +491,20 @@ class SecureAccessAttemptAdmin(
     pass
 
 
+# ==========================================
+# Access Log Admin
+# ==========================================
+
 class SecureAccessLogAdmin(
     SecurityActionsMixin,
     AccessLogAdmin,
 ):
     pass
 
+
+# ==========================================
+# Access Failure Log Admin
+# ==========================================
 
 class SecureAccessFailureLogAdmin(
     SecurityActionsMixin,
@@ -339,15 +513,35 @@ class SecureAccessFailureLogAdmin(
     pass
 
 
+# ==========================================
+# Register Secure Axes Admin
+# ==========================================
+
 def register_secure_axes_admin():
+
     registrations = (
-        (AccessAttempt, SecureAccessAttemptAdmin),
-        (AccessLog, SecureAccessLogAdmin),
-        (AccessFailureLog, SecureAccessFailureLogAdmin),
+        (
+            AccessAttempt,
+            SecureAccessAttemptAdmin,
+        ),
+        (
+            AccessLog,
+            SecureAccessLogAdmin,
+        ),
+        (
+            AccessFailureLog,
+            SecureAccessFailureLogAdmin,
+        ),
     )
 
     for model, admin_class in registrations:
-        if model in admin.site._registry:
-            admin.site.unregister(model)
 
-        admin.site.register(model, admin_class)
+        if model in admin.site._registry:
+            admin.site.unregister(
+                model
+            )
+
+        admin.site.register(
+            model,
+            admin_class,
+        )

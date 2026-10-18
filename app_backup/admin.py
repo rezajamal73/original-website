@@ -1,29 +1,9 @@
 
-"""
-Backup Administration
-Parsa Novin Kavosh
-Django 6 compatible
-
-Features:
-- Create backups
-- Upload and validate backup archives
-- Download backups
-- Validate backup health without restoring live data
-- Delete backup ZIP and database record
-- Show animated progress while backup is being created
-
-Security:
-- Superuser-only operations
-- CSRF-protected POST operations
-- Confirmation before deletion
-- Backup path validation
-"""
-
 import hashlib
 import logging
 import uuid
 import zipfile
-
+from html import escape
 from pathlib import Path
 
 import jdatetime
@@ -49,7 +29,6 @@ from .restore_service import RestoreService
 
 
 logger = logging.getLogger(__name__)
-
 MAX_UPLOAD_SIZE = 2 * 1024**3
 
 
@@ -64,6 +43,8 @@ class BackupAdmin(admin.ModelAdmin):
         "created_at_jalali",
         "download_backup",
         "restore_backup",
+        "restore_media_button",
+        "restore_full_button",
         "delete_backup_button",
     )
 
@@ -79,9 +60,9 @@ class BackupAdmin(admin.ModelAdmin):
         "created_at",
     )
 
-    # ======================================================
-    # PERMISSIONS
-    # ======================================================
+    # ==========================================
+    # Permissions
+    # ==========================================
 
     def _is_superuser(self, request):
         return bool(
@@ -111,9 +92,9 @@ class BackupAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         return self._is_superuser(request)
 
-    # ======================================================
-    # HELPERS
-    # ======================================================
+    # ==========================================
+    # Helpers
+    # ==========================================
 
     def _list_url(self):
         return reverse(
@@ -121,9 +102,24 @@ class BackupAdmin(admin.ModelAdmin):
         )
 
     def _redirect_list(self):
-        return HttpResponseRedirect(
-            self._list_url()
+        return HttpResponseRedirect(self._list_url())
+
+    def _get_backup(self, backup_id):
+        return get_object_or_404(
+            Backup,
+            pk=backup_id,
         )
+
+    def _backup_exists_or_redirect(self, request, backup):
+        if backup.file_exists:
+            return True
+
+        self.message_user(
+            request,
+            "فایل بکاپ وجود ندارد.",
+            messages.ERROR,
+        )
+        return False
 
     def _confirmation_page(
         self,
@@ -135,19 +131,9 @@ class BackupAdmin(admin.ModelAdmin):
         is_progress=False,
         is_danger=False,
     ):
-        """
-        Render a CSRF-protected confirmation page.
-
-        When is_progress=True, show an animated,
-        indeterminate progress bar after submission.
-
-        The bar does not invent a completion percentage.
-        """
-
         template = engines["django"].from_string(
             """
 {% extends "admin/base_site.html" %}
-
 {% block content %}
 
 <div style="
@@ -160,10 +146,7 @@ class BackupAdmin(admin.ModelAdmin):
     box-shadow:0 4px 18px rgba(0,0,0,.05);
 ">
 
-    <h1 style="
-        font-size:23px;
-        margin-bottom:18px;
-    ">
+    <h1 style="font-size:23px;margin-bottom:18px">
         {{ title }}
     </h1>
 
@@ -172,9 +155,7 @@ class BackupAdmin(admin.ModelAdmin):
         font-size:14px;
         color:#444;
         white-space:pre-line;
-    ">
-        {{ message }}
-    </p>
+    ">{{ message }}</p>
 
     <form
         id="backup-action-form"
@@ -195,29 +176,19 @@ class BackupAdmin(admin.ModelAdmin):
                 cursor:pointer;
                 font-weight:bold;
             "
-        >
-            {{ button_text }}
-        </button>
+        >{{ button_text }}</button>
 
         <a
             id="backup-cancel-link"
             href="{{ cancel_url }}"
-            style="
-                margin-right:18px;
-                text-decoration:none;
-            "
-        >
-            انصراف
-        </a>
-
+            style="margin-right:18px;text-decoration:none"
+        >انصراف</a>
     </form>
 
     {% if is_progress %}
 
     <div
         id="backup-progress-panel"
-        role="status"
-        aria-live="polite"
         style="
             display:none;
             margin-top:28px;
@@ -227,119 +198,68 @@ class BackupAdmin(admin.ModelAdmin):
             border-radius:12px;
         "
     >
+        <strong>در حال پردازش عملیات...</strong>
 
         <div style="
-            font-weight:bold;
-            margin-bottom:12px;
-            color:#176b43;
+            margin-top:15px;
+            height:15px;
+            background:#dce7e0;
+            border-radius:20px;
+            overflow:hidden;
+            position:relative;
         ">
-            در حال ساخت نسخه پشتیبان...
-        </div>
-
-        <div
-            role="progressbar"
-            aria-label="عملیات ساخت بکاپ در حال انجام است"
-            style="
-                width:100%;
-                height:15px;
-                background:#dce7e0;
-                border-radius:20px;
-                overflow:hidden;
-                position:relative;
-            "
-        >
             <div class="backup-progress-animation"></div>
         </div>
 
-        <div
-            id="backup-elapsed-time"
-            style="
-                margin-top:12px;
-                font-size:13px;
-                color:#555;
-            "
-        >
+        <p id="backup-elapsed-time">
             زمان سپری‌شده: ۰ ثانیه
-        </div>
-
-        <p style="
-            margin-top:12px;
-            font-size:12px;
-            color:#666;
-            line-height:1.9;
-        ">
-            سرور در حال آماده‌سازی فایل ZIP است.
-            مدت انجام عملیات به حجم دیتابیس
-            و فایل‌های رسانه‌ای بستگی دارد.
-            لطفاً صفحه را نبندید و دوباره
-            روی دکمه کلیک نکنید.
         </p>
 
-        <p style="
-            font-size:12px;
-            color:#777;
-        ">
+        <small>
             این نوار نشان‌دهنده فعال بودن عملیات است،
-            نه درصد واقعی تکمیل بکاپ.
-        </p>
-
+            نه درصد واقعی تکمیل.
+        </small>
     </div>
 
     <style>
-        .backup-progress-animation {
-            position:absolute;
-            top:0;
-            bottom:0;
-            width:35%;
-            background:linear-gradient(
-                90deg,
-                #43a047,
-                #81c784,
-                #1b5e20
-            );
-            border-radius:20px;
-            animation:backup-running 1.8s
-                ease-in-out infinite alternate;
-        }
+    .backup-progress-animation {
+        position:absolute;
+        top:0;
+        bottom:0;
+        width:35%;
+        background:linear-gradient(
+            90deg,#43a047,#81c784,#1b5e20
+        );
+        border-radius:20px;
+        animation:backup-running 1.8s
+            ease-in-out infinite alternate;
+    }
 
-        @keyframes backup-running {
-            from {
-                left:0%;
-            }
-
-            to {
-                left:65%;
-            }
-        }
+    @keyframes backup-running {
+        from {left:0%}
+        to {left:65%}
+    }
     </style>
 
     <script>
     (function () {
-        "use strict";
-
         var form = document.getElementById(
             "backup-action-form"
         );
-
         var button = document.getElementById(
             "backup-submit-button"
         );
-
         var panel = document.getElementById(
             "backup-progress-panel"
         );
-
-        var timerLabel = document.getElementById(
+        var label = document.getElementById(
             "backup-elapsed-time"
         );
-
         var cancel = document.getElementById(
             "backup-cancel-link"
         );
 
-        if (!form || !button || !panel) {
-            return;
-        }
+        if (!form || !button || !panel) return;
 
         var submitted = false;
 
@@ -350,11 +270,8 @@ class BackupAdmin(admin.ModelAdmin):
             }
 
             submitted = true;
-
             panel.style.display = "block";
-
-            button.style.opacity = "0.65";
-            button.style.cursor = "not-allowed";
+            button.disabled = true;
             button.textContent = "در حال پردازش...";
 
             if (cancel) {
@@ -362,33 +279,23 @@ class BackupAdmin(admin.ModelAdmin):
                 cancel.style.opacity = "0.5";
             }
 
-            var startTime = Date.now();
+            var start = Date.now();
 
             function updateElapsed() {
                 var seconds = Math.floor(
-                    (Date.now() - startTime) / 1000
+                    (Date.now() - start) / 1000
                 );
-
-                var minutes = Math.floor(
-                    seconds / 60
-                );
-
+                var minutes = Math.floor(seconds / 60);
                 var remaining = seconds % 60;
 
-                timerLabel.textContent =
+                label.textContent =
                     "زمان سپری‌شده: " +
-                    minutes +
-                    " دقیقه و " +
-                    remaining +
-                    " ثانیه";
+                    minutes + " دقیقه و " +
+                    remaining + " ثانیه";
             }
 
             updateElapsed();
-
-            window.setInterval(
-                updateElapsed,
-                1000
-            );
+            window.setInterval(updateElapsed, 1000);
         });
     })();
     </script>
@@ -396,98 +303,144 @@ class BackupAdmin(admin.ModelAdmin):
     {% endif %}
 
 </div>
-
 {% endblock %}
             """
         )
 
-        html = template.render(
-            {
-                "title": title,
-                "message": message,
-                "action_url": action_url,
-                "button_text": button_text,
-                "cancel_url": self._list_url(),
-                "is_progress": is_progress,
-                "is_danger": is_danger,
-            },
-            request,
+        return HttpResponse(
+            template.render(
+                {
+                    "title": title,
+                    "message": message,
+                    "action_url": action_url,
+                    "button_text": button_text,
+                    "cancel_url": self._list_url(),
+                    "is_progress": is_progress,
+                    "is_danger": is_danger,
+                },
+                request,
+            )
+        )
+
+    def _instruction_page(
+        self,
+        title,
+        backup,
+        description,
+        command=None,
+        warning=None,
+    ):
+        command_html = ""
+
+        if command:
+            command_html = (
+                '<h3>دستور اجرای آفلاین</h3>'
+                '<pre dir="ltr" style="'
+                'padding:20px;'
+                'background:#222;'
+                'color:#fff;'
+                'border-radius:10px;'
+                'white-space:pre-wrap;'
+                'overflow-wrap:anywhere;">'
+                + escape(command)
+                + '</pre>'
+            )
+
+        warning_html = ""
+
+        if warning:
+            warning_html = (
+                '<div style="'
+                'padding:15px;'
+                'background:#fff3e0;'
+                'border:1px solid #ffcc80;'
+                'border-radius:8px;'
+                'color:#9a3412;'
+                'margin:20px 0;">'
+                + escape(warning)
+                + '</div>'
+            )
+
+        html = (
+            '<div dir="rtl" style="'
+            'max-width:850px;'
+            'margin:45px auto;'
+            'padding:25px;'
+            'font-family:tahoma;'
+            'line-height:2;'
+            'border:1px solid #ddd;'
+            'border-radius:14px;">'
+            '<h2>'
+            + escape(title)
+            + '</h2>'
+            '<p><strong>فایل بکاپ:</strong> '
+            + escape(backup.file_name)
+            + '</p>'
+            '<p>'
+            + escape(description)
+            + '</p>'
+            + warning_html
+            + command_html
+            + '<p>'
+            'قبل از بازیابی واقعی، سایت و همه '
+            'پردازش‌های نویسنده باید متوقف شوند.'
+            '</p>'
+            '<p>'
+            'پس از بازیابی، اطلاعات و فایل‌های '
+            'سایت را بررسی کنید و سپس سایت را '
+            'مجدداً راه‌اندازی کنید.'
+            '</p>'
+            '<a href="'
+            + escape(self._list_url(), quote=True)
+            + '">بازگشت به فهرست بکاپ‌ها</a>'
+            '</div>'
         )
 
         return HttpResponse(html)
 
-    # ======================================================
-    # DATE DISPLAY
-    # ======================================================
+    # ==========================================
+    # List columns
+    # ==========================================
 
     @admin.display(description="تاریخ")
     def created_at_jalali(self, obj):
-
         if not obj or not obj.created_at:
             return "تاریخ نامشخص"
 
         try:
-            local_time = timezone.localtime(
-                obj.created_at
-            )
-
+            local = timezone.localtime(obj.created_at)
             jalali = jdatetime.datetime.fromgregorian(
-                datetime=local_time
+                datetime=local
             )
-
             return format_html(
-                '<div style="line-height:1.5">'
                 '<strong>{}</strong>'
-                '<div style="font-size:11px;color:#777">'
-                '{}</div></div>',
+                '<div style="font-size:11px;color:#777">{}</div>',
                 jalali.strftime("%Y/%m/%d %H:%M:%S"),
-                local_time.strftime("%Y-%m-%d %H:%M:%S"),
+                local.strftime("%Y-%m-%d %H:%M:%S"),
             )
-
         except Exception:
-            logger.exception(
-                "Invalid backup date."
-            )
+            logger.exception("Invalid backup date")
             return "تاریخ نامعتبر"
-
-    # ======================================================
-    # FILE SIZE
-    # ======================================================
 
     @admin.display(description="حجم فایل")
     def file_size_display(self, obj):
-
-        if not obj:
-            return "نامشخص"
-
-        return obj.size
-
-    # ======================================================
-    # DOWNLOAD BUTTON
-    # ======================================================
+        return obj.size if obj else "نامشخص"
 
     @admin.display(description="دانلود")
     def download_backup(self, obj):
-
         if not obj or not obj.file_exists:
             return "فایل موجود نیست"
 
         return format_html(
-            '<a class="button" href="{}">'
-            '⬇ دانلود</a>',
+            '<a class="button" href="{}">⬇ دانلود</a>',
             reverse(
                 "admin:app_backup_download",
                 args=[obj.pk],
             ),
         )
 
-    # ======================================================
-    # VALIDATE BUTTON
-    # ======================================================
-
     @admin.display(description="بررسی بکاپ")
     def restore_backup(self, obj):
-
         if not obj or not obj.file_exists:
             return "فایل موجود نیست"
 
@@ -500,43 +453,77 @@ class BackupAdmin(admin.ModelAdmin):
             ),
         )
 
-    # ======================================================
-    # DELETE BUTTON
-    # ======================================================
-
-    @admin.display(description="حذف بکاپ")
-    def delete_backup_button(self, obj):
-
-        if not obj or not obj.pk:
-            return "—"
-
-        url = reverse(
-            "admin:app_backup_delete_backup",
-            args=[obj.pk],
-        )
+    @admin.display(description="بازیابی فقط Media")
+    def restore_media_button(self, obj):
+        if not obj or not obj.file_exists:
+            return "فایل موجود نیست"
 
         return format_html(
-            '<a href="{}" '
-            'style="'
+            '<a href="{}" style="'
             'display:inline-block;'
-            'background:#c62828;'
-            'color:#fff;'
+            'background:#00897b;'
+            'color:white;'
             'padding:6px 12px;'
             'border-radius:7px;'
             'text-decoration:none;'
-            'font-weight:bold;'
-            'white-space:nowrap;'
-            '">'
-            '🗑 حذف</a>',
-            url,
+            'font-weight:bold;">'
+            '🖼 بازیابی Media'
+            '</a>',
+            reverse(
+                "admin:app_backup_restore_media",
+                args=[obj.pk],
+            ),
         )
 
-    # ======================================================
-    # CUSTOM URLS
-    # ======================================================
+    @admin.display(description="بازیابی Media + Database")
+    def restore_full_button(self, obj):
+        if not obj or not obj.file_exists:
+            return "فایل موجود نیست"
+
+        return format_html(
+            '<a href="{}" style="'
+            'display:inline-block;'
+            'background:#1565c0;'
+            'color:white;'
+            'padding:6px 12px;'
+            'border-radius:7px;'
+            'text-decoration:none;'
+            'font-weight:bold;">'
+            '♻️ Media + Database'
+            '</a>',
+            reverse(
+                "admin:app_backup_restore_full",
+                args=[obj.pk],
+            ),
+        )
+
+    @admin.display(description="حذف بکاپ")
+    def delete_backup_button(self, obj):
+        if not obj or not obj.pk:
+            return "—"
+
+        return format_html(
+            '<a href="{}" style="'
+            'display:inline-block;'
+            'background:#c62828;'
+            'color:white;'
+            'padding:6px 12px;'
+            'border-radius:7px;'
+            'text-decoration:none;'
+            'font-weight:bold;">'
+            '🗑 حذف'
+            '</a>',
+            reverse(
+                "admin:app_backup_delete_backup",
+                args=[obj.pk],
+            ),
+        )
+
+    # ==========================================
+    # Custom URLs
+    # ==========================================
 
     def get_urls(self):
-
         custom_urls = [
             path(
                 "create/",
@@ -567,6 +554,20 @@ class BackupAdmin(admin.ModelAdmin):
                 name="app_backup_restore",
             ),
             path(
+                "<int:backup_id>/restore-media/",
+                self.admin_site.admin_view(
+                    self.restore_media_view
+                ),
+                name="app_backup_restore_media",
+            ),
+            path(
+                "<int:backup_id>/restore-full/",
+                self.admin_site.admin_view(
+                    self.restore_full_view
+                ),
+                name="app_backup_restore_full",
+            ),
+            path(
                 "<int:backup_id>/delete/",
                 self.admin_site.admin_view(
                     self.delete_backup_view
@@ -574,27 +575,21 @@ class BackupAdmin(admin.ModelAdmin):
                 name="app_backup_delete_backup",
             ),
         ]
-
         return custom_urls + super().get_urls()
 
-    # ======================================================
-    # CREATE BACKUP
-    # ======================================================
+    # ==========================================
+    # Create backup
+    # ==========================================
 
     def create_backup(self, request):
-
         self._require_superuser(request)
 
         if request.method == "GET":
             return self._confirmation_page(
                 request,
                 "ایجاد نسخه پشتیبان",
-                (
-                    "یک نسخه پشتیبان جدید از دیتابیس "
-                    "و فایل‌های رسانه‌ای ساخته می‌شود.\n\n"
-                    "بعد از تأیید، نوار وضعیت عملیات "
-                    "و زمان سپری‌شده نمایش داده می‌شود."
-                ),
+                "یک نسخه پشتیبان از دیتابیس و "
+                "فایل‌های رسانه‌ای سایت ساخته می‌شود.",
                 reverse(
                     "admin:app_backup_create_backup"
                 ),
@@ -603,24 +598,17 @@ class BackupAdmin(admin.ModelAdmin):
             )
 
         if request.method != "POST":
-            return HttpResponseNotAllowed(
-                ["GET", "POST"]
-            )
+            return HttpResponseNotAllowed(["GET", "POST"])
 
         try:
             BackupService().create_backup()
-
             self.message_user(
                 request,
                 "✅ نسخه پشتیبان با موفقیت ایجاد شد.",
                 messages.SUCCESS,
             )
-
         except Exception:
-            logger.exception(
-                "Backup creation failed."
-            )
-
+            logger.exception("Backup creation failed")
             self.message_user(
                 request,
                 "❌ ایجاد بکاپ ناموفق بود. "
@@ -630,12 +618,11 @@ class BackupAdmin(admin.ModelAdmin):
 
         return self._redirect_list()
 
-    # ======================================================
-    # UPLOAD BACKUP
-    # ======================================================
+    # ==========================================
+    # Upload backup
+    # ==========================================
 
     def upload_backup_view(self, request):
-
         self._require_superuser(request)
 
         if request.method == "GET":
@@ -645,15 +632,11 @@ class BackupAdmin(admin.ModelAdmin):
             )
 
         if request.method != "POST":
-            return HttpResponseNotAllowed(
-                ["GET", "POST"]
-            )
+            return HttpResponseNotAllowed(["GET", "POST"])
 
-        uploaded_file = request.FILES.get(
-            "backup"
-        )
+        uploaded = request.FILES.get("backup")
 
-        if uploaded_file is None:
+        if uploaded is None:
             self.message_user(
                 request,
                 "فایلی انتخاب نشده است.",
@@ -661,9 +644,7 @@ class BackupAdmin(admin.ModelAdmin):
             )
             return self._redirect_list()
 
-        if not uploaded_file.name.lower().endswith(
-            ".zip"
-        ):
+        if not uploaded.name.lower().endswith(".zip"):
             self.message_user(
                 request,
                 "فقط فایل ZIP مجاز است.",
@@ -671,7 +652,7 @@ class BackupAdmin(admin.ModelAdmin):
             )
             return self._redirect_list()
 
-        if uploaded_file.size > MAX_UPLOAD_SIZE:
+        if uploaded.size > MAX_UPLOAD_SIZE:
             self.message_user(
                 request,
                 "حجم فایل بیش از حد مجاز است.",
@@ -684,10 +665,7 @@ class BackupAdmin(admin.ModelAdmin):
             exist_ok=True,
         )
 
-        filename = (
-            f"uploaded_{uuid.uuid4().hex}.zip"
-        )
-
+        filename = f"uploaded_{uuid.uuid4().hex}.zip"
         file_path = BACKUP_DIRECTORY / filename
 
         try:
@@ -695,9 +673,7 @@ class BackupAdmin(admin.ModelAdmin):
             total_size = 0
 
             with file_path.open("xb") as output:
-
-                for chunk in uploaded_file.chunks():
-
+                for chunk in uploaded.chunks():
                     total_size += len(chunk)
 
                     if total_size > MAX_UPLOAD_SIZE:
@@ -708,15 +684,9 @@ class BackupAdmin(admin.ModelAdmin):
                     sha256.update(chunk)
                     output.write(chunk)
 
-            with zipfile.ZipFile(
-                file_path,
-                "r",
-            ) as archive:
-
+            with zipfile.ZipFile(file_path, "r") as archive:
                 if archive.testzip() is not None:
-                    raise ValueError(
-                        "فایل ZIP خراب است."
-                    )
+                    raise ValueError("فایل ZIP خراب است.")
 
                 database_files = [
                     name
@@ -741,9 +711,7 @@ class BackupAdmin(admin.ModelAdmin):
 
             self.message_user(
                 request,
-                "✅ فایل بکاپ بارگذاری و ثبت شد. "
-                "برای بررسی سلامت دیتابیس از "
-                "گزینه بررسی بکاپ استفاده کنید.",
+                "✅ فایل بکاپ بارگذاری و ثبت شد.",
                 messages.SUCCESS,
             )
 
@@ -753,51 +721,32 @@ class BackupAdmin(admin.ModelAdmin):
             zipfile.BadZipFile,
             IntegrityError,
         ):
-            logger.exception(
-                "Backup upload failed."
-            )
-
-            file_path.unlink(
-                missing_ok=True
-            )
+            logger.exception("Backup upload failed")
+            file_path.unlink(missing_ok=True)
 
             self.message_user(
                 request,
-                "❌ بارگذاری بکاپ ناموفق بود. "
-                "فایل یا ساختار آن را بررسی کنید.",
+                "❌ بارگذاری بکاپ ناموفق بود.",
                 messages.ERROR,
             )
 
         return self._redirect_list()
 
-    # ======================================================
-    # DOWNLOAD BACKUP
-    # ======================================================
+    # ==========================================
+    # Download backup
+    # ==========================================
 
-    def download_backup_view(
-        self,
-        request,
-        backup_id,
-    ):
-
+    def download_backup_view(self, request, backup_id):
         self._require_superuser(request)
 
         if request.method != "GET":
-            return HttpResponseNotAllowed(
-                ["GET"]
-            )
+            return HttpResponseNotAllowed(["GET"])
 
-        backup = get_object_or_404(
-            Backup,
-            pk=backup_id,
-        )
+        backup = self._get_backup(backup_id)
 
-        if not backup.file_exists:
-            self.message_user(
-                request,
-                "فایل بکاپ وجود ندارد.",
-                messages.ERROR,
-            )
+        if not self._backup_exists_or_redirect(
+            request, backup
+        ):
             return self._redirect_list()
 
         return FileResponse(
@@ -807,33 +756,23 @@ class BackupAdmin(admin.ModelAdmin):
             content_type="application/zip",
         )
 
-    # ======================================================
-    # VALIDATE BACKUP - NO LIVE RESTORE
-    # ======================================================
+    # ==========================================
+    # Validate backup
+    # ==========================================
 
-    def restore_backup_view(
-        self,
-        request,
-        backup_id,
-    ):
-
+    def restore_backup_view(self, request, backup_id):
         self._require_superuser(request)
 
-        backup = get_object_or_404(
-            Backup,
-            pk=backup_id,
-        )
+        backup = self._get_backup(backup_id)
 
         if request.method == "GET":
             return self._confirmation_page(
                 request,
                 "بررسی سلامت نسخه پشتیبان",
-                (
-                    "این عملیات فقط فایل بکاپ و "
-                    "سلامت دیتابیس آن را بررسی می‌کند.\n\n"
-                    "هیچ اطلاعاتی روی سایت اصلی "
-                    "بازیابی یا جایگزین نمی‌شود."
-                ),
+                "این عملیات فقط فایل بکاپ و "
+                "دیتابیس آن را بررسی می‌کند.\n\n"
+                "هیچ اطلاعاتی روی سایت اصلی "
+                "جایگزین نمی‌شود.",
                 reverse(
                     "admin:app_backup_restore",
                     args=[backup.pk],
@@ -843,100 +782,150 @@ class BackupAdmin(admin.ModelAdmin):
             )
 
         if request.method != "POST":
-            return HttpResponseNotAllowed(
-                ["GET", "POST"]
-            )
+            return HttpResponseNotAllowed(["GET", "POST"])
 
         try:
-            result = RestoreService(
-                backup
-            ).restore()
+            result = RestoreService(backup).restore()
 
             if (
                 isinstance(result, dict)
                 and result.get("valid") is True
                 and result.get("restored") is False
             ):
-
                 self.message_user(
                     request,
                     "✅ سلامت نسخه پشتیبان تأیید شد. "
-                    "هیچ اطلاعاتی روی سایت "
-                    "اصلی جایگزین نشده است.",
+                    "هیچ اطلاعاتی جایگزین نشده است.",
                     messages.SUCCESS,
                 )
-
             else:
                 self.message_user(
                     request,
-                    "نتیجه اعتبارسنجی قابل تأیید نیست. "
-                    "هیچ بازیابی انجام نشد.",
+                    "نتیجه اعتبارسنجی قابل تأیید نیست.",
                     messages.WARNING,
                 )
 
         except Exception:
-            logger.exception(
-                "Backup validation failed."
-            )
-
+            logger.exception("Backup validation failed")
             self.message_user(
                 request,
-                "❌ بررسی سلامت بکاپ ناموفق بود. "
-                "جزئیات در لاگ سرور ثبت شد.",
+                "❌ بررسی سلامت بکاپ ناموفق بود.",
                 messages.ERROR,
             )
 
         return self._redirect_list()
 
-    # ======================================================
-    # DELETE BACKUP
-    # ======================================================
+    # ==========================================
+    # Restore Media only
+    # ==========================================
 
-    def delete_backup_view(
-        self,
-        request,
-        backup_id,
-    ):
-        """
-        Delete the backup archive and its database record.
-
-        GET:
-            Display confirmation.
-
-        POST:
-            Validate path.
-            Delete ZIP.
-            Delete database record.
-
-        Only superusers are allowed.
-        """
-
+    def restore_media_view(self, request, backup_id):
         self._require_superuser(request)
 
-        backup = get_object_or_404(
-            Backup,
-            pk=backup_id,
+        if request.method != "GET":
+            return HttpResponseNotAllowed(["GET"])
+
+        backup = self._get_backup(backup_id)
+
+        if not self._backup_exists_or_redirect(
+            request, backup
+        ):
+            return self._redirect_list()
+
+        command = (
+            "cd /home/nkavoshc/project\n"
+            "source /home/nkavoshc/virtualenv/"
+            "project/3.12/bin/activate\n"
+            "python -m "
+            "app_backup.management.restore_backup_offline "
+            f"{backup.pk} "
+            "--media-only --confirm --offline-verified"
         )
 
+        return self._instruction_page(
+            title="🖼 بازیابی فقط Media",
+            backup=backup,
+            description=(
+                "در این حالت فقط تصاویر، ویدئوها و "
+                "سایر فایل‌های پوشه Media از بکاپ "
+                "بازیابی می‌شوند. "
+                "دیتابیس فعلی تغییر نمی‌کند."
+            ),
+            command=command,
+            warning=(
+                "هشدار: فایل‌های Media فعلی با "
+                "فایل‌های بکاپ جایگزین می‌شوند. "
+                "قبل از اجرای دستور، سایت، کرون‌ها "
+                "و همه پردازش‌های نویسنده را متوقف کنید. "
+                "نسخه قبلی Media در پوشه نجات "
+                "نگهداری خواهد شد."
+            ),
+        )
+
+    # ==========================================
+    # Restore Media + Database
+    # ==========================================
+
+    def restore_full_view(self, request, backup_id):
+        self._require_superuser(request)
+
+        if request.method != "GET":
+            return HttpResponseNotAllowed(["GET"])
+
+        backup = self._get_backup(backup_id)
+
+        if not self._backup_exists_or_redirect(
+            request, backup
+        ):
+            return self._redirect_list()
+
+        command = (
+            "cd /home/nkavoshc/project\n"
+            "source /home/nkavoshc/virtualenv/"
+            "project/3.12/bin/activate\n"
+            "python -m "
+            "app_backup.management.restore_backup_offline "
+            f"{backup.pk} "
+            "--confirm --offline-verified"
+        )
+
+        return self._instruction_page(
+            title="♻️ بازیابی Media + Database",
+            backup=backup,
+            description=(
+                "این حالت دیتابیس و تمام فایل‌های "
+                "Media فعلی سایت را با محتوای "
+                "نسخه پشتیبان جایگزین می‌کند."
+            ),
+            command=command,
+            warning=(
+                "هشدار: این عملیات واقعی است. "
+                "قبل از اجرای دستور، سایت، کرون‌ها "
+                "و تمام پردازش‌های نویسنده دیتابیس "
+                "باید متوقف شوند. "
+                "گزینه --offline-verified صرفاً "
+                "تأیید دستی توقف آن‌هاست."
+            ),
+        )
+
+    # ==========================================
+    # Delete backup
+    # ==========================================
+
+    def delete_backup_view(self, request, backup_id):
+        self._require_superuser(request)
+
+        backup = self._get_backup(backup_id)
+
         if request.method == "GET":
-
-            filename = str(
-                backup.file_name
-            )
-
             return self._confirmation_page(
                 request,
                 "🗑 حذف نسخه پشتیبان",
-                (
-                    "آیا از حذف این نسخه پشتیبان "
-                    "اطمینان دارید؟\n\n"
-                    f"نام فایل: {filename}\n\n"
-                    "با تأیید این عملیات، فایل ZIP "
-                    "از فضای هاست حذف می‌شود و "
-                    "رکورد مربوط به آن نیز "
-                    "از فهرست بکاپ‌ها پاک خواهد شد.\n\n"
-                    "این عملیات قابل بازگشت نیست."
-                ),
+                "آیا از حذف این نسخه پشتیبان "
+                "اطمینان دارید؟\n\n"
+                f"نام فایل: {backup.file_name}\n\n"
+                "فایل ZIP و رکورد آن حذف می‌شوند.\n"
+                "این عملیات قابل بازگشت نیست.",
                 reverse(
                     "admin:app_backup_delete_backup",
                     args=[backup.pk],
@@ -946,20 +935,15 @@ class BackupAdmin(admin.ModelAdmin):
             )
 
         if request.method != "POST":
-            return HttpResponseNotAllowed(
-                ["GET", "POST"]
-            )
+            return HttpResponseNotAllowed(["GET", "POST"])
 
         try:
             backup_root = Path(
                 BACKUP_DIRECTORY
             ).resolve(strict=True)
 
-            filename = str(
-                backup.file_name
-            )
+            filename = str(backup.file_name)
 
-            # Reject absolute paths and path traversal.
             if (
                 not filename
                 or filename in (".", "..")
@@ -972,43 +956,30 @@ class BackupAdmin(admin.ModelAdmin):
                     "Invalid backup filename."
                 )
 
-            file_path = Path(
-                backup.backup_path
-            )
+            file_path = Path(backup.backup_path)
 
-            # Never delete a symlink.
             if file_path.is_symlink():
                 raise ValueError(
                     "Backup symlink deletion is forbidden."
                 )
 
-            resolved_path = file_path.resolve(
-                strict=False
-            )
+            resolved = file_path.resolve(strict=False)
 
-            # Only files directly inside BACKUP_DIRECTORY
-            # can be deleted.
-            if resolved_path.parent != backup_root:
+            if (
+                resolved.parent != backup_root
+                or resolved.name != filename
+            ):
                 raise ValueError(
-                    "Backup path is outside backup directory."
+                    "Backup path is invalid."
                 )
 
-            if resolved_path.name != filename:
-                raise ValueError(
-                    "Backup filename does not match path."
-                )
-
-            if resolved_path.exists():
-
-                if not resolved_path.is_file():
+            if resolved.exists():
+                if not resolved.is_file():
                     raise ValueError(
                         "Backup path is not a regular file."
                     )
+                resolved.unlink()
 
-                resolved_path.unlink()
-
-            # Delete database record only after
-            # successful file removal.
             backup.delete()
 
             logger.info(
@@ -1021,23 +992,20 @@ class BackupAdmin(admin.ModelAdmin):
 
             self.message_user(
                 request,
-                "✅ نسخه پشتیبان و رکورد آن "
-                "با موفقیت حذف شدند.",
+                "✅ نسخه پشتیبان و رکورد آن حذف شدند.",
                 messages.SUCCESS,
             )
 
         except Exception:
             logger.exception(
-                "Backup deletion failed. "
-                "backup_id=%s",
+                "Backup deletion failed: %s",
                 backup_id,
             )
 
             self.message_user(
                 request,
                 "❌ حذف بکاپ ناموفق بود. "
-                "فایل یا مسیر ذخیره‌سازی را بررسی کنید. "
-                "جزئیات خطا در لاگ سرور ثبت شد.",
+                "جزئیات در لاگ سرور ثبت شد.",
                 messages.ERROR,
             )
 
